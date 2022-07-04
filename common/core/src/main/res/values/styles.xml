@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="StandartButton">
+        <item name="android:background">@drawable/shape_button_standart</item>
+        <item name="android:textColor">@color/button_standart_text</item>
+
+    </style>
+</resources>
