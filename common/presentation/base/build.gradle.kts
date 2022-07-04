@@ -15,6 +15,7 @@ dependencies {
 
     api(Deps.AndroidX.core)
     api(Deps.AndroidX.appcompat)
+    api(Deps.AndroidX.fragment)
     api(Deps.AndroidX.lifecycleCommon)
     api(Deps.Android.material)
     api(Deps.Coroutines.core)

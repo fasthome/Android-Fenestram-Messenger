@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="Gradle: com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/176cb4e48fe903d9474e5f0501ced07b/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/2514ac94deaa86e22c0ab35d2541c748/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5c41c4b5e3d0216203b205d32d6d0a75/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/a19370a672eb2d33c71621744f39e8dd/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/24476ee19d9f2617a5e44986dab3806d/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f0a070883fac621f2cdb624d99bb4ad7/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/f0a070883fac621f2cdb624d99bb4ad7/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/f0a070883fac621f2cdb624d99bb4ad7/transformed/jetified-adapterdelegates4-kotlin-dsl-viewbinding-4.3.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.hannesdorfmann/adapterdelegates4-kotlin-dsl-viewbinding/4.3.0/fdb841c8bc892aec3398dcf071c20756d7ea44c2/adapterdelegates4-kotlin-dsl-viewbinding-4.3.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.hannesdorfmann/adapterdelegates4-kotlin-dsl-viewbinding/4.3.0/756d828c17a881048d8625a89f6b6a4e291452a1/adapterdelegates4-kotlin-dsl-viewbinding-4.3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

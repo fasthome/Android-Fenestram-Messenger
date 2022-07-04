@@ -3,5 +3,11 @@
  */
 package io.fasthome.fenestram_messenger.messenger_api
 
+import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
+
 interface MessengerFeature {
+
+    val messengerNavigationContract : NavigationContractApi<NoParams, NoResult>
 }

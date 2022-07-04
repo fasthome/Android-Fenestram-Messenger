@@ -24,7 +24,13 @@ class MainActivityViewModel(
     }
 
     fun onAppStarted() {
-        authLauncher.launch(NoParams)
+        router.newRootScreen(features.mainFeature.mainNavigationContract.createParams(NoParams))
+
+        //TODO Пока не готова авторизация, проверяем авторизованного пользователя так. Поменяй на нужный флаг
+        val authorized = true
+        if (!authorized) {
+            authLauncher.launch(NoParams)
+        }
     }
 
     companion object {

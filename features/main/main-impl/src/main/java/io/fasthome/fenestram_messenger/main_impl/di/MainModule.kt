@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.main_impl.presentation.main.MainViewModel
 import io.fasthome.fenestram_messenger.main_impl.MainFeatureImpl
+import io.fasthome.fenestram_messenger.main_impl.domain.logic.OuterTabNavigator
 import org.koin.dsl.factory
 import org.koin.dsl.module
 
@@ -30,11 +31,13 @@ object MainModule {
     }
 
     private fun createDomainModule() = module {
-
+        single(::OuterTabNavigator)
     }
 
     private fun createPresentationModule() = module {
         viewModel(::MainViewModel)
+
+        factory(MainViewModel::Features)
     }
 
 }

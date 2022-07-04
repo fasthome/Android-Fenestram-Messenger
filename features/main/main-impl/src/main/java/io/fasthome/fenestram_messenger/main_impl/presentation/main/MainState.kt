@@ -3,5 +3,8 @@
  */
 package io.fasthome.fenestram_messenger.main_impl.presentation.main
 
+import io.fasthome.fenestram_messenger.main_api.MainFeature
 
-class MainState()
+data class MainState(
+    val currentTab: MainFeature.TabType,
+)

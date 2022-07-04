@@ -1,0 +1,4 @@
+io/fasthome/fenestram_messenger/BuildConfig.java
+ io.fasthome.fenestram_messenger.BuildConfig
+io/fasthome/fenestram_messenger/databinding/ActivityMainBinding.java
+ io.fasthome.fenestram_messenger.databinding.ActivityMainBinding

@@ -3,5 +3,11 @@
  */
 package io.fasthome.fenestram_messenger.contacts_api
 
+import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
+
 interface ContactsFeature {
+
+    val contactsNavigationContract : NavigationContractApi<NoParams, NoResult>
 }
