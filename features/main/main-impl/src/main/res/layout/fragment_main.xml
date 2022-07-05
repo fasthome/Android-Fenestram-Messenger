@@ -8,6 +8,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/purple_back"
         app:layout_constraintBottom_toTopOf="@id/navigation_view"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -15,6 +16,9 @@
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/purple"
+        app:itemIconTint="@color/bottom_navigation_color_state_icon"
+        app:itemTextColor="@color/bottom_navigation_color_state_text"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
