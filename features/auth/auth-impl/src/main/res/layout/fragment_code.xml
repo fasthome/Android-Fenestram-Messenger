@@ -19,15 +19,15 @@
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/phone_input"
+        app:layout_constraintBottom_toTopOf="@id/code_input"
         />
 
     <TextView
-        android:id="@+id/label_phone"
+        android:id="@+id/label_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Номер телефона"
+        android:text="Введите код из СМС"
         android:textColor="@color/labels"
         android:textSize="15sp"
         android:fontFamily="@font/geometria"
@@ -36,28 +36,26 @@
         android:layout_marginBottom="5dp"
 
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/phone_input"/>
+        app:layout_constraintBottom_toTopOf="@id/code_input"/>
 
-    <com.santalu.maskara.widget.MaskEditText
-        android:id="@+id/phone_input"
+    <EditText
+        android:id="@+id/code_input"
 
         android:layout_width="match_parent"
         android:layout_height="50dp"
 
-        android:text="+7"
         android:textColor="@color/labels"
-        android:textSize="15sp"
+        android:textSize="20sp"
         android:fontFamily="@font/geometria"
+        android:gravity="center"
 
-        android:inputType="phone"
-        app:mask="+7 ### ### ## ##"
-
-        android:background="@drawable/rounded_border"
+        android:maxLength="5"
+        android:inputType="number"
 
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
 
-        android:padding="10dp"
+        android:background="@drawable/rounded_border"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,23 +63,42 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+    <TextView
+        android:id="@+id/resend_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
-        android:text="Отправить код"
-        android:textColor="@color/white"
+        android:text="Отправить заново?"
+        android:textColor="@color/button"
         android:textSize="15sp"
         android:fontFamily="@font/geometria"
 
-        android:background="@drawable/rounded_button"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="5dp"
+
+        android:padding="5dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_input"/>
+
+    <Button
+        android:id="@+id/button_send_code"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_input"
 
         android:layout_marginTop="50dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
 
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/phone_input"/>
+        android:text="ГОТОВО"
+        android:textColor="@color/white"
+        android:fontFamily="@font/geometria"
+        android:textSize="15sp"
+
+        android:background="@drawable/rounded_button"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout >
