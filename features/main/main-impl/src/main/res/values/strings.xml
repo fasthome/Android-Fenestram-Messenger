@@ -2,5 +2,5 @@
 <resources>
     <string name="contacts">Контакты</string>
     <string name="profile">Профиль</string>
-    <string name="chats">Чаты</string>
+    <string name="chat">Чат</string>
 </resources>
