@@ -48,6 +48,7 @@
         android:textSize="20sp"
         android:fontFamily="@font/geometria"
         android:gravity="center"
+        android:textStyle="bold"
 
         android:maxLength="5"
         android:inputType="number"
@@ -62,6 +63,25 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Неверный код"
+        android:textColor="@color/error"
+        android:textSize="15sp"
+        android:fontFamily="@font/geometria"
+
+        android:layout_marginTop="10dp"
+
+        android:visibility="invisible"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_input"
+        app:layout_constraintEnd_toStartOf="@id/resend_code"/>
+
 
     <TextView
         android:id="@+id/resend_code"
