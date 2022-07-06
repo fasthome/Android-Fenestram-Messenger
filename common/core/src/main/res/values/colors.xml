@@ -6,4 +6,8 @@
     <color name="button_standart">#888686</color>
     <color name="button_standart_stroke">#C5C4C4</color>
     <color name="button_standart_text">#1B1A1A</color>
+    <color name="purple">#32283B</color>
+    <color name="purple_back">#251B2D</color>
+    <color name="purple_transparent">#8E86A5</color>
+
 </resources>
