@@ -1,13 +1,13 @@
-package io.fasthome.fenestram_messenger.contacts_impl.presentation.recycler_view
+package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter
 
-import android.view.View
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
 import io.fasthome.fenestram_messenger.util.bindWithBinding
 
-class ContactsAdapter : AsyncListDifferDelegationAdapter<ContactsModel>(
+class ContactsAdapter : AsyncListDifferDelegationAdapter<ContactsViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
         createContactsAdapterDelegate()
@@ -15,12 +15,11 @@ class ContactsAdapter : AsyncListDifferDelegationAdapter<ContactsModel>(
 ) {}
 
 fun createContactsAdapterDelegate() =
-    adapterDelegateViewBinding<ContactsModel, ContactItemBinding>(
+    adapterDelegateViewBinding<ContactsViewItem, ContactItemBinding>(
         ContactItemBinding::inflate,
     ) {
         bindWithBinding {
             contactName.text = item.name
-            if (item.newMessage) newMessage.visibility = View.VISIBLE else newMessage.visibility =
-                View.GONE
+            newMessage.visibility = item.newMessageVisibility
         }
     }
