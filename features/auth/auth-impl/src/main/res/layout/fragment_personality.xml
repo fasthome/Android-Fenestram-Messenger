@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,9 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
 
-        android:text="Добро пожаловать в FENESTRAM!"
+        android:text="@string/welcome_message_label"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:fontFamily="@font/montserrat"
@@ -30,11 +31,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/label_welcome"
 
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/ic_baseline_account_circle_24"
         />
 
-    <Button
+    <ImageButton
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="@drawable/ic_baseline_add_circle_24"
@@ -50,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Имя"
+        android:text="@string/name_label"
         android:textColor="@color/labels"
         android:textSize="15sp"
         android:fontFamily="@font/geometria"
@@ -59,7 +60,7 @@
         android:layout_marginBottom="5dp"
 
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/name_input"/>
+        app:layout_constraintBottom_toTopOf="@id/name_input" />
 
     <EditText
         android:id="@+id/name_input"
@@ -78,9 +79,10 @@
 
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
 
         android:background="@drawable/rounded_border"
+        android:imeOptions="actionDone"
         />
 
     <TextView
@@ -88,9 +90,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Никнейм"
+        android:text="@string/user_name_label"
         android:textColor="@color/labels"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:fontFamily="@font/geometria"
 
         android:layout_marginStart="20dp"
@@ -109,7 +111,7 @@
         android:padding="10dp"
         android:fontFamily="@font/geometria"
         android:textSize="20sp"
-
+        android:singleLine="true"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -117,17 +119,18 @@
 
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
 
         android:background="@drawable/rounded_border"
+        android:imeOptions="actionDone"
         />
 
     <TextView
-        android:id="@+id/label_bithday"
+        android:id="@+id/label_birthday"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Дата рождения"
+        android:text="@string/birthday_label"
         android:textColor="@color/labels"
         android:textSize="15sp"
         android:fontFamily="@font/geometria"
@@ -136,10 +139,10 @@
         android:layout_marginBottom="5dp"
 
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bithdate_input"/>
+        app:layout_constraintBottom_toTopOf="@id/birthdate_input"/>
 
     <EditText
-        android:id="@+id/bithdate_input"
+        android:id="@+id/birthdate_input"
 
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -148,6 +151,7 @@
         android:padding="10dp"
         android:fontFamily="@font/geometria"
         android:textSize="20sp"
+        android:singleLine="true"
 
         android:inputType="date"
 
@@ -157,17 +161,19 @@
 
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
 
         android:background="@drawable/rounded_border"
+        android:imeOptions="actionDone"
         />
 
     <TextView
         android:id="@+id/label_mail"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Email"
+        android:text="@string/email_label"
         android:textColor="@color/labels"
         android:textSize="15sp"
         android:fontFamily="@font/geometria"
@@ -175,8 +181,8 @@
         android:layout_marginStart="20dp"
         android:layout_marginBottom="5dp"
 
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/mail_input"/>
+        app:layout_constraintBottom_toTopOf="@id/mail_input"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <EditText
         android:id="@+id/mail_input"
@@ -188,16 +194,20 @@
         android:padding="10dp"
         android:fontFamily="@font/geometria"
         android:textSize="20sp"
+        android:singleLine="true"
+
+        android:inputType="textEmailAddress"
 
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bithdate_input"
+        app:layout_constraintTop_toBottomOf="@+id/birthdate_input"
 
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
 
         android:background="@drawable/rounded_border"
+        android:imeOptions="actionDone"
         />
 
     <Button
@@ -209,23 +219,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mail_input"
 
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
 
-        android:text="ГОТОВО"
+        android:text="@string/ready_button"
         android:textColor="@color/white"
         android:fontFamily="@font/geometria"
         android:textSize="15sp"
+        android:textAllCaps="false"
 
-        android:background="@drawable/rounded_button"/>
+        android:background="@drawable/rounded_gray_button"
+        android:enabled="false"/>
 
     <TextView
         android:id="@+id/label_skip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:text="Пропустить"
+        android:text="@string/skip_button"
         android:textColor="@color/skip_button"
         android:textSize="20sp"
         android:fontFamily="@font/geometria"

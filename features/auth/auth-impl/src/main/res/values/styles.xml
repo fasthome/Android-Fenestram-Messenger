@@ -6,4 +6,7 @@
     <color name="skip_button">#4F415A</color>
     <color name="user_icon">#8E86A5</color>
     <color name="error">#FF4B4B</color>
+    <color name="button_gray">#3D3246</color>
+    <color name="icon_white">#F2F2F2</color>
+    <color name="icon_background">#8E86A5</color>
 </resources>
