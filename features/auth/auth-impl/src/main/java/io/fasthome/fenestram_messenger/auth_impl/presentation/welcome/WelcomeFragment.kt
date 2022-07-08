@@ -9,29 +9,26 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragment_welcome) {
 
-    override val vm : WelcomeViewModel by viewModel()
+    override val vm: WelcomeViewModel by viewModel()
 
     private val binding by fragmentViewBinding(FragmentWelcomeBinding::bind)
 
     override fun renderState(state: WelcomeState) = with(binding) {
-        when(state){
-            is WelcomeState.CorrectPhoneNumberState -> {
-            // TODO ПЕРЕХОД НА СТРАНИЦУ С КОДОМ
-            }
-            is WelcomeState.UncorrectPhoneNumberState -> {
-                binding.phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
-            }
-            is WelcomeState.BeginWelcomeState -> {
-                binding.phoneInput.setBackgroundResource(R.drawable.rounded_border)
-            }
-        }
+        if (state.error)
+            phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
+        else
+            phoneInput.setBackgroundResource(R.drawable.rounded_border)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.fenestram_label))
 
         binding.buttonSendCode.setOnClickListener {
             vm.checkPhoneNumber(binding.phoneInput.unMasked)

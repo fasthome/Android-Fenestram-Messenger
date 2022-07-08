@@ -10,6 +10,6 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeNav
 
 class AuthFeatureImpl : AuthFeature {
 
-    override val authNavigationContract = PersonalityNavigationContract
+    override val authNavigationContract = WelcomeNavigationContract
 
 }

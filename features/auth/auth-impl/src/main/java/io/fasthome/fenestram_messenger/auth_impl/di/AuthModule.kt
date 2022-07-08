@@ -36,6 +36,8 @@ object AuthModule {
     }
 
     private fun createPresentationModule() = module {
+        viewModel(::WelcomeViewModel)
+        viewModel(::CodeViewModel)
         viewModel(::PersonalityViewModel)
     }
 
