@@ -1,126 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background">
 
-    <TextView
+    <include
         android:id="@+id/app_name"
+        layout="@layout/include_welcome_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginBottom="150dp"
-
-        android:text="@string/fenestram_label"
-        android:textColor="@color/white"
-        android:textSize="25sp"
-        android:fontFamily="@font/montserrat"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/code_input"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/label_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/geometria"
         android:text="@string/input_code_label"
         android:textColor="@color/labels"
         android:textSize="15sp"
-        android:fontFamily="@font/geometria"
-
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="5dp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/code_input"/>
+        app:layout_constraintBottom_toTopOf="@id/code_input"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/code_input"
-
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
-        android:textColor="@color/labels"
-        android:textSize="20sp"
-        android:fontFamily="@font/geometria"
-        android:gravity="center"
-        android:textStyle="bold"
-
-        android:maxLength="5"
-        android:inputType="number"
-
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-
         android:background="@drawable/rounded_border"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/geometria"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="5"
+        android:textColor="@color/labels"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/geometria"
         android:text="@string/incorrect_code_label"
         android:textColor="@color/error"
         android:textSize="15sp"
-        android:fontFamily="@font/geometria"
-
-        android:layout_marginTop="10dp"
-
         android:visibility="invisible"
-
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/code_input"
-        app:layout_constraintEnd_toStartOf="@id/resend_code"/>
-
+        app:layout_constraintEnd_toStartOf="@id/resend_code"
+        app:layout_constraintTop_toBottomOf="@id/code_input" />
 
     <TextView
         android:id="@+id/resend_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/geometria"
+        android:padding="5dp"
         android:text="@string/resend_code_button"
         android:textColor="@color/button"
         android:textSize="15sp"
-        android:fontFamily="@font/geometria"
-
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="5dp"
-
-        android:padding="5dp"
-
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/code_input"/>
+        app:layout_constraintTop_toBottomOf="@id/code_input" />
 
     <Button
         android:id="@+id/button_send_code"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/code_input"
-
-        android:layout_marginTop="50dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
-
-        android:text="@string/ready_button"
-        android:textColor="@color/white"
-        android:fontFamily="@font/geometria"
-        android:textSize="15sp"
-        android:textAllCaps="false"
-
         android:background="@drawable/rounded_gray_button"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:fontFamily="@font/geometria"
+        android:text="@string/ready_button"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_input" />
 
-</androidx.constraintlayout.widget.ConstraintLayout >
+</androidx.constraintlayout.widget.ConstraintLayout>

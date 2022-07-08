@@ -1,89 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background">
 
-    <TextView
+    <include
         android:id="@+id/app_name"
+        layout="@layout/include_welcome_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginBottom="150dp"
-
-        android:text="@string/fenestram_label"
-        android:textColor="@color/white"
-        android:textSize="25sp"
-        android:fontFamily="@font/montserrat"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/phone_input"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/label_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/geometria"
         android:text="@string/phone_number_label"
         android:textColor="@color/labels"
         android:textSize="15sp"
-        android:fontFamily="@font/geometria"
-
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="5dp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/phone_input"/>
+        app:layout_constraintBottom_toTopOf="@id/phone_input"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.santalu.maskara.widget.MaskEditText
         android:id="@+id/phone_input"
-
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/rounded_border"
+        android:fontFamily="@font/geometria"
+        android:inputType="phone"
+        android:padding="10dp"
         android:text="@string/country_code_text"
         android:textColor="@color/labels"
         android:textSize="15sp"
-        android:fontFamily="@font/geometria"
-
-        android:inputType="phone"
-        app:mask="+7 ### ### ## ##"
-
-        android:background="@drawable/rounded_border"
-
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-
-        android:padding="10dp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:mask="+7 ### ### ## ##" />
 
     <Button
         android:id="@+id/button_send_code"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/rounded_button"
+        android:fontFamily="@font/geometria"
         android:text="@string/send_code_button"
+        android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"
-        android:fontFamily="@font/geometria"
-        android:textAllCaps="false"
-
-        android:background="@drawable/rounded_button"
-
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/phone_input"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phone_input" />
 
-</androidx.constraintlayout.widget.ConstraintLayout >
+</androidx.constraintlayout.widget.ConstraintLayout>
