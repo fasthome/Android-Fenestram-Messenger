@@ -1,5 +1,5 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
-class ContactsState {
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 
-}
+data class ContactsState(val contacts: List<ContactsViewItem>)
