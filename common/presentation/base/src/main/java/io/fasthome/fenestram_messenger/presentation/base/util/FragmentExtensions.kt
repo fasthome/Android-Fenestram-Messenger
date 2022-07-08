@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.presentation.base.util
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.util.doOnDestroy
 import io.fasthome.fenestram_messenger.util.getPrintableText
 import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 @Suppress("unused")
@@ -101,4 +103,19 @@ fun Fragment.showMessage(message: Message): Unit = when (message) {
     is Message.PopUp -> Toast
         .makeText(requireContext(), getPrintableText(message.messageText), Toast.LENGTH_LONG)
         .show()
+}
+
+
+fun Fragment.getOrCreateArguments(): Bundle {
+    if (arguments == null) arguments = Bundle()
+    return requireArguments()
+}
+
+fun booleanArg(key: String, defaultValue: Boolean) = object : ReadWriteProperty<Fragment, Boolean> {
+    override fun getValue(thisRef: Fragment, property: KProperty<*>): Boolean =
+        thisRef.getOrCreateArguments().getBoolean(key, defaultValue)
+
+    override fun setValue(thisRef: Fragment, property: KProperty<*>, value: Boolean) {
+        thisRef.getOrCreateArguments().putBoolean(key, value)
+    }
 }
