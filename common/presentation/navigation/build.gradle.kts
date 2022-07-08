@@ -9,6 +9,7 @@ dependencies {
     implementation(Deps.AndroidX.lifecycleCommon)
 
     implementation(project(Modules.Common.util))
+    implementation(project(Modules.Common.di))
 
     api(Deps.cicerone)
 }

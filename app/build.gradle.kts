@@ -62,6 +62,7 @@ dependencies {
     implementation(project(Modules.Common.mvi))
     implementation(project(Modules.Common.navigation))
     implementation(project(Modules.Common.util))
+    implementation(project(Modules.Common.component))
 
     implementation(project(Modules.Feature.main.api))
     implementation(project(Modules.Feature.main.impl))
