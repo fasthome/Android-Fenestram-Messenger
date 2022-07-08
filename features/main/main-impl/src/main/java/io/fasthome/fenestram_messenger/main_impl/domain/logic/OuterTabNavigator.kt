@@ -1,6 +1,3 @@
-/**
- * Created by Eugeny Kabak on 09.07.2021
- */
 package io.fasthome.fenestram_messenger.main_impl.domain.logic
 
 import io.fasthome.fenestram_messenger.main_api.MainFeature
