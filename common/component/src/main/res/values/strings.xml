@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="permission_settings_dialog_title">Требуется разрешение</string>
+    <string name="permission_settings_dialog_message">Вы можете дать разрешение в настройках приложения.</string>
+    <string name="permission_settings_dialog_open_settings">Открыть настройки</string>
+</resources>

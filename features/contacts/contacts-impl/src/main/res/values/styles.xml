@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ContactsHeader" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/contacts_header_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/geometria</item>
+    </style>
+
+    <style name="ContactName" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/contact_name_text_size</item>
+        <item name="android:fontFamily">@font/geometria</item>
+    </style>
+
+    <style name="SearchView" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@color/manatee</item>
+        <item name="android:textColorSecondary">@color/manatee</item>
+        <item name="android:inputType">text</item>
+        <item name="iconifiedByDefault">false</item>
+        <item name="queryBackground">@android:color/transparent</item>
+        <item name="searchIcon">@null</item>
+    </style>
+
+    <style name="FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="srcCompat">@drawable/bg_add_contact_cross</item>
+        <item name="tint">@color/white</item>
+        <item name="fabSize">normal</item>
+        <item name="backgroundTint">@color/blue</item>
+    </style>
+</resources>

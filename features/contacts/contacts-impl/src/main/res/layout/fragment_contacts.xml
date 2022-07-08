@@ -1,16 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    >
+    android:background="@color/bleached_cedar">
 
 
     <TextView
+        android:id="@+id/contacts_header"
+        style="@style/ContactsHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Contacts Fragment"
-        android:layout_gravity="center"
-        />
+        android:layout_marginStart="@dimen/contacts_header_margin_start"
+        android:layout_marginTop="@dimen/contacts_header_margin_top"
+        android:text="@string/contacts"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/contacts_sv"
+        style="@style/SearchView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/contacts_sv_height"
+        android:layout_marginStart="@dimen/contacts_sv_margin_start_end"
+        android:layout_marginTop="@dimen/contacts_sv_margin_top"
+        android:layout_marginEnd="@dimen/contacts_sv_margin_start_end"
+        android:background="@drawable/bg_searchview"
+        android:theme="@style/SearchView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contacts_header"
+        app:queryHint="@string/search_contacts" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contacts_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/contacts_rv_padding_start_end"
+        android:paddingEnd="@dimen/contacts_rv_padding_start_end"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/contacts_sv"
+        app:layout_constraintStart_toStartOf="@+id/contacts_sv"
+        app:layout_constraintTop_toBottomOf="@id/contacts_sv"
+        tools:listitem="@layout/contact_item" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/contacts_add"
+        style="@style/FloatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/contacts_fab_margin_bottom"
+        android:contentDescription="@string/contacts_add_description"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/contacts_sv" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
