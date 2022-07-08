@@ -20,10 +20,9 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 
 class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts) {
 
-    override val vm: ContactsViewModel by viewModel()
     private val permissionInterface by registerFragment(PermissionComponentContract)
 
-    override val vm : ContactsViewModel by viewModel(
+    override val vm: ContactsViewModel by viewModel(
         getParamsInterface = ContactsNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::permissionInterface),
@@ -31,12 +30,11 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
 
     private val binding: FragmentContactsBinding by fragmentViewBinding(FragmentContactsBinding::bind)
 
-    private lateinit var contactsAdapter: ContactsAdapter
+    private val contactsAdapter: ContactsAdapter = ContactsAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        contactsAdapter = ContactsAdapter()
         binding.contactsList.adapter = contactsAdapter
 
         binding.contactsAdd.setOnClickListener {

@@ -3,11 +3,11 @@
  */
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
-import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
+import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -23,11 +23,11 @@ class ContactsViewModel(
         requestPermissionAndLoadContacts()
     }
 
-    private fun requestPermissionAndLoadContacts(){
+    private fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
 
-            if(permissionGranted){
+            if (permissionGranted) {
                 //todo
             }
 
