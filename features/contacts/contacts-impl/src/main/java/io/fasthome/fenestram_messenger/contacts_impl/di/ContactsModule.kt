@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.di
 
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_impl.ContactsFeatureImpl
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsLoader
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsViewModel
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
@@ -30,5 +31,8 @@ object ContactsModule {
 
     private fun createPresentationModule() = module {
         viewModel(::ContactsViewModel)
+        single {
+            ContactsLoader(context = get())
+        }
     }
 }
