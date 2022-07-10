@@ -1,6 +1,6 @@
 [
     {
-        "merged": "C:\\Users\\SetupPC\\AndroidStudioProjects\\FenestramMessenger\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\activity_main.xml",
-        "source": "C:\\Users\\SetupPC\\AndroidStudioProjects\\FenestramMessenger\\app\\src\\main\\res\\layout\\activity_main.xml"
+        "merged": "C:\\Sdk\\Android-Fenestram-Messenger\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\activity_main.xml",
+        "source": "C:\\Sdk\\Android-Fenestram-Messenger\\app\\src\\main\\res\\layout\\activity_main.xml"
     }
 ]

@@ -1,4 +1,5 @@
 plugins {
+    id("kotlin-android")
     `android-common`
 }
 
@@ -13,5 +14,6 @@ dependencies {
     implementation(project(Modules.Common.di))
     implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.util))
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
 }

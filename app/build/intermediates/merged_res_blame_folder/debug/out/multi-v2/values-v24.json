@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\SetupPC\\AndroidStudioProjects\\FenestramMessenger\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v24\\values-v24.xml",
+            "outputFile": "C:\\Sdk\\Android-Fenestram-Messenger\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v24\\values-v24.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\SetupPC\\.gradle\\caches\\transforms-3\\0eb2586904de051fa9c7c3b90c1780b9\\transformed\\material-1.5.0\\res\\values-v24\\values-v24.xml",
+                    "source": "C:\\Users\\Виктор\\.gradle\\caches\\transforms-3\\0eb2586904de051fa9c7c3b90c1780b9\\transformed\\material-1.5.0\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,9,12,15",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\SetupPC\\.gradle\\caches\\transforms-3\\e769e39e1af0269577292f6777e26d08\\transformed\\media-1.0.0\\res\\values-v24\\values-v24.xml",
+                    "source": "C:\\Users\\Виктор\\.gradle\\caches\\transforms-3\\e769e39e1af0269577292f6777e26d08\\transformed\\media-1.0.0\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
@@ -40,7 +40,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\SetupPC\\.gradle\\caches\\transforms-3\\7905c7a28bf932c1b5df260b779e7f35\\transformed\\appcompat-1.4.1\\res\\values-v24\\values-v24.xml",
+                    "source": "C:\\Users\\Виктор\\.gradle\\caches\\transforms-3\\7905c7a28bf932c1b5df260b779e7f35\\transformed\\appcompat-1.4.1\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",

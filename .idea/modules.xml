@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Android-Fenestram-Messenger.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/Android-Fenestram-Messenger.buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Fenestram-Messenger.iml" filepath="$PROJECT_DIR$/.idea/modules/Fenestram-Messenger.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Fenestram-Messenger.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Fenestram-Messenger.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Fenestram-Messenger.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Fenestram-Messenger.common.iml" />
@@ -28,7 +29,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/profile/Fenestram-Messenger.features.profile.iml" filepath="$PROJECT_DIR$/.idea/modules/features/profile/Fenestram-Messenger.features.profile.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/profile/profile-api/Fenestram-Messenger.features.profile.profile-api.iml" filepath="$PROJECT_DIR$/.idea/modules/features/profile/profile-api/Fenestram-Messenger.features.profile.profile-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/features/profile/profile-impl/Fenestram-Messenger.features.profile.profile-impl.iml" filepath="$PROJECT_DIR$/.idea/modules/features/profile/profile-impl/Fenestram-Messenger.features.profile.profile-impl.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FenestramMessenger.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/FenestramMessenger.buildSrc.iml" />
     </modules>
   </component>
 </project>
