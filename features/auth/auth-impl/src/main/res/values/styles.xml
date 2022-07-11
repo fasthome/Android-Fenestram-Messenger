@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#251B2D</color>
+    <color name="labels">#C9C9C9</color>
+    <color name="button">#076ED1</color>
+    <color name="skip_button">#4F415A</color>
+    <color name="user_icon">#8E86A5</color>
+    <color name="error">#FF4B4B</color>
+    <color name="button_gray">#3D3246</color>
+    <color name="icon_white">#F2F2F2</color>
+    <color name="icon_background">#8E86A5</color>
+</resources>
