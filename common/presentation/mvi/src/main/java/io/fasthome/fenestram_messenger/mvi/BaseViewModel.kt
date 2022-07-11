@@ -5,6 +5,7 @@ import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.contract.CreateResultInterface
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -119,6 +120,14 @@ abstract class BaseViewModel<S : Any, E : Any>(
                 messageText = errorInfo.description,
             )
         }
+    }
+
+    protected fun exitWithResult(createResultInterface: CreateResultInterface) {
+        router.exitWithResult(requestParams.resultKey, createResultInterface)
+    }
+
+    protected fun exitWithoutResult() {
+        router.exit()
     }
 
     private val screens = mutableListOf<ScreenLauncherImpl<*, *>>()
