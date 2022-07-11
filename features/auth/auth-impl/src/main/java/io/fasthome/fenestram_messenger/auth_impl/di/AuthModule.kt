@@ -6,11 +6,13 @@ package io.fasthome.fenestram_messenger.auth_impl.di
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.AuthFeatureImpl
 import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeViewModel
-
+import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeViewModel
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityViewModel
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
+
 import org.koin.dsl.module
 
 object AuthModule {
@@ -34,7 +36,7 @@ object AuthModule {
     }
 
     private fun createPresentationModule() = module {
-        viewModel(::WelcomeViewModel)
+        viewModel(::PersonalityViewModel)
     }
 
 }

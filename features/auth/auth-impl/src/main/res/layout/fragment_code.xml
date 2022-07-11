@@ -11,41 +11,70 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="150dp"
-        app:layout_constraintBottom_toTopOf="@id/phone_input"
+        app:layout_constraintBottom_toTopOf="@id/code_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/label_phone"
+        android:id="@+id/label_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="5dp"
         android:fontFamily="@font/geometria"
-        android:text="@string/phone_number_label"
+        android:text="@string/input_code_label"
         android:textColor="@color/labels"
         android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@id/phone_input"
+        app:layout_constraintBottom_toTopOf="@id/code_input"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.santalu.maskara.widget.MaskEditText
-        android:id="@+id/phone_input"
+    <EditText
+        android:id="@+id/code_input"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/rounded_border"
         android:fontFamily="@font/geometria"
-        android:inputType="phone"
-        android:padding="10dp"
-        android:text="@string/country_code_text"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="5"
         android:textColor="@color/labels"
-        android:textSize="15sp"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:mask="+7 ### ### ## ##" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/geometria"
+        android:text="@string/incorrect_code_label"
+        android:textColor="@color/error"
+        android:textSize="15sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/resend_code"
+        app:layout_constraintTop_toBottomOf="@id/code_input" />
+
+    <TextView
+        android:id="@+id/resend_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/geometria"
+        android:padding="5dp"
+        android:text="@string/resend_code_button"
+        android:textColor="@color/button"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_input" />
 
     <Button
         android:id="@+id/button_send_code"
@@ -54,14 +83,15 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
-        android:background="@drawable/rounded_button"
+        android:background="@drawable/rounded_gray_button"
+        android:enabled="false"
         android:fontFamily="@font/geometria"
-        android:text="@string/send_code_button"
+        android:text="@string/ready_button"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/phone_input" />
+        app:layout_constraintTop_toBottomOf="@id/code_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

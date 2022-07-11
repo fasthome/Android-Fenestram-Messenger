@@ -120,4 +120,6 @@ object Deps {
 
     const val cicerone = "com.github.terrakok:cicerone:${Versions.cicerone}"
 
+    const val maskara = "com.github.santalu:maskara:1.0.0"
+
 }
