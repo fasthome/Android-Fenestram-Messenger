@@ -1,14 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.hannesdorfmann:adapterdelegates4:4.3.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6146a3fe35934647a8f8fe607895a4de/transformed/jetified-adapterdelegates4-4.3.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/eebc0f9623fa5bc23adffca6cb0faef6/transformed/jetified-adapterdelegates4-4.3.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/8e3bf379e418baea8a51308bced29344/transformed/jetified-adapterdelegates4-4.3.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/50bfea2edcaa8b7f60cc8bfd538c814e/transformed/jetified-adapterdelegates4-4.3.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b0ee56aa702a39aebaada0d3e58c5c01/transformed/jetified-adapterdelegates4-4.3.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b934b7cd26b3c55116fe1b283c3ed521/transformed/jetified-adapterdelegates4-4.3.0/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b934b7cd26b3c55116fe1b283c3ed521/transformed/jetified-adapterdelegates4-4.3.0/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/b934b7cd26b3c55116fe1b283c3ed521/transformed/jetified-adapterdelegates4-4.3.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/b42380eb082f802c65b26b8f4971be63/transformed/jetified-adapterdelegates4-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5618929d8b6d3794a51ad8f578fd0d3e/transformed/jetified-adapterdelegates4-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/3d2fc3e790161358275debe74ed4d62a/transformed/jetified-adapterdelegates4-4.3.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/3d2fc3e790161358275debe74ed4d62a/transformed/jetified-adapterdelegates4-4.3.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/3d2fc3e790161358275debe74ed4d62a/transformed/jetified-adapterdelegates4-4.3.0/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.hannesdorfmann/adapterdelegates4/4.3.0/29eec3b5527edbbad917a135454c5105d460d4bb/adapterdelegates4-4.3.0-javadoc.jar!/" />

@@ -1,12 +1,33 @@
 package io.fasthome.fenestram_messenger
 
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.navigation.model.createParams
+import io.fasthome.fenestram_messenger.util.CallResult
+import kotlinx.coroutines.launch
 
+/**
+ * ViewModel для [MainActivity].
+ * - открывает корневой экран при старте приложения;
+ * - отвечает за запуск и обработку результата флоу авторизации;
+ * - производит сброс на Главный экран, если юзер авторизован, и МП было свернуто
+ *
+ * Если юзер не авторизован, то в корне стека навигации ВСЕГДА должен быть экран [MainActivityViewModel.GuestModeRootNavigationContract].
+ * Это нужно для того, чтобы экран [AuthFeature.authNavigationContract] не был в самом корне,
+ * и чтобы при переходе "назад" с возвратом результата из [AuthFeature.authNavigationContract] не завершалась цепочка экранов
+ * и не закрывалась [MainActivity].
+ *
+ * Если юзер авторизован, то в корне стека навигации ВСЕГДА должен быть Главный экран [MainFeature.navigationContract].
+ *
+ */
 class MainActivityViewModel(
     router: ContractRouter,
     private val features: Features,
@@ -17,20 +38,36 @@ class MainActivityViewModel(
         val mainFeature: MainFeature
     )
 
-    private val authLauncher = registerScreen(features.authFeature.authNavigationContract)
+    private val authLauncher = registerScreen(features.authFeature.authNavigationContract) { result ->
+        when (result) {
+            AuthFeature.AuthResult.Canceled -> router.finishChain()
+            AuthFeature.AuthResult.Success -> openAuthedRootScreen()
+        }
+    }
 
     override fun createInitialState(): MainActivityState {
         return MainActivityState()
     }
 
     fun onAppStarted() {
-        router.newRootScreen(features.mainFeature.mainNavigationContract.createParams(NoParams))
-
-        //TODO Пока не готова авторизация, проверяем авторизованного пользователя так. Поменяй на нужный флаг
-        val authorized = true
-        if (!authorized) {
-            authLauncher.launch(NoParams)
+        viewModelScope.launch {
+            when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
+                is CallResult.Success -> when {
+                    !isAuthedResult.data -> startAuth()
+                    else -> openAuthedRootScreen()
+                }
+                is CallResult.Error -> startAuth()
+            }
         }
+    }
+
+    private fun startAuth() {
+        router.newRootScreen(GuestModeRootNavigationContract.createParams())
+        authLauncher.launch(NoParams)
+    }
+
+    private fun openAuthedRootScreen() {
+        router.newRootScreen(features.mainFeature.mainNavigationContract.createParams())
     }
 
     companion object {
@@ -38,5 +75,7 @@ class MainActivityViewModel(
             requestKey = "MainActivityViewModel_requestKey",
             resultKey = ContractRouter.IGNORE_RESULT,
         )
+
+        object GuestModeRootNavigationContract : NavigationContract<NoParams, NoResult>(Fragment::class)
     }
 }

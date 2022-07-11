@@ -15,6 +15,7 @@ object Versions {
         const val lifecycle = "2.3.0"
         const val camera = "1.0.0"
         const val cameraView = "1.0.0-alpha25"
+        const val crypto = "1.1.0-alpha03"
 
     }
 
@@ -31,5 +32,6 @@ object Versions {
     }
     const val koin = "3.1.3"
     const val cicerone = "7.0"
+    const val ktor = "1.6.3"
 
 }
