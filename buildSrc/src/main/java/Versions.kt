@@ -15,6 +15,7 @@ object Versions {
         const val lifecycle = "2.3.0"
         const val camera = "1.0.0"
         const val cameraView = "1.0.0-alpha25"
+        const val crypto = "1.1.0-alpha03"
 
     }
 

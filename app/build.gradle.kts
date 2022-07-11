@@ -36,6 +36,8 @@ android {
         getByName(BuildType.debug) {
             booleanBuildConfigField("IS_DEBUG", true)
 
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://176.99.12.176/")
+            stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://176.99.12.176/")
             isDebuggable = true
             isMinifyEnabled = obfuscationEnabled
             isShrinkResources = obfuscationEnabled

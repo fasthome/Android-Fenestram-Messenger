@@ -20,6 +20,7 @@ object Deps {
         const val legacy = "androidx.legacy:legacy-support-v4:1.0.0"
         const val lifecycleCommon =
             "androidx.lifecycle:lifecycle-common-java8:${Versions.AndroidX.lifecycle}"
+        const val crypto = "androidx.security:security-crypto:${Versions.AndroidX.crypto}"
 
         object Camera {
             const val core = "androidx.camera:camera-core:${Versions.AndroidX.camera}"

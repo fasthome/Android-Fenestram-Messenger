@@ -1,5 +1,6 @@
 package io.fasthome.network.di
 
+import io.fasthome.fenestram_messenger.core.data.StorageQualifier
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
@@ -69,6 +70,7 @@ object NetworkModule {
         } bindSafe HttpClientEngine::class
 
         single(::InMemoryTokensStorage)
+        single { RefreshTokenStorage(get(named(StorageQualifier.Secure))) }
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 

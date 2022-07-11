@@ -1,12 +1,13 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
+import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 
 class PersonalityViewModel(
     router: ContractRouter,
-    requestParams: RequestParams
+    requestParams: RequestParams,
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
 
     override fun createInitialState(): PersonalityState {
@@ -19,9 +20,7 @@ class PersonalityViewModel(
     }
 
     fun skipPersonalData() {
-        exitWithoutResult()
-        exitWithoutResult()
-        exitWithoutResult()
+        exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
     }
 
     fun fillingPersonalData(data: String, hasFocus: Boolean, key: String) {
