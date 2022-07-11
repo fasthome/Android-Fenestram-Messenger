@@ -19,6 +19,7 @@ class PersonalityViewModel(
     }
 
     fun skipPersonalData() {
+        // TODO Кнопка "Пропустить"
         exitWithoutResult()
         exitWithoutResult()
         exitWithoutResult()

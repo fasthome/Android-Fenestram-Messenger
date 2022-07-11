@@ -8,5 +8,5 @@
     android:imeOptions="actionDone"
     android:padding="10dp"
     android:singleLine="true"
-    android:textColor="@color/labels"
+    android:textColor="@color/auth_labels"
     android:textSize="20sp" />

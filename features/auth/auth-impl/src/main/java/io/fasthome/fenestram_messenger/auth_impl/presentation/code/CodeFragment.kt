@@ -17,24 +17,28 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
 
     private val binding by fragmentViewBinding(FragmentCodeBinding::bind)
 
-    override fun renderState(state: CodeState) = with(binding) {
+    override fun renderState(state: CodeState): Unit = with(binding) {
         when {
             state.filled -> {
-                buttonSendCode.isEnabled = true
-                buttonSendCode.setBackgroundResource(R.drawable.rounded_button)
+                buttonSendCode.apply {
+                    isEnabled = true
+                    setBackgroundResource(R.drawable.rounded_button)
+                }
             }
             state.error -> {
-                codeInput.setBackgroundResource(R.drawable.error_rounded_border)
-                resendCode.setTextColor(resources.getColor(R.color.error, null))
-                error.visibility = View.VISIBLE
-                buttonSendCode.isEnabled = false
+                codeInput.apply { setBackgroundResource(R.drawable.error_rounded_border) }
+                resendCode.apply { setTextColor(resources.getColor(R.color.auth_error, null)) }
+                error.apply { visibility = View.VISIBLE }
+                buttonSendCode.apply { isEnabled = false }
             }
             else -> {
-                codeInput.setBackgroundResource(R.drawable.rounded_border)
-                resendCode.setTextColor(resources.getColor(R.color.button, null))
-                error.visibility = View.GONE
-                buttonSendCode.isEnabled = false
-                buttonSendCode.setBackgroundResource(R.drawable.rounded_gray_button)
+                codeInput.apply { setBackgroundResource(R.drawable.rounded_border) }
+                resendCode.apply { setTextColor(resources.getColor(R.color.auth_button, null)) }
+                error.apply { visibility = View.GONE }
+                buttonSendCode.apply {
+                    isEnabled = false
+                    setBackgroundResource(R.drawable.rounded_gray_button)
+                }
             }
         }
     }
@@ -42,18 +46,20 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.fenestram_label))
+        with(binding) {
+            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_fenestram_label))
 
-        binding.buttonSendCode.setOnClickListener {
-            vm.checkCode(binding.codeInput.text.toString())
-        }
+            buttonSendCode.setOnClickListener {
+                vm.checkCode(binding.codeInput.text.toString())
+            }
 
-        binding.codeInput.addTextChangedListener {
-            vm.overWriteCode(binding.codeInput.text.toString())
-        }
+            codeInput.addTextChangedListener {
+                vm.overWriteCode(binding.codeInput.text.toString())
+            }
 
-        binding.resendCode.setOnClickListener {
-            // TODO ПОВТОРНАЯ ОТПРАВКА КОДА
+            resendCode.setOnClickListener {
+                // TODO ПОВТОРНАЯ ОТПРАВКА КОДА
+            }
         }
     }
 
