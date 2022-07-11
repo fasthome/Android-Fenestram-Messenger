@@ -5,8 +5,10 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Fenestram-Messenger.iml" filepath="$PROJECT_DIR$/.idea/modules/Fenestram-Messenger.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Fenestram-Messenger.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Fenestram-Messenger.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Fenestram-Messenger.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Fenestram-Messenger.common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/component/Fenestram-Messenger.common.component.iml" filepath="$PROJECT_DIR$/.idea/modules/common/component/Fenestram-Messenger.common.component.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/core/Fenestram-Messenger.common.core.iml" filepath="$PROJECT_DIR$/.idea/modules/common/core/Fenestram-Messenger.common.core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/di/Fenestram-Messenger.common.di.iml" filepath="$PROJECT_DIR$/.idea/modules/common/di/Fenestram-Messenger.common.di.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/network/Fenestram-Messenger.common.network.iml" filepath="$PROJECT_DIR$/.idea/modules/common/network/Fenestram-Messenger.common.network.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/presentation/Fenestram-Messenger.common.presentation.iml" filepath="$PROJECT_DIR$/.idea/modules/common/presentation/Fenestram-Messenger.common.presentation.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/presentation/base/Fenestram-Messenger.common.presentation.base.iml" filepath="$PROJECT_DIR$/.idea/modules/common/presentation/base/Fenestram-Messenger.common.presentation.base.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/presentation/mvi/Fenestram-Messenger.common.presentation.mvi.iml" filepath="$PROJECT_DIR$/.idea/modules/common/presentation/mvi/Fenestram-Messenger.common.presentation.mvi.iml" />
