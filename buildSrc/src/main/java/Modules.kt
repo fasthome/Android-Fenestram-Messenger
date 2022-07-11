@@ -10,6 +10,7 @@ object Modules {
         const val navigation = ":common:presentation:navigation"
         const val mvi = ":common:presentation:mvi"
         const val component = ":common:component"
+        const val network = ":common:network"
     }
 
     class FeatureTemplate(name: String) {

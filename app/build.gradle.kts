@@ -63,6 +63,7 @@ dependencies {
     implementation(project(Modules.Common.navigation))
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.component))
+    implementation(project(Modules.Common.network))
 
     implementation(project(Modules.Feature.main.api))
     implementation(project(Modules.Feature.main.impl))
@@ -109,12 +110,6 @@ dependencies {
     implementation(Deps.materialCalendar)
 
     implementation(Deps.Koin.core)
-
-    implementation(Deps.Squareup.retrofit)
-    implementation(Deps.Squareup.gsonConverter)
-    implementation(Deps.Squareup.rxadapter)
-    implementation(Deps.Squareup.okhttp)
-    implementation(Deps.Squareup.interceptor)
 
     androidTestImplementation(Deps.Tests.androidxJunit)
     androidTestImplementation(Deps.Tests.espresso)
