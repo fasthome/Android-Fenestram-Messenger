@@ -22,7 +22,7 @@ class ContactsViewModel(
         requestPermissionAndLoadContacts()
     }
 
-    var currentContacts: List<ContactsViewItem> = listOf()
+    private var currentContacts: List<ContactsViewItem> = listOf()
 
     private fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
@@ -36,7 +36,7 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(listOf())
+        return ContactsState(currentContacts)
     }
 
     private fun fetchContacts() {
@@ -51,14 +51,10 @@ class ContactsViewModel(
     }
 
     fun filterContacts(text: String) {
-        if (text.isEmpty()) {
-            updateState { ContactsState(currentContacts) }
-        } else {
-            val filteredContacts = currentContacts.filter {
-                it.name.startsWith(text, true)
-            }
-            updateState { ContactsState(filteredContacts) }
+        val filteredContacts = currentContacts.filter {
+            it.name.startsWith(text.trim(), true)
         }
+        updateState { ContactsState(filteredContacts) }
     }
 
 }
