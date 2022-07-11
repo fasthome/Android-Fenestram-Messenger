@@ -36,6 +36,8 @@ android {
         getByName(BuildType.debug) {
             booleanBuildConfigField("IS_DEBUG", true)
 
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://176.99.12.176/")
+            stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://176.99.12.176/")
             isDebuggable = true
             isMinifyEnabled = obfuscationEnabled
             isShrinkResources = obfuscationEnabled
@@ -63,6 +65,7 @@ dependencies {
     implementation(project(Modules.Common.navigation))
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.component))
+    implementation(project(Modules.Common.network))
 
     implementation(project(Modules.Feature.main.api))
     implementation(project(Modules.Feature.main.impl))
@@ -109,12 +112,6 @@ dependencies {
     implementation(Deps.materialCalendar)
 
     implementation(Deps.Koin.core)
-
-    implementation(Deps.Squareup.retrofit)
-    implementation(Deps.Squareup.gsonConverter)
-    implementation(Deps.Squareup.rxadapter)
-    implementation(Deps.Squareup.okhttp)
-    implementation(Deps.Squareup.interceptor)
 
     androidTestImplementation(Deps.Tests.androidxJunit)
     androidTestImplementation(Deps.Tests.espresso)
