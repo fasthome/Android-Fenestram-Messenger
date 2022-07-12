@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.util.kotlin
 
 import kotlinx.coroutines.Job
 import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
 
@@ -23,3 +24,7 @@ fun switchJob() = switchObject(cancelPrev = Job::cancel)
 
 inline fun <T> ifOrNull(condition: Boolean, valueProvider: () -> T): T? =
     if (condition) valueProvider() else null
+
+inline fun <P> KMutableProperty0<P?>.getOrSet(
+    createValue: () -> P,
+): P = get() ?: createValue().also(::set)

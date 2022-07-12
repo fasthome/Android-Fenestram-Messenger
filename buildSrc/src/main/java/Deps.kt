@@ -20,6 +20,7 @@ object Deps {
         const val legacy = "androidx.legacy:legacy-support-v4:1.0.0"
         const val lifecycleCommon =
             "androidx.lifecycle:lifecycle-common-java8:${Versions.AndroidX.lifecycle}"
+        const val crypto = "androidx.security:security-crypto:${Versions.AndroidX.crypto}"
 
         object Camera {
             const val core = "androidx.camera:camera-core:${Versions.AndroidX.camera}"
@@ -57,12 +58,12 @@ object Deps {
         const val compiler = "com.google.dagger:dagger-compiler:2.37"
     }
 
-    object Squareup {
-        const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
-        const val gsonConverter = "com.squareup.retrofit2:converter-gson:2.9.0"
-        const val rxadapter = "com.squareup.retrofit2:adapter-rxjava3:2.9.0"
-        const val okhttp = "com.squareup.okhttp3:okhttp:4.9.0"
-        const val interceptor = "com.squareup.okhttp3:logging-interceptor:4.9.0"
+    object Ktor {
+        const val core = "io.ktor:ktor-client-core:${Versions.ktor}"
+        const val serialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
+        const val client = "io.ktor:ktor-client-okhttp:${Versions.ktor}"
+        const val logging = "io.ktor:ktor-client-logging:${Versions.ktor}"
+        const val mock = "io.ktor:ktor-client-mock:${Versions.ktor}"
     }
 
     object Coil {
