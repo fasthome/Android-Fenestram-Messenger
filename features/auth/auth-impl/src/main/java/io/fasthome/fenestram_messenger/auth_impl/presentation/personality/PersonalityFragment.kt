@@ -143,6 +143,7 @@ class PersonalityFragment :
                 )
             }
 
+        }
     }
 
     override fun handleEvent(event: PersonalityEvent): Unit = noEventsExpected()
