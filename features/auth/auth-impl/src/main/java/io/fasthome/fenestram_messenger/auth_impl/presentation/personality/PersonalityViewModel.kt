@@ -11,7 +11,7 @@ class PersonalityViewModel(
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
 
     override fun createInitialState(): PersonalityState {
-        return PersonalityState("", false)
+        return PersonalityState(null, false)
     }
 
     fun checkPersonalData() {
@@ -23,14 +23,14 @@ class PersonalityViewModel(
         exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
     }
 
-    fun fillingPersonalData(data: String, hasFocus: Boolean, key: String) {
+    fun fillingPersonalData(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
         if (!hasFocus && data.isNotEmpty())
             updateState { PersonalityState(key, true) }
         else
             updateState { PersonalityState(key, false) }
     }
 
-    fun fillingBirthdate(data: String, hasFocus: Boolean, key: String) {
+    fun fillingBirthdate(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
         if (!hasFocus && data.length == 10)
             updateState { PersonalityState(key, true) }
         else

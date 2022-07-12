@@ -22,6 +22,8 @@ class ContactsViewModel(
         requestPermissionAndLoadContacts()
     }
 
+    private var currentContacts: List<ContactsViewItem> = listOf()
+
     private fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
@@ -34,17 +36,25 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(listOf())
+        return ContactsState(currentContacts)
     }
 
     private fun fetchContacts() {
-        updateState { ContactsState(contactsLoader.onStartLoading()) }
+        currentContacts = contactsLoader.onStartLoading()
+        updateState { ContactsState(currentContacts) }
     }
 
     fun addContact() {
-        val newContactsList =
+        currentContacts =
             currentViewState.contacts + listOf(ContactsViewItem(0, 0, "New Contact", 0))
-        updateState { ContactsState(newContactsList) }
+        updateState { ContactsState(currentContacts) }
+    }
+
+    fun filterContacts(text: String) {
+        val filteredContacts = currentContacts.filter {
+            it.name.startsWith(text.trim(), true)
+        }
+        updateState { ContactsState(filteredContacts) }
     }
 
 }

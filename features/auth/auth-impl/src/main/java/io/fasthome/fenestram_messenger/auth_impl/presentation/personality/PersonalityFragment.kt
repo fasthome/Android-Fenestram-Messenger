@@ -21,18 +21,16 @@ class PersonalityFragment :
 
     private val binding by fragmentViewBinding(FragmentPersonalityBinding::bind)
 
-    override fun renderState(state: PersonalityState) = with(binding) {
-        val editTextFilled = when (state.key) {
-            nameKey -> nameInput.includeEditText
-            userNameKey -> userNameInput.includeEditText
-            birthdateKey -> birthdateInput
-            mailKey -> mailInput.includeEditText
+    override fun renderState(state: PersonalityState): Unit = with(binding) {
+        when (state.key) {
+            EditTextKey.NameKey -> nameInput.includeEditText
+            EditTextKey.UserNameKey -> userNameInput.includeEditText
+            EditTextKey.BirthdateKey -> birthdateInput
+            EditTextKey.MailKey -> mailInput.includeEditText
             else -> null
-        }
-
-        if (editTextFilled != null) {
+        }?.let { editText ->
             if (state.visibility) {
-                editTextFilled.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     0,
                     0,
                     R.drawable.ic_baseline_check_24,
@@ -46,19 +44,23 @@ class PersonalityFragment :
                         mailInput.includeEditText
                     ).count { it.compoundDrawablesRelative[2] != null } == 4
                 ) {
-                    buttonReady.setBackgroundResource(R.drawable.rounded_button)
-                    buttonReady.isEnabled = true
+                    buttonReady.apply {
+                        setBackgroundResource(R.drawable.rounded_button)
+                        isEnabled = true
+                    }
                 }
             } else {
-                editTextFilled.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     0,
                     0,
                     0,
                     0
                 )
 
-                buttonReady.setBackgroundResource(R.drawable.rounded_gray_button)
-                buttonReady.isEnabled = false
+                buttonReady.apply {
+                    setBackgroundResource(R.drawable.rounded_gray_button)
+                    isEnabled = false
+                }
             }
         }
 
@@ -67,71 +69,88 @@ class PersonalityFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.labelName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.name_label))
-        binding.labelUserName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.user_name_label))
-        binding.labelBirthday.includeTextView.setPrintableText(PrintableText.StringResource(R.string.birthday_label))
-        binding.labelMail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.email_label))
-        binding.labelWelcomeStart.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.welcome_message_label_start))
-        binding.labelWelcomeEnd.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.welcome_message_label_end))
+        with(binding) {
+            labelName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_name_label))
+            labelUserName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_user_name_label))
+            labelBirthday.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_birthday_label))
+            labelMail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_email_label))
+            labelWelcomeStart.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_welcome_message_label_start))
+            labelWelcomeEnd.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_welcome_message_label_end))
 
-        binding.birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
+            birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
 
-        binding.buttonReady.setOnClickListener {
-            vm.checkPersonalData()
-        }
+            buttonReady.setOnClickListener {
+                vm.checkPersonalData()
+            }
 
-        binding.labelSkip.setOnClickListener {
-            vm.skipPersonalData()
-        }
+            labelSkip.setOnClickListener {
+                vm.skipPersonalData()
+            }
 
-        binding.nameInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE)
-                v.clearFocus()
-            return@setOnEditorActionListener false
-        }
+            nameInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                    v.clearFocus()
+                return@setOnEditorActionListener false
+            }
 
-        binding.userNameInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE)
-                v.clearFocus()
-            return@setOnEditorActionListener false
-        }
+            userNameInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                    v.clearFocus()
+                return@setOnEditorActionListener false
+            }
 
-        binding.birthdateInput.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE)
-                v.clearFocus()
-            return@setOnEditorActionListener false
-        }
+            birthdateInput.setOnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                    v.clearFocus()
+                return@setOnEditorActionListener false
+            }
 
-        binding.mailInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE)
-                v.clearFocus()
-            return@setOnEditorActionListener false
-        }
+            mailInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                    v.clearFocus()
+                return@setOnEditorActionListener false
+            }
 
-        binding.nameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-            vm.fillingPersonalData((v as EditText).text.toString(), hasFocus, nameKey)
-        }
+            nameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
+                vm.fillingPersonalData(
+                    (v as EditText).text.toString(),
+                    hasFocus,
+                    EditTextKey.NameKey
+                )
+            }
 
-        binding.userNameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-            vm.fillingPersonalData((v as EditText).text.toString(), hasFocus, userNameKey)
-        }
+            userNameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
+                vm.fillingPersonalData(
+                    (v as EditText).text.toString(),
+                    hasFocus,
+                    EditTextKey.UserNameKey
+                )
+            }
 
-        binding.birthdateInput.setOnFocusChangeListener { v, hasFocus ->
-            vm.fillingBirthdate((v as MaskEditText).masked, hasFocus, birthdateKey)
-        }
+            birthdateInput.setOnFocusChangeListener { v, hasFocus ->
+                vm.fillingBirthdate(
+                    (v as MaskEditText).masked,
+                    hasFocus,
+                    EditTextKey.BirthdateKey
+                )
+            }
 
-        binding.mailInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-            vm.fillingPersonalData((v as EditText).text.toString(), hasFocus, mailKey)
-        }
+            mailInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
+                vm.fillingPersonalData(
+                    (v as EditText).text.toString(),
+                    hasFocus,
+                    EditTextKey.MailKey
+                )
+            }
 
     }
 
     override fun handleEvent(event: PersonalityEvent): Unit = noEventsExpected()
 
-    companion object {
-        const val nameKey = "Name"
-        const val userNameKey = "UserName"
-        const val birthdateKey = "Birthdate"
-        const val mailKey = "Mail"
+    enum class EditTextKey {
+        NameKey,
+        UserNameKey,
+        BirthdateKey,
+        MailKey
     }
 }

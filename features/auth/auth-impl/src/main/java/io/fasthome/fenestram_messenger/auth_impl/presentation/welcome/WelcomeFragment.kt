@@ -18,7 +18,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
     private val binding by fragmentViewBinding(FragmentWelcomeBinding::bind)
 
-    override fun renderState(state: WelcomeState) = with(binding) {
+    override fun renderState(state: WelcomeState): Unit = with(binding) {
         if (state.error)
             phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
         else
@@ -28,14 +28,17 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.fenestram_label))
+        with(binding) {
 
-        binding.buttonSendCode.setOnClickListener {
-            vm.checkPhoneNumber(binding.phoneInput.unMasked)
-        }
+            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_fenestram_label))
 
-        binding.phoneInput.addTextChangedListener {
-            vm.overWritePhoneNumber()
+            buttonSendCode.setOnClickListener {
+                vm.checkPhoneNumber(binding.phoneInput.unMasked)
+            }
+
+            phoneInput.addTextChangedListener {
+                vm.overWritePhoneNumber()
+            }
         }
     }
 
