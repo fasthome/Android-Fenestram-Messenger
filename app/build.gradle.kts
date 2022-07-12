@@ -113,6 +113,8 @@ dependencies {
 
     implementation(Deps.Koin.core)
 
+    implementation(Deps.workRuntime)
+
     androidTestImplementation(Deps.Tests.androidxJunit)
     androidTestImplementation(Deps.Tests.espresso)
     androidTestImplementation(Deps.Tests.junit)
