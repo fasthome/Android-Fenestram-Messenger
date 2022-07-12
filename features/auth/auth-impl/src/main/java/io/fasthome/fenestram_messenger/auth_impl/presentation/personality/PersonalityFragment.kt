@@ -23,10 +23,10 @@ class PersonalityFragment :
 
     override fun renderState(state: PersonalityState): Unit = with(binding) {
         when (state.key) {
-            EditTextKey.NameKey.key -> nameInput.includeEditText
-            EditTextKey.UserNameKey.key -> userNameInput.includeEditText
-            EditTextKey.BirthdateKey.key -> birthdateInput
-            EditTextKey.MailKey.key -> mailInput.includeEditText
+            EditTextKey.NameKey -> nameInput.includeEditText
+            EditTextKey.UserNameKey -> userNameInput.includeEditText
+            EditTextKey.BirthdateKey -> birthdateInput
+            EditTextKey.MailKey -> mailInput.includeEditText
             else -> null
         }?.let { editText ->
             if (state.visibility) {
@@ -115,7 +115,7 @@ class PersonalityFragment :
                 vm.fillingPersonalData(
                     (v as EditText).text.toString(),
                     hasFocus,
-                    EditTextKey.NameKey.key
+                    EditTextKey.NameKey
                 )
             }
 
@@ -123,7 +123,7 @@ class PersonalityFragment :
                 vm.fillingPersonalData(
                     (v as EditText).text.toString(),
                     hasFocus,
-                    EditTextKey.UserNameKey.key
+                    EditTextKey.UserNameKey
                 )
             }
 
@@ -131,7 +131,7 @@ class PersonalityFragment :
                 vm.fillingBirthdate(
                     (v as MaskEditText).masked,
                     hasFocus,
-                    EditTextKey.BirthdateKey.key
+                    EditTextKey.BirthdateKey
                 )
             }
 
@@ -139,7 +139,7 @@ class PersonalityFragment :
                 vm.fillingPersonalData(
                     (v as EditText).text.toString(),
                     hasFocus,
-                    EditTextKey.MailKey.key
+                    EditTextKey.MailKey
                 )
             }
 
@@ -149,10 +149,10 @@ class PersonalityFragment :
 
     override fun handleEvent(event: PersonalityEvent): Unit = noEventsExpected()
 
-    enum class EditTextKey(val key: String) {
-        NameKey("Name"),
-        UserNameKey("UserName"),
-        BirthdateKey("Birthdate"),
-        MailKey("Mail")
+    enum class EditTextKey {
+        NameKey,
+        UserNameKey,
+        BirthdateKey,
+        MailKey
     }
 }

@@ -26,15 +26,15 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
                 }
             }
             state.error -> {
-                codeInput.apply { setBackgroundResource(R.drawable.error_rounded_border) }
-                resendCode.apply { setTextColor(resources.getColor(R.color.auth_error, null)) }
-                error.apply { visibility = View.VISIBLE }
-                buttonSendCode.apply { isEnabled = false }
+                codeInput.setBackgroundResource(R.drawable.error_rounded_border)
+                resendCode.setTextColor(resources.getColor(R.color.auth_error, null))
+                error.visibility = View.VISIBLE
+                buttonSendCode.isEnabled = false
             }
             else -> {
-                codeInput.apply { setBackgroundResource(R.drawable.rounded_border) }
-                resendCode.apply { setTextColor(resources.getColor(R.color.auth_button, null)) }
-                error.apply { visibility = View.GONE }
+                codeInput.setBackgroundResource(R.drawable.rounded_border)
+                resendCode.setTextColor(resources.getColor(R.color.auth_button, null))
+                error.visibility = View.GONE
                 buttonSendCode.apply {
                     isEnabled = false
                     setBackgroundResource(R.drawable.rounded_gray_button)

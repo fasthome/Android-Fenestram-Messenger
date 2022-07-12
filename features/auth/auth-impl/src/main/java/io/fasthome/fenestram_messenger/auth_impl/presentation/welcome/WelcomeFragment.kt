@@ -20,9 +20,9 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
     override fun renderState(state: WelcomeState): Unit = with(binding) {
         if (state.error)
-            phoneInput.apply { setBackgroundResource(R.drawable.error_rounded_border) }
+            phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
         else
-            phoneInput.apply { setBackgroundResource(R.drawable.rounded_border) }
+            phoneInput.setBackgroundResource(R.drawable.rounded_border)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
