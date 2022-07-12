@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
@@ -41,6 +42,17 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         binding.contactsAdd.setOnClickListener {
             vm.addContact()
         }
+
+        binding.contactsSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                vm.filterContacts(newText)
+                return false
+            }
+        })
     }
 
     override fun renderState(state: ContactsState) {

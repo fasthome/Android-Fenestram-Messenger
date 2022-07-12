@@ -9,13 +9,14 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 
-class PersonalityFragment : BaseFragment<PersonalityState, PersonalityEvent>(R.layout.fragment_personality) {
-    override val vm : PersonalityViewModel by viewModel()
+class PersonalityFragment :
+    BaseFragment<PersonalityState, PersonalityEvent>(R.layout.fragment_personality) {
+    override val vm: PersonalityViewModel by viewModel()
 
     private val binding by fragmentViewBinding(FragmentPersonalityBinding::bind)
 
     override fun renderState(state: PersonalityState) = with(binding) {
-        when(state){
+        when (state) {
             is PersonalityState.CorrectPersonalityState -> {
                 // TODO ПЕРЕХОД НА ГЛАВНУЮ СТРАНИЦУ
             }
@@ -39,9 +40,14 @@ class PersonalityFragment : BaseFragment<PersonalityState, PersonalityEvent>(R.l
             // TODO ПРОПУСТИТЬ ВВОД ДАННЫх
         }
 
-        binding.nameInput.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus && !binding.nameInput.text.toString().isEmpty())
-                binding.nameInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0);
+        binding.nameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus && !binding.nameInput.includeEditText.text.toString().isEmpty())
+                binding.nameInput.includeEditText.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.ic_baseline_check_24,
+                    0
+                )
         }
     }
 
