@@ -62,11 +62,7 @@ object NetworkModule {
         ) bindSafe NetworkClientFactory::class
 
         single {
-            OkHttp.create {
-                config {
-                    certificatePinner(get())
-                }
-            }
+            OkHttp.create()
         } bindSafe HttpClientEngine::class
 
         single(::InMemoryTokensStorage)
