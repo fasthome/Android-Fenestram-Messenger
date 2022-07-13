@@ -1,15 +1,20 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 
+import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
     router: ContractRouter,
-    requestParams: RequestParams
+    requestParams: RequestParams,
+    private val authInteractor: AuthInteractor
 ) : BaseViewModel<WelcomeState, WelcomeEvent>(router, requestParams) {
 
     private val checkCodeLauncher = registerScreen(CodeNavigationContract){result->
@@ -21,10 +26,14 @@ class WelcomeViewModel(
     }
 
     fun checkPhoneNumber(phoneNumber: String) {
-        if (phoneNumber.isNotEmpty() && phoneNumber.length == 10) {
+        if (phoneNumber.isNotEmpty() && phoneNumber.length == 10){
+            viewModelScope.launch {
+                authInteractor.sendCode("+7$phoneNumber")
+            }
             checkCodeLauncher.launch(NoParams)
-        } else
-            updateState { WelcomeState(error = true) }
+        }
+        else
+           updateState { WelcomeState(error = true) }
     }
 
     fun overWritePhoneNumber() {

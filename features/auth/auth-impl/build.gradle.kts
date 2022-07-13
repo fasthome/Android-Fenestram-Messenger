@@ -16,4 +16,5 @@ dependencies {
     implementation(project(Modules.Common.network))
 
     api(Deps.maskara)
+    api(Deps.Ktor.serialization)
 }

@@ -15,4 +15,8 @@ class AuthRepoImpl(
     override suspend fun isUserAuthorized(): CallResult<Boolean> = callForResult {
         authService.isUserAuthorized()
     }
+
+    override suspend fun sendCode(phoneNumber : String) {
+        authService.sendCode(phoneNumber)
+    }
 }

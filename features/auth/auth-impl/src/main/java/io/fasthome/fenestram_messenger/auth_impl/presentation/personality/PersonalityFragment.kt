@@ -142,6 +142,7 @@ class PersonalityFragment :
                     EditTextKey.MailKey
                 )
             }
+        }
 
     }
 

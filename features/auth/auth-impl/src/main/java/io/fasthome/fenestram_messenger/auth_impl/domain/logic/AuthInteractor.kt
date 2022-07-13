@@ -26,6 +26,10 @@ class AuthInteractor(
         )
     }
 
+    suspend fun sendCode(phoneNumber : String) {
+        authRepo.sendCode(phoneNumber)
+    }
+
     companion object {
         suspend fun onLoginResultSuccess(
             tokensRepo: TokensRepo,
