@@ -19,4 +19,8 @@ class AuthRepoImpl(
     override suspend fun sendCode(phoneNumber : String) {
         authService.sendCode(phoneNumber)
     }
+
+    override suspend fun login(code : String){
+        authService.login(code)
+    }
 }

@@ -18,8 +18,8 @@ class AuthInteractor(
     suspend fun isUserAuthorized(): CallResult<Boolean> =
         authRepo.isUserAuthorized()
 
-    suspend fun login() {
-        //todo
+    suspend fun login(code : String) {
+        authRepo.login(code)
         onLoginResultSuccess(
             tokensRepo = tokensRepo,
             loginResult = LoginResult.Success(AccessToken("access"), RefreshToken("refresh"), "userid")
