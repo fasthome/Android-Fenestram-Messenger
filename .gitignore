@@ -36,6 +36,7 @@ proguard/
 *.ipr
 *.iws
 .gradle/
+.idea/
 captures/
 
 # Mac OSX Files
