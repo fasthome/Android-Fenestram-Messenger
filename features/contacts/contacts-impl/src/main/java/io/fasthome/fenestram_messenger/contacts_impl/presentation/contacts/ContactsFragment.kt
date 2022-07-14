@@ -42,8 +42,12 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         binding.contactsAdd.setOnClickListener {
             vm.addContact()
         }
+    }
 
-        binding.contactsSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+    override fun onResume() {
+        super.onResume()
+
+        binding.contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -57,9 +61,32 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
 
     override fun renderState(state: ContactsState) {
         when {
-            state.contacts.isNotEmpty() -> contactsAdapter.items = state.contacts
-            state.contacts.isEmpty() -> contactsAdapter.items =
-                listOf(ContactsViewItem(0, 0, "Empty", 0))
+            state.contacts.isNotEmpty() -> {
+                contactsAdapter.items = state.contacts
+                binding.contactsSv.visibility = View.VISIBLE
+                binding.contactsList.visibility = View.VISIBLE
+                binding.contactsAdd.visibility = View.VISIBLE
+                binding.contactsEmpty.visibility = View.GONE
+                binding.contactsAddFirst.visibility = View.GONE
+                binding.contactsEmptyText.visibility = View.GONE
+            }
+            state.contacts.isEmpty() && !state.loading -> {
+                binding.contactsSv.visibility = View.GONE
+                binding.contactsList.visibility = View.GONE
+                binding.contactsAdd.visibility = View.GONE
+                binding.contactsEmpty.visibility = View.VISIBLE
+                binding.contactsAddFirst.visibility = View.VISIBLE
+                binding.contactsEmptyText.visibility = View.VISIBLE
+            }
+            state.contacts.isEmpty() && state.loading -> {
+                contactsAdapter.items = state.contacts
+                binding.contactsSv.visibility = View.VISIBLE
+                binding.contactsList.visibility = View.VISIBLE
+                binding.contactsAdd.visibility = View.VISIBLE
+                binding.contactsEmpty.visibility = View.GONE
+                binding.contactsAddFirst.visibility = View.GONE
+                binding.contactsEmptyText.visibility = View.GONE
+            }
         }
     }
 

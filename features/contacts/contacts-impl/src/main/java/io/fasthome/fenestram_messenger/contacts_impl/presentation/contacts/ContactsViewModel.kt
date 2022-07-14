@@ -13,7 +13,8 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
-    router: ContractRouter, requestParams: RequestParams,
+    router: ContractRouter,
+    requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
     private val contactsLoader: ContactsLoader
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
@@ -36,25 +37,25 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(currentContacts)
+        return ContactsState(currentContacts, true)
     }
 
     private fun fetchContacts() {
         currentContacts = contactsLoader.onStartLoading()
-        updateState { ContactsState(currentContacts) }
+        updateState { ContactsState(currentContacts, false) }
     }
 
     fun addContact() {
         currentContacts =
             currentViewState.contacts + listOf(ContactsViewItem(0, 0, "New Contact", 0))
-        updateState { ContactsState(currentContacts) }
+        updateState { ContactsState(currentContacts, false) }
     }
 
     fun filterContacts(text: String) {
         val filteredContacts = currentContacts.filter {
             it.name.startsWith(text.trim(), true)
         }
-        updateState { ContactsState(filteredContacts) }
+        updateState { ContactsState(filteredContacts, true) }
     }
 
 }
