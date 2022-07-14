@@ -1,2 +1,0 @@
-io/fasthome/fenestram_messenger/auth_impl/databinding/FragmentWelcomeBinding.java
- io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentWelcomeBinding
