@@ -18,12 +18,12 @@ class AuthInteractor(
     suspend fun isUserAuthorized(): CallResult<Boolean> =
         authRepo.isUserAuthorized()
 
-    suspend fun login(code : String) {
-        authRepo.login(code)
-        onLoginResultSuccess(
-            tokensRepo = tokensRepo,
-            loginResult = LoginResult.Success(AccessToken("access"), RefreshToken("refresh"), "userid")
-        )
+    suspend fun login(phoneNumber: String, code : String) {
+        authRepo.login(phoneNumber, code)
+//        onLoginResultSuccess(
+//            tokensRepo = tokensRepo,
+//            loginResult = LoginResult.Success(AccessToken("access"), RefreshToken("refresh"), "userid")
+//        )
     }
 
     suspend fun sendCode(phoneNumber : String) {

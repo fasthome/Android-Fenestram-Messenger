@@ -13,7 +13,7 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) {
-    override val vm: CodeViewModel by viewModel()
+    override val vm: CodeViewModel by viewModel(getParamsInterface = CodeNavigationContract.getParams)
 
     private val binding by fragmentViewBinding(FragmentCodeBinding::bind)
 

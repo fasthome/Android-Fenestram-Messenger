@@ -22,16 +22,13 @@ class CodeViewModel(
         exitWithResult(CodeNavigationContract.createResult(result))
     }
 
-    init {
-        Log.d("phone", params.phoneNumber)
-    }
     override fun createInitialState(): CodeState {
         return CodeState(filled = false, error = false)
     }
 
     fun checkCode(code: String) {
         viewModelScope.launch {
-            authInteractor.login(code)
+            authInteractor.login(params.phoneNumber, code)
             personalityLauncher.launch(NoParams)
         }
     }

@@ -20,7 +20,7 @@ class AuthRepoImpl(
         authService.sendCode(phoneNumber)
     }
 
-    override suspend fun login(code : String){
-        authService.login(code)
+    override suspend fun login(phoneNumber: String, code : String){
+        authService.login(phoneNumber, code)
     }
 }

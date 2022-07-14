@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 
-import android.os.Parcelable
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
@@ -28,7 +27,7 @@ class WelcomeViewModel(
             viewModelScope.launch {
                 //authInteractor.sendCode("+7$phoneNumber")
             }
-            checkCodeLauncher.launch(CodeNavigationContract.Params(phoneNumber))
+            checkCodeLauncher.launch(CodeNavigationContract.Params("+7$phoneNumber"))
 
         }
         else
