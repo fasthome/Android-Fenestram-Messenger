@@ -28,7 +28,7 @@ class LoginResponse(
 
     @SerialName("player_id")
     val playerId: String?,
-){
+) {
     init {
         require(accessToken.isNotEmpty())
     }

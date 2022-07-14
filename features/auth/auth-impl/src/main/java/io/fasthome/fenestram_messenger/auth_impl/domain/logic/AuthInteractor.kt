@@ -5,9 +5,8 @@ package io.fasthome.fenestram_messenger.auth_impl.domain.logic
 
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.network.tokens.AccessToken
-import io.fasthome.network.tokens.RefreshToken
 import io.fasthome.network.tokens.TokensRepo
 
 class AuthInteractor(
@@ -18,16 +17,24 @@ class AuthInteractor(
     suspend fun isUserAuthorized(): CallResult<Boolean> =
         authRepo.isUserAuthorized()
 
-    suspend fun login(phoneNumber: String, code : String) {
-        authRepo.login(phoneNumber, code)
-//        onLoginResultSuccess(
-//            tokensRepo = tokensRepo,
-//            loginResult = LoginResult.Success(AccessToken("access"), RefreshToken("refresh"), "userid")
-//        )
+    suspend fun login(phoneNumber: String, code: String, callback: LoginResult.() -> Unit) {
+        authRepo.login(phoneNumber, code) {
+            if (this is LoginResult.Success)
+                onLoginResultSuccess(tokensRepo = tokensRepo, loginResult = this)
+            callback(this)
+        }
     }
 
-    suspend fun sendCode(phoneNumber : String) {
-        authRepo.sendCode(phoneNumber)
+    suspend fun sendCode(phoneNumber: String, callback: LoginResult.() -> Unit) {
+        authRepo.sendCode(phoneNumber) {
+            callback(this)
+        }
+    }
+
+    suspend fun sendPersonalData(personalData: PersonalData, callBack: Boolean.() -> Unit) {
+        authRepo.sendPersonalData(personalData) {
+            callBack(this)
+        }
     }
 
     companion object {

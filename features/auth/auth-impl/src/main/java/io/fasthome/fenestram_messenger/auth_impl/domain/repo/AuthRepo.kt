@@ -3,10 +3,13 @@
  */
 package io.fasthome.fenestram_messenger.auth_impl.domain.repo
 
+import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.util.CallResult
 
 interface AuthRepo {
     suspend fun isUserAuthorized(): CallResult<Boolean>
-    suspend fun sendCode(phoneNumber: String)
-    suspend fun login(phoneNumber: String, code: String)
+    suspend fun sendCode(phoneNumber: String, callback: LoginResult.() -> Unit)
+    suspend fun login(phoneNumber: String, code: String, callback: suspend LoginResult.() -> Unit)
+    suspend fun sendPersonalData(personalData: PersonalData, callback: Boolean.() -> Unit)
 }

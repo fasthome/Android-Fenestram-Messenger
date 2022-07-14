@@ -1,8 +1,7 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.code
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
-import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -28,9 +27,45 @@ class CodeViewModel(
 
     fun checkCode(code: String) {
         viewModelScope.launch {
-            authInteractor.login(params.phoneNumber, code)
-            personalityLauncher.launch(NoParams)
+            authInteractor.login(params.phoneNumber, code) {
+                when (this) {
+                    is LoginResult.ConnectionError -> {
+                        sendEvent(CodeEvent.ConnectionError)
+                    }
+                    is LoginResult.Success -> {
+                        personalityLauncher.launch(NoParams)
+                    }
+                    is LoginResult.WrongCode -> {
+                        updateState { CodeState(filled = false, error = true) }
+                    }
+                    is LoginResult.SessionClosed -> {
+                        exitWithoutResult()
+                    }
+                    else -> {
+                        sendEvent(CodeEvent.IndefiniteError)
+                    }
+                }
+            }
         }
+    }
+
+    fun resendCode() {
+//        viewModelScope.launch {
+//            /**
+//             * Отпрвка кода на телефон
+//             */
+//            authInteractor.sendCode(params.phoneNumber) {
+//                when (this) {
+//                    is LoginResult.SuccessSendRequest -> {}
+//                    is LoginResult.ConnectionError -> {
+//                        sendEvent(CodeEvent.ConnectionError)
+//                    }
+//                    else -> {
+//                        sendEvent(CodeEvent.IndefiniteError)
+//                    }
+//                }
+//            }
+//        }
     }
 
     fun overWriteCode(code: String) {

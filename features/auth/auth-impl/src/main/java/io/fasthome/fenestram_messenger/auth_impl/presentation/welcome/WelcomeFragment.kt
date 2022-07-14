@@ -2,12 +2,12 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentWelcomeBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
@@ -42,6 +42,21 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
         }
     }
 
-    override fun handleEvent(event: WelcomeEvent): Unit = noEventsExpected()
+    override fun handleEvent(event: WelcomeEvent) {
+        val text = when (event) {
+            is WelcomeEvent.ConnectionError -> {
+                connectionError
+            }
+            is WelcomeEvent.IndefiniteError -> {
+                indefiniteError
+            }
+        }
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+    }
+
+    companion object {
+        const val connectionError = "Проверьте соединение с интернетом!"
+        const val indefiniteError = "Что-то пошло не так"
+    }
 
 }

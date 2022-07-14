@@ -25,4 +25,14 @@ sealed class LoginResult {
      * Пользователь несколько раз ввел неправильно код из СМС или пароль, сервер закрывает сессию
      */
     object SessionClosed : LoginResult()
+
+    /**
+     * У пользователя нет соединения с интернетом
+     */
+    object ConnectionError : LoginResult()
+
+    /**
+     * Успешный запрос на получение кода
+     */
+    object SuccessSendRequest : LoginResult()
 }

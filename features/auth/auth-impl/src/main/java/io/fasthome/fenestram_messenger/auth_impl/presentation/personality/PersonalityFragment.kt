@@ -8,6 +8,7 @@ import android.widget.EditText
 import com.santalu.maskara.widget.MaskEditText
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
@@ -80,7 +81,16 @@ class PersonalityFragment :
             birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
 
             buttonReady.setOnClickListener {
-                vm.checkPersonalData()
+                vm.checkPersonalData(
+                    PersonalData(
+                        nameInput.includeEditText.text.toString(),
+                        userNameInput.includeEditText.text.toString(),
+                        birthdateInput.masked,
+                        mailInput.includeEditText.text.toString(),
+                        "",
+                        ""
+                    )
+                )
             }
 
             labelSkip.setOnClickListener {
@@ -144,7 +154,6 @@ class PersonalityFragment :
             }
         }
 
-        }
     }
 
     override fun handleEvent(event: PersonalityEvent): Unit = noEventsExpected()

@@ -2,12 +2,12 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.code
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentCodeBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
@@ -58,11 +58,26 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
             }
 
             resendCode.setOnClickListener {
-                // TODO ПОВТОРНАЯ ОТПРАВКА КОДА
+                vm.resendCode()
             }
         }
     }
 
-    override fun handleEvent(event: CodeEvent): Unit = noEventsExpected()
+    override fun handleEvent(event: CodeEvent): Unit {
+        val text = when (event) {
+            is CodeEvent.ConnectionError -> {
+                connectionError
+            }
+            is CodeEvent.IndefiniteError -> {
+                indefiniteError
+            }
+        }
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+    }
+
+    companion object {
+        const val connectionError = "Проверьте соединение с интернетом!"
+        const val indefiniteError = "Что-то пошло не так"
+    }
 
 }
