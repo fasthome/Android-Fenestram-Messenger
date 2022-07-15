@@ -6,19 +6,16 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.ContactsAdapter
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import org.koin.android.ext.android.inject
 
 
 class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts) {
@@ -42,6 +39,8 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         binding.contactsAdd.setOnClickListener {
             vm.addContact()
         }
+
+
     }
 
     override fun onResume() {
@@ -63,29 +62,53 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         when {
             state.contacts.isNotEmpty() -> {
                 contactsAdapter.items = state.contacts
-                binding.contactsSv.visibility = View.VISIBLE
-                binding.contactsList.visibility = View.VISIBLE
-                binding.contactsAdd.visibility = View.VISIBLE
-                binding.contactsEmpty.visibility = View.GONE
-                binding.contactsAddFirst.visibility = View.GONE
-                binding.contactsEmptyText.visibility = View.GONE
+                View.VISIBLE.also {
+                    with(binding) {
+                        contactsSv.visibility = it
+                        contactsList.visibility = it
+                        contactsAdd.visibility = it
+                    }
+                }
+                View.GONE.also {
+                    with(binding) {
+                        contactsEmpty.visibility = it
+                        contactsAddFirst.visibility = it
+                        contactsEmptyText.visibility = it
+                    }
+                }
             }
             state.contacts.isEmpty() && !state.loading -> {
-                binding.contactsSv.visibility = View.GONE
-                binding.contactsList.visibility = View.GONE
-                binding.contactsAdd.visibility = View.GONE
-                binding.contactsEmpty.visibility = View.VISIBLE
-                binding.contactsAddFirst.visibility = View.VISIBLE
-                binding.contactsEmptyText.visibility = View.VISIBLE
+                View.GONE.also {
+                    with(binding) {
+                        contactsSv.visibility = it
+                        contactsList.visibility = it
+                        contactsAdd.visibility = it
+                    }
+                }
+                View.VISIBLE.also {
+                    with(binding) {
+                        contactsEmpty.visibility = it
+                        contactsAddFirst.visibility = it
+                        contactsEmptyText.visibility = it
+                    }
+                }
             }
             state.contacts.isEmpty() && state.loading -> {
                 contactsAdapter.items = state.contacts
-                binding.contactsSv.visibility = View.VISIBLE
-                binding.contactsList.visibility = View.VISIBLE
-                binding.contactsAdd.visibility = View.VISIBLE
-                binding.contactsEmpty.visibility = View.GONE
-                binding.contactsAddFirst.visibility = View.GONE
-                binding.contactsEmptyText.visibility = View.GONE
+                View.VISIBLE.also {
+                    with(binding) {
+                        contactsSv.visibility = it
+                        contactsList.visibility = it
+                        contactsAdd.visibility = it
+                    }
+                }
+                View.GONE.also {
+                    with(binding) {
+                        contactsEmpty.visibility = it
+                        contactsAddFirst.visibility = it
+                        contactsEmptyText.visibility = it
+                    }
+                }
             }
         }
     }
