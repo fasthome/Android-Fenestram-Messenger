@@ -62,27 +62,4 @@ class AuthService(
             callback(LoginResult.WrongCode)
         }
     }
-
-    suspend fun sendPersonalData(personalData: PersonalData, callback: Boolean.() -> Unit) {
-        // TODO Доделать с заголовком
-        try {
-            val params = with(personalData) {
-                mapOf(
-                    "name" to name,
-                    "nickname" to userName,
-                    "email" to email,
-                    "birth" to birth,
-                    "avatar" to avatar,
-                    "player_id" to player_id
-                )
-            }
-            Log.d("params", params.toString())
-            client.runPatch<String>(
-                path = "api/v1/profile",
-                params = params
-            )
-        } catch (e: Exception) {
-            callback(false)
-        }
-    }
 }

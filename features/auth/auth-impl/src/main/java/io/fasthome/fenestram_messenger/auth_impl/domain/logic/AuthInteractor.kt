@@ -31,12 +31,6 @@ class AuthInteractor(
         }
     }
 
-    suspend fun sendPersonalData(personalData: PersonalData, callBack: Boolean.() -> Unit) {
-        authRepo.sendPersonalData(personalData) {
-            callBack(this)
-        }
-    }
-
     companion object {
         suspend fun onLoginResultSuccess(
             tokensRepo: TokensRepo,

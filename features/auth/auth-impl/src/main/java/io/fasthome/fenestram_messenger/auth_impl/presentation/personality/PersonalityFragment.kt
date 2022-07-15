@@ -5,6 +5,7 @@ import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.Toast
 import com.santalu.maskara.widget.MaskEditText
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
@@ -80,6 +81,8 @@ class PersonalityFragment :
 
             birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
 
+            labelName.includeTextView.hint
+
             buttonReady.setOnClickListener {
                 vm.checkPersonalData(
                     PersonalData(
@@ -146,7 +149,7 @@ class PersonalityFragment :
             }
 
             mailInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillingPersonalData(
+                vm.fillingEmail(
                     (v as EditText).text.toString(),
                     hasFocus,
                     EditTextKey.MailKey
@@ -156,12 +159,24 @@ class PersonalityFragment :
 
     }
 
-    override fun handleEvent(event: PersonalityEvent): Unit = noEventsExpected()
+    override fun handleEvent(event: PersonalityEvent) {
+        val text = when (event) {
+            is PersonalityEvent.IndefiniteError -> {
+                indefiniteError
+            }
+        }
+
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+    }
 
     enum class EditTextKey {
         NameKey,
         UserNameKey,
         BirthdateKey,
         MailKey
+    }
+
+    companion object {
+        const val indefiniteError = "Что-то пошло не так"
     }
 }

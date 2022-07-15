@@ -1,8 +1,9 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
+import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 class PersonalityViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val authInteractor: AuthInteractor
+    private val profileInteractor: ProfileInteractor
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
 
     override fun createInitialState(): PersonalityState {
@@ -21,8 +22,11 @@ class PersonalityViewModel(
 
     fun checkPersonalData(personalData: PersonalData) {
         viewModelScope.launch {
-            authInteractor.sendPersonalData(personalData) {
-                exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
+            profileInteractor.sendPersonalData(personalData) {
+                if (this)
+                    exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
+                else
+                    sendEvent(PersonalityEvent.IndefiniteError)
             }
         }
     }
@@ -43,6 +47,13 @@ class PersonalityViewModel(
             updateState { PersonalityState(key, true) }
         else
             updateState { PersonalityState(key, false) }
-
     }
+
+    fun fillingEmail(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
+        if (!hasFocus && Patterns.EMAIL_ADDRESS.matcher(data).matches())
+            updateState { PersonalityState(key, true) }
+        else
+            updateState { PersonalityState(key, false) }
+    }
+
 }

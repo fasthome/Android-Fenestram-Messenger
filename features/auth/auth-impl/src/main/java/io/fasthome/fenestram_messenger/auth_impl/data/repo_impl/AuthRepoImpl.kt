@@ -6,7 +6,6 @@ package io.fasthome.fenestram_messenger.auth_impl.data.repo_impl
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
-import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 
@@ -30,15 +29,6 @@ class AuthRepoImpl(
         callback: suspend LoginResult.() -> Unit
     ) {
         authService.login(phoneNumber, code) {
-            callback(this)
-        }
-    }
-
-    override suspend fun sendPersonalData(
-        personalData: PersonalData,
-        callback: Boolean.() -> Unit
-    ) {
-        authService.sendPersonalData(personalData) {
             callback(this)
         }
     }
