@@ -6,9 +6,11 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import kotlinx.coroutines.launch
 
@@ -21,6 +23,10 @@ class ContactsViewModel(
 
     init {
         requestPermissionAndLoadContacts()
+    }
+
+    private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
+        exitWithResult(ContactsNavigationContract.createResult(result))
     }
 
     private var currentContacts: List<ContactsViewItem> = listOf()
@@ -46,9 +52,7 @@ class ContactsViewModel(
     }
 
     fun addContact() {
-        currentContacts =
-            currentViewState.contacts + listOf(ContactsViewItem(0, 0, "New Contact", 0))
-        updateState { ContactsState(currentContacts, false) }
+        addContactLauncher.launch(NoParams)
     }
 
     fun filterContacts(text: String) {
