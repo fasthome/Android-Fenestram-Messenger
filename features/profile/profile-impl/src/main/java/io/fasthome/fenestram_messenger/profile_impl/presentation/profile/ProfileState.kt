@@ -3,5 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
-class ProfileState {
-}
+data class ProfileState(
+    val key: ProfileFragment.EditTextKey?,
+    val visibility: Boolean
+)

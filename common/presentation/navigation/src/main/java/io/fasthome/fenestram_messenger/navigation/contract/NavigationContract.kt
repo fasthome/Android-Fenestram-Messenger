@@ -16,7 +16,7 @@ abstract class NavigationContract<P : Parcelable, R : Parcelable>(
 
     override val getParams: GetParamsInterface<P> = GetParams(fragmentClazz)
 
-    override fun createResult(result: R): CreateResultInterface =
+    override fun createResult(result: io.fasthome.fenestram_messenger.profile_api.ProfileFeature.ProfileResult.Success): CreateResultInterface =
         CreateResult(fragmentClazz, result)
 
     override val getResult: GetResultInterface<R> = GetResult(fragmentClazz)

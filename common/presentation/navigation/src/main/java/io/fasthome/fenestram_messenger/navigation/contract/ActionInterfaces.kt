@@ -39,7 +39,7 @@ interface NavigationContractInterface<P : Parcelable, R : Parcelable> :
     NavigationContractApi<P, R> {
 
     val getParams: GetParamsInterface<P>
-    fun createResult(result: R): CreateResultInterface
+    fun createResult(result: io.fasthome.fenestram_messenger.profile_api.ProfileFeature.ProfileResult.Success): CreateResultInterface
 }
 
 fun <P : Parcelable> errorNavigationContract(error: String) = object : NavigationContractApi<P, Nothing> {
