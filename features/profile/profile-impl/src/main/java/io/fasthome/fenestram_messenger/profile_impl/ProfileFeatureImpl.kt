@@ -10,5 +10,6 @@ import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileNavigationContract
 
 class ProfileFeatureImpl : ProfileFeature {
-    override val profileNavigationContract = ProfileNavigationContract
+    override val profileNavigationContract: NavigationContractApi<NoParams, NoParams>
+        get() = ProfileNavigationContract
 }

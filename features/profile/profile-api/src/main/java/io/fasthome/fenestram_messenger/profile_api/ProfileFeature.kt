@@ -11,16 +11,5 @@ import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.parcelize.Parcelize
 
 interface ProfileFeature {
-    val profileNavigationContract : NavigationContractApi<NoParams, ProfileResult>
-
-    suspend fun isUserAuthorized(): CallResult<Boolean>
-
-    sealed class ProfileResult : Parcelable {
-
-        @Parcelize
-        object Success : ProfileResult()
-
-        @Parcelize
-        object Canceled : ProfileResult()
-    }
+    val profileNavigationContract : NavigationContractApi<NoParams, NoParams>
 }

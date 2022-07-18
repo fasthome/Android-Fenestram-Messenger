@@ -4,7 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_border"
-    android:fontFamily="@font/poppins"
     android:imeOptions="actionDone"
     android:padding="10dp"
     android:singleLine="true"
