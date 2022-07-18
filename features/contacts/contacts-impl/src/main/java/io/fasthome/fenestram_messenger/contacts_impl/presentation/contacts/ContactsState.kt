@@ -4,4 +4,7 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
 
-data class ContactsState(val contacts: List<ContactsViewItem>, val loading: Boolean, val loadingState : LoadingState<ErrorInfo, List<ContactsViewItem>>)
+data class ContactsState(
+    val contacts: List<ContactsViewItem>,
+    val loadingState: LoadingState<ErrorInfo, List<ContactsViewItem>>
+)

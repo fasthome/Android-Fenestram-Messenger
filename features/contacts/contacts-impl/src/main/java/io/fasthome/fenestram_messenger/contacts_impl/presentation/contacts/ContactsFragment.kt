@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.isLoading
 import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 
@@ -62,63 +63,11 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     override fun renderState(state: ContactsState) = with(binding){
         renderLoadingState(
             loadingState = state.loadingState,
-            progressContainer = null, errorContainer = errorContainer, contentContainer = null,
+            progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = contentContainer,
             renderData = {
-                contactsAdapter.items = state.contacts
+                contactsAdapter.items = it
             }
         )
-//        when {
-//            state.contacts.isNotEmpty() -> {
-//                contactsAdapter.items = state.contacts
-//                View.VISIBLE.also {
-//                    with(binding) {
-//                        contactsSv.visibility = it
-//                        contactsList.visibility = it
-//                        contactsAdd.visibility = it
-//                    }
-//                }
-//                View.GONE.also {
-//                    with(binding) {
-//                        contactsEmpty.visibility = it
-//                        contactsAddFirst.visibility = it
-//                        contactsEmptyText.visibility = it
-//                    }
-//                }
-//            }
-//            state.contacts.isEmpty() && !state.loading -> {
-//                View.GONE.also {
-//                    with(binding) {
-//                        contactsSv.visibility = it
-//                        contactsList.visibility = it
-//                        contactsAdd.visibility = it
-//                    }
-//                }
-//                View.VISIBLE.also {
-//                    with(binding) {
-//                        contactsEmpty.visibility = it
-//                        contactsAddFirst.visibility = it
-//                        contactsEmptyText.visibility = it
-//                    }
-//                }
-//            }
-//            state.contacts.isEmpty() && state.loading -> {
-//                contactsAdapter.items = state.contacts
-//                View.VISIBLE.also {
-//                    with(binding) {
-//                        contactsSv.visibility = it
-//                        contactsList.visibility = it
-//                        contactsAdd.visibility = it
-//                    }
-//                }
-//                View.GONE.also {
-//                    with(binding) {
-//                        contactsEmpty.visibility = it
-//                        contactsAddFirst.visibility = it
-//                        contactsEmptyText.visibility = it
-//                    }
-//                }
-//            }
-//        }
     }
 
     override fun handleEvent(event: ContactsEvent) = noEventsExpected()
