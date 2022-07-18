@@ -10,6 +10,11 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.Error
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -37,25 +42,29 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(currentContacts, true)
+        return ContactsState(currentContacts, true, LoadingState.None)
     }
 
     private fun fetchContacts() {
         currentContacts = contactsLoader.onStartLoading()
-        updateState { ContactsState(currentContacts, false) }
+        if(currentContacts.isEmpty()){
+            updateState { ContactsState(currentContacts, false, LoadingState.Error(error = ErrorInfo.createEmpty())) }
+        }else{
+            updateState { ContactsState(currentContacts, false, LoadingState.Success(currentContacts)) }
+        }
     }
 
     fun addContact() {
         currentContacts =
             currentViewState.contacts + listOf(ContactsViewItem(0, 0, "New Contact", 0))
-        updateState { ContactsState(currentContacts, false) }
+        updateState { ContactsState(currentContacts, false, LoadingState.Success(currentContacts)) }
     }
 
     fun filterContacts(text: String) {
         val filteredContacts = currentContacts.filter {
             it.name.startsWith(text.trim(), true)
         }
-        updateState { ContactsState(filteredContacts, true) }
+        updateState { ContactsState(filteredContacts, true, LoadingState.Success(filteredContacts)) }
     }
 
 }
