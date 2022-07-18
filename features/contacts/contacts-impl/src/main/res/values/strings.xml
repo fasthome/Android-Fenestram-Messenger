@@ -8,16 +8,19 @@
     <string name="contact_avatar_description">Аватар контакта</string>
     <string name="new_message_description">Новое сообщение</string>
     <string name="contacts_empty">Телефонная книга пуста.\nХотите добавить контакты?</string>
-    <string name="add_first_contact">Добавить контакт</string>
+
     <string name="add_contact">Добавить контакт</string>
     <string name="contact_add_ready">Готово</string>
     <string name="number_placeholder">+7 _ _ _ _ _ _ - _ _ - _ _</string>
+
     <string name="contact_add_first_name_label">Имя</string>
     <string name="contact_add_second_name_label">Фамилия</string>
     <string name="contact_add_number_label">Номер телефона</string>
 
     <string name="contact_add_name_invalid">Не добавлено имя</string>
-    <string name="contact_add_number_invalid">Не добавлен номер телефона</string>
-    <string name="contact_add_number_empty">Некорректный номер телефона</string>
+    <string name="contact_add_number_invalid">Некорректный номер телефона</string>
+    <string name="contact_add_number_empty">Не добавлен номер телефона</string>
+    <string name="contact_add_first_name_hint">(обязательно)</string>
+    <string name="contact_add_second_name_hint">(необязательно)</string>
 
 </resources>

@@ -20,7 +20,7 @@
 
     <include
         android:id="@+id/contact_add_label_first_name"
-        layout="@layout/include_text_view"
+        layout="@layout/include_text_view_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/contact_add_label_margin_bottom"
@@ -50,7 +50,7 @@
 
     <include
         android:id="@+id/contact_add_label_second_name"
-        layout="@layout/include_text_view"
+        layout="@layout/include_text_view_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/contact_add_label_margin_bottom"
@@ -71,7 +71,7 @@
 
     <include
         android:id="@+id/contact_add_label_number"
-        layout="@layout/include_text_view"
+        layout="@layout/include_text_view_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/contact_add_label_margin_bottom"
@@ -81,18 +81,14 @@
 
     <com.santalu.maskara.widget.MaskEditText
         android:id="@+id/contact_add_input_number"
+        style="@style/PhoneNumberInput"
         android:layout_width="match_parent"
         android:layout_height="@dimen/contact_add_input_height"
         android:layout_marginStart="@dimen/contacts_input_margin_start_end"
         android:layout_marginTop="@dimen/contact_add_input_margin_top"
         android:layout_marginEnd="@dimen/contacts_input_margin_start_end"
-        android:background="@drawable/bg_rounded_edittext"
-        android:fontFamily="@font/geometria"
         android:hint="@string/number_placeholder"
-        android:inputType="phone"
-        android:padding="10dp"
-        android:textColor="@color/gray"
-        android:textSize="15sp"
+        android:padding="@dimen/contact_add_input_number_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contact_add_input_second_name"
@@ -108,19 +104,16 @@
         app:layout_constraintTop_toBottomOf="@id/contact_add_input_number" />
 
     <Button
-        android:id="@+id/button_ready"
+        android:id="@+id/contact_add_button_ready"
+        style="@style/ContactNameAndAddFirst"
         android:layout_width="match_parent"
         android:layout_height="@dimen/contact_add_input_height"
         android:layout_marginStart="@dimen/contacts_input_margin_start_end"
         android:layout_marginTop="@dimen/contact_add_input_margin_top"
         android:layout_marginEnd="@dimen/contacts_input_margin_start_end"
-        android:background="@color/appbar_color"
+        android:backgroundTint="@color/appbar_color"
         android:enabled="false"
-        android:fontFamily="@font/geometria"
         android:text="@string/contact_add_ready"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contact_add_input_number" />

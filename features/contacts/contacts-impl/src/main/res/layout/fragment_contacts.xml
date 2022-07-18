@@ -86,8 +86,8 @@
         android:layout_width="@dimen/contacts_add_first_width"
         android:layout_height="@dimen/contacts_add_first_height"
         android:layout_marginBottom="@dimen/contacts_add_first_margin_bottom"
-        android:text="@string/add_first_contact"
-        app:backgroundTint="@color/blue"
+        android:text="@string/add_contact"
+        app:background="@color/blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

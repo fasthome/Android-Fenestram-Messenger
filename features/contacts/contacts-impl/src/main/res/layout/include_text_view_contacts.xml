@@ -6,4 +6,4 @@
     android:fontFamily="@font/geometria"
     android:textColor="@color/gray"
     android:textColorHint="@color/gray"
-    android:textSize="14sp" />
+    android:textSize="@dimen/contact_add_label_text_size" />

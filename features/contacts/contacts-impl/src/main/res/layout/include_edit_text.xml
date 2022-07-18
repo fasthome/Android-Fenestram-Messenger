@@ -6,7 +6,9 @@
     android:background="@drawable/bg_rounded_edittext"
     android:fontFamily="@font/geometria"
     android:imeOptions="actionDone"
-    android:padding="20dp"
+    android:importantForAutofill="no"
+    android:inputType="text"
+    android:padding="@dimen/contact_add_include_edittext_padding"
     android:singleLine="true"
     android:textColor="@color/manatee"
-    android:textSize="15sp" />
+    android:textSize="@dimen/contact_add_input_text_size" />
