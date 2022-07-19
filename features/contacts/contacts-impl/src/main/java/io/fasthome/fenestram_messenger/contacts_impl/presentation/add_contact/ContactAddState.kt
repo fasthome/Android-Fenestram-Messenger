@@ -4,5 +4,5 @@ data class ContactAddState(
     val isNameFilled: Boolean,
     val isNumberEmpty: Boolean,
     val isNumberCorrect: Boolean,
-    val idle: Boolean
+    val isButtonEnabled: Boolean
 )

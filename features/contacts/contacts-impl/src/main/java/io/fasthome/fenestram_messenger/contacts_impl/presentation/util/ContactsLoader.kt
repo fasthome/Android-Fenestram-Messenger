@@ -1,8 +1,13 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.util
 
+import android.content.ContentProviderOperation
+import android.content.ContentProviderResult
 import android.content.Context
 import android.content.Intent
 import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds
+import android.provider.ContactsContract.RawContacts
+import android.widget.Toast
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactWriteItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 
@@ -15,17 +20,17 @@ class ContactsLoader(private val context: Context) {
         val cr = context.contentResolver
 
         val projection = arrayOf(
-            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+            CommonDataKinds.Phone.CONTACT_ID,
             ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Phone.NUMBER
+            CommonDataKinds.Phone.NUMBER
         )
 
         val cursor = cr.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            CommonDataKinds.Phone.CONTENT_URI,
             projection,
-            ContactsContract.Contacts.HAS_PHONE_NUMBER + ">0 AND LENGTH(" + ContactsContract.CommonDataKinds.Phone.NUMBER + ")>0",
+            ContactsContract.Contacts.HAS_PHONE_NUMBER + ">0 AND LENGTH(" + CommonDataKinds.Phone.NUMBER + ")>0",
             null,
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+            CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
         )
 
         if (cursor != null && cursor.count > 0) {
@@ -33,11 +38,11 @@ class ContactsLoader(private val context: Context) {
             cursor.use { cur ->
                 while (cur.moveToNext()) {
                     val id =
-                        cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
+                        cur.getString(cur.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID))
                     val name =
                         cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
                     val number =
-                        cur.getString(cur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                        cur.getString(cur.getColumnIndex(CommonDataKinds.Phone.NUMBER))
                             .replace(" ", "")
                     if (!mobileNoSet.contains(number)) {
                         _contactsList.add(
@@ -56,16 +61,42 @@ class ContactsLoader(private val context: Context) {
         return _contactsList.toList()
     }
 
-    fun onStartWriting(contact: ContactWriteItem) {
-        val intent = Intent(ContactsContract.Intents.Insert.ACTION).apply {
-            type = ContactsContract.RawContacts.CONTENT_TYPE
+    fun insertContact(firstName: String?, mobileNumber: String?) {
+        val ops = ArrayList<ContentProviderOperation>()
+        val rawContactInsertIndex: Int = ops.size
+        ops.add(
+            ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
+                .withValue(RawContacts.ACCOUNT_TYPE, null)
+                .withValue(RawContacts.ACCOUNT_NAME, null).build()
+        )
+        ops.add(
+            ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(
+                    ContactsContract.Data.MIMETYPE,
+                    CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
+                )
+                .withValue(
+                    CommonDataKinds.StructuredName.DISPLAY_NAME,
+                    firstName
+                )
+                .build()
+        )
+        ops.add(
+            ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(
+                    ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex
+                )
+                .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(CommonDataKinds.Phone.NUMBER, "+7${mobileNumber}")
+                .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE).build()
+        )
+        try {
+            context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+        } catch (e: Exception) {
         }
-        intent.apply {
-            putExtra(ContactsContract.Intents.Insert.NAME, "${contact.firstName} ${contact.SecondName}")
-            putExtra(ContactsContract.Intents.Insert.PHONE, "+7${contact.phoneNumber}")
-        }
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
     }
 
 }

@@ -21,6 +21,9 @@ class ContactAddViewModel(
         requestPermissionToWriteContacts()
     }
 
+    private var _firstName: String = String()
+    private var _phoneNumber: String = String()
+
     private fun requestPermissionToWriteContacts() {
         viewModelScope.launch {
             val permissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
@@ -34,10 +37,10 @@ class ContactAddViewModel(
 
     override fun createInitialState(): ContactAddState {
         return ContactAddState(
-            isNameFilled = false,
+            isNameFilled = true,
             isNumberEmpty = false,
-            isNumberCorrect = false,
-            idle = true
+            isNumberCorrect = true,
+            isButtonEnabled = false
         )
     }
 
@@ -45,54 +48,100 @@ class ContactAddViewModel(
         router.exit()
     }
 
-    fun onNameChanged(name: String) {
-        if (name.isNotEmpty())
+    fun onNameChanged(firstName: String) {
+        _firstName = firstName
+        val isButtonEnabled = _firstName.isNotEmpty() && _phoneNumber.length == 10
+        if (!currentViewState.isNameFilled)
             updateState {
                 ContactAddState(
                     true,
                     currentViewState.isNumberEmpty,
                     currentViewState.isNumberCorrect,
-                    false
+                    isButtonEnabled
                 )
             }
-        else
+        else {
             updateState {
                 ContactAddState(
-                    false,
+                    currentViewState.isNameFilled,
                     currentViewState.isNumberEmpty,
                     currentViewState.isNumberCorrect,
-                    false
+                    isButtonEnabled
                 )
             }
-    }
-
-    fun onNumberChanged(number: String) {
-        var isNumberCorrect = false
-        if (number.length == 10) {
-            isNumberCorrect = true
         }
-
-        if (number.isNotEmpty())
-            updateState {
-                ContactAddState(
-                    currentViewState.isNameFilled,
-                    false,
-                    isNumberCorrect,
-                    false
-                )
-            }
-        else
-            updateState {
-                ContactAddState(
-                    currentViewState.isNameFilled,
-                    true,
-                    currentViewState.isNumberCorrect,
-                    false
-                )
-            }
     }
 
-    fun writeContact(firstName: String, secondName: String, phoneNumber: String) {
-        contactsLoader.onStartWriting(ContactWriteItem(firstName, secondName, phoneNumber))
+    fun onNumberChanged(phoneNumber: String) {
+        _phoneNumber = phoneNumber
+        val isButtonEnabled = _firstName.isNotEmpty() && _phoneNumber.length == 10
+        if (currentViewState.isNumberEmpty || !currentViewState.isNumberCorrect)
+            updateState {
+                ContactAddState(
+                    currentViewState.isNameFilled,
+                    isNumberEmpty = false,
+                    isNumberCorrect = true,
+                    isButtonEnabled
+                )
+            }
+        else {
+            updateState {
+                ContactAddState(
+                    currentViewState.isNameFilled,
+                    currentViewState.isNumberEmpty,
+                    currentViewState.isNumberCorrect,
+                    isButtonEnabled
+                )
+            }
+        }
+    }
+
+    fun checkAndWriteContact(firstName: String, secondName: String, phoneNumber: String) {
+        when {
+            firstName.isEmpty() && phoneNumber.isEmpty() -> updateState {
+                ContactAddState(
+                    isNameFilled = false,
+                    isNumberEmpty = true,
+                    isNumberCorrect = true,
+                    isButtonEnabled = false
+                )
+            }
+            firstName.isEmpty() && phoneNumber.length != 10 -> updateState {
+                ContactAddState(
+                    isNameFilled = false,
+                    isNumberEmpty = false,
+                    isNumberCorrect = false,
+                    isButtonEnabled = false
+                )
+            }
+            firstName.isEmpty() && phoneNumber.length == 10 -> updateState {
+                ContactAddState(
+                    isNameFilled = false,
+                    isNumberEmpty = false,
+                    isNumberCorrect = true,
+                    isButtonEnabled = false
+                )
+            }
+            firstName.isNotEmpty() && phoneNumber.isEmpty() -> updateState {
+                ContactAddState(
+                    isNameFilled = true,
+                    isNumberEmpty = true,
+                    isNumberCorrect = false,
+                    isButtonEnabled = false
+                )
+            }
+            firstName.isNotEmpty() && phoneNumber.length != 10 -> updateState {
+                ContactAddState(
+                    isNameFilled = true,
+                    isNumberEmpty = false,
+                    isNumberCorrect = false,
+                    isButtonEnabled = false
+                )
+            }
+            else -> {
+                contactsLoader.insertContact("$firstName $secondName", phoneNumber)
+                router.exit()
+            }
+        }
     }
 }
