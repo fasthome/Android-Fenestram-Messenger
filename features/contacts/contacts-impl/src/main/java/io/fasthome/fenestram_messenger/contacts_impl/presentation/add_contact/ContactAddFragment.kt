@@ -76,7 +76,11 @@ class ContactAddFragment :
             }
 
             contactAddButtonReady.setOnClickListener {
-                vm.writeContact()
+                vm.writeContact(
+                    contactAddInputFirstName.includeEditText.text.toString(),
+                    contactAddInputSecondName.includeEditText.text.toString(),
+                    contactAddInputNumber.unMasked
+                )
             }
         }
     }

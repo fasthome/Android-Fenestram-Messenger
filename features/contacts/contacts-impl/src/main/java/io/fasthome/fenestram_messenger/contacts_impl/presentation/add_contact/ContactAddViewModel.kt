@@ -1,10 +1,14 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 
+import android.Manifest
+import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsLoader
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactWriteItem
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import kotlinx.coroutines.launch
 
 class ContactAddViewModel(
     router: ContractRouter,
@@ -12,6 +16,21 @@ class ContactAddViewModel(
     private val permissionInterface: PermissionInterface,
     private val contactsLoader: ContactsLoader
 ) : BaseViewModel<ContactAddState, ContactAddEvent>(router, requestParams) {
+
+    init {
+        requestPermissionToWriteContacts()
+    }
+
+    private fun requestPermissionToWriteContacts() {
+        viewModelScope.launch {
+            val permissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
+
+            if (!permissionGranted) {
+                router.exit()
+            }
+
+        }
+    }
 
     override fun createInitialState(): ContactAddState {
         return ContactAddState(
@@ -73,7 +92,7 @@ class ContactAddViewModel(
             }
     }
 
-    fun writeContact() {
-
+    fun writeContact(firstName: String, secondName: String, phoneNumber: String) {
+        contactsLoader.onStartWriting(ContactWriteItem(firstName, secondName, phoneNumber))
     }
 }

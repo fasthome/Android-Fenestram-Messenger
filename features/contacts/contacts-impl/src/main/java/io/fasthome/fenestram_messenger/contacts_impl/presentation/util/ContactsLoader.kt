@@ -1,7 +1,9 @@
-package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
+package io.fasthome.fenestram_messenger.contacts_impl.presentation.util
 
 import android.content.Context
+import android.content.Intent
 import android.provider.ContactsContract
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactWriteItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 
 
@@ -52,6 +54,18 @@ class ContactsLoader(private val context: Context) {
             }
         }
         return _contactsList.toList()
+    }
+
+    fun onStartWriting(contact: ContactWriteItem) {
+        val intent = Intent(ContactsContract.Intents.Insert.ACTION).apply {
+            type = ContactsContract.RawContacts.CONTENT_TYPE
+        }
+        intent.apply {
+            putExtra(ContactsContract.Intents.Insert.NAME, "${contact.firstName} ${contact.SecondName}")
+            putExtra(ContactsContract.Intents.Insert.PHONE, "+7${contact.phoneNumber}")
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 
 }
