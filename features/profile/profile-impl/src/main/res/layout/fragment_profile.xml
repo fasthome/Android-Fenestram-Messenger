@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark1">
 
-
     <ImageView
         android:id="@+id/iv_avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="80dp"
         android:layout_marginEnd="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:background="@drawable/ic_baseline_account_circle_24"
+        />
 
     <ImageButton
         android:id="@+id/ib_add"
@@ -27,20 +25,32 @@
         android:background="@null"
         app:layout_constraintBottom_toBottomOf="@+id/iv_avatar"
         app:layout_constraintEnd_toEndOf="@+id/iv_avatar"
-        app:srcCompat="@drawable/ic_add_circle" />
+        app:srcCompat="@drawable/ic_add" />
+
+
+    <ImageButton
+        android:id="@+id/ib_edit_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="68dp"
+        android:background="@null"
+        app:layout_constraintBottom_toTopOf="@+id/iv_avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_edit"/>
 
     <ImageButton
         android:id="@+id/ib_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="64dp"
         android:layout_marginEnd="32dp"
         android:background="@null"
         app:layout_constraintBottom_toTopOf="@+id/iv_avatar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/iv_avatar"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_setting" />
+        app:srcCompat="@drawable/ic_setting"/>
 
     <TextView
         android:id="@+id/tv_Nickname"
@@ -54,7 +64,7 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_avatar" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_avatar"/>
 
     <include
         android:id="@+id/label_NicknameU"
@@ -66,7 +76,7 @@
         android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toTopOf="@id/nick_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_Nickname" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_Nickname"/>
 
     <include
         android:id="@+id/nick_container"
@@ -78,7 +88,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label_NicknameU" />
+        app:layout_constraintTop_toBottomOf="@+id/label_NicknameU"/>
 
     <include
         android:id="@+id/label_HBDay"
@@ -90,7 +100,7 @@
         android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toTopOf="@id/hbDay_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nick_container" />
+        app:layout_constraintTop_toBottomOf="@+id/nick_container"/>
 
     <include
         android:id="@+id/hbDay_container"
@@ -102,7 +112,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label_HBDay" />
+        app:layout_constraintTop_toBottomOf="@+id/label_HBDay"/>
 
     <include
         android:id="@+id/label_Email"
@@ -112,7 +122,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hbDay_container" />
+        app:layout_constraintTop_toBottomOf="@+id/hbDay_container"/>
 
     <include
         android:id="@+id/email_container"
@@ -124,14 +134,13 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label_Email" />
+        app:layout_constraintTop_toBottomOf="@+id/label_Email"/>
 
     <LinearLayout
         android:id="@+id/ll_buttons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="20dp"
-
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:weightSum="2"
@@ -145,14 +154,13 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginTop="16dp"
-            android:background="@drawable/rounded_gray_button"
-            android:enabled="false"
-            android:text="@string/profile_cancel_b"
+            android:backgroundTint="@color/gray1"
+            android:text="@string/common_cancel_b"
             android:textAllCaps="false"
             android:textColor="@color/gray2"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_container" />
+            app:layout_constraintTop_toBottomOf="@+id/email_container"/>
 
         <Button
             android:id="@+id/b_done"
@@ -161,22 +169,15 @@
             android:layout_height="match_parent"
             android:layout_marginStart="20dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/rounded_blue_button"
-            android:enabled="false"
-            android:text="@string/profile_done_b"
+            android:backgroundTint="@color/blue"
+            android:text="@string/common_done_b"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_container" />
-
+            app:layout_constraintTop_toBottomOf="@+id/email_container"/>
 
     </LinearLayout>
-
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

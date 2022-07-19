@@ -11,5 +11,6 @@ import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.parcelize.Parcelize
 
 interface ProfileFeature {
-    val profileNavigationContract : NavigationContractApi<NoParams, NoParams>
+    val profileNavigationContract: NavigationContractApi<NoParams, NoResult>
+
 }

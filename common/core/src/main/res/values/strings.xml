@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="common_skip_button">Пропустить</string>
-    <string name="auth_ready_button">Готово</string>
+    <string name="common_done_b">Готово</string>
+    <string name="common_cancel_b">Отмена</string>
     <string name="common_email_label">Email</string>
     <string name="common_birthday_label">Дата рождения</string>
     <string name="common_user_name_label">Никнейм</string>

@@ -3,44 +3,51 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
+import android.Manifest
+import android.net.Uri
+import androidx.lifecycle.viewModelScope
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     router : ContractRouter,
-    requestParams : RequestParams
+    requestParams : RequestParams,
+    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
+
     override fun createInitialState(): ProfileState {
-        return ProfileState()
+        return ProfileState(null, false)
     }
 
-    fun checkPersonalData() {
-        //TODO Выход с заполненными данными
-        //exitWithResult()
+    fun requestPermissionAndLoadPhoto() {
+        viewModelScope.launch {
+            val permissionGranted = permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (permissionGranted) {
+                sendEvent(ProfileEvent.LaunchGallery)
+            }
+        }
     }
 
-    fun skipPersonalData() {
-        exitWithResult(ProfileNavigationContract.createResult(ProfileFeature.ProfileResult.Success))
+    fun onUpdatePhoto(data: Uri?) {
+        if (data == null)
+            return
+        updateState { state ->
+            state.copy(avatar = data)
+        }
     }
 
-    fun fillingPersonalData(data: String, hasFocus: Boolean, key: ProfileFragment.EditTextKey) {
-        if (!hasFocus && data.isNotEmpty())
-            updateState { ProfileState(key, true) }
-        else
-            updateState { ProfileState(key, false) }
+    fun editClicked(){
+        updateState { state ->
+            state.copy(isEdit = true)
+        }
     }
 
-    fun fillingBirthdate(data: String, hasFocus: Boolean, key: ProfileFragment.EditTextKey) {
-        if (!hasFocus && data.length == 10)
-            updateState { ProfileState(key, true) }
-        else
-            updateState { ProfileState(key, false) }
-
+    fun cancelClicked(){
+        updateState { state ->
+            state.copy(isEdit = false)
+        }
     }
-}
-
-private fun String.isNotEmpty(): Boolean {
-
 }

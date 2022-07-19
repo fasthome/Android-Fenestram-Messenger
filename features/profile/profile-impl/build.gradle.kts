@@ -13,6 +13,10 @@ dependencies {
     implementation(project(Modules.Common.di))
     implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.util))
-    implementation("io.coil-kt:coil:0.13.0")
+    implementation(project(Modules.Common.component))
+
+    implementation(Deps.Coil.coil)
+    implementation(Deps.Coil.base)
+    implementation(Deps.Coil.svg)
 
 }
