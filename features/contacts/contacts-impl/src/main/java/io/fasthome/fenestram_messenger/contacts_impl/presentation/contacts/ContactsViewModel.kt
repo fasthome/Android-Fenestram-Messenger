@@ -10,10 +10,14 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.dataOrNull
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
-    router: ContractRouter, requestParams: RequestParams,
+    router: ContractRouter,
+    requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
     private val contactsLoader: ContactsLoader
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
@@ -36,25 +40,40 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(currentContacts)
+        return ContactsState(LoadingState.None)
     }
 
     private fun fetchContacts() {
         currentContacts = contactsLoader.onStartLoading()
-        updateState { ContactsState(currentContacts) }
+        if (currentContacts.isEmpty()) {
+            updateState {
+                ContactsState(
+                    LoadingState.Error(error = ErrorInfo.createEmpty())
+                )
+            }
+        } else {
+            updateState { ContactsState(LoadingState.Success(currentContacts)) }
+        }
     }
 
     fun addContact() {
         currentContacts =
-            currentViewState.contacts + listOf(ContactsViewItem(0, 0, "New Contact", 0))
-        updateState { ContactsState(currentContacts) }
+            currentViewState.loadingState.dataOrNull!! + listOf(
+                ContactsViewItem(
+                    0,
+                    0,
+                    "New Contact",
+                    0
+                )
+            )
+        updateState { ContactsState(LoadingState.Success(currentContacts)) }
     }
 
     fun filterContacts(text: String) {
         val filteredContacts = currentContacts.filter {
             it.name.startsWith(text.trim(), true)
         }
-        updateState { ContactsState(filteredContacts) }
+        updateState { ContactsState(LoadingState.Success(filteredContacts)) }
     }
 
 }

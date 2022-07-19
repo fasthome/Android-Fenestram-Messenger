@@ -1,7 +1,7 @@
 package io.fasthome.fenestram_messenger.mvi
 
 import androidx.annotation.StringRes
-import io.fasthome.fenestram_messenger.core.ErrorInfo
+import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 interface ErrorConverter {
