@@ -13,6 +13,9 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.dataOrNull
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -44,12 +47,20 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(currentContacts, true)
+        return ContactsState(LoadingState.None)
     }
 
     private fun fetchContacts() {
         currentContacts = contactsLoader.onStartLoading()
-        updateState { ContactsState(currentContacts, false) }
+        if (currentContacts.isEmpty()) {
+            updateState {
+                ContactsState(
+                    LoadingState.Error(error = ErrorInfo.createEmpty())
+                )
+            }
+        } else {
+            updateState { ContactsState(LoadingState.Success(currentContacts)) }
+        }
     }
 
     fun addContact() {
@@ -60,7 +71,7 @@ class ContactsViewModel(
         val filteredContacts = currentContacts.filter {
             it.name.startsWith(text.trim(), true)
         }
-        updateState { ContactsState(filteredContacts, true) }
+        updateState { ContactsState(LoadingState.Success(filteredContacts)) }
     }
 
 }

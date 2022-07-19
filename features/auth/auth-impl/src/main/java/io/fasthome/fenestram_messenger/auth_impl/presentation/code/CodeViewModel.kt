@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.code
 
 import androidx.lifecycle.viewModelScope
-import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
