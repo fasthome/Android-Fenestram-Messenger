@@ -30,9 +30,4 @@ sealed class LoginResult {
      * У пользователя нет соединения с интернетом
      */
     object ConnectionError : LoginResult()
-
-    /**
-     * Успешный запрос на получение кода
-     */
-    object SuccessSendRequest : LoginResult()
 }

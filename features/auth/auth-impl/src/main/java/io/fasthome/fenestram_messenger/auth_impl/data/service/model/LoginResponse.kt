@@ -17,9 +17,6 @@ class LoginResponse(
     @SerialName("name")
     val name: String?,
 
-    @SerialName("login")
-    val login: String?,
-
     @SerialName("email")
     val email: String?,
 
@@ -28,4 +25,7 @@ class LoginResponse(
 
     @SerialName("player_id")
     val playerId: String?,
+
+    @SerialName("socket_id")
+    val sockedId: String?
 )

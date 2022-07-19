@@ -7,7 +7,7 @@ import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.tokens.AccessToken
 import io.fasthome.network.tokens.RefreshToken
 
-object AuthMapper {
+object LoginMapper {
 
     fun responseToLogInResult(response: BaseResponse<LoginResponse>): LoginResult {
         response.data?.let {
@@ -26,6 +26,7 @@ object AuthMapper {
             return LoginResult.SessionClosed
         }
 
-        throw Exception()
+        //throw Exception()
+        return LoginResult.SessionClosed
     }
 }

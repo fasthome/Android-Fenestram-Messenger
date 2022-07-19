@@ -17,10 +17,8 @@ class AuthRepoImpl(
         authService.isUserAuthorized()
     }
 
-    override suspend fun sendCode(phoneNumber: String, callback: LoginResult.() -> Unit) {
-        authService.sendCode(phoneNumber) {
-            callback(this)
-        }
+    override suspend fun sendCode(phoneNumber: String) = callForResult {
+        authService.sendCode(phoneNumber)
     }
 
     override suspend fun login(

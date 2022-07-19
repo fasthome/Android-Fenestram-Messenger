@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.launch
 
 class PersonalityViewModel(
@@ -22,11 +23,13 @@ class PersonalityViewModel(
 
     fun checkPersonalData(personalData: PersonalData) {
         viewModelScope.launch {
-            profileInteractor.sendPersonalData(personalData) {
-                if (this)
+            when (val codeResult = profileInteractor.sendPersonalData(personalData)) {
+                is CallResult.Success -> {
                     exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
-                else
+                }
+                is CallResult.Error -> {
                     sendEvent(PersonalityEvent.IndefiniteError)
+                }
             }
         }
     }

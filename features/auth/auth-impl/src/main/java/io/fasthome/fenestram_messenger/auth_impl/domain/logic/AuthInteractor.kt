@@ -24,11 +24,8 @@ class AuthInteractor(
         }
 
 
-    suspend fun sendCode(phoneNumber: String, callback: LoginResult.() -> Unit) {
-        authRepo.sendCode(phoneNumber) {
-            callback(this)
-        }
-    }
+    suspend fun sendCode(phoneNumber: String) = authRepo.sendCode(phoneNumber).onSuccess { }
+
 
     companion object {
         suspend fun onLoginResultSuccess(
