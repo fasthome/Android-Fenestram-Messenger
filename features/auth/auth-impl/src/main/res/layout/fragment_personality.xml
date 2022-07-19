@@ -164,7 +164,7 @@
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/geometria"
         android:padding="10dp"
-        android:text="@string/auth_skip_button"
+        android:text="@string/common_skip_button"
         android:textColor="@color/auth_skip_button"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
