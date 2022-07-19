@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.dataOrNull
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -39,7 +40,7 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(currentContacts, LoadingState.None)
+        return ContactsState(LoadingState.None)
     }
 
     private fun fetchContacts() {
@@ -47,26 +48,32 @@ class ContactsViewModel(
         if (currentContacts.isEmpty()) {
             updateState {
                 ContactsState(
-                    currentContacts,
                     LoadingState.Error(error = ErrorInfo.createEmpty())
                 )
             }
         } else {
-            updateState { ContactsState(currentContacts, LoadingState.Success(currentContacts)) }
+            updateState { ContactsState(LoadingState.Success(currentContacts)) }
         }
     }
 
     fun addContact() {
         currentContacts =
-            currentViewState.contacts + listOf(ContactsViewItem(0, 0, "New Contact", 0))
-        updateState { ContactsState(currentContacts, LoadingState.Success(currentContacts)) }
+            currentViewState.loadingState.dataOrNull!! + listOf(
+                ContactsViewItem(
+                    0,
+                    0,
+                    "New Contact",
+                    0
+                )
+            )
+        updateState { ContactsState(LoadingState.Success(currentContacts)) }
     }
 
     fun filterContacts(text: String) {
         val filteredContacts = currentContacts.filter {
             it.name.startsWith(text.trim(), true)
         }
-        updateState { ContactsState(filteredContacts, LoadingState.Success(filteredContacts)) }
+        updateState { ContactsState(LoadingState.Success(filteredContacts)) }
     }
 
 }
