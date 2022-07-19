@@ -25,11 +25,8 @@ class AuthRepoImpl(
 
     override suspend fun login(
         phoneNumber: String,
-        code: String,
-        callback: suspend LoginResult.() -> Unit
-    ) {
-        authService.login(phoneNumber, code) {
-            callback(this)
-        }
+        code: String
+    ) = callForResult {
+        authService.login(phoneNumber, code)
     }
 }

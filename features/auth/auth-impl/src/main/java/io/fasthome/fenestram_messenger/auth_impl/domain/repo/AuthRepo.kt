@@ -9,5 +9,5 @@ import io.fasthome.fenestram_messenger.util.CallResult
 interface AuthRepo {
     suspend fun isUserAuthorized(): CallResult<Boolean>
     suspend fun sendCode(phoneNumber: String, callback: LoginResult.() -> Unit)
-    suspend fun login(phoneNumber: String, code: String, callback: suspend LoginResult.() -> Unit)
+    suspend fun login(phoneNumber: String, code: String) : CallResult<LoginResult>
 }
