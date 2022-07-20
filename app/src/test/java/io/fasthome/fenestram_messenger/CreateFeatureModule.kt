@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 
 fun main() {
     val username = "Dmitry Popov" // todo: поменяй это на своё имя.
-    val name = "profile" // todo: поменяй это на название модуля.
+    val name = "settings" // todo: поменяй это на название модуля.
 
     // название модуля в коде.
     val codeName = name
@@ -129,6 +129,42 @@ fun main() {
 
     val diDir = File(implJavaDir, "di")
         .also { it.mkdirs() }
+
+    File(diDir, "${codeName}Module.kt").writeText(
+        fileHeader +
+                "package $implPackage.di\n" +
+                "\n" +
+                "import org.koin.dsl.module\n" +
+                "import $apiPackage.${codeName}Feature\n" +
+                "import $implPackage.${codeName}FeatureImpl\n" +
+                "import io.fasthome.fenestram_messenger.di.bindSafe\n" +
+                "import io.fasthome.fenestram_messenger.di.factory\n" +
+                "import io.fasthome.fenestram_messenger.di.single\n" +
+                "import io.fasthome.fenestram_messenger.di.viewModel\n" +
+                "\n" +
+                "//TODO: add to AppModule.\n" +
+                "object ${codeName}Module {\n" +
+                "    operator fun invoke() = listOf(\n" +
+                "        createFeatureModule(),\n" +
+                "        createDataModule(),\n" +
+                "        createDomainModule(),\n" +
+                "        createPresentationModule(),\n" +
+                "    )\n" +
+                "\n" +
+                "    private fun createFeatureModule() = module {\n" +
+                "        factory(::${codeName}FeatureImpl) bindSafe ${codeName}Feature::class\n" +
+                "    }\n" +
+                "\n" +
+                "    private fun createDataModule() = module {\n" +
+                "    }\n" +
+                "\n" +
+                "    private fun createDomainModule() = module {\n" +
+                "    }\n" +
+                "\n" +
+                "    private fun createPresentationModule() = module {\n" +
+                "    }\n" +
+                "}"
+    )
 
     File(implJavaDir, "data").mkdir()
     File(implJavaDir, "data/repo_impl").mkdir()
