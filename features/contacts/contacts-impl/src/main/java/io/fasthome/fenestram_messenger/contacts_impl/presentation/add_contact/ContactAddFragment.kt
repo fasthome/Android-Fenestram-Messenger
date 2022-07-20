@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -60,11 +59,17 @@ class ContactAddFragment :
             }
 
             contactAddInputFirstName.includeEditText.addTextChangedListener {
-                vm.onNameChanged(contactAddInputFirstName.includeEditText.text.toString())
+                vm.onNameTextChanged(
+                    contactAddInputFirstName.includeEditText.text.toString(),
+                    contactAddInputNumber.unMasked
+                )
             }
 
             contactAddInputNumber.addTextChangedListener {
-                vm.onNumberChanged(contactAddInputNumber.unMasked)
+                vm.onNumberTextChanged(
+                    contactAddInputFirstName.includeEditText.text.toString(),
+                    contactAddInputNumber.unMasked
+                )
             }
 
             contactAddButtonReady.setOnClickListener {
@@ -78,92 +83,142 @@ class ContactAddFragment :
     }
 
     override fun renderState(state: ContactAddState) = with(binding) {
-        if (state.isButtonEnabled) {
-            contactAddButtonReady.setBackgroundColor(
-                ContextCompat.getColor(
-                    context!!,
-                    R.color.blue
-                )
-            )
-        } else {
-            contactAddButtonReady.setBackgroundColor(
-                ContextCompat.getColor(
-                    context!!,
-                    R.color.appbar_color
-                )
-            )
-        }
-
-        if (state.isNameFilled) {
-            contactAddInputFirstName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
-            contactAddInvalidFirstName.includeTextInvalid.visibility = View.GONE
-            contactAddLabelFirstName.includeTextView.setTextColor(
-                ContextCompat.getColor(
-                    context!!,
-                    R.color.gray
-                )
-            )
-        } else {
-            contactAddInputFirstName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
-            contactAddInvalidFirstName.includeTextInvalid.visibility = View.VISIBLE
-            contactAddLabelFirstName.includeTextView.setTextColor(
-                ContextCompat.getColor(
-                    context!!,
-                    R.color.red
-                )
-            )
-        }
-
-        when {
-            state.isNumberEmpty -> {
-                contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
-                contactAddInvalidNumber.includeTextInvalid.run {
-                    setPrintableText(
-                        PrintableText.StringResource(
-                            R.string.contact_add_number_empty
-                        )
-                    )
-                    visibility = View.VISIBLE
-                }
-                contactAddLabelNumber.includeTextView.setTextColor(
-                    ContextCompat.getColor(
-                        context!!,
-                        R.color.red
-                    )
-                )
+        when (state.contactAddStatus) {
+            EditTextStatus.NameIdle -> {
+                renderNameIdle()
+                renderButtonDisabled()
             }
 
-            state.isNumberCorrect -> {
-                contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext)
-                contactAddInvalidNumber.includeTextInvalid.visibility = View.GONE
-                contactAddLabelNumber.includeTextView.setTextColor(
-                    ContextCompat.getColor(
-                        context!!,
-                        R.color.gray
-                    )
-                )
+            EditTextStatus.NumberIdle -> {
+                renderNumberIdle()
+                renderButtonDisabled()
             }
 
-            else -> {
-                contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
-                contactAddInvalidNumber.includeTextInvalid.run {
-                    setPrintableText(
-                        PrintableText.StringResource(
-                            R.string.contact_add_number_invalid
-                        )
-                    )
-                    visibility = View.VISIBLE
-                }
-                contactAddLabelNumber.includeTextView.setTextColor(
+            EditTextStatus.NameFilledAndNumberCorrect -> {
+                contactAddButtonReady.setBackgroundColor(
                     ContextCompat.getColor(
-                        context!!,
-                        R.color.red
+                        contactAddButtonReady.context,
+                        R.color.blue
                     )
                 )
+                renderNameIdle()
+                renderNumberIdle()
+            }
+
+            EditTextStatus.NameEmptyAndNumberEmpty -> {
+                renderNameEmpty()
+                renderNumberEmpty()
+            }
+
+            EditTextStatus.NameEmptyAndNumberIncorrect -> {
+                renderNameEmpty()
+                renderNumberIncorrect()
+            }
+
+            EditTextStatus.NameEmptyAndNumberCorrect -> {
+                renderNameEmpty()
+            }
+
+            EditTextStatus.NameFilledAndNumberEmpty -> {
+                renderNumberEmpty()
+            }
+
+            EditTextStatus.NameFilledAndNumberIncorrect -> {
+                renderNumberIncorrect()
             }
         }
     }
 
     override fun handleEvent(event: ContactAddEvent) = noEventsExpected()
+
+    private fun renderButtonDisabled() = with(binding) {
+        contactAddButtonReady.setBackgroundColor(
+            ContextCompat.getColor(
+                contactAddButtonReady.context,
+                R.color.appbar_color
+            )
+        )
+    }
+
+    private fun renderNameIdle() = with(binding) {
+        contactAddInputFirstName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
+        contactAddInvalidFirstName.includeTextInvalid.visibility = View.GONE
+        contactAddLabelFirstName.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                contactAddLabelFirstName.includeTextView.context,
+                R.color.gray
+            )
+        )
+    }
+
+    private fun renderNumberIdle() = with(binding) {
+        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext)
+        contactAddInvalidNumber.includeTextInvalid.visibility = View.GONE
+        contactAddLabelNumber.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                contactAddLabelNumber.includeTextView.context,
+                R.color.gray
+            )
+        )
+    }
+
+    private fun renderNameEmpty() = with(binding) {
+        contactAddInputFirstName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInvalidFirstName.includeTextInvalid.visibility = View.VISIBLE
+        contactAddLabelFirstName.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                contactAddLabelFirstName.includeTextView.context,
+                R.color.red
+            )
+        )
+    }
+
+    private fun renderNumberEmpty() = with(binding) {
+        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInvalidNumber.includeTextInvalid.run {
+            setPrintableText(
+                PrintableText.StringResource(
+                    R.string.contact_add_number_empty
+                )
+            )
+            visibility = View.VISIBLE
+        }
+        contactAddLabelNumber.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                contactAddLabelNumber.includeTextView.context,
+                R.color.red
+            )
+        )
+    }
+
+    private fun renderNumberIncorrect() = with(binding) {
+        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInvalidNumber.includeTextInvalid.run {
+            setPrintableText(
+                PrintableText.StringResource(
+                    R.string.contact_add_number_invalid
+                )
+            )
+            visibility = View.VISIBLE
+        }
+        contactAddLabelNumber.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                contactAddLabelNumber.includeTextView.context,
+                R.color.red
+            )
+        )
+    }
+
+
+    enum class EditTextStatus {
+        NameIdle,
+        NumberIdle,
+        NameEmptyAndNumberEmpty,
+        NameEmptyAndNumberIncorrect,
+        NameEmptyAndNumberCorrect,
+        NameFilledAndNumberEmpty,
+        NameFilledAndNumberIncorrect,
+        NameFilledAndNumberCorrect
+    }
 
 }

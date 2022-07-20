@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.Manifest
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
@@ -30,7 +31,9 @@ class ContactsViewModel(
     }
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
-        exitWithResult(ContactsNavigationContract.createResult(result))
+        if(result.code == 0) {
+            requestPermissionAndLoadContacts()
+        }
     }
 
     private var currentContacts: List<ContactsViewItem> = listOf()
@@ -42,7 +45,6 @@ class ContactsViewModel(
             if (permissionGranted) {
                 fetchContacts()
             }
-
         }
     }
 

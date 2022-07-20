@@ -1,23 +1,20 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.util
 
 import android.content.ContentProviderOperation
-import android.content.ContentProviderResult
 import android.content.Context
-import android.content.Intent
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
-import android.widget.Toast
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactWriteItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 
 
 class ContactsLoader(private val context: Context) {
 
-    private val _contactsList: MutableList<ContactsViewItem> = ArrayList()
+    private var _contactsList: MutableList<ContactsViewItem> = ArrayList()
 
     fun onStartLoading(): List<ContactsViewItem> {
         val cr = context.contentResolver
+        _contactsList = ArrayList<ContactsViewItem>()
 
         val projection = arrayOf(
             CommonDataKinds.Phone.CONTACT_ID,
@@ -61,7 +58,7 @@ class ContactsLoader(private val context: Context) {
         return _contactsList.toList()
     }
 
-    fun insertContact(firstName: String?, mobileNumber: String?) {
+    fun insertContact(firstName: String, secondName: String, mobileNumber: String) {
         val ops = ArrayList<ContentProviderOperation>()
         val rawContactInsertIndex: Int = ops.size
         ops.add(
@@ -79,7 +76,7 @@ class ContactsLoader(private val context: Context) {
                 )
                 .withValue(
                     CommonDataKinds.StructuredName.DISPLAY_NAME,
-                    firstName
+                    "$firstName $secondName"
                 )
                 .build()
         )
@@ -96,6 +93,7 @@ class ContactsLoader(private val context: Context) {
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
         } catch (e: Exception) {
+            //TODO обработка исключения
         }
     }
 
