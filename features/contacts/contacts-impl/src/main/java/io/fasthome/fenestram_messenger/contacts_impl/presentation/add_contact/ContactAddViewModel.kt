@@ -8,6 +8,9 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsL
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ContactAddViewModel(
@@ -20,6 +23,9 @@ class ContactAddViewModel(
     init {
         requestPermissionToWriteContacts()
     }
+
+    private val contactsLoaderScope = CoroutineScope(Job() + Dispatchers.IO)
+    private var contactsLoaderJob: Job? = null
 
     private fun requestPermissionToWriteContacts() {
         viewModelScope.launch {
@@ -74,7 +80,9 @@ class ContactAddViewModel(
                 ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberIncorrect)
             }
             else -> {
-                contactsLoader.insertContact(firstName, secondName, phoneNumber)
+                contactsLoaderScope.launch {
+                    contactsLoader.insertContact(firstName, secondName, phoneNumber)
+                }
                 exitWithResult(ContactAddNavigationContract.createResult(ContactAddResult(0)))
             }
         }

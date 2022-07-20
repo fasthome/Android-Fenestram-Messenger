@@ -69,6 +69,11 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         })
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.stopJob()
+    }
+
     override fun renderState(state: ContactsState) = with(binding){
         when (state.permissionGranted) {
             true -> {
