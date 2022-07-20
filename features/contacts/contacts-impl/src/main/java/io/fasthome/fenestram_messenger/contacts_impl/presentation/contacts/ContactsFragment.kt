@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
@@ -36,16 +37,20 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.contactsList.adapter = contactsAdapter
+        with(binding) {
+            contactsList.adapter = contactsAdapter
 
-        binding.contactsAdd.setOnClickListener {
-            vm.addContact()
-        }
+            contactsAdd.setOnClickListener {
+                vm.addContact()
+            }
 
+            contactsAddFirst.setOnClickListener {
+                vm.addContact()
+            }
 
-
-        binding.contactsAddFirst.setOnClickListener {
-            vm.addContact()
+            contactsAllow.setOnClickListener {
+                vm.requestPermissionAndLoadContacts()
+            }
         }
     }
 
@@ -65,13 +70,30 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     }
 
     override fun renderState(state: ContactsState) = with(binding){
-        renderLoadingState(
-            loadingState = state.loadingState,
-            progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = contentContainer,
-            renderData = {
-                contactsAdapter.items = it
+        when (state.permissionGranted) {
+            true -> {
+                noPermissionContainer.isVisible = false
+                renderLoadingState(
+                    loadingState = state.loadingState,
+                    progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = contentContainer,
+                    renderData = {
+                        contactsAdapter.items = it
+                    }
+                )
             }
-        )
+            false -> {
+                errorContainer.isVisible = false
+                renderLoadingState(
+                    loadingState = state.loadingState,
+                    progressContainer = progressContainer,
+                    errorContainer = noPermissionContainer,
+                    contentContainer = contentContainer,
+                    renderData = {
+                        contactsAdapter.items = it
+                    }
+                )
+            }
+        }
     }
 
     override fun handleEvent(event: ContactsEvent) = noEventsExpected()

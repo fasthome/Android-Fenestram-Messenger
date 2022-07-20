@@ -31,25 +31,28 @@ class ContactsViewModel(
     }
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
-        if(result.code == 0) {
+        if (result.code == 0) {
             requestPermissionAndLoadContacts()
         }
     }
 
     private var currentContacts: List<ContactsViewItem> = listOf()
 
-    private fun requestPermissionAndLoadContacts() {
+    fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
 
             if (permissionGranted) {
                 fetchContacts()
             }
+            else {
+                updateState { ContactsState(LoadingState.Error(error = ErrorInfo.createEmpty()), false) }
+            }
         }
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(LoadingState.None)
+        return ContactsState(LoadingState.None, true)
     }
 
     private fun fetchContacts() {
@@ -57,11 +60,12 @@ class ContactsViewModel(
         if (currentContacts.isEmpty()) {
             updateState {
                 ContactsState(
-                    LoadingState.Error(error = ErrorInfo.createEmpty())
+                    LoadingState.Error(error = ErrorInfo.createEmpty()),
+                    true
                 )
             }
         } else {
-            updateState { ContactsState(LoadingState.Success(currentContacts)) }
+            updateState { ContactsState(LoadingState.Success(currentContacts), true) }
         }
     }
 
@@ -73,7 +77,7 @@ class ContactsViewModel(
         val filteredContacts = currentContacts.filter {
             it.name.startsWith(text.trim(), true)
         }
-        updateState { ContactsState(LoadingState.Success(filteredContacts)) }
+        updateState { ContactsState(LoadingState.Success(filteredContacts), true) }
     }
 
 }
