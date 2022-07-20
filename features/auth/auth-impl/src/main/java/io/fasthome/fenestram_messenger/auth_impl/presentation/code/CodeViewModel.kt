@@ -1,12 +1,12 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.code
 
-import android.util.Log
+import android.Manifest
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
-import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
@@ -18,11 +18,18 @@ class CodeViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val authInteractor: AuthInteractor,
-    private val params: CodeNavigationContract.Params
+    private val params: CodeNavigationContract.Params,
+    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<CodeState, CodeEvent>(router, requestParams) {
 
     private val personalityLauncher = registerScreen(PersonalityNavigationContract) { result ->
         exitWithResult(CodeNavigationContract.createResult(result))
+    }
+
+    init {
+        viewModelScope.launch {
+            permissionInterface.request(Manifest.permission.RECEIVE_SMS)
+        }
     }
 
     override fun createInitialState(): CodeState {

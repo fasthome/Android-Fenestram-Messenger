@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(Modules.Feature.auth.api))
+    implementation(project(Modules.Common.component))
 
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.di))

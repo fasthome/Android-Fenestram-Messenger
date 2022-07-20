@@ -1,19 +1,29 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.code
 
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentCodeBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) {
-    override val vm: CodeViewModel by viewModel(getParamsInterface = CodeNavigationContract.getParams)
+    private val permissionInterface by registerFragment(PermissionComponentContract)
+
+    override val vm: CodeViewModel by viewModel(
+        getParamsInterface = CodeNavigationContract.getParams,
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::permissionInterface)
+    )
 
     private val binding by fragmentViewBinding(FragmentCodeBinding::bind)
 
@@ -60,10 +70,19 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
             resendCode.setOnClickListener {
                 vm.resendCode()
             }
+
+            requireActivity().registerReceiver(
+                SmsReceiver {
+                    codeInput.setText(this)
+                    codeInput.clearFocus()
+                },
+                IntentFilter("android.provider.Telephony.SMS_RECEIVED")
+            )
         }
+
     }
 
-    override fun handleEvent(event: CodeEvent): Unit {
+    override fun handleEvent(event: CodeEvent) {
         val text = when (event) {
             is CodeEvent.ConnectionError -> {
                 connectionError
