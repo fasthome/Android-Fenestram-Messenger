@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_background">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/profileToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:logo="@drawable/ic_empty_avatar"
+        android:background="@color/send_message_background_color"
+        app:navigationIcon="@drawable/ic_back_button"
+        app:title="Username"
+        app:titleMarginStart="8dp"
+        app:subtitle="online"
+
+        >
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messages_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:scrollbars="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileToolBar"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:reverseLayout="false"
+        app:stackFromEnd="true"
+        tools:listitem="@layout/conversation_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="43dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/ic_send_message"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintCircleRadius="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/attach_button"
+            android:layout_width="13dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1"
+            android:background="@color/send_message_background_color"
+            android:contentDescription="@string/AttachButtonPresentText"
+            android:minHeight="43dp"
+            app:srcCompat="@drawable/attach_button_icon"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <EditText
+            android:id="@+id/input_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/send_message_background_color"
+            android:ems="10"
+            android:fontFamily="@font/geometria"
+            android:gravity="start|top"
+            android:hint="@string/messageHint"
+            android:inputType="textMultiLine"
+            android:minWidth="64dp"
+            android:minHeight="43dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/text_color_grey"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <ImageButton
+            android:id="@+id/send_button"
+            android:layout_width="13dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1"
+            android:background="@color/send_message_background_color"
+            android:contentDescription="@string/SendButtonPresentText"
+            android:minHeight="43dp"
+            app:srcCompat="@drawable/ic_coolicon"
+            tools:ignore="TouchTargetSizeCheck" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

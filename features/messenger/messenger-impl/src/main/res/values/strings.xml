@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="messageHint">Ваше сообщение</string>
+    <string name="SendButtonPresentText">Кнопка отправки сообщения</string>
+    <string name="AttachButtonPresentText">Кнопка прикрепления файлов</string>
+    <string name="SendMessegeTextViewPresentText">Поле ввода сообщения</string>
+    <string name="AppName">FENESTRAM</string>
+    <string name="MessageContentCheck">FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</string>
+    <string name="timeviewcheck">22:22</string>
+</resources>
