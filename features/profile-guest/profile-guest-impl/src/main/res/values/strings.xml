@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_guest_no_nickname">\@noname</string>
+    <string name="profile_guest_no_file">Нет файла</string>
+    <string name="no_name">Безымянный</string>
+    <string name="recent_files">Недавние файлы</string>
+    <string name="zero_files">0 файлов</string>
+    <string name="images">Изображения</string>
+    <string name="zero_images">0 изображений</string>
+
+</resources>
