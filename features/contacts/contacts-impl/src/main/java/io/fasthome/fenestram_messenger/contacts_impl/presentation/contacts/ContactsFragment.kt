@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
@@ -74,6 +75,11 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         )
     }
 
-    override fun handleEvent(event: ContactsEvent) = noEventsExpected()
+    override fun handleEvent(event: ContactsEvent) {
+        when(event) {
+            ContactsEvent.ContactAddCancelled -> Toast.makeText(context, "Не удалось сохранить контакт", Toast.LENGTH_SHORT)
+        }
+    }
+
 
 }
