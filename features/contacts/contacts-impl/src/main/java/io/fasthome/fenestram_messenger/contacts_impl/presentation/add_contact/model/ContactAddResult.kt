@@ -3,5 +3,11 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.m
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-class ContactAddResult(val code: Int): Parcelable
+sealed class ContactAddResult : Parcelable {
+
+    @Parcelize
+    object Success : ContactAddResult()
+
+    @Parcelize
+    object Canceled : ContactAddResult()
+}

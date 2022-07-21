@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 
 
@@ -14,7 +15,7 @@ class ContactsLoader(private val context: Context) {
 
     fun onStartLoading(): List<ContactsViewItem> {
         val cr = context.contentResolver
-        _contactsList = ArrayList<ContactsViewItem>()
+        _contactsList = ArrayList()
 
         val projection = arrayOf(
             CommonDataKinds.Phone.CONTACT_ID,
@@ -58,7 +59,7 @@ class ContactsLoader(private val context: Context) {
         return _contactsList.toList()
     }
 
-    fun insertContact(firstName: String, secondName: String, mobileNumber: String) {
+    fun insertContact(firstName: String, secondName: String, mobileNumber: String, callback: ContactAddResult.() -> Unit) {
         val ops = ArrayList<ContentProviderOperation>()
         val rawContactInsertIndex: Int = ops.size
         ops.add(
@@ -92,8 +93,9 @@ class ContactsLoader(private val context: Context) {
         )
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+            callback(ContactAddResult.Success)
         } catch (e: Exception) {
-            //TODO обработка исключения
+            callback(ContactAddResult.Canceled)
         }
     }
 
