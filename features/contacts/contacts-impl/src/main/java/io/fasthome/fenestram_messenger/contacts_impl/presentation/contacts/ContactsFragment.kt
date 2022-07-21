@@ -43,6 +43,10 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         }
 
 
+
+        binding.contactsAddFirst.setOnClickListener {
+            vm.addContact()
+        }
     }
 
     override fun onResume() {

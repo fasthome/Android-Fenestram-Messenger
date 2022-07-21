@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/include_edit_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rounded_edittext"
+    android:fontFamily="@font/geometria"
+    android:imeOptions="actionDone"
+    android:importantForAutofill="no"
+    android:inputType="text"
+    android:paddingStart="@dimen/contact_add_include_edittext_padding"
+    android:singleLine="true"
+    android:textColor="@color/manatee"
+    android:textSize="@dimen/contact_add_input_text_size" />

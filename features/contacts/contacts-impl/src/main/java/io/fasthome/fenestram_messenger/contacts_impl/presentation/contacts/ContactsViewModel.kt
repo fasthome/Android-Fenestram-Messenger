@@ -4,11 +4,15 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.Manifest
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
@@ -26,6 +30,12 @@ class ContactsViewModel(
         requestPermissionAndLoadContacts()
     }
 
+    private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
+        if(result.code == 0) {
+            requestPermissionAndLoadContacts()
+        }
+    }
+
     private var currentContacts: List<ContactsViewItem> = listOf()
 
     private fun requestPermissionAndLoadContacts() {
@@ -35,7 +45,6 @@ class ContactsViewModel(
             if (permissionGranted) {
                 fetchContacts()
             }
-
         }
     }
 
@@ -57,16 +66,7 @@ class ContactsViewModel(
     }
 
     fun addContact() {
-        currentContacts =
-            currentViewState.loadingState.dataOrNull!! + listOf(
-                ContactsViewItem(
-                    0,
-                    0,
-                    "New Contact",
-                    0
-                )
-            )
-        updateState { ContactsState(LoadingState.Success(currentContacts)) }
+        addContactLauncher.launch(NoParams)
     }
 
     fun filterContacts(text: String) {
