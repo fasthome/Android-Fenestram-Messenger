@@ -25,10 +25,25 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
             .register(::permissionInterface)
     )
 
+    private val smsReceiver = SmsReceiver {
+        vm.autoFillCode(this)
+    }
+
     private val binding by fragmentViewBinding(FragmentCodeBinding::bind)
 
     override fun renderState(state: CodeState): Unit = with(binding) {
         when {
+            !state.autoFilling.isNullOrEmpty() -> {
+                codeInput.apply {
+                    setText(state.autoFilling)
+                    clearFocus()
+                    setBackgroundResource(R.drawable.rounded_border)
+                }
+                resendCode.setTextColor(resources.getColor(R.color.auth_button, null))
+                error.visibility = View.GONE
+            }
+
+
             state.filled -> {
                 buttonSendCode.apply {
                     isEnabled = true
@@ -72,10 +87,7 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
             }
 
             requireActivity().registerReceiver(
-                SmsReceiver {
-                    codeInput.setText(this)
-                    codeInput.clearFocus()
-                },
+                smsReceiver,
                 IntentFilter("android.provider.Telephony.SMS_RECEIVED")
             )
         }
@@ -97,6 +109,12 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
     companion object {
         const val connectionError = "Проверьте соединение с интернетом!"
         const val indefiniteError = "Что-то пошло не так"
+    }
+
+
+    override fun onDestroy() {
+        requireActivity().unregisterReceiver(smsReceiver)
+        super.onDestroy()
     }
 
 }

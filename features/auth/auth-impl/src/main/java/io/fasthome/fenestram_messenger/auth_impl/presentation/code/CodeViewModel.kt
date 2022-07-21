@@ -33,7 +33,7 @@ class CodeViewModel(
     }
 
     override fun createInitialState(): CodeState {
-        return CodeState(filled = false, error = false)
+        return CodeState(filled = false, error = false, autoFilling = null)
     }
 
     fun checkCode(code: String) {
@@ -46,7 +46,7 @@ class CodeViewModel(
                             personalityLauncher.launch(NoParams)
                         }
                         is LoginResult.WrongCode -> {
-                            updateState { CodeState(filled = false, error = true) }
+                            updateState { CodeState(filled = false, error = true, autoFilling = null) }
                         }
                         is LoginResult.SessionClosed -> {
                             exitWithoutResult()
@@ -65,6 +65,10 @@ class CodeViewModel(
                 }
             }
         }
+    }
+
+    fun autoFillCode(code : String){
+        updateState { CodeState(filled = true, error= false, code) }
     }
 
     fun resendCode() {
@@ -88,8 +92,8 @@ class CodeViewModel(
 
     fun overWriteCode(code: String) {
         if (code.length == 4)
-            updateState { CodeState(filled = true, error = false) }
+            updateState { CodeState(filled = true, error = false, autoFilling = null) }
         else
-            updateState { CodeState(filled = false, error = false) }
+            updateState { CodeState(filled = false, error = false, autoFilling = null) }
     }
 }
