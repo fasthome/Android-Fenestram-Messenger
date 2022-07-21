@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlinx-serialization`
 }
 
 dependencies {
@@ -11,4 +12,7 @@ dependencies {
     api(Deps.Ktor.logging)
     implementation(Deps.Ktor.client)
     implementation(Deps.Ktor.serialization)
+
+    api(Deps.serializationJson)
+
 }

@@ -124,4 +124,10 @@ object Deps {
     const val maskara = "com.github.santalu:maskara:1.0.0"
     const val workRuntime = "androidx.work:work-runtime-ktx:2.7.1"
 
+    const val kotlinXSerialization =
+        "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlinXSerialization}"
+
+    const val serializationJson =
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serializationJson}"
+
 }

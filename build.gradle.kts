@@ -12,6 +12,7 @@ buildscript {
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.4.0")
 //        classpath("com.google.gms:google-services:4.3.10")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
+        classpath(Deps.kotlinXSerialization)
     }
 }
 
