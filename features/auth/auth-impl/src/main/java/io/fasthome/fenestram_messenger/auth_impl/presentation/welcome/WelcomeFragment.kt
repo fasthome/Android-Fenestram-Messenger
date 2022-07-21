@@ -30,7 +30,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
         with(binding) {
 
-            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_fenestram_label))
+            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_fenestram_label))
 
             buttonSendCode.setOnClickListener {
                 vm.checkPhoneNumber(binding.phoneInput.unMasked)

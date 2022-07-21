@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.main_impl.presentation.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.commitNow
 import io.fasthome.fenestram_messenger.main_impl.R
 import io.fasthome.fenestram_messenger.main_impl.databinding.FragmentMainBinding
@@ -12,6 +13,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.onClick
 
 class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) {
 
@@ -19,10 +21,12 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
 
     private val binding : FragmentMainBinding by fragmentViewBinding(FragmentMainBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.navigationView.setOnItemSelectedListener { item ->
+        debug.onClick{
+            vm.debugClicked()
+        }
+        navigationView.setOnItemSelectedListener { item ->
             val tabType = TabsMapper.mapItemIdToTab(item) ?: return@setOnItemSelectedListener false
             vm.onShowFragment(tabType)
             true
@@ -30,6 +34,7 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
     }
 
     override fun renderState(state: MainState) {
+        binding.debug.isVisible = state.debugVisible
         val tabToOpen = state.currentTab
 
         binding.navigationView.selectedItemId = TabsMapper.mapTabToItemId(tabToOpen)

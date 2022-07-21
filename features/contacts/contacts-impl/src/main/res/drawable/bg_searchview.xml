@@ -4,9 +4,5 @@
     <stroke
         android:width="@dimen/bg_sv_width"
         android:color="@color/manatee" />
-    <corners
-        android:bottomLeftRadius="@dimen/bg_sv_radius"
-        android:bottomRightRadius="@dimen/bg_sv_radius"
-        android:topLeftRadius="@dimen/bg_sv_radius"
-        android:topRightRadius="@dimen/bg_sv_radius" />
+    <corners android:radius="@dimen/bg_sv_radius" />
 </shape>

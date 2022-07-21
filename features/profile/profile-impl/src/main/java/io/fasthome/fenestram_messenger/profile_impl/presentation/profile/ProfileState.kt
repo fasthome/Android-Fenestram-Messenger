@@ -3,5 +3,9 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
-class ProfileState {
-}
+import android.net.Uri
+
+data class ProfileState(
+    val avatar: Uri?,
+    val isEdit: Boolean
+)

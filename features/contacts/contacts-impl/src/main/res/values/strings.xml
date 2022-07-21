@@ -7,4 +7,6 @@
     <string name="contacts_add_description">Добавить контакт</string>
     <string name="contact_avatar_description">Аватар контакта</string>
     <string name="new_message_description">Новое сообщение</string>
+    <string name="contacts_empty">Телефонная книга пуста.\nХотите добавить контакты?</string>
+    <string name="add_first_contact">Добавить контакт</string>
 </resources>

@@ -72,12 +72,12 @@ class PersonalityFragment :
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            labelName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_name_label))
-            labelUserName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_user_name_label))
-            labelBirthday.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_birthday_label))
-            labelMail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.auth_email_label))
-            labelWelcomeStart.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_welcome_message_label_start))
-            labelWelcomeEnd.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.auth_welcome_message_label_end))
+            labelName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_name_label))
+            labelUserName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
+            labelBirthday.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_birthday_label))
+            labelMail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_email_label))
+            labelWelcomeStart.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_welcome_message_label_start))
+            labelWelcomeEnd.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_welcome_message_label_end))
 
             birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
 
