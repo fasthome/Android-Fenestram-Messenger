@@ -39,14 +39,13 @@ class CodeViewModel(
     fun checkCode(code: String) {
         viewModelScope.launch {
             when (val loginResult = authInteractor.login(params.phoneNumber, code)) {
-
                 is CallResult.Success -> {
                     when (loginResult.data) {
                         is LoginResult.Success -> {
                             personalityLauncher.launch(NoParams)
                         }
                         is LoginResult.WrongCode -> {
-                            updateState { CodeState(filled = false, error = true, autoFilling = null) }
+                            updateState { it.copy(error = true, autoFilling = null) }
                         }
                         is LoginResult.SessionClosed -> {
                             exitWithoutResult()
@@ -72,28 +71,17 @@ class CodeViewModel(
     }
 
     fun resendCode() {
-//        viewModelScope.launch {
-//            /**
-//             * Отпрвка кода на телефон
-//             */
-//            authInteractor.sendCode(params.phoneNumber) {
-//                when (this) {
-//                    is LoginResult.SuccessSendRequest -> {}
-//                    is LoginResult.ConnectionError -> {
-//                        sendEvent(CodeEvent.ConnectionError)
-//                    }
-//                    else -> {
-//                        sendEvent(CodeEvent.IndefiniteError)
-//                    }
-//                }
-//            }
-//        }
+        viewModelScope.launch {
+            /**
+             * Отпрвка кода на телефон
+             */
+            authInteractor.sendCode(params.phoneNumber).successOrSendError()
+        }
     }
 
     fun overWriteCode(code: String) {
-        if (code.length == 4)
-            updateState { CodeState(filled = true, error = false, autoFilling = null) }
-        else
-            updateState { CodeState(filled = false, error = false, autoFilling = null) }
+        updateState { state->
+            state.copy(filled = code.length == 4, error = false)
+        }
     }
 }

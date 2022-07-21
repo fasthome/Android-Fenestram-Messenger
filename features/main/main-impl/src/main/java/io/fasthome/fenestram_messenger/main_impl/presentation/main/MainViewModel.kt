@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
+import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.main_impl.domain.logic.OuterTabNavigator
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
@@ -28,16 +30,20 @@ class MainViewModel(
     requestParams: RequestParams,
     savedStateHandle: SavedStateHandle,
     private val features: Features,
-    private val outerTabNavigator: OuterTabNavigator
+    private val outerTabNavigator: OuterTabNavigator,
+    private val environment: Environment
 ) : BaseViewModel<MainState, MainEvent>(router, requestParams) {
 
     class Features(
         val chatsFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
-        val profileFeature: ProfileFeature
+        val profileFeature: ProfileFeature,
+        val debugFeature : DebugFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
+
+    private val debugLauncher = registerScreen(features.debugFeature.navigationContract)
 
     init {
 
@@ -56,14 +62,16 @@ class MainViewModel(
             outerTabNavigator.tabToOpenFlow
                 .collectWhenViewActive()
                 .collect { newTab ->
-                    updateState { MainState(currentTab = newTab) }
+                    updateState {
+                        it.copy(currentTab = newTab)
+                    }
                 }
         }
 
     }
 
     override fun createInitialState(): MainState {
-        return MainState(currentTab = fragmentsStack.peek())
+        return MainState(currentTab = fragmentsStack.peek(), debugVisible = environment.isDebug)
     }
 
     override fun onBackPressed(): Boolean {
@@ -74,7 +82,9 @@ class MainViewModel(
         fragmentsStack.pop()
         val tabToOpen = fragmentsStack.peek()
 
-        updateState { MainState(currentTab = tabToOpen) }
+        updateState {
+            it.copy(currentTab = tabToOpen)
+        }
         return true
     }
 
@@ -85,17 +95,26 @@ class MainViewModel(
 
         fragmentsStack.remove(tab)
         fragmentsStack.push(tab)
-        updateState { MainState(currentTab = tab) }
+        updateState {
+            it.copy(currentTab = tab)
+        }
     }
 
     fun buildFragment(type: MainFeature.TabType): Fragment {
         return when (type) {
-            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams().createFragment()
-            MainFeature.TabType.Contacts -> features.contactsFeature.contactsNavigationContract.createParams().createFragment()
-            MainFeature.TabType.Profile -> features.profileFeature.profileNavigationContract.createParams().createFragment()
+            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams()
+                .createFragment()
+            MainFeature.TabType.Contacts -> features.contactsFeature.contactsNavigationContract.createParams()
+                .createFragment()
+            MainFeature.TabType.Profile -> features.profileFeature.profileNavigationContract.createParams()
+                .createFragment()
         }.apply {
-                this.requestParams = RequestParams.createWithIgnoreResult()
-            }
+            this.requestParams = RequestParams.createWithIgnoreResult()
+        }
+    }
+
+    fun debugClicked() {
+        debugLauncher.launch(NoParams)
     }
 
     @Parcelize
