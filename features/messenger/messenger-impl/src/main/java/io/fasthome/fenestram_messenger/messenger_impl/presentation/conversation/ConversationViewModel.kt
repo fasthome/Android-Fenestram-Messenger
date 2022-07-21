@@ -12,6 +12,10 @@ class ConversationViewModel(
 
     private var currentConversation:List<ConversationViewItem> = listOf()
 
+    fun exitToMessenger() = exitWithoutResult()
+
+
+
     override fun createInitialState(): ConversationState {
         return ConversationState(listOf())
     }

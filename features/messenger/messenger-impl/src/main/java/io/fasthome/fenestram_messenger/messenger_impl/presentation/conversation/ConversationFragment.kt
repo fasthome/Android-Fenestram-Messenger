@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.core.view.size
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
@@ -26,6 +27,7 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 
         binding.messagesList.adapter = conversationAdapter
 
@@ -41,6 +43,9 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
             }
             binding.inputMessage.text.clear()
             binding.messagesList.scrollToPosition(conversationAdapter.itemCount)
+        }
+        binding.backButton.setOnClickListener(){
+            vm.exitToMessenger()
         }
     }
 

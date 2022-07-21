@@ -19,15 +19,12 @@ class MessengerFragment : BaseFragment<MessengerState, MessengerEvent>(R.layout.
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
 
-    private var messageAdapter = MessengerAdapter()
+    private var messageAdapter = MessengerAdapter{vm.launchConversation()}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.chatList.adapter = messageAdapter
 
-        binding.button.setOnClickListener(){
-            vm.launchConversation()
-        }
 
     }
 
@@ -37,7 +34,5 @@ class MessengerFragment : BaseFragment<MessengerState, MessengerEvent>(R.layout.
 
     override fun handleEvent(event: MessengerEvent) = noEventsExpected()
 
-    fun OnItemAdapterTouch(){
-        vm.launchConversation()
-    }
+
 }

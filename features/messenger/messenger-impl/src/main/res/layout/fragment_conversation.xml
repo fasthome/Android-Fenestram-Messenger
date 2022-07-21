@@ -4,25 +4,104 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background">
+    android:background="@color/app_background"
+    >
 
-    <androidx.appcompat.widget.Toolbar
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profileToolBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="36dp"
+        android:background="@color/toolbar_background"
+        android:layout_marginStart="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:logo="@drawable/ic_empty_avatar"
-        android:background="@color/send_message_background_color"
-        app:navigationIcon="@drawable/ic_back_button"
-        app:title="Username"
-        app:titleMarginStart="8dp"
-        app:subtitle="online"
-
         >
+        <ImageButton
+            android:id="@+id/call_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/toolbar_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_call"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
-    </androidx.appcompat.widget.Toolbar>
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginBottom="19dp"
+            android:background="@color/toolbar_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back_button"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/avatar_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/bg_account_circle" />
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/name"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/avatar_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/user_status_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="11dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/statusonline"
+            android:textColor="@color/text_color_grey"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/avatar_image"
+            app:layout_constraintTop_toBottomOf="@+id/username" />
+
+        <ImageButton
+            android:id="@+id/facecall_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="66dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/toolbar_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_facecall"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,ImageContrastCheck" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages_list"
@@ -31,7 +110,7 @@
         android:layout_marginBottom="16dp"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/input_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profileToolBar"
         app:layout_constraintHorizontal_bias="0.0"
@@ -42,67 +121,62 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+
+    <EditText
+        android:id="@+id/input_message"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="43dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="12dp"
+        android:layout_weight="1"
         android:background="@drawable/ic_send_message"
-        android:gravity="center"
-        android:orientation="horizontal"
+        android:backgroundTint="@color/send_message_background_color"
+        android:ems="10"
+        android:fontFamily="@font/geometria"
+        android:gravity="start|top"
+        android:hint="@string/messageHint"
+        android:inputType="textMultiLine"
+        android:minWidth="64dp"
+        android:minHeight="43dp"
+        android:paddingStart="48dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="48dp"
+        android:paddingBottom="4dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/text_color_grey"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintCircleRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TouchTargetSizeCheck" />
 
-        <ImageButton
-            android:id="@+id/attach_button"
-            android:layout_width="13dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1"
-            android:background="@color/send_message_background_color"
-            android:contentDescription="@string/AttachButtonPresentText"
-            android:minHeight="43dp"
-            app:srcCompat="@drawable/attach_button_icon"
-            tools:ignore="TouchTargetSizeCheck" />
+    <ImageButton
+        android:id="@+id/attach_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="8dp"
+        android:background="@color/send_message_background_color"
+        android:contentDescription="@string/AttachButtonPresentText"
+        android:minHeight="43dp"
+        app:layout_constraintStart_toStartOf="@+id/input_message"
+        app:layout_constraintBottom_toBottomOf="@id/input_message"
+        app:srcCompat="@drawable/attach_button_icon"
+        tools:ignore="TouchTargetSizeCheck" />
 
-        <EditText
-            android:id="@+id/input_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/send_message_background_color"
-            android:ems="10"
-            android:fontFamily="@font/geometria"
-            android:gravity="start|top"
-            android:hint="@string/messageHint"
-            android:inputType="textMultiLine"
-            android:minWidth="64dp"
-            android:minHeight="43dp"
-            android:textColor="@color/white"
-            android:textColorHint="@color/text_color_grey"
-            tools:ignore="TouchTargetSizeCheck" />
+    <ImageButton
+        android:id="@+id/send_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="8dp"
+        android:background="@color/send_message_background_color"
+        android:contentDescription="@string/SendButtonPresentText"
+        android:minHeight="43dp"
+        app:layout_constraintEnd_toEndOf="@id/input_message"
+        app:layout_constraintBottom_toBottomOf="@id/input_message"
+        app:srcCompat="@drawable/ic_coolicon"
+        tools:ignore="TouchTargetSizeCheck" />
 
-        <ImageButton
-            android:id="@+id/send_button"
-            android:layout_width="13dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1"
-            android:background="@color/send_message_background_color"
-            android:contentDescription="@string/SendButtonPresentText"
-            android:minHeight="43dp"
-            app:srcCompat="@drawable/ic_coolicon"
-            tools:ignore="TouchTargetSizeCheck" />
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
