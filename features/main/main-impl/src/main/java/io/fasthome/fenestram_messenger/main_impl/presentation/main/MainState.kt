@@ -7,4 +7,5 @@ import io.fasthome.fenestram_messenger.main_api.MainFeature
 
 data class MainState(
     val currentTab: MainFeature.TabType,
+    val debugVisible : Boolean
 )

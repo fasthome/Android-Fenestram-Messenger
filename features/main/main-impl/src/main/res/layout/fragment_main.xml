@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout
         android:id="@+id/content"
@@ -11,6 +12,16 @@
         android:background="@color/purple_back"
         app:layout_constraintBottom_toTopOf="@id/navigation_view"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/debug"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/debug_menu"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="@+id/content"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation_view"
@@ -21,6 +32,7 @@
         app:itemTextColor="@color/bottom_navigation_color_state_text"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_navigation_menu"
+        tools:layout_height="56dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

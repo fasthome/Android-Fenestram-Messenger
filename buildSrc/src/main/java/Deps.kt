@@ -81,7 +81,7 @@ object Deps {
     object Tests {
         const val androidxJunit = "androidx.test.ext:junit:1.1.3"
         const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
-        const val junit = "junit:junit:4.13.2"
+        const val junit = "junit:junit:4.12"
     }
 
     const val gson = "com.google.code.gson:gson:2.8.6"
@@ -123,5 +123,11 @@ object Deps {
 
     const val maskara = "com.github.santalu:maskara:1.0.0"
     const val workRuntime = "androidx.work:work-runtime-ktx:2.7.1"
+
+    const val kotlinXSerialization =
+        "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlinXSerialization}"
+
+    const val serializationJson =
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serializationJson}"
 
 }
