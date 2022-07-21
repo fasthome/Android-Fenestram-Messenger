@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.main_impl.di.MainModule
 import io.fasthome.fenestram_messenger.messenger_impl.di.MessengerModule
 import io.fasthome.fenestram_messenger.profile_impl.di.ProfileModule
 import io.fasthome.fenestram_messenger.settings_impl.di.SettingsModule
+import io.fasthome.fenestram_messenger.debug_impl.di.DebugModule
 import io.fasthome.network.di.NetworkModule
 import org.koin.core.module.Module
 
@@ -28,7 +29,8 @@ object AppModule {
         AuthModule(),
         MessengerModule(),
         ContactsModule(),
+        SettingsModule(),
         ProfileModule(),
-        SettingsModule()
+        DebugModule()
     ).flatten()
 }
