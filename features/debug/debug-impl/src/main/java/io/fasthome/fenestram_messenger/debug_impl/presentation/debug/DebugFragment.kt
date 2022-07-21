@@ -28,6 +28,9 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         debugAuth.onClick {
             vm.onAuthClicked()
         }
+        debugLogout.onClick {
+            vm.onLogoutClicked()
+        }
     }
 
     override fun renderState(state: DebugState) = nothingToRender()
