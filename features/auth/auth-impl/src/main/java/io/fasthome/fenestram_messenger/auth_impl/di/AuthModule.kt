@@ -8,19 +8,27 @@ import io.fasthome.fenestram_messenger.auth_impl.AuthFeatureImpl
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.AuthRepoImpl
+import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.ProfileRepoImpl
+import io.fasthome.fenestram_messenger.auth_impl.data.service.ProfileService
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ProfileInteractor
+import io.fasthome.fenestram_messenger.auth_impl.domain.repo.ProfileRepo
 import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeViewModel
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeViewModel
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityViewModel
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
+import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigator
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.network.client.ForceLogoutManager
 import io.fasthome.network.di.NetworkClientFactoryQualifier
-import io.fasthome.network.di.singleAuthorizedService
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 
 import org.koin.dsl.module
 
@@ -38,16 +46,23 @@ object AuthModule {
 
     private fun createDataModule() = module {
         single(::AuthRepoImpl) bindSafe AuthRepo::class
+        single(::ProfileRepoImpl) bindSafe ProfileRepo::class
 
+        single { ProfileService(get(named(NetworkClientFactoryQualifier.Authorized))) }
         single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get()) }
     }
 
     private fun createDomainModule() = module {
         factory(::AuthInteractor)
+        factory(::ProfileInteractor)
+        factory(::LogoutUseCase)
+        factory(::ForceLogoutUseCase)
+        factory(::ClearUserDataUseCase)
     }
 
     private fun createPresentationModule() = module {
         single(::LogoutManager) bindSafe ForceLogoutManager::class
+        single(::AuthNavigator)
 
         viewModel(::WelcomeViewModel)
         viewModel(::CodeViewModel)

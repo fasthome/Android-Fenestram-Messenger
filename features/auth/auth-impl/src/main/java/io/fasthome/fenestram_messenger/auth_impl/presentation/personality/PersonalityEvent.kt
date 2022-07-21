@@ -1,3 +1,5 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
-sealed class PersonalityEvent
+sealed class PersonalityEvent {
+    object IndefiniteError : PersonalityEvent()
+}
