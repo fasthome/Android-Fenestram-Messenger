@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="auth_skip_button">Пропустить</string>
+    <string name="common_skip_button">Пропустить</string>
     <string name="auth_ready_button">Готово</string>
-    <string name="auth_email_label">Email</string>
-    <string name="auth_birthday_label">Дата рождения</string>
-    <string name="auth_user_name_label">Никнейм</string>
-    <string name="auth_name_label">Имя</string>
-    <string name="auth_welcome_message_label_start">Добро пожаловать</string>
-    <string name="auth_welcome_message_label_end">в FENESTRAM!</string>
-    <string name="auth_fenestram_label">FENESTRAM</string>
-    <string name="auth_phone_number_label">Номер телефона</string>
-    <string name="auth_country_code_text">+7</string>
-    <string name="auth_send_code_button">Отправить код</string>
-    <string name="auth_input_code_label">Введите код из СМС</string>
-    <string name="auth_incorrect_code_label">Неверный код</string>
-    <string name="auth_resend_code_button">Отправить заново?</string>
+    <string name="common_email_label">Email</string>
+    <string name="common_birthday_label">Дата рождения</string>
+    <string name="common_user_name_label">Никнейм</string>
+    <string name="common_name_label">Имя</string>
+    <string name="common_welcome_message_label_start">Добро пожаловать</string>
+    <string name="common_welcome_message_label_end">в FENESTRAM!</string>
+    <string name="common_fenestram_label">FENESTRAM</string>
+    <string name="common_phone_number_label">Номер телефона</string>
+    <string name="common_country_code_text">+7</string>
+    <string name="common_send_code_button">Отправить код</string>
+    <string name="common_input_code_label">Введите код из СМС</string>
+    <string name="common_incorrect_code_label">Неверный код</string>
+    <string name="common_resend_code_button">Отправить заново?</string>
 </resources>

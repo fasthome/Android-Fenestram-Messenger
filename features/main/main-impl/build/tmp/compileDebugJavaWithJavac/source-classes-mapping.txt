@@ -1,2 +1,0 @@
-io/fasthome/fenestram_messenger/main_impl/databinding/FragmentMainBinding.java
- io.fasthome.fenestram_messenger.main_impl.databinding.FragmentMainBinding

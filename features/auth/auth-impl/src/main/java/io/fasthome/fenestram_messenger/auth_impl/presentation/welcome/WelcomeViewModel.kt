@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 
-import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
