@@ -85,6 +85,9 @@ dependencies {
     implementation(project(Modules.Feature.settings.api))
     implementation(project(Modules.Feature.settings.impl))
 
+    implementation(project(Modules.Feature.debug.api))
+    implementation(project(Modules.Feature.debug.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)
