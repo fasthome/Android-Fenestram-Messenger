@@ -8,4 +8,5 @@
     <color name="red">#FF4B4B</color>
     <color name="gray">#C9C9C9DE</color>
     <color name="bg_rv">#332E42</color>
+    <color name="bg_chat_files_photos">#1B1728</color>
 </resources>

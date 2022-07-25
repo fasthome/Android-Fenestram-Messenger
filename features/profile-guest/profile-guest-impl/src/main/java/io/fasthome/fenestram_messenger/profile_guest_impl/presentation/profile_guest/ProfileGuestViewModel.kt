@@ -2,15 +2,22 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.FilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.PhotosViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
 
 class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
+
+    private val filesProfileGuestLauncher = registerScreen(ProfileGuestFilesNavigationContract) { result ->
+        exitWithResult(ProfileGuestNavigationContract.createResult(result))
+    }
 
     override fun createInitialState() = ProfileGuestState(listOf(), listOf())
 
@@ -27,5 +34,9 @@ class ProfileGuestViewModel(
             PhotosViewItem(R.drawable.shape_button_standart)
         )
         updateState { ProfileGuestState(files, photos) }
+    }
+
+    fun onShowFilesClicked() {
+        filesProfileGuestLauncher.launch(NoParams)
     }
 }
