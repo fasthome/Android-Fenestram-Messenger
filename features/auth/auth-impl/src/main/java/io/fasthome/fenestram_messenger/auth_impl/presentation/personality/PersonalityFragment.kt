@@ -2,11 +2,9 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.Toast
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.santalu.maskara.widget.MaskEditText
@@ -18,7 +16,6 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getGalleryIntent
@@ -42,7 +39,6 @@ class PersonalityFragment :
     private val binding by fragmentViewBinding(FragmentPersonalityBinding::bind)
 
     override fun renderState(state: PersonalityState): Unit = with(binding) {
-
         when (state.key) {
             EditTextKey.NameKey -> nameInput.includeEditText
             EditTextKey.UserNameKey -> userNameInput.includeEditText
@@ -194,9 +190,6 @@ class PersonalityFragment :
 
     override fun handleEvent(event: PersonalityEvent) {
         when (event) {
-            is PersonalityEvent.IndefiniteError -> {
-                Toast.makeText(context, indefiniteError, Toast.LENGTH_LONG).show()
-            }
             is PersonalityEvent.LaunchGallery -> {
                 galleryLauncher.launch(getGalleryIntent())
             }
@@ -208,9 +201,5 @@ class PersonalityFragment :
         UserNameKey,
         BirthdateKey,
         MailKey
-    }
-
-    companion object {
-        const val indefiniteError = "Что-то пошло не так"
     }
 }

@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
@@ -94,23 +95,7 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
 
     }
 
-    override fun handleEvent(event: CodeEvent) {
-        val text = when (event) {
-            is CodeEvent.ConnectionError -> {
-                connectionError
-            }
-            is CodeEvent.IndefiniteError -> {
-                indefiniteError
-            }
-        }
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
-    }
-
-    companion object {
-        const val connectionError = "Проверьте соединение с интернетом!"
-        const val indefiniteError = "Что-то пошло не так"
-    }
-
+    override fun handleEvent(event: CodeEvent) : Unit = noEventsExpected()
 
     override fun onDestroy() {
         requireActivity().unregisterReceiver(smsReceiver)
