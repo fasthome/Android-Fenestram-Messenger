@@ -32,6 +32,9 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         debugProfileGuest.onClick {
             vm.onProfileGuestClicked()
         }
+        debugLogout.onClick {
+            vm.onLogoutClicked()
+        }
     }
 
     override fun renderState(state: DebugState) = nothingToRender()

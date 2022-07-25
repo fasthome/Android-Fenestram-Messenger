@@ -33,5 +33,7 @@ object Versions {
     const val koin = "3.1.3"
     const val cicerone = "7.0"
     const val ktor = "1.6.3"
+    const val kotlinXSerialization = "1.4.30"
+    const val serializationJson = "1.1.0"
 
 }

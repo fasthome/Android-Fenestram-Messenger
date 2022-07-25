@@ -5,9 +5,11 @@ import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.Toast
 import com.santalu.maskara.widget.MaskEditText
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
@@ -79,8 +81,19 @@ class PersonalityFragment :
 
             birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
 
+            labelName.includeTextView.hint
+
             buttonReady.setOnClickListener {
-                vm.checkPersonalData()
+                vm.checkPersonalData(
+                    PersonalData(
+                        nameInput.includeEditText.text.toString(),
+                        userNameInput.includeEditText.text.toString(),
+                        birthdateInput.masked,
+                        mailInput.includeEditText.text.toString(),
+                        "",
+                        ""
+                    )
+                )
             }
 
             labelSkip.setOnClickListener {
@@ -136,22 +149,34 @@ class PersonalityFragment :
             }
 
             mailInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillingPersonalData(
+                vm.fillingEmail(
                     (v as EditText).text.toString(),
                     hasFocus,
                     EditTextKey.MailKey
                 )
             }
-
         }
+
     }
 
-    override fun handleEvent(event: PersonalityEvent): Unit = noEventsExpected()
+    override fun handleEvent(event: PersonalityEvent) {
+        val text = when (event) {
+            is PersonalityEvent.IndefiniteError -> {
+                indefiniteError
+            }
+        }
+
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
+    }
 
     enum class EditTextKey {
         NameKey,
         UserNameKey,
         BirthdateKey,
         MailKey
+    }
+
+    companion object {
+        const val indefiniteError = "Что-то пошло не так"
     }
 }

@@ -27,5 +27,13 @@
             android:text="Профиль из тулбара"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/debug_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Выход"
+            tools:ignore="HardcodedText" />
+
     </LinearLayout>
 </ScrollView>

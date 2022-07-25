@@ -9,12 +9,21 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.parcelize.Parcelize
+import kotlinx.coroutines.flow.Flow
 
 interface AuthFeature {
 
     val authNavigationContract: NavigationContractApi<NoParams, AuthResult>
 
     suspend fun isUserAuthorized(): CallResult<Boolean>
+
+    suspend fun logout(): CallResult<Unit>
+
+    /**
+     * Поток событий, по которым должен происходить переход на экран авторизации.
+     * Его предполагается обрабатывать только в MainActivityViewModel.
+     */
+    val startAuthEvents: Flow<AuthEvent>
 
     sealed class AuthResult : Parcelable {
 
@@ -23,5 +32,11 @@ interface AuthFeature {
 
         @Parcelize
         object Canceled : AuthResult()
+    }
+
+    sealed class AuthEvent : Parcelable {
+
+        @Parcelize
+        object LaunchWelcome : AuthEvent()
     }
 }

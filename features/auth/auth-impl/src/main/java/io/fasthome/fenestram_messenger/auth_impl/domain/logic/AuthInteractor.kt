@@ -6,8 +6,7 @@ package io.fasthome.fenestram_messenger.auth_impl.domain.logic
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.network.tokens.AccessToken
-import io.fasthome.network.tokens.RefreshToken
+import io.fasthome.fenestram_messenger.util.onSuccess
 import io.fasthome.network.tokens.TokensRepo
 
 class AuthInteractor(
@@ -18,13 +17,15 @@ class AuthInteractor(
     suspend fun isUserAuthorized(): CallResult<Boolean> =
         authRepo.isUserAuthorized()
 
-    suspend fun login() {
-        //todo
-        onLoginResultSuccess(
-            tokensRepo = tokensRepo,
-            loginResult = LoginResult.Success(AccessToken("access"), RefreshToken("refresh"), "userid")
-        )
-    }
+    suspend fun login(phoneNumber: String, code: String) =
+        authRepo.login(phoneNumber, code).onSuccess {
+            if (it is LoginResult.Success)
+                onLoginResultSuccess(tokensRepo = tokensRepo, loginResult = it)
+        }
+
+
+    suspend fun sendCode(phoneNumber: String) = authRepo.sendCode(phoneNumber).onSuccess { }
+
 
     companion object {
         suspend fun onLoginResultSuccess(

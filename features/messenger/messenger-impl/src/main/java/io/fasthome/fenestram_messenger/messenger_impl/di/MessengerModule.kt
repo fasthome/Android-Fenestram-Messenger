@@ -6,6 +6,8 @@ import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.MessengerFeatureImpl
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 object MessengerModule  {
@@ -29,6 +31,8 @@ object MessengerModule  {
     }
 
     private fun createPresentationModule() = module {
+
         viewModel(::MessengerViewModel)
+        viewModel(::ConversationViewModel)
     }
 }

@@ -42,12 +42,16 @@ class NetworkClient(
         customHeaders.forEach(headers::append)
     }
 
-    suspend inline fun <reified Response> runPatch(
+    suspend inline fun <reified Request, reified Response> runPatch(
         path: String,
         useBaseUrl: Boolean = true,
+        body: Request,
         params: Map<String, Any?> = emptyMap(),
+        contentType: ContentType = ContentType.Application.Json,
     ): Response = httpClient.patch {
         url(buildUrl(path, useBaseUrl))
+        contentType(contentType)
+        if (body != null) this.body = body
         params.forEach { (t, u) -> parameter(t, u) }
     }
 
