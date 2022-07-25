@@ -8,9 +8,8 @@
         android:id="@+id/photo_item"
         android:layout_width="90dp"
         android:layout_height="90dp"
-        android:background="@drawable/ic_profile_guest_file"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
