@@ -8,12 +8,11 @@ import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.profile_guest_impl.ProfileGuestFeatureImpl
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
-import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.ProfileGuestViewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesViewModel
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesViewModel
 
-//TODO: add to AppModule.
 object ProfileGuestModule {
     operator fun invoke() = listOf(
         createFeatureModule(),
@@ -35,5 +34,6 @@ object ProfileGuestModule {
     private fun createPresentationModule() = module {
         viewModel(::ProfileGuestViewModel)
         viewModel(::ProfileGuestFilesViewModel)
+        viewModel(::ProfileGuestImagesViewModel)
     }
 }
