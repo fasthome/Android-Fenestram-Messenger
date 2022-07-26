@@ -3,13 +3,13 @@
  */
 package io.fasthome.fenestram_messenger.settings_impl.di
 
-import org.koin.dsl.module
-import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
-import io.fasthome.fenestram_messenger.settings_impl.SettingsFeatureImpl
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
-import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
+import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
+import io.fasthome.fenestram_messenger.settings_impl.SettingsFeatureImpl
+import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.SettingsViewModel
+import org.koin.dsl.module
 
 object SettingsModule {
     operator fun invoke() = listOf(
@@ -30,6 +30,12 @@ object SettingsModule {
     }
 
     private fun createPresentationModule() = module {
+        viewModel (::SettingsViewModel)
+
+
+
         //todo добавь свою viewModel
+
     }
 }
+

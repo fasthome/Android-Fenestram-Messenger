@@ -78,4 +78,5 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
     }
+
 }
