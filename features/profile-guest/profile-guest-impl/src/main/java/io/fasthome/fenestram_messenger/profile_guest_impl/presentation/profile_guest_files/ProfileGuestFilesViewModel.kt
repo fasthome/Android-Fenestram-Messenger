@@ -3,23 +3,31 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.FilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.model.AllFilesViewItem
 
-class ProfileGuestFilesViewModel (
+class ProfileGuestFilesViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
 ) : BaseViewModel<ProfileGuestFilesState, ProfileGuestFilesEvent>(router, requestParams) {
 
-    override fun createInitialState() = ProfileGuestFilesState(listOf())
+    private var currentFiles: List<AllFilesViewItem> = listOf()
+
+    override fun createInitialState() = ProfileGuestFilesState(currentFiles)
 
     fun fetchFiles() {
-        val files = listOf(
+        currentFiles = listOf(
             AllFilesViewItem("Kek", 5, "01.05.2022"),
-            AllFilesViewItem("Doc",1, "29.06.2022"),
-            AllFilesViewItem("aBOBA",100, "13.07.2022")
+            AllFilesViewItem("Doc", 1, "29.06.2022"),
+            AllFilesViewItem("aBOBA", 100, "13.07.2022")
         )
-        updateState { ProfileGuestFilesState(files) }
+        updateState { ProfileGuestFilesState(currentFiles) }
+    }
+
+    fun filterFiles(text: String) {
+        val filteredFiles = currentFiles.filter {
+            it.fileName.startsWith(text.trim(), true)
+        }
+        updateState { ProfileGuestFilesState(filteredFiles) }
     }
 
     fun navigateBack() {

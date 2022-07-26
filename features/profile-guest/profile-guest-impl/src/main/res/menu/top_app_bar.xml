@@ -5,6 +5,6 @@
         android:id="@+id/search"
         android:icon="@drawable/ic_magnifier"
         android:title="@string/search"
-        app:showAsAction="ifRoom|withText"
-        app:actionViewClass="android.widget.SearchView" />
+        app:showAsAction="always|withText"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 </menu>
