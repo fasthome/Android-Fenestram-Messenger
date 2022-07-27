@@ -4,8 +4,8 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.FilesViewItem
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.PhotosViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 
 class ProfileGuestViewModel(
     router: ContractRouter,
@@ -16,16 +16,20 @@ class ProfileGuestViewModel(
 
     fun fetchFilesAndPhotos() {
         val files = listOf(
-            FilesViewItem("Kek"), FilesViewItem("Doc"),
-            FilesViewItem("aBOBA")
+            RecentFilesViewItem("Kek"), RecentFilesViewItem("Doc"),
+            RecentFilesViewItem("aBOBA"), RecentFilesViewItem("Doc2")
         )
 
         val photos = listOf(
-            PhotosViewItem(R.drawable.bg_call),
-            PhotosViewItem(R.drawable.bg_account_circle),
-            PhotosViewItem(R.drawable.shape_button_standart),
-            PhotosViewItem(R.drawable.shape_button_standart)
+            RecentImagesViewItem(R.drawable.bg_call, 0, false),
+            RecentImagesViewItem(R.drawable.bg_account_circle, 0, false),
+            RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),
+            RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),
+            RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),
+            RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),
+            RecentImagesViewItem(R.drawable.shape_button_standart, 0, false)
         )
+
         updateState { ProfileGuestState(files, photos) }
     }
 }
