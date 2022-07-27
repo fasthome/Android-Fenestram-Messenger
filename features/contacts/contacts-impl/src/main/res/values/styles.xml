@@ -35,4 +35,12 @@
         <item name="fabSize">normal</item>
         <item name="backgroundTint">@color/blue</item>
     </style>
+
+    <style name="PhoneNumberInput">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textSize">@dimen/contact_add_input_text_size</item>
+        <item name="android:inputType">phone</item>
+        <item name="android:fontFamily">@font/geometria</item>
+        <item name="android:background">@drawable/bg_rounded_edittext</item>
+    </style>
 </resources>

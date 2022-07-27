@@ -11,7 +11,7 @@ interface ErrorConverter {
 object DefaultErrorConverter : ErrorConverter {
     override fun convert(throwable: Throwable): ErrorInfo {
         val (@StringRes titleStringRes, @StringRes descriptionStringRes) = when (throwable) {
-            else -> 0 to 0
+            else -> R.string.common_error_something_went_wrong_title to R.string.common_error_something_went_wrong_description
         }
 
         return ErrorInfo(

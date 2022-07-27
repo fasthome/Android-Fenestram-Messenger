@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.auth_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
+import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
@@ -14,5 +15,16 @@ class AuthRepoImpl(
 
     override suspend fun isUserAuthorized(): CallResult<Boolean> = callForResult {
         authService.isUserAuthorized()
+    }
+
+    override suspend fun sendCode(phoneNumber: String) = callForResult {
+        authService.sendCode(phoneNumber)
+    }
+
+    override suspend fun login(
+        phoneNumber: String,
+        code: String
+    ) = callForResult {
+        authService.login(phoneNumber, code)
     }
 }

@@ -15,4 +15,5 @@ dependencies {
     implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.util))
 
+    api(Deps.maskara)
 }
