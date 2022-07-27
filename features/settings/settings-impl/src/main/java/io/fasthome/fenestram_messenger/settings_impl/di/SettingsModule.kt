@@ -33,9 +33,6 @@ object SettingsModule {
         viewModel (::SettingsViewModel)
 
 
-
-        //todo добавь свою viewModel
-
     }
 }
 

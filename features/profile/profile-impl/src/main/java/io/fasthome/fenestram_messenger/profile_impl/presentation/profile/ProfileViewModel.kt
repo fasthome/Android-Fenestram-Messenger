@@ -9,7 +9,9 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.SettingsNavigationContact
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -17,6 +19,8 @@ class ProfileViewModel(
     requestParams : RequestParams,
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
+
+    private val settingsLauncher = registerScreen(SettingsNavigationContact)
 
     override fun createInitialState(): ProfileState {
         return ProfileState(null, false)
@@ -49,5 +53,9 @@ class ProfileViewModel(
         updateState { state ->
             state.copy(isEdit = false)
         }
+    }
+
+    fun startSettings(){
+        settingsLauncher.launch(NoParams)
     }
 }

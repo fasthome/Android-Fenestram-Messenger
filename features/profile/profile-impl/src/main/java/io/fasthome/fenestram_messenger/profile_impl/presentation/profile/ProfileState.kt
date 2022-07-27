@@ -7,5 +7,5 @@ import android.net.Uri
 
 data class ProfileState(
     val avatar: Uri?,
-    val isEdit: Boolean,
+    val isEdit: Boolean
 )
