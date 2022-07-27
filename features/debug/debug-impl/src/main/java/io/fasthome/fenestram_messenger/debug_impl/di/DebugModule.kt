@@ -8,10 +8,8 @@ import io.fasthome.fenestram_messenger.debug_impl.DebugFeatureImpl
 import io.fasthome.fenestram_messenger.debug_impl.presentation.debug.DebugViewModel
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
-import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
-import org.koin.core.qualifier.named
-
+import io.fasthome.fenestram_messenger.debug_impl.presentation.socket.SocketViewModel
 import org.koin.dsl.module
 
 object DebugModule {
@@ -36,8 +34,10 @@ object DebugModule {
 
     private fun createPresentationModule() = module {
         viewModel(::DebugViewModel)
+        viewModel(::SocketViewModel)
 
         factory(DebugViewModel::Features)
+        factory(SocketViewModel::Interactors)
     }
 
 }

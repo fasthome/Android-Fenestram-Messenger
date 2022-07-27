@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
+import io.fasthome.fenestram_messenger.debug_impl.presentation.socket.SocketNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
@@ -23,11 +24,16 @@ class DebugViewModel(
     )
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
+    private val socketLauncher = registerScreen(SocketNavigationContract)
 
     override fun createInitialState() = DebugState()
 
     fun onAuthClicked() {
         authLauncher.launch(NoParams)
+    }
+
+    fun onSocketClicked() {
+        socketLauncher.launch(NoParams)
     }
 
     fun onLogoutClicked() {

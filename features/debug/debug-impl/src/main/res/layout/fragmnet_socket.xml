@@ -10,23 +10,15 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/debug_auth"
+            android:id="@+id/socket_send_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Авторизация"
+            android:text="Отправить сообщение"
             tools:ignore="HardcodedText" />
 
         <Button
-            android:id="@+id/debug_socket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Socket"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_logout"
+            android:id="@+id/socket_back"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

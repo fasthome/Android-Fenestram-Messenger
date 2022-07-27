@@ -1,0 +1,3 @@
+package io.fasthome.fenestram_messenger.debug_impl.presentation.socket
+
+class SocketState

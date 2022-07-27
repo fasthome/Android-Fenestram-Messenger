@@ -130,4 +130,5 @@ object Deps {
     const val serializationJson =
         "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serializationJson}"
 
+    const val socketIO = "io.socket:socket.io-client:2.0.0"
 }

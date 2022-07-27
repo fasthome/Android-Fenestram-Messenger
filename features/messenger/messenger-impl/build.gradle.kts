@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlinx-serialization`
 }
 
 android {
@@ -13,5 +14,10 @@ dependencies {
     implementation(project(Modules.Common.di))
     implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.util))
+    implementation(project(Modules.Common.network))
+
+    implementation(Deps.socketIO) {
+        exclude(group = "org.json", module = "json")
+    }
 
 }
