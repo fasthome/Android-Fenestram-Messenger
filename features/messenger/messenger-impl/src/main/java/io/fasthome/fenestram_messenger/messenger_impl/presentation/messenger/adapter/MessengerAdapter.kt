@@ -8,18 +8,18 @@ import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
 import io.fasthome.fenestram_messenger.util.bindWithBinding
 
-class MessengerAdapter(OnClickChat:() -> Unit) : AsyncListDifferDelegationAdapter<MessengerViewItem>(
+class MessengerAdapter(onClickChat:() -> Unit) : AsyncListDifferDelegationAdapter<MessengerViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
-        createMessengerAdapter(OnClickChat)
+        createMessengerAdapter(onClickChat)
     )
 ) {}
 
-fun createMessengerAdapter(OnClickChat:() -> Unit) = adapterDelegateViewBinding<MessengerViewItem, MessangerChatItemBinding>(
+fun createMessengerAdapter(onClickChat:() -> Unit) = adapterDelegateViewBinding<MessengerViewItem, MessangerChatItemBinding>(
     MessangerChatItemBinding::inflate){
 
     binding.root.setOnClickListener{
-        OnClickChat()
+        onClickChat()
     }
     bindWithBinding {
         nameView.text = item.name

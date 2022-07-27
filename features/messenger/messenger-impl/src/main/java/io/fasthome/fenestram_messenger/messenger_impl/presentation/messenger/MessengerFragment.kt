@@ -13,13 +13,14 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 
-class MessengerFragment : BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
+class MessengerFragment :
+    BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
 
     override val vm: MessengerViewModel by viewModel()
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
 
-    private var messageAdapter = MessengerAdapter{vm.launchConversation()}
+    private var messageAdapter = MessengerAdapter { vm.launchConversation() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -28,7 +29,7 @@ class MessengerFragment : BaseFragment<MessengerState, MessengerEvent>(R.layout.
 
     }
 
-    override fun renderState(state: MessengerState){
+    override fun renderState(state: MessengerState) {
         messageAdapter.items = state.chats
     }
 

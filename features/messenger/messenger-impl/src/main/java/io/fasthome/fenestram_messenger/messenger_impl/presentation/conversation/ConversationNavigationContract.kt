@@ -6,4 +6,5 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
 
-object ConversationNavigationContract : NavigationContract<NoParams, NoResult>(ConversationFragment::class)
+object ConversationNavigationContract :
+    NavigationContract<NoParams, NoResult>(ConversationFragment::class)

@@ -6,14 +6,13 @@ import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 
 class ConversationViewModel(
-    router : ContractRouter,
-    requestParams : RequestParams
+    router: ContractRouter,
+    requestParams: RequestParams
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
-    private var currentConversation:List<ConversationViewItem> = listOf()
+    private var currentConversation: List<ConversationViewItem> = listOf()
 
     fun exitToMessenger() = exitWithoutResult()
-
 
 
     override fun createInitialState(): ConversationState {
@@ -21,8 +20,8 @@ class ConversationViewModel(
     }
 
 
-    fun addMessageToConversation(mess:String,time:String){
-        currentConversation = currentConversation + listOf( ConversationViewItem( mess, time ,false) )
+    fun addMessageToConversation(mess: String, time: String) {
+        currentConversation = currentConversation + listOf(ConversationViewItem(mess, time, false))
         updateState { ConversationState(currentConversation) }
     }
 

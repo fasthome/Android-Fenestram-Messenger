@@ -33,7 +33,7 @@
         android:layout_marginStart="23dp"
         android:layout_marginTop="63dp"
         android:fontFamily="@font/montserrat"
-        android:text="@string/AppName"
+        android:text="@string/messenger_AppName"
         android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"

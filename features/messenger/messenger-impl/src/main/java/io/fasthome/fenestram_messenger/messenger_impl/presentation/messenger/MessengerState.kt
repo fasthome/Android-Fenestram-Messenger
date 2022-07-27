@@ -7,7 +7,5 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 
 data class MessengerState(
-    val chats:List<MessengerViewItem>
-){
-
-}
+    val chats: List<MessengerViewItem>
+)

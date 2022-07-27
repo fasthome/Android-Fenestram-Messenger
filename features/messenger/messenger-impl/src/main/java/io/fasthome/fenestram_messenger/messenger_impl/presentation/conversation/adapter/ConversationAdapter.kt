@@ -14,11 +14,13 @@ class ConversationAdapter : AsyncListDifferDelegationAdapter<ConversationViewIte
     )
 ) {}
 
-fun createConversationAdapterDelegate() = adapterDelegateViewBinding<ConversationViewItem, ConversationItemBinding>(
-    ConversationItemBinding::inflate){
-    bindWithBinding {
+fun createConversationAdapterDelegate() =
+    adapterDelegateViewBinding<ConversationViewItem, ConversationItemBinding>(
+        ConversationItemBinding::inflate
+    ) {
+        bindWithBinding {
 
-        messageContent.text = item.content
-        sendTimeView.text = item.time
+            messageContent.text = item.content
+            sendTimeView.text = item.time
+        }
     }
-}

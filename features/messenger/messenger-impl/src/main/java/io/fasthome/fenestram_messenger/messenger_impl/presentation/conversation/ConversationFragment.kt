@@ -16,9 +16,12 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 
-class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (R.layout.fragment_conversation) {
+class ConversationFragment :
+    BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
 
     override val vm: ConversationViewModel by viewModel()
+
+    val formater = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
 
@@ -31,26 +34,28 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
 
         binding.messagesList.adapter = conversationAdapter
 
-        binding.sendButton.setOnClickListener(){
+        binding.sendButton.setOnClickListener() {
 
             val currentTime = LocalTime.now()
-
-            val formater = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-
             val formated = currentTime.format(formater)
-            when{
-                !binding.inputMessage.text.toString().isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString(),formated)
+
+            when {
+                !binding.inputMessage.text.toString()
+                    .isNullOrBlank() -> vm.addMessageToConversation(
+                    binding.inputMessage.text.toString(),
+                    formated
+                )
             }
             binding.inputMessage.text.clear()
             binding.messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
-        binding.backButton.setOnClickListener(){
+        binding.backButton.setOnClickListener() {
             vm.exitToMessenger()
         }
     }
 
     override fun renderState(state: ConversationState) {
-        when{
+        when {
             state.messages.isNotEmpty() -> conversationAdapter.items = state.messages
         }
     }

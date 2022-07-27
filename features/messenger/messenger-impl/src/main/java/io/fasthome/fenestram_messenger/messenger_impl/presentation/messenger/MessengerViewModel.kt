@@ -13,28 +13,24 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 
 class MessengerViewModel(
-    router : ContractRouter,
-    requestParams : RequestParams
+    router: ContractRouter,
+    requestParams: RequestParams
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
-    private var currentChats:List<MessengerViewItem> = listOf()
+    private var currentChats: List<MessengerViewItem> = listOf()
 
-    private val conversationlauncher = registerScreen(ConversationNavigationContract){
-        exitWithoutResult()
-    }
+    private val conversationlauncher = registerScreen(ConversationNavigationContract)
 
-    fun launchConversation(){
+    fun launchConversation() {
         conversationlauncher.launch(NoParams)
     }
 
     override fun createInitialState(): MessengerState {
-        currentChats = currentChats + listOf(MessengerViewItem(0,0,"Bob",0))
-        currentChats = currentChats + listOf(MessengerViewItem(1,0,"Rob",0))
-        currentChats = currentChats + listOf(MessengerViewItem(2,0,"Tony",0))
+        currentChats = currentChats + listOf(MessengerViewItem(0, 0, "Bob", 0))
+        currentChats = currentChats + listOf(MessengerViewItem(1, 0, "Rob", 0))
+        currentChats = currentChats + listOf(MessengerViewItem(2, 0, "Tony", 0))
         return MessengerState(currentChats)
     }
-
-
 
 
 }
