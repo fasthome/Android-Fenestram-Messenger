@@ -14,6 +14,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.MessengerIm
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.network.di.NetworkClientFactoryQualifier
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -32,8 +33,8 @@ object MessengerModule {
     private fun createDataModule() = module {
         single(::MessengerImpl) bindSafe MessengerRepo::class
 
-        single(::MessengerSocket)
-        single { MessengerService(get(named(NetworkClientFactoryQualifier.Authorized)), get()) }
+        single { MessengerSocket(get<Environment>().endpoints.apiBaseUrl) }
+        single { MessengerService(get(named(NetworkClientFactoryQualifier.Authorized))) }
     }
 
     private fun createDomainModule() = module {

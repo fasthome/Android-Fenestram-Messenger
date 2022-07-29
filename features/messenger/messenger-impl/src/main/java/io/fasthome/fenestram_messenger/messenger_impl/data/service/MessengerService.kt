@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service
 
+import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
@@ -13,7 +14,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageR
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 
-class MessengerService(clientFactory: NetworkClientFactory, val socket: MessengerSocket) {
+class MessengerService(clientFactory: NetworkClientFactory) {
     private val client = clientFactory.create()
 
     suspend fun sendMessage(id: Int, text: String, type: String): SendMessageResult {

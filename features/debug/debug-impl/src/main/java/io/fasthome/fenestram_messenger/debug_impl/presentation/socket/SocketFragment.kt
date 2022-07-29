@@ -26,6 +26,13 @@ class SocketFragment : BaseFragment<SocketState, SocketEvent>(R.layout.fragmnet_
         socketBack.onClick {
             vm.onBackClicked()
         }
+
+        vm.getMessageById()
+    }
+
+    override fun onStop() {
+        vm.closeSocket()
+        super.onStop()
     }
 
     override fun renderState(state: SocketState) = nothingToRender()

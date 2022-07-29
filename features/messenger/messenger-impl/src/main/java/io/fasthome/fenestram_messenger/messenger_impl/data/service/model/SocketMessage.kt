@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class SendMessageResponse(
+class SocketMessage(
     @SerialName("message")
-    val message: Message?
+    val message: Message?,
 ) {
     @Serializable
     class Message(
@@ -26,8 +26,9 @@ class SendMessageResponse(
         val date: String?,
 
         @SerialName("initiator")
-        val initiator: Initiator?
+        val initiator: Initiator?,
+
+        @SerialName("chat_id")
+        val chatId: String?
     )
 }
-
-

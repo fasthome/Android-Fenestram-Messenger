@@ -16,4 +16,7 @@ dependencies {
     implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.util))
 
+    implementation(Deps.socketIO) {
+        exclude(group = "org.json", module = "json")
+    }
 }

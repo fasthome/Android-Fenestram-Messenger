@@ -7,7 +7,7 @@ import io.fasthome.network.model.BaseResponse
 object GetChatByIdMapper {
     fun responseToGetChatById(response: BaseResponse<GetChatByIdResponse>): GetChatByIdResult {
         response.data?.let {
-            return GetChatByIdResult.Success
+            return GetChatByIdResult.Success(it.message)
         }
         throw Exception()
     }
