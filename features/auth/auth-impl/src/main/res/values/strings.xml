@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="auth_skip_button">Пропустить</string>
+    <string name="common_skip_button">Пропустить</string>
     <string name="auth_ready_button">Готово</string>
     <string name="auth_email_label">Email</string>
     <string name="auth_birthday_label">Дата рождения</string>

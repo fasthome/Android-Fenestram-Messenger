@@ -6,7 +6,6 @@ package io.fasthome.fenestram_messenger.auth_impl.data.service
 import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.CodeMapper
 import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.LoginMapper
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.CodeRequest
-import io.fasthome.fenestram_messenger.auth_impl.data.service.model.CodeResponse
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.LoginRequest
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.LoginResponse
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.CodeResult
@@ -24,7 +23,7 @@ class AuthService(
     suspend fun isUserAuthorized(): Boolean = tokensRepo.isHaveRefreshToken()
 
     suspend fun sendCode(phoneNumber: String): CodeResult {
-        val response: BaseResponse<CodeResponse> = client.runPost(
+        val response: BaseResponse<String> = client.runPost(
             path = "api/v1/authorization/send_code",
             body = CodeRequest(phoneNumber)
         )

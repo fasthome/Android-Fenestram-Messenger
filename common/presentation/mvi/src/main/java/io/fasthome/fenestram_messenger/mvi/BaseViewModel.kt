@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.navigation.model.UnitResult
+import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -85,6 +86,24 @@ abstract class BaseViewModel<S : Any, E : Any>(
     }
 
     protected open val errorConverter: ErrorConverter = DefaultErrorConverter
+
+    protected inline fun <T> CallResult<T>.withErrorHandled(
+        showErrorType: ShowErrorType = ShowErrorType.Popup,
+        onSuccess: (T) -> Unit,
+    ): Unit = when (this) {
+        is CallResult.Error -> onError(showErrorType, error)
+        is CallResult.Success -> onSuccess(this.data)
+    }
+
+    protected fun <T> CallResult<T>.successOrSendError(
+        showErrorType: ShowErrorType = ShowErrorType.Popup,
+    ): T? = when (this) {
+        is CallResult.Error -> {
+            onError(showErrorType, error)
+            null
+        }
+        is CallResult.Success -> this.data
+    }
 
     protected fun showMessage(message: Message) {
         sendEvent(BaseViewEvent.ShowMessage(message))

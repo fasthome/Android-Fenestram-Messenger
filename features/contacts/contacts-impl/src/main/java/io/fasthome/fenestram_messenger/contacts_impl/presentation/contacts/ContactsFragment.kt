@@ -6,19 +6,18 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.Observer
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.ContactsAdapter
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import org.koin.android.ext.android.inject
+import io.fasthome.fenestram_messenger.util.isLoading
+import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 
 class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts) {
@@ -43,7 +42,17 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
             vm.addContact()
         }
 
-        binding.contactsSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+
+
+        binding.contactsAddFirst.setOnClickListener {
+            vm.addContact()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        binding.contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -55,12 +64,14 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         })
     }
 
-    override fun renderState(state: ContactsState) {
-        when {
-            state.contacts.isNotEmpty() -> contactsAdapter.items = state.contacts
-            state.contacts.isEmpty() -> contactsAdapter.items =
-                listOf(ContactsViewItem(0, 0, "Empty", 0))
-        }
+    override fun renderState(state: ContactsState) = with(binding){
+        renderLoadingState(
+            loadingState = state.loadingState,
+            progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = contentContainer,
+            renderData = {
+                contactsAdapter.items = it
+            }
+        )
     }
 
     override fun handleEvent(event: ContactsEvent) = noEventsExpected()

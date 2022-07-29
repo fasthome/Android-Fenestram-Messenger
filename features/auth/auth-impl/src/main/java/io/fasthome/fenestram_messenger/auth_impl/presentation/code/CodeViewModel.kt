@@ -44,7 +44,6 @@ class CodeViewModel(
     fun checkCode(code: String) {
         viewModelScope.launch {
             when (val loginResult = authInteractor.login(params.phoneNumber, code)) {
-
                 is CallResult.Success -> {
                     when (loginResult.data) {
                         is LoginResult.Success -> {

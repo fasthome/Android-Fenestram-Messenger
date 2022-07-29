@@ -17,6 +17,10 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeVie
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeViewModel
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityViewModel
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
+import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigator
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
@@ -51,10 +55,14 @@ object AuthModule {
     private fun createDomainModule() = module {
         factory(::AuthInteractor)
         factory(::ProfileInteractor)
+        factory(::LogoutUseCase)
+        factory(::ForceLogoutUseCase)
+        factory(::ClearUserDataUseCase)
     }
 
     private fun createPresentationModule() = module {
         single(::LogoutManager) bindSafe ForceLogoutManager::class
+        single(::AuthNavigator)
 
         viewModel(::WelcomeViewModel)
         viewModel(::CodeViewModel)

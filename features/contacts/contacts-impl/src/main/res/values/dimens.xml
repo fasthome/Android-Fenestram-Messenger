@@ -14,11 +14,11 @@
 
 
     <dimen name="contacts_header_margin_start">20dp</dimen>
-    <dimen name="contacts_header_margin_top">40dp</dimen>
+    <dimen name="contacts_header_margin_top">10dp</dimen>
     <dimen name="contacts_header_text_size">20sp</dimen>
 
     <dimen name="contacts_sv_height">50dp</dimen>
-    <dimen name="contacts_sv_margin_start_end">30dp</dimen>
+    <dimen name="contacts_input_margin_start_end">30dp</dimen>
     <dimen name="contacts_sv_margin_top">20dp</dimen>
 
     <dimen name="contacts_rv_padding_start_end">30dp</dimen>
@@ -29,5 +29,19 @@
 
 
     <dimen name="contact_name_margin_start">15dp</dimen>
-    <dimen name="contact_name_text_size">16sp</dimen>
+
+    <dimen name="contact_name_empty_text_size">16sp</dimen>
+
+    <dimen name="contacts_add_first_width">300dp</dimen>
+    <dimen name="contacts_add_first_height">60dp</dimen>
+    <dimen name="contacts_add_first_margin_bottom">40dp</dimen>
+
+    <dimen name="contact_add_appbar_height">50dp</dimen>
+    <dimen name="contact_add_input_margin_top">50dp</dimen>
+    <dimen name="contact_add_input_height">50dp</dimen>
+    <dimen name="contact_add_label_margin_bottom">5dp</dimen>
+    <dimen name="contact_add_input_text_size">15sp</dimen>
+    <dimen name="contact_add_include_edittext_padding">20dp</dimen>
+    <dimen name="contact_add_invalid_text_size">12sp</dimen>
+    <dimen name="contact_add_label_text_size">14sp</dimen>
 </resources>
