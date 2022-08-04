@@ -3,11 +3,13 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ContactAddViewModel(
@@ -20,6 +22,8 @@ class ContactAddViewModel(
     init {
         requestPermissionToWriteContacts()
     }
+
+    private val contactsLoaderScope = CoroutineScope(Job() + Dispatchers.IO)
 
     private fun requestPermissionToWriteContacts() {
         viewModelScope.launch {
@@ -74,8 +78,10 @@ class ContactAddViewModel(
                 ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberIncorrect)
             }
             else -> {
-                contactsLoader.insertContact(firstName, secondName, phoneNumber) {
-                    exitWithResult(ContactAddNavigationContract.createResult(this))
+                contactsLoaderScope.launch {
+                    contactsLoader.insertContact(firstName, secondName, phoneNumber) {
+                        exitWithResult(ContactAddNavigationContract.createResult(this))
+                    }
                 }
             }
         }

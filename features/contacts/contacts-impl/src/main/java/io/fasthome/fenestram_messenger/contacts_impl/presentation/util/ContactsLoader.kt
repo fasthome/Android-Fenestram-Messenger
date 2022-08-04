@@ -15,7 +15,7 @@ class ContactsLoader(private val context: Context) {
 
     fun onStartLoading(): List<ContactsViewItem> {
         val cr = context.contentResolver
-        _contactsList = ArrayList<ContactsViewItem>()
+        _contactsList = ArrayList()
 
         val projection = arrayOf(
             CommonDataKinds.Phone.CONTACT_ID,

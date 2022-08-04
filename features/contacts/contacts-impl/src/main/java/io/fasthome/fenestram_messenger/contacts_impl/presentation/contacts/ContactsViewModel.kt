@@ -4,7 +4,6 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.Manifest
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
@@ -17,7 +16,9 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.dataOrNull
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -40,6 +41,9 @@ class ContactsViewModel(
 
     private var currentContacts: List<ContactsViewItem> = listOf()
 
+    private val contactsLoaderScope = CoroutineScope(Job() + Dispatchers.IO)
+    private var contactsLoaderJob: Job? = null
+
     fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
@@ -58,17 +62,23 @@ class ContactsViewModel(
     }
 
     private fun fetchContacts() {
-        currentContacts = contactsLoader.onStartLoading()
-        if (currentContacts.isEmpty()) {
-            updateState {
-                ContactsState(
-                    LoadingState.Error(error = ErrorInfo.createEmpty()),
-                    true
-                )
+        contactsLoaderJob = contactsLoaderScope.launch {
+            currentContacts = contactsLoader.onStartLoading()
+            if (currentContacts.isEmpty()) {
+                updateState {
+                    ContactsState(
+                        LoadingState.Error(error = ErrorInfo.createEmpty()),
+                        true
+                    )
+                }
+            } else {
+                updateState { ContactsState(LoadingState.Success(currentContacts), true) }
             }
-        } else {
-            updateState { ContactsState(LoadingState.Success(currentContacts), true) }
         }
+    }
+
+    fun stopJob() {
+        contactsLoaderJob?.cancel()
     }
 
     fun addContact() {
