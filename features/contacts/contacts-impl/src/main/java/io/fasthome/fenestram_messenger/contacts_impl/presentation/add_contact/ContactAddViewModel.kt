@@ -74,8 +74,9 @@ class ContactAddViewModel(
                 ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberIncorrect)
             }
             else -> {
-                contactsLoader.insertContact(firstName, secondName, phoneNumber)
-                exitWithResult(ContactAddNavigationContract.createResult(ContactAddResult(0)))
+                contactsLoader.insertContact(firstName, secondName, phoneNumber) {
+                    exitWithResult(ContactAddNavigationContract.createResult(this))
+                }
             }
         }
     }
