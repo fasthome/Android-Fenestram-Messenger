@@ -7,8 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.Feature.debug.api))
-    implementation(project(Modules.Feature.auth.api))
     implementation(project(Modules.Feature.profileGuest.api))
 
     implementation(project(Modules.Common.core))

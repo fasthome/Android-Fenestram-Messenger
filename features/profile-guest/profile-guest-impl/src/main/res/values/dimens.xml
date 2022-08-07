@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bg_account_circle_width_height">80dp</dimen>
+    <dimen name="profile_guest_avatar_margin_start_top">24dp</dimen>
+    <dimen name="recent_file_item_padding">20dp</dimen>
+    <dimen name="recent_file_name_margin_start">15dp</dimen>
+</resources>
