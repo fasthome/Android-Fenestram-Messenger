@@ -9,6 +9,8 @@ android {
 
 dependencies {
     implementation(project(Modules.Feature.messenger.api))
+    implementation(project(Modules.Feature.profileGuest.api))
+    implementation(project(Modules.Feature.auth.api))
 
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.di))

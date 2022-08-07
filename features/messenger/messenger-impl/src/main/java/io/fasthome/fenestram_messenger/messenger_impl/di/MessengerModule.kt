@@ -17,6 +17,7 @@ import io.fasthome.network.di.NetworkClientFactoryQualifier
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 
 object MessengerModule {
     operator fun invoke() = listOf(
@@ -45,5 +46,7 @@ object MessengerModule {
 
         viewModel(::MessengerViewModel)
         viewModel(::ConversationViewModel)
+
+        factory(ConversationViewModel::Features)
     }
 }

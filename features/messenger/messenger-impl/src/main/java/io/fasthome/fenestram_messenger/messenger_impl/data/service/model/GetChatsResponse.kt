@@ -1,13 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service.model
 
-import io.fasthome.network.model.BaseResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 class GetChatsResponse(
     @SerialName("data")
-    val data: List<Chats?>?,
+    val data: List<Chats>?,
 
     @SerialName("page")
     val page: Int?,
@@ -21,7 +20,7 @@ class GetChatsResponse(
     @Serializable
     class Chats(
         @SerialName("id")
-        val id: Int?,
+        val id: Long,
 
         @SerialName("name")
         val name: String?,
@@ -33,6 +32,6 @@ class GetChatsResponse(
         val users: List<Int?>?,
 
         @SerialName("message")
-        val message: List<Message>?
+        val message: List<MessageResponse>?
     )
 }

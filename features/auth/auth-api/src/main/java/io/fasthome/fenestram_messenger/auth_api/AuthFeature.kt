@@ -15,6 +15,8 @@ interface AuthFeature {
 
     val authNavigationContract: NavigationContractApi<NoParams, AuthResult>
 
+    suspend fun getUserId() : CallResult<Long?>
+
     suspend fun isUserAuthorized(): CallResult<Boolean>
 
     suspend fun logout(): CallResult<Unit>

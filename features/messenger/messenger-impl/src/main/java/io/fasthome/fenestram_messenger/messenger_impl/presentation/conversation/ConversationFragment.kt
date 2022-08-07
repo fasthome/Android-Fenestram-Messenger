@@ -11,6 +11,8 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.setPrintableText
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -18,7 +20,7 @@ import java.time.format.FormatStyle
 
 class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (R.layout.fragment_conversation) {
 
-    override val vm: ConversationViewModel by viewModel()
+    override val vm: ConversationViewModel by viewModel(getParamsInterface = ConversationNavigationContract.getParams)
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
 
@@ -47,12 +49,16 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
         binding.backButton.setOnClickListener(){
             vm.exitToMessenger()
         }
+        binding.profileToolBar.onClick {
+            vm.onUserClicked()
+        }
     }
 
     override fun renderState(state: ConversationState) {
         when{
             state.messages.isNotEmpty() -> conversationAdapter.items = state.messages
         }
+        binding.username.setPrintableText(state.userName)
     }
 
     override fun handleEvent(event: ConversationEvent) = noEventsExpected()

@@ -3,6 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.auth_impl.domain.logic
 
+import io.fasthome.fenestram_messenger.auth_impl.data.storage.UserStorage
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -20,19 +21,23 @@ class AuthInteractor(
     suspend fun login(phoneNumber: String, code: String) =
         authRepo.login(phoneNumber, code).onSuccess {
             if (it is LoginResult.Success)
-                onLoginResultSuccess(tokensRepo = tokensRepo, loginResult = it)
+                onLoginResultSuccess(tokensRepo = tokensRepo, authRepo = authRepo, loginResult = it)
         }
 
 
     suspend fun sendCode(phoneNumber: String) = authRepo.sendCode(phoneNumber).onSuccess { }
 
+    suspend fun getUserId() = authRepo.getUserId()
+
 
     companion object {
         suspend fun onLoginResultSuccess(
             tokensRepo: TokensRepo,
+            authRepo: AuthRepo,
             loginResult: LoginResult.Success,
         ) {
             tokensRepo.saveTokens(loginResult.accessToken, loginResult.refreshToken)
+            authRepo.saveUserId(loginResult.userId.toLong())
         }
     }
 }

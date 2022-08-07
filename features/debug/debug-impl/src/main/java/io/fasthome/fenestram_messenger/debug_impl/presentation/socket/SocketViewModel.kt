@@ -62,7 +62,7 @@ class SocketViewModel(
         const val limit = 10
         const val page = 1
 
-        const val id = 13
+        const val id = 13L
 
         const val message = "Hello World!"
         const val type = "test"

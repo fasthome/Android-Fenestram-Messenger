@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data
 
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.Message
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessage
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
@@ -14,7 +14,7 @@ import java.util.Collections.singletonMap
 class MessengerSocket(private val baseUrl: String) {
     lateinit var socket: Socket
 
-    fun setClientSocket(token: AccessToken, callback: Message.() -> Unit) {
+    fun setClientSocket(token: AccessToken, callback: MessageResponse.() -> Unit) {
         try {
             val opts = IO.Options()
             opts.extraHeaders =
@@ -24,12 +24,12 @@ class MessengerSocket(private val baseUrl: String) {
             socket.on("receiveMessage") {
                 val message = Json.decodeFromString<SocketMessage>(it[0].toString())
                 callback(with(message.message) {
-                    Message(
-                        this?.id,
-                        this?.initiatorId,
-                        this?.text,
-                        this?.type,
-                        this?.date
+                    MessageResponse(
+                        this?.id?.toLong() ?: 1,
+                        this?.initiatorId ?: 1L,
+                        this?.text ?: "",
+                        this?.type ?: "",
+                        this?.date ?: ""
                     )
                 })
 

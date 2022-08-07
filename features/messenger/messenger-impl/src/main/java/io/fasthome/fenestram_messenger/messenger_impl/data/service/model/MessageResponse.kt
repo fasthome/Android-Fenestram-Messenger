@@ -4,19 +4,19 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Message(
+class MessageResponse(
     @SerialName("id")
-    val id: Int?,
+    val id: Long,
 
     @SerialName("initiator_id")
-    val initiator: Int?,
+    val initiator: Long,
 
     @SerialName("text")
-    val text: String?,
+    val text: String,
 
     @SerialName("message_type")
-    val type: String?,
+    val type: String,
 
     @SerialName("created_at")
-    val date: String?
+    val date: String
 )

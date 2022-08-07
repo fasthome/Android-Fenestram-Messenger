@@ -17,7 +17,7 @@ class SocketMessage(
         val type: String?,
 
         @SerialName("initiator_id")
-        val initiatorId: Int?,
+        val initiatorId: Long,
 
         @SerialName("id")
         val id: Int?,

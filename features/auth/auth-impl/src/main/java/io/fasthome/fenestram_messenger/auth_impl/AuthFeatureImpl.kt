@@ -21,6 +21,8 @@ class AuthFeatureImpl(
 
     override val authNavigationContract = WelcomeNavigationContract
 
+    override suspend fun getUserId(): CallResult<Long?> = authInteractor.getUserId()
+
     override val startAuthEvents: Flow<AuthFeature.AuthEvent> get() = authNavigator.startAuthEvents
 
     override suspend fun isUserAuthorized() = authInteractor.isUserAuthorized()
