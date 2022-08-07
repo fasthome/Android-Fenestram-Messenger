@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.View
 import io.fasthome.fenestram_messenger.debug_impl.R
 import io.fasthome.fenestram_messenger.debug_impl.databinding.FragmentDebugBinding
-import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
-import io.fasthome.fenestram_messenger.mvi.ViewModelInterface
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
@@ -29,12 +27,18 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onAuthClicked()
         }
 
+        debugSocket.onClick {
+            vm.onSocketClicked()
+        }
+
+
         debugProfileGuest.onClick {
             vm.onProfileGuestClicked()
         }
         debugLogout.onClick {
             vm.onLogoutClicked()
         }
+
     }
 
     override fun renderState(state: DebugState) = nothingToRender()

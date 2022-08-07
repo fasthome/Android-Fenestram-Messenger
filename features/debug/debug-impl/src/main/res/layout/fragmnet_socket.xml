@@ -2,8 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,31 +10,15 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/debug_auth"
+            android:id="@+id/socket_send_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Авторизация"
+            android:text="Отправить сообщение"
             tools:ignore="HardcodedText" />
 
         <Button
-            android:id="@+id/debug_profile_guest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Профиль из тулбара"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_socket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Socket"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_logout"
+            android:id="@+id/socket_back"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
