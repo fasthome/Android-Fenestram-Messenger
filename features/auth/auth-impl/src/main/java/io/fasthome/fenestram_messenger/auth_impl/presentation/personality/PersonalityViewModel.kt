@@ -27,14 +27,7 @@ class PersonalityViewModel(
 
     fun checkPersonalData(personalData: PersonalData) {
         viewModelScope.launch {
-            when (val codeResult = profileInteractor.sendPersonalData(personalData)) {
-                is CallResult.Success -> {
-                    exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
-                }
-                is CallResult.Error -> {
-                    sendEvent(PersonalityEvent.IndefiniteError)
-                }
-            }
+            profileInteractor.sendPersonalData(personalData).successOrSendError()
         }
     }
 
@@ -65,7 +58,8 @@ class PersonalityViewModel(
 
     fun requestPermissionAndLoadPhoto() {
         viewModelScope.launch {
-            val permissionGranted = permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+            val permissionGranted =
+                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
             if (permissionGranted) {
                 sendEvent(PersonalityEvent.LaunchGallery)
             }
