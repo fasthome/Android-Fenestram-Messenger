@@ -7,6 +7,7 @@ import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -32,8 +33,9 @@ class ContactsViewModel(
     }
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
-        if (result.code == 0) {
-            requestPermissionAndLoadContacts()
+        when(result) {
+            is ContactAddResult.Success -> requestPermissionAndLoadContacts()
+            is ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
         }
     }
 
