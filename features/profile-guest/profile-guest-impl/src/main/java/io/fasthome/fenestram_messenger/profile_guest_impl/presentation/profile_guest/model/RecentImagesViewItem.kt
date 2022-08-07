@@ -2,6 +2,8 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import androidx.annotation.DrawableRes
 
-data class PhotosViewItem(
+data class RecentImagesViewItem(
     @DrawableRes val image: Int,
+    val imageCount: Int,
+    val showAll: Boolean
 )

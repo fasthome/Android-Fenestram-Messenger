@@ -4,114 +4,122 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/appbar_color"
+    android:background="@color/bg_rv"
     android:fitsSystemWindows="true">
 
-    <ImageView
-        android:id="@+id/profile_guest_avatar"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="@dimen/profile_guest_avatar_margin_start_top"
-        android:layout_marginTop="@dimen/profile_guest_avatar_margin_start_top"
-        android:src="@drawable/bg_account_circle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/profile_guest_name"
-        style="@style/ProfileGuestName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:text="@string/no_name"
-        app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/profile_guest_nickname"
-        style="@style/ProfileGuestNickName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/profile_guest_no_nickname"
-        app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
-        app:layout_constraintTop_toBottomOf="@id/profile_guest_name" />
-
-    <ImageButton
-        android:id="@+id/profile_guest_video_chat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/bg_video_chat"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profile_guest_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_guest_avatar" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/recent_files_header"
+        android:background="@color/appbar_color">
 
-    <ImageButton
-        android:id="@+id/profile_guest_call"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/bg_call"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.7"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/profile_guest_video_chat" />
+        <ImageView
+            android:id="@+id/profile_guest_avatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="@dimen/profile_guest_avatar_margin_start_top"
+            android:layout_marginTop="@dimen/profile_guest_avatar_margin_start_top"
+            android:src="@drawable/bg_account_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/profile_guest_name"
+            style="@style/ProfileGuestName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/no_name"
+            app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/profile_guest_nickname"
+            style="@style/ProfileGuestNickName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/profile_guest_no_nickname"
+            app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
+            app:layout_constraintTop_toBottomOf="@id/profile_guest_name" />
+
+        <ImageButton
+            android:id="@+id/profile_guest_video_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bg_video_chat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profile_guest_avatar" />
+
+        <ImageButton
+            android:id="@+id/profile_guest_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bg_call"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.7"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/profile_guest_video_chat" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
-        android:id="@+id/files_header"
-        layout="@layout/files_header"
+        android:id="@+id/recent_files_header"
+        layout="@layout/recent_files_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        app:layout_constraintBottom_toTopOf="@id/files_list"
+        app:layout_constraintBottom_toTopOf="@id/recent_files_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_guest_video_chat" />
+        app:layout_constraintTop_toBottomOf="@id/profile_guest_appbar" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/files_list"
+        android:id="@+id/recent_files_list"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:background="@color/bg_rv"
         android:nestedScrollingEnabled="false"
-        android:paddingStart="40dp"
         android:paddingTop="10dp"
-        android:paddingEnd="40dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/photos_header"
+        app:layout_constraintBottom_toTopOf="@id/recent_images_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/files_header"
-        tools:listitem="@layout/file_item" />
+        app:layout_constraintTop_toBottomOf="@id/recent_files_header"
+        tools:listitem="@layout/recent_file_item" />
 
     <include
-        android:id="@+id/photos_header"
-        layout="@layout/photos_header"
+        android:id="@+id/recent_images_header"
+        layout="@layout/recent_images_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/photos_list"
+        app:layout_constraintBottom_toTopOf="@id/recent_images_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/files_list" />
+        app:layout_constraintTop_toBottomOf="@id/recent_files_list" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/photos_list"
+        android:id="@+id/recent_images_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/bg_rv"
-        android:paddingStart="40dp"
+        android:paddingStart="25dp"
+        android:paddingEnd="25dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/photos_header"
+        app:layout_constraintTop_toBottomOf="@id/recent_images_header"
         tools:itemCount="6"
-        tools:listitem="@layout/photo_item"
+        tools:listitem="@layout/recent_image_item"
         tools:spanCount="3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

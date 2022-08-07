@@ -2,28 +2,47 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.santalu.maskara.widget.MaskEditText
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.getGalleryIntent
+import io.fasthome.fenestram_messenger.util.resultLauncher
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class PersonalityFragment :
     BaseFragment<PersonalityState, PersonalityEvent>(R.layout.fragment_personality) {
-    override val vm: PersonalityViewModel by viewModel()
+
+    private val permissionInterface by registerFragment(PermissionComponentContract)
+    override val vm: PersonalityViewModel by viewModel(
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::permissionInterface)
+    )
+
+    private val galleryLauncher = resultLauncher { result ->
+        vm.onUpdatePhoto(result.data?.data)
+    }
+
 
     private val binding by fragmentViewBinding(FragmentPersonalityBinding::bind)
 
     override fun renderState(state: PersonalityState): Unit = with(binding) {
+
         when (state.key) {
             EditTextKey.NameKey -> nameInput.includeEditText
             EditTextKey.UserNameKey -> userNameInput.includeEditText
@@ -45,12 +64,16 @@ class PersonalityFragment :
                         birthdateInput,
                         mailInput.includeEditText
                     ).count { it.compoundDrawablesRelative[2] != null } == 4
-                ) {
+                )
                     buttonReady.apply {
                         setBackgroundResource(R.drawable.rounded_button)
                         isEnabled = true
                     }
-                }
+                else
+                    buttonReady.apply {
+                        setBackgroundResource(R.drawable.rounded_gray_button)
+                        isEnabled = false
+                    }
             } else {
                 editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     0,
@@ -65,6 +88,12 @@ class PersonalityFragment :
                 }
             }
         }
+
+        if (state.avatar != null)
+            userPhoto.load(state.avatar) {
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_baseline_account_circle_24)
+            }
 
     }
 
@@ -155,18 +184,23 @@ class PersonalityFragment :
                     EditTextKey.MailKey
                 )
             }
+
+            userPhoto.setOnClickListener {
+                vm.requestPermissionAndLoadPhoto()
+            }
         }
 
     }
 
     override fun handleEvent(event: PersonalityEvent) {
-        val text = when (event) {
+        when (event) {
             is PersonalityEvent.IndefiniteError -> {
-                indefiniteError
+                Toast.makeText(context, indefiniteError, Toast.LENGTH_LONG).show()
+            }
+            is PersonalityEvent.LaunchGallery -> {
+                galleryLauncher.launch(getGalleryIntent())
             }
         }
-
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
     }
 
     enum class EditTextKey {
