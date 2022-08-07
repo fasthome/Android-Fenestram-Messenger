@@ -28,14 +28,19 @@ class CodeViewModel(
         exitWithResult(CodeNavigationContract.createResult(result))
     }
 
+    private val resendCodeTimer = ResendCodeTimer(duration.toLong(), step.toLong()) {
+        updateState { CodeState.ChangeTime(this) }
+    }
+
     init {
+        resendCodeTimer.start()
         viewModelScope.launch {
             permissionInterface.request(Manifest.permission.RECEIVE_SMS)
         }
     }
 
     override fun createInitialState(): CodeState {
-        return CodeState(filled = false, error = false, autoFilling = null)
+        return CodeState.GlobalState(filled = false, error = false, autoFilling = null)
     }
 
     fun checkCode(code: String) {
@@ -59,18 +64,38 @@ class CodeViewModel(
     }
 
     fun autoFillCode(code: String) {
-        updateState { CodeState(filled = true, error = false, code) }
+        updateState { CodeState.GlobalState(filled = true, error = false, code) }
     }
 
     fun resendCode() {
-        viewModelScope.launch {
-            authInteractor.sendCode(params.phoneNumber).successOrSendError()
-        }
+        resendCodeTimer.start()
+//        viewModelScope.launch {
+//            /**
+//             * Отпрвка кода на телефон
+//             */
+//            authInteractor.sendCode(params.phoneNumber) {
+//                when (this) {
+//                    is LoginResult.SuccessSendRequest -> {}
+//                    is LoginResult.ConnectionError -> {
+//                        sendEvent(CodeEvent.ConnectionError)
+//                    }
+//                    else -> {
+//                        sendEvent(CodeEvent.IndefiniteError)
+//                    }
+//                }
+//            }
+//        }
     }
 
     fun overWriteCode(code: String) {
-        updateState { state ->
-            state.copy(filled = code.length == 4, error = false)
-        }
+        if (code.length == 4)
+            updateState { CodeState.GlobalState(filled = true, error = false, autoFilling = null) }
+        else
+            updateState { CodeState.GlobalState(filled = false, error = false, autoFilling = null) }
+    }
+
+    companion object {
+        const val duration = 15000
+        const val step = 1
     }
 }

@@ -30,10 +30,12 @@ class ContactAddFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.contactAddAppbar.setNavigationOnClickListener {
-            vm.navigateBack()
-        }
+
         with(binding) {
+
+            contactAddAppbar.setNavigationOnClickListener {
+                vm.navigateBack()
+            }
 
             contactAddLabelFirstName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.contact_add_first_name_label))
 

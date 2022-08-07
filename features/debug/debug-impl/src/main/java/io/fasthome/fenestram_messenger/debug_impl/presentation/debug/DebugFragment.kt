@@ -28,6 +28,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         debugAuth.onClick {
             vm.onAuthClicked()
         }
+
+        debugProfileGuest.onClick {
+            vm.onProfileGuestClicked()
+        }
         debugLogout.onClick {
             vm.onLogoutClicked()
         }

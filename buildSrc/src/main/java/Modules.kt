@@ -25,6 +25,7 @@ object Modules {
         val messenger = FeatureTemplate("messenger")
         val profile = FeatureTemplate("profile")
         val settings = FeatureTemplate("settings")
+        val profileGuest = FeatureTemplate("profile-guest")
         val debug = FeatureTemplate("debug")
     }
 }

@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import kotlinx.coroutines.launch
 
 class DebugViewModel(
@@ -19,10 +20,12 @@ class DebugViewModel(
 ) : BaseViewModel<DebugState, DebugEvent>(router, requestParams) {
 
     class Features(
-        val authFeature : AuthFeature
+        val authFeature : AuthFeature,
+        val profileGuestFeature: ProfileGuestFeature
     )
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
+    private val profileGuestLauncher = registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
 
     override fun createInitialState() = DebugState()
 
@@ -34,6 +37,10 @@ class DebugViewModel(
         viewModelScope.launch {
             features.authFeature.logout().withErrorHandled {}
         }
+    }
+
+    fun onProfileGuestClicked() {
+        profileGuestLauncher.launch(NoParams)
     }
 
 }
