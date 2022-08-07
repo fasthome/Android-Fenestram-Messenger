@@ -39,6 +39,10 @@ class ProfileGuestFragment :
         }
 
         vm.fetchFilesAndPhotos()
+
+        filesHeader.filesListAll.setOnClickListener {
+            vm.onShowFilesClicked()
+        }
     }
 
     override fun renderState(state: ProfileGuestState) {

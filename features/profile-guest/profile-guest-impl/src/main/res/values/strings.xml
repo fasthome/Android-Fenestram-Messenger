@@ -7,6 +7,10 @@
     <string name="zero_files">0 файлов</string>
     <string name="images">Изображения</string>
     <string name="zero_images">0 изображений</string>
+    <string name="files">Файлы</string>
+    <string name="search">Поиск</string>
+    <string name="zero_mb">0 МБ</string>
+    <string name="default_date">01.01.1990</string>
     <string name="more_images">0+</string>
 
 </resources>

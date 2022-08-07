@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.ProfileGuestViewModel
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesViewModel
 
 //TODO: add to AppModule.
 object ProfileGuestModule {
@@ -33,5 +34,6 @@ object ProfileGuestModule {
 
     private fun createPresentationModule() = module {
         viewModel(::ProfileGuestViewModel)
+        viewModel(::ProfileGuestFilesViewModel)
     }
 }
