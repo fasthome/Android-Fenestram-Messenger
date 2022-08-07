@@ -3,38 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/bg_rv"
+    android:paddingBottom="@dimen/recent_file_item_padding"
     android:paddingStart="40dp"
-    android:paddingTop="20dp"
-    android:paddingEnd="40dp"
-    android:paddingBottom="10dp">
+    android:paddingEnd="40dp">
 
-    <TextView
-        android:id="@+id/photo_header_text"
-        style="@style/ProfileGuestFileHeaderText"
+    <ImageView
+        android:id="@+id/recent_file_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/images"
+        android:background="@drawable/ic_profile_guest_file"
+        app:layout_constraintEnd_toStartOf="@+id/recent_file_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/photo_count"
-        style="@style/ProfileGuestFileCountText"
+        android:id="@+id/recent_file_name"
+        style="@style/ProfileGuestFileText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/zero_images"
-        app:layout_constraintStart_toStartOf="@id/photo_header_text"
-        app:layout_constraintTop_toBottomOf="@id/photo_header_text" />
+        android:layout_marginStart="@dimen/recent_file_name_margin_start"
+        android:text="@string/profile_guest_no_file"
+        app:layout_constraintBottom_toBottomOf="@id/recent_file_icon"
+        app:layout_constraintStart_toEndOf="@+id/recent_file_icon"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/photos_list_all"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/recent_file_action"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_header_arrow"
-        app:layout_constraintBottom_toBottomOf="@id/photo_count"
+        android:src="@drawable/ic_file_dots"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

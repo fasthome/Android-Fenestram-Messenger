@@ -10,25 +10,29 @@ import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestBinding
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.FilesAdapter
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.PhotosAdapter
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.getPrintableText
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class ProfileGuestFragment :
     BaseFragment<ProfileGuestState, ProfileGuestEvent>(R.layout.fragment_profile_guest) {
 
     private val binding by fragmentViewBinding(FragmentProfileGuestBinding::bind)
-    private val filesAdapter = FilesAdapter()
-    private val photosAdapter = PhotosAdapter()
+    private val recentFilesAdapter = RecentFilesAdapter()
+    private val recentImagesAdapter = RecentImagesAdapter()
 
     override val vm: ProfileGuestViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        filesList.adapter = filesAdapter
-        photosList.adapter = photosAdapter
-        photosList.layoutManager = GridLayoutManager(context, 3)
+        recentFilesList.adapter = recentFilesAdapter
+        recentImagesList.adapter = recentImagesAdapter
+        recentImagesList.layoutManager = GridLayoutManager(context, 3)
 
-        filesList.layoutManager = object : LinearLayoutManager(context) {
+        recentFilesList.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean {
                 return false
             }
@@ -38,19 +42,51 @@ class ProfileGuestFragment :
     }
 
     override fun renderState(state: ProfileGuestState) {
-        filesAdapter.items = state.files
-        photosAdapter.items = state.photos
+        when {
+            state.recentFiles.size > 3 -> {
+                recentFilesAdapter.items = state.recentFiles.take(3)
+            }
+            state.recentImages.isNotEmpty() -> {
+                recentFilesAdapter.items = state.recentFiles
+            }
+            else -> {
+                //TODO Нет недавних файлов
+            }
+        }
+
+        when {
+            state.recentImages.size > 6 -> {
+                val items = state.recentImages.take(5) +
+                        RecentImagesViewItem(
+                            state.recentImages[5].image,
+                            state.recentImages.size - 5,
+                            true
+                        )
+                recentImagesAdapter.items = items
+            }
+            state.recentImages.isNotEmpty() -> {
+                recentImagesAdapter.items = state.recentImages
+            }
+            else -> {
+                //TODO Нет недавних изображений
+            }
+        }
+
         with(binding) {
-            when (state.files.size) {
-                1 -> filesHeader.fileCount.text = "${state.files.size} файл"
-                2, 3, 4 -> filesHeader.fileCount.text = "${state.files.size} файла"
-                else -> filesHeader.fileCount.text = "${state.files.size} файлов"
-            }
-            when (state.photos.size) {
-                1 -> photosHeader.photoCount.text = "${state.photos.size} изображение"
-                2, 3, 4 -> photosHeader.photoCount.text = "${state.photos.size} изображения"
-                else -> photosHeader.photoCount.text = "${state.photos.size} изображений"
-            }
+            recentFilesHeader.recentFileCount.setPrintableText(
+                PrintableText.PluralResource(
+                    R.plurals.file_quantity,
+                    state.recentFiles.size,
+                    state.recentFiles.size
+                )
+            )
+            recentImagesHeader.recentImagesCount.setPrintableText(
+                PrintableText.PluralResource(
+                    R.plurals.image_quantity,
+                    state.recentImages.size,
+                    state.recentImages.size
+                )
+            )
         }
     }
 
