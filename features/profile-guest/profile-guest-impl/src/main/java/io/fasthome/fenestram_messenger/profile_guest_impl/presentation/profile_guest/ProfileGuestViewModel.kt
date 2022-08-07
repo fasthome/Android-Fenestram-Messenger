@@ -3,12 +3,12 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.FilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.PhotosViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 
@@ -18,6 +18,10 @@ class ProfileGuestViewModel(
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     private val filesProfileGuestLauncher = registerScreen(ProfileGuestFilesNavigationContract) { result ->
+        exitWithResult(ProfileGuestNavigationContract.createResult(result))
+    }
+
+    private val imagesProfileGuestLauncher = registerScreen(ProfileGuestImagesNavigationContract) { result ->
         exitWithResult(ProfileGuestNavigationContract.createResult(result))
     }
 
@@ -44,5 +48,9 @@ class ProfileGuestViewModel(
 
     fun onShowFilesClicked() {
         filesProfileGuestLauncher.launch(NoParams)
+    }
+
+    fun onShowPhotosClicked() {
+        imagesProfileGuestLauncher.launch(NoParams)
     }
 }
