@@ -10,7 +10,7 @@
     android:paddingBottom="10dp">
 
     <TextView
-        android:id="@+id/file_header_text"
+        android:id="@+id/recent_file_header_text"
         style="@style/ProfileGuestFileHeaderText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,22 +19,22 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/file_count"
+        android:id="@+id/recent_file_count"
         style="@style/ProfileGuestFileCountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="@string/zero_files"
-        app:layout_constraintStart_toStartOf="@id/file_header_text"
-        app:layout_constraintTop_toBottomOf="@id/file_header_text" />
+        app:layout_constraintStart_toStartOf="@id/recent_file_header_text"
+        app:layout_constraintTop_toBottomOf="@id/recent_file_header_text" />
 
     <ImageButton
-        android:id="@+id/files_list_all"
+        android:id="@+id/recent_files_show_all"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_header_arrow"
-        app:layout_constraintBottom_toBottomOf="@id/file_count"
+        app:layout_constraintBottom_toBottomOf="@id/recent_file_count"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

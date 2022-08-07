@@ -6,4 +6,6 @@
     <dimen name="all_files_item_padding_top">30dp</dimen>
     <dimen name="all_files_item_padding_start_end">20dp</dimen>
     <dimen name="all_files_margin_start">10dp</dimen>
+    <dimen name="recent_file_item_padding">20dp</dimen>
+    <dimen name="recent_file_name_margin_start">15dp</dimen>
 </resources>
