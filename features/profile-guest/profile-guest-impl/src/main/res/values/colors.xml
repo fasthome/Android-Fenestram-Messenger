@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bleached_cedar">#251B2D</color>
+    <color name="manatee">#8E86A5</color>
+    <color name="blue">#076ED1</color>
+    <color name="almost_white">#F2F2F2</color>
+    <color name="appbar_color">#2E283B</color>
+    <color name="red">#FF4B4B</color>
+    <color name="gray">#C9C9C9DE</color>
+    <color name="bg_rv">#332E42</color>
+    <color name="bg_chat_files_photos">#1B1728</color>
+</resources>
