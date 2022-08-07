@@ -40,10 +40,10 @@ class ProfileGuestFragment :
 
         vm.fetchFilesAndPhotos()
 
-        filesHeader.filesListAll.setOnClickListener {
+        recentFilesHeader.recentFilesShowAll.setOnClickListener {
             vm.onShowFilesClicked()
         }
-        photosHeader.photosListAll.setOnClickListener {
+        recentImagesHeader.imagesShowAll.setOnClickListener {
             vm.onShowPhotosClicked()
         }
     }

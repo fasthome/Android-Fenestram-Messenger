@@ -4,6 +4,6 @@ import androidx.annotation.DrawableRes
 
 data class RecentImagesViewItem(
     @DrawableRes val image: Int,
-    val imageCount: Int,
-    val showAll: Boolean
+    val imageCount: Int = 0,
+    val showAll: Boolean = true
 )

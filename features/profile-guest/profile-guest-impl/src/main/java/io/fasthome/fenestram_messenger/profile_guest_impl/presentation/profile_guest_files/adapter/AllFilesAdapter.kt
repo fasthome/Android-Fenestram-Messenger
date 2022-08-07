@@ -2,8 +2,6 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.AllFilesItemBinding
-import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FileItemBinding
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.FilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.model.AllFilesViewItem
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding

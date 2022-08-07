@@ -50,7 +50,7 @@ class CodeViewModel(
                 is CallResult.Error -> {
                     when (loginResult.error) {
                         is WrongServerResponseException -> updateState {
-                            CodeState(
+                            CodeState.GlobalState(
                                 error = true,
                                 filled = false,
                                 autoFilling = null

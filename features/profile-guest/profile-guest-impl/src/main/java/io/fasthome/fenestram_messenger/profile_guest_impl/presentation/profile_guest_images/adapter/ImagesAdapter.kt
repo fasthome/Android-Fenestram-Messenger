@@ -2,12 +2,12 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.ImageItemBinding
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.PhotosViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
 import io.fasthome.fenestram_messenger.util.bindWithBinding
 
-class ImagesAdapter : AsyncListDifferDelegationAdapter<PhotosViewItem>(
+class ImagesAdapter : AsyncListDifferDelegationAdapter<RecentImagesViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
         createImagesAdapterDelegate()
@@ -15,7 +15,7 @@ class ImagesAdapter : AsyncListDifferDelegationAdapter<PhotosViewItem>(
 ) {}
 
 fun createImagesAdapterDelegate() =
-    adapterDelegateViewBinding<PhotosViewItem, ImageItemBinding>(
+    adapterDelegateViewBinding<RecentImagesViewItem, ImageItemBinding>(
         ImageItemBinding::inflate,
     ) {
         bindWithBinding {
