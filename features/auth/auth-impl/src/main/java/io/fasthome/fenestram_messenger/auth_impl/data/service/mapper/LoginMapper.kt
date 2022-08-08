@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.auth_impl.data.service.mapper
 
-import android.util.Log
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.LoginResponse
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.network.model.BaseResponse
@@ -18,15 +17,6 @@ object LoginMapper {
             )
         }
 
-        if (response.error?.code == 401) {
-            return LoginResult.WrongCode
-        }
-
-        if (response.error?.code == 408) {
-            return LoginResult.SessionClosed
-        }
-
-        //throw Exception()
-        return LoginResult.SessionClosed
+        throw Exception()
     }
 }
