@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManag
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeNavigationContract
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.Flow
 
 class AuthFeatureImpl(
@@ -21,7 +22,13 @@ class AuthFeatureImpl(
 
     override val authNavigationContract = WelcomeNavigationContract
 
-    override suspend fun getUserId(): CallResult<Long?> = authInteractor.getUserId()
+    override suspend fun getUserId(): CallResult<Long?> = authInteractor.getUserId().onSuccess {
+        if(it == null){
+            logout()
+        }
+    }
+
+    override suspend fun getUsers(): CallResult<List<AuthFeature.User>> = authInteractor.getUsers()
 
     override val startAuthEvents: Flow<AuthFeature.AuthEvent> get() = authNavigator.startAuthEvents
 

@@ -11,13 +11,13 @@ sealed class GetChatsResult {
 
 @Parcelize
 data class Chat(
-    val id : Long,
-    val messages: List<Message>,
+    val id : Long?,
     val user: User
 ) : Parcelable
 
 @Parcelize
 data class User(
+    val id : Long,
     val name: String
 ): Parcelable
 

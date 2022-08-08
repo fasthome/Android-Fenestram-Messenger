@@ -62,4 +62,9 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
     }
 
     override fun handleEvent(event: ConversationEvent) = noEventsExpected()
+
+    override fun onStop() {
+        super.onStop()
+        vm.closeSocket()
+    }
 }

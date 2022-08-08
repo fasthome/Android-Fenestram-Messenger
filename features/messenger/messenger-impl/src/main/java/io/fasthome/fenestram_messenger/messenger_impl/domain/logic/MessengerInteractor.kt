@@ -17,9 +17,9 @@ class MessengerInteractor(
     suspend fun sendMessage(id: Long, text: String, type: String) =
         messageRepo.sendMessage(id, text, type).onSuccess { }
 
-    suspend fun getChats(limit: Int, page: Int) = messageRepo.getChats(limit, page)
+    suspend fun getChats(selfUserId : Long, limit: Int, page: Int) = messageRepo.getChats(selfUserId, limit, page)
 
-    suspend fun postChats(name: String, users: List<Int>) =
+    suspend fun postChats(name: String, users: List<Long>) =
         messageRepo.postChats(name, users).onSuccess { }
 
     suspend fun getChatById(id: Long) = messageRepo.getChatById(id).onSuccess { }

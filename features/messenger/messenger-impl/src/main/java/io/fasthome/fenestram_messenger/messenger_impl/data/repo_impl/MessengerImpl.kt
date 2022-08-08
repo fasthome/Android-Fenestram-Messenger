@@ -24,12 +24,12 @@ class MessengerImpl(
         messengerService.sendMessage(id, text, type)
     }
 
-    override suspend fun getChats(limit: Int, page: Int): CallResult<GetChatsResult> =
+    override suspend fun getChats(selfUserId : Long, limit: Int, page: Int): CallResult<GetChatsResult> =
         callForResult {
-            messengerService.getChats(limit, page)
+            messengerService.getChats(selfUserId, limit, page)
         }
 
-    override suspend fun postChats(name: String, users: List<Int>): CallResult<PostChatsResult> =
+    override suspend fun postChats(name: String, users: List<Long>): CallResult<PostChatsResult> =
         callForResult {
             messengerService.postChats(name, users)
         }

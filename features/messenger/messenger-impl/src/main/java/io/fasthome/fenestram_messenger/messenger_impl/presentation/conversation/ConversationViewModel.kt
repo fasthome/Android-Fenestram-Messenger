@@ -3,6 +3,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
@@ -21,9 +23,9 @@ import kotlinx.coroutines.launch
 class ConversationViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    val params: Params,
-    val features: Features,
-    val messengerInteractor: MessengerInteractor,
+    private val params: ConversationNavigationContract.Params,
+    private val features: Features,
+    private val messengerInteractor: MessengerInteractor,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     init {
@@ -31,6 +33,14 @@ class ConversationViewModel(
             val selfUserId = features.authFeature.getUserId().getOrNull()
             if(selfUserId == null){
                 features.authFeature.logout()
+                return@launch
+            }
+            if(params.chat.id == null){
+                messengerInteractor.postChats(name = "123", users = listOf(selfUserId, params.chat.user.id)).onSuccess {
+                    if(it is PostChatsResult.Success) {
+
+                    }
+                }
                 return@launch
             }
             messengerInteractor.getMessagesFromChat(params.chat.id).collectLatest { message ->
@@ -79,7 +89,7 @@ class ConversationViewModel(
 //        }
         viewModelScope.launch {
             messengerInteractor.sendMessage(
-                id = params.chat.id,
+                id = params.chat.id ?: return@launch,
                 text = mess,
                 type = "text"
             ).getOrThrow()

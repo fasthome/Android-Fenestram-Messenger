@@ -29,7 +29,7 @@ class GetChatsResponse(
         val date: String?,
 
         @SerialName("users")
-        val users: List<Int?>?,
+        val users: List<Long>,
 
         @SerialName("message")
         val message: List<MessageResponse>?

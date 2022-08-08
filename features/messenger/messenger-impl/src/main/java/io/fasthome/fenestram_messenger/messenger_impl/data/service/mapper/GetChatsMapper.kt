@@ -9,23 +9,18 @@ import io.fasthome.network.model.BaseResponse
 
 object GetChatsMapper {
 
-    fun responseToGetChatsResult(response: GetChatsResponse): GetChatsResult {
+    fun responseToGetChatsResult(response: GetChatsResponse, selfUserId: Long): GetChatsResult {
         response.data?.let { list ->
             return GetChatsResult.Success(
                 chats = list.map { chat ->
                     Chat(
                         id = chat.id,
-                        user = User(chat.name ?: ""),
-                        messages = chat.message?.map {
-                            Message(
-                                id = it.id,
-                                text = it.text,
-                                messageType = it.type,
-                                createdAt = it.date,
-                                userSenderId = it.initiator
-                            )
-                        } ?: listOf()
-                    )
+                        user = User(
+                            name = chat.name ?: "",
+                            id = chat.users.filter {
+                                it != selfUserId
+                            }.random(),
+                        ))
                 }
             )
         }

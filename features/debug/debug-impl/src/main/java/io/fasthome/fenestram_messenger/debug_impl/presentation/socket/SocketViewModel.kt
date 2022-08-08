@@ -32,7 +32,7 @@ class SocketViewModel(
         viewModelScope.launch {
             interactor.messengerInteractor.postChats(name, users)
             interactor.messengerInteractor.sendMessage(id, message, type)
-            interactor.messengerInteractor.getChats(limit, page)
+            interactor.messengerInteractor.getChats(0, limit, page)
             interactor.messengerInteractor.getChatById(id)
         }
     }
@@ -57,7 +57,7 @@ class SocketViewModel(
 
     companion object {
         const val name = "TestChat"
-        val users = listOf(2)
+        val users = listOf(2L)
 
         const val limit = 10
         const val page = 1

@@ -1,10 +1,8 @@
-package io.fasthome.fenestram_messenger.auth_impl.data.storage
+package io.fasthome.component.storage
 
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
 import io.fasthome.fenestram_messenger.core.data.KeyValueStorage
 import io.fasthome.fenestram_messenger.core.data.stored
-import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
-import io.fasthome.network.tokens.AccessToken
 import kotlinx.coroutines.withContext
 
 class UserStorage(
