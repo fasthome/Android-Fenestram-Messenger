@@ -1,18 +1,19 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.util.PrintableText
+import java.time.LocalDateTime
 
 sealed interface ConversationViewItem {
 
-    abstract val content: PrintableText
-    abstract val time: String
-    abstract val sendStatus: Boolean
+    val content: PrintableText
+    val time: PrintableText
+    val sendStatus: Boolean
 
     data class Self(
-        override val content: PrintableText, override val time: String, override val sendStatus: Boolean
+        override val content: PrintableText, override val time: PrintableText, override val sendStatus: Boolean
     ) : ConversationViewItem
 
     data class Receive(
-        override val content: PrintableText, override val time: String, override val sendStatus: Boolean
+        override val content: PrintableText, override val time: PrintableText, override val sendStatus: Boolean
     ) : ConversationViewItem
 }

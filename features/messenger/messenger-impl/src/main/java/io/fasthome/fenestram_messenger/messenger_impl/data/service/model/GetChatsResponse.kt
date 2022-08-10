@@ -26,7 +26,7 @@ class GetChatsResponse(
         val name: String?,
 
         @SerialName("created_at")
-        val date: String?,
+        val date: String,
 
         @SerialName("users")
         val users: List<Long>,
