@@ -43,7 +43,7 @@ class SettingsFragment: BaseFragment<SettingsState, SettingsEvent>(R.layout.frag
         }
     }
 
-    override fun renderState(state: SettingsState) {
+    override fun renderState(state: SettingsState) = with(binding){
         binding.ibBlueButton.isActivated = state.blueSelected
         binding.ibGreenButton.isActivated = state.greenSelected
     }

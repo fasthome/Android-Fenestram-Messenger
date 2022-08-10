@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentInfoappBinding
@@ -26,11 +27,6 @@ class InfoappFragment: BaseFragment<InfoappState, InfoappEvent>(R.layout.fragmen
         ibCancel.onClick { vm.onSettings() }
     }
 
-    override fun renderState(state: InfoappState) {
-
-    }
-
-    override fun handleEvent(event: InfoappEvent) {
-
-    }
+    override fun renderState(state: InfoappState) = nothingToRender()
+    override fun handleEvent(event: InfoappEvent) = nothingToRender()
 }
