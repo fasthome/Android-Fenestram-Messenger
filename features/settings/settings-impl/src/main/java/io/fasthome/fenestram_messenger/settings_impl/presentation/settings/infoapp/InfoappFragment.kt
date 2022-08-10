@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
@@ -28,5 +29,5 @@ class InfoappFragment: BaseFragment<InfoappState, InfoappEvent>(R.layout.fragmen
     }
 
     override fun renderState(state: InfoappState) = nothingToRender()
-    override fun handleEvent(event: InfoappEvent) = nothingToRender()
+    override fun handleEvent(event: InfoappEvent) = noEventsExpected()
 }
