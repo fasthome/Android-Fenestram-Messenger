@@ -9,6 +9,7 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.toMessengerViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -16,6 +17,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class MessengerViewModel(
     router: ContractRouter,
@@ -50,15 +52,12 @@ class MessengerViewModel(
             ).withErrorHandled { result ->
                 when (result) {
                     is GetChatsResult.Success -> {
-                        val chats = result.chats.mapNotNull {
-                            MessengerViewItem(
-                                id = it.id ?: return@mapNotNull null,
-                                avatar = 0,
-                                name = it.user.name,
-                                newMessages = 0,
-                                lastMessage = PrintableText.Raw(it.messages.last().text)
-                            )
-                        }
+                        val chats = result.chats
+                            .sortedByDescending {
+                                val millis = it.time?.toInstant()?.toEpochMilli()
+                                millis
+                            }
+                            .mapNotNull(::toMessengerViewItem)
                         updateState {
                             it.copy(messengerViewItems = chats, chats = result.chats)
                         }

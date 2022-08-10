@@ -32,6 +32,7 @@ class ConversationViewModel(
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private var chatId = params.chat.id
+
     fun fetchMessages() {
         viewModelScope.launch {
             val selfUserId = features.authFeature.getUserId().getOrNull()
@@ -103,16 +104,19 @@ class ConversationViewModel(
     }
 
     private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
-        messengerInteractor.getMessagesFromChat(chatId).collectWhenViewActive().onEach { messages ->
-            updateState { state ->
-                state.copy(
-                    messages = state.messages.plus(
-                        messages.map {
-                            it.toConversationViewItem(selfUserId)
-                        }
+        messengerInteractor.getMessagesFromChat(chatId)
+            .collectWhenViewActive()
+            .onEach { messages ->
+                updateState { state ->
+                    state.copy(
+                        messages = state.messages.plus(
+                            messages.map {
+                                it.toConversationViewItem(selfUserId)
+                            }
+                        )
                     )
-                )
+                }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 }
