@@ -21,7 +21,7 @@ fun createConversationSelfAdapterDelegate() = adapterDelegateViewBinding<Convers
     ConversationItemSelfBinding::inflate){
     bindWithBinding {
         messageContent.setPrintableText(item.content)
-        sendTimeView.text = item.time
+        sendTimeView.setPrintableText(item.time)
     }
 }
 
@@ -29,6 +29,6 @@ fun createConversationReceiveAdapterDelegate() = adapterDelegateViewBinding<Conv
     ConversationItemReceiveBinding::inflate){
     bindWithBinding {
         messageContent.setPrintableText(item.content)
-        sendTimeView.text = item.time
+        sendTimeView.setPrintableText(item.time)
     }
 }

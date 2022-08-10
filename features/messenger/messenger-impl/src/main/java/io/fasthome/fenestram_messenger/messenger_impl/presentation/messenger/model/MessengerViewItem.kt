@@ -6,7 +6,8 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 data class MessengerViewItem(
     val id: Long,
     @DrawableRes val avatar: Int,
-    val name: String,
+    val name: PrintableText,
     val newMessages: Int,
+    val time : PrintableText,
     val lastMessage: PrintableText
 )

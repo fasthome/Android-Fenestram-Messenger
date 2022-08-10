@@ -5,7 +5,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.User
-import io.fasthome.network.model.BaseResponse
+import io.fasthome.network.util.NetworkMapperUtil
+import java.time.ZoneId
 
 object GetChatsMapper {
 
@@ -22,15 +23,20 @@ object GetChatsMapper {
                                 it != selfUserId
                             }.random(),
                         ),
-                        messages = listOf(
+                        messages = listOfNotNull(lastMessage?.let {
                             Message(
-                                id = lastMessage?.id ?: 0L,
-                                text = lastMessage?.text ?: "",
-                                userSenderId = lastMessage?.initiator ?: 0L,
-                                messageType = lastMessage?.type ?: "text",
-                                createdAt = lastMessage?.date ?: ""
+                                id = lastMessage.id,
+                                text = lastMessage.text,
+                                userSenderId = lastMessage.initiator,
+                                messageType = lastMessage.type,
+                                date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime)
                             )
-                        )
+                        }
+                        ),
+                        time = lastMessage?.date?.let(NetworkMapperUtil::parseZonedDateTime)
+                            ?.withZoneSameInstant(ZoneId.systemDefault()) ?: chat.date.let(
+                            NetworkMapperUtil::parseZonedDateTime
+                        ).withZoneSameInstant(ZoneId.systemDefault())
                     )
                 }
             )
