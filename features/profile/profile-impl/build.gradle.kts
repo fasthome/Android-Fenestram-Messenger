@@ -20,5 +20,4 @@ dependencies {
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)
     implementation(Deps.Coil.svg)
-    implementation(project(mapOf("path" to ":features:settings:settings-impl")))
 }
