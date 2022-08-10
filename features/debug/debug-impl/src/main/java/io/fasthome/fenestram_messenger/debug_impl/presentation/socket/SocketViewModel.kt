@@ -39,11 +39,11 @@ class SocketViewModel(
 
     fun getMessageById() {
         viewModelScope.launch {
-            interactor.messengerInteractor.getMessagesFromChat(id).collectLatest {
-                if (it != null) {
-                    it.text?.let { it1 -> Log.d("Message", it1) }
-                }
-            }
+//            interactor.messengerInteractor.getMessagesFromChat(id).collectLatest {
+//                if (it != null) {
+//                    it.text?.let { it1 -> Log.d("Message", it1) }
+//                }
+//            }
         }
     }
 
