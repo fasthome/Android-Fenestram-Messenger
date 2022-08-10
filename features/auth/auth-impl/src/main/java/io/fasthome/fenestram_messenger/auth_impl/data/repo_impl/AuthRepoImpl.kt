@@ -4,17 +4,25 @@
 package io.fasthome.fenestram_messenger.auth_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
-import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
+import io.fasthome.fenestram_messenger.auth_impl.data.service.UsersService
+import io.fasthome.component.storage.UserStorage
+import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UsersResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 
 class AuthRepoImpl(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val userStorage : UserStorage,
+    private val usersService: UsersService
 ) : AuthRepo {
 
     override suspend fun isUserAuthorized(): CallResult<Boolean> = callForResult {
         authService.isUserAuthorized()
+    }
+
+    override suspend fun getUserId(): CallResult<Long?> = callForResult {
+        userStorage.getUserId()
     }
 
     override suspend fun sendCode(phoneNumber: String) = callForResult {
@@ -26,5 +34,13 @@ class AuthRepoImpl(
         code: String
     ) = callForResult {
         authService.login(phoneNumber, code)
+    }
+
+    override suspend fun saveUserId(userId: Long) {
+        userStorage.setUserId(userId)
+    }
+
+    override suspend fun getUsers(): CallResult<UsersResult> = callForResult {
+        usersService.getUsers()
     }
 }

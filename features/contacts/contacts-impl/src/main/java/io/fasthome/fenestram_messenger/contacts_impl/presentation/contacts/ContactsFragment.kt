@@ -33,7 +33,9 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     )
 
     private val binding: FragmentContactsBinding by fragmentViewBinding(FragmentContactsBinding::bind)
-    private val contactsAdapter = ContactsAdapter()
+    private val contactsAdapter = ContactsAdapter(onItemClicked = {
+        vm.onContactClicked(it)
+    })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

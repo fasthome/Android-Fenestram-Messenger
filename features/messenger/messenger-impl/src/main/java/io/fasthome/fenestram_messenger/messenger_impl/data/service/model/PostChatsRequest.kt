@@ -9,5 +9,5 @@ class PostChatsRequest(
     val name: String?,
 
     @SerialName("users")
-    val users: List<Int?>?
+    val users: List<Long?>?
 )

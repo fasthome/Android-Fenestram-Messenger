@@ -15,6 +15,10 @@ interface AuthFeature {
 
     val authNavigationContract: NavigationContractApi<NoParams, AuthResult>
 
+    suspend fun getUserId(): CallResult<Long?>
+
+    suspend fun getUsers(): CallResult<List<User>>
+
     suspend fun isUserAuthorized(): CallResult<Boolean>
 
     suspend fun logout(): CallResult<Unit>
@@ -39,4 +43,9 @@ interface AuthFeature {
         @Parcelize
         object LaunchWelcome : AuthEvent()
     }
+
+    data class User(
+        val id: Long,
+        val name: String
+    )
 }

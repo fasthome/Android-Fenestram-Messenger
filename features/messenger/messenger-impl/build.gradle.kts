@@ -9,12 +9,15 @@ android {
 
 dependencies {
     implementation(project(Modules.Feature.messenger.api))
+    implementation(project(Modules.Feature.profileGuest.api))
+    implementation(project(Modules.Feature.auth.api))
 
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.di))
     implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.network))
+    implementation(project(Modules.Common.component))
 
     implementation(Deps.socketIO) {
         exclude(group = "org.json", module = "json")

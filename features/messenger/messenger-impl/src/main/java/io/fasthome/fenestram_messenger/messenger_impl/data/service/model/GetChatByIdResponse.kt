@@ -18,5 +18,5 @@ class GetChatByIdResponse(
     val users: List<Int?>?,
 
     @SerialName("message")
-    val message: List<Message?>?
+    val message: List<MessageResponse?>?
 )

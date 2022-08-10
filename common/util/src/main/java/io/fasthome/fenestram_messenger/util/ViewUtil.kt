@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.util.TypedValue
 import android.view.TouchDelegate
 import android.view.View
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 inline fun View.onClick(crossinline action: () -> Unit) {
     setOnClickListener { action() }
@@ -32,3 +33,7 @@ fun View.increaseHitArea(dp: Int) {
 }
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+
+suspend fun View.awaitPost() = suspendCancellableCoroutine<Unit> { continuation ->
+    post { continuation.resume(Unit, null) }
+}

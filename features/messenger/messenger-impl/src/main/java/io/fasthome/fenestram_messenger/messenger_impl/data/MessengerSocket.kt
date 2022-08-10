@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data
 
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.Message
+import android.util.Log
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessage
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
@@ -12,24 +13,26 @@ import java.util.Collections.singletonList
 import java.util.Collections.singletonMap
 
 class MessengerSocket(private val baseUrl: String) {
-    lateinit var socket: Socket
 
-    fun setClientSocket(token: AccessToken, callback: Message.() -> Unit) {
+    private var socket: Socket? = null
+
+    fun setClientSocket(token: AccessToken, callback: MessageResponse.() -> Unit) {
         try {
             val opts = IO.Options()
             opts.extraHeaders =
                 singletonMap("Authorization", singletonList("Bearer ${token.s}"))
             socket = IO.socket(baseUrl.dropLast(1), opts)
-            socket.connect()
-            socket.on("receiveMessage") {
+            socket?.connect()
+            socket?.on("receiveMessage") {
+                Log.d(this.javaClass.simpleName, "receiveMessage: " + it[0].toString())
                 val message = Json.decodeFromString<SocketMessage>(it[0].toString())
                 callback(with(message.message) {
-                    Message(
-                        this?.id,
-                        this?.initiatorId,
-                        this?.text,
-                        this?.type,
-                        this?.date
+                    MessageResponse(
+                        this?.id?.toLong() ?: 1,
+                        this?.initiatorId ?: 1L,
+                        this?.text ?: "",
+                        this?.type ?: "",
+                        this?.date ?: ""
                     )
                 })
 
@@ -39,6 +42,6 @@ class MessengerSocket(private val baseUrl: String) {
     }
 
     fun closeClientSocket() {
-        socket.close()
+        socket?.close()
     }
 }

@@ -46,8 +46,10 @@
             android:id="@+id/contacts_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:clipToPadding="false"
             android:paddingStart="@dimen/contacts_rv_padding_start_end"
             android:paddingEnd="@dimen/contacts_rv_padding_start_end"
+            android:paddingBottom="80dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/contacts_sv"
@@ -162,10 +164,10 @@
             style="@style/ContactsEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/contacts_error_text_margin_top"
             android:gravity="center"
             android:text="@string/no_permission"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="@dimen/contacts_error_text_margin_top"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/contacts_error" />
 

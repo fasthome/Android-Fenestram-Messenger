@@ -12,6 +12,8 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
 
 class PersonalityViewModel(
@@ -19,15 +21,42 @@ class PersonalityViewModel(
     requestParams: RequestParams,
     private val profileInteractor: ProfileInteractor,
     private val permissionInterface: PermissionInterface,
+    private val params: PersonalityNavigationContract.Params
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
 
     override fun createInitialState(): PersonalityState {
-        return PersonalityState(null, false, null)
+        val detail = params.userDetail
+        return PersonalityState(
+            listOf(
+                PersonalityState.Field(
+                    key = PersonalityFragment.EditTextKey.BirthdateKey,
+                    text = PrintableText.Raw(detail.birth),
+                    visibility = detail.birth.isNotEmpty()
+                ),
+                PersonalityState.Field(
+                    key = PersonalityFragment.EditTextKey.UserNameKey,
+                    text = PrintableText.Raw(detail.nickname),
+                    visibility = detail.nickname.isNotEmpty()
+                ),
+                PersonalityState.Field(
+                    key = PersonalityFragment.EditTextKey.NameKey,
+                    text = PrintableText.Raw(detail.name),
+                    visibility = detail.name.isNotEmpty()
+                ),
+                PersonalityState.Field(
+                    key = PersonalityFragment.EditTextKey.MailKey,
+                    text = PrintableText.Raw(detail.email),
+                    visibility = detail.email.isNotEmpty()
+                )
+            ), null
+        )
     }
 
     fun checkPersonalData(personalData: PersonalData) {
         viewModelScope.launch {
-            profileInteractor.sendPersonalData(personalData).successOrSendError()
+            profileInteractor.sendPersonalData(personalData).onSuccess {
+                exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
+            }
         }
     }
 
@@ -35,25 +64,22 @@ class PersonalityViewModel(
         exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
     }
 
-    fun fillingPersonalData(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
-        if (!hasFocus && data.isNotEmpty())
-            updateState { PersonalityState(key, true, null) }
-        else
-            updateState { PersonalityState(key, false, null) }
-    }
-
-    fun fillingBirthdate(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
-        if (!hasFocus && data.length == 10)
-            updateState { PersonalityState(key, true, null) }
-        else
-            updateState { PersonalityState(key, false, null) }
-    }
-
-    fun fillingEmail(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
-        if (!hasFocus && Patterns.EMAIL_ADDRESS.matcher(data).matches())
-            updateState { PersonalityState(key, true, null) }
-        else
-            updateState { PersonalityState(key, false, null) }
+    fun fillData(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
+        val visibleCondition = when (key) {
+            PersonalityFragment.EditTextKey.NameKey -> !hasFocus && data.isNotEmpty()
+            PersonalityFragment.EditTextKey.UserNameKey -> !hasFocus && data.isNotEmpty()
+            PersonalityFragment.EditTextKey.BirthdateKey -> !hasFocus && data.length == 10
+            PersonalityFragment.EditTextKey.MailKey -> !hasFocus && Patterns.EMAIL_ADDRESS.matcher(data).matches()
+        }
+        updateState { state->
+            state.copy(
+                fieldsData = listOf(PersonalityState.Field(
+                    key = key,
+                    text = PrintableText.Raw(data),
+                    visibility = visibleCondition
+                ))
+            )
+        }
     }
 
     fun requestPermissionAndLoadPhoto() {
@@ -67,7 +93,7 @@ class PersonalityViewModel(
     }
 
     fun onUpdatePhoto(data: Uri?) {
-        updateState { PersonalityState(null, false, data) }
+        updateState { PersonalityState(listOf(), data) }
     }
 
 }

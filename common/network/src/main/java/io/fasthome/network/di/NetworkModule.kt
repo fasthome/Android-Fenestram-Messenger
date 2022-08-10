@@ -67,6 +67,7 @@ object NetworkModule {
 
         single(::InMemoryTokensStorage)
         single { RefreshTokenStorage(get(named(StorageQualifier.Secure))) }
+        single { AccessTokenStorage(get(named(StorageQualifier.Secure))) }
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 
