@@ -54,6 +54,11 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.fetchMessages()
+    }
+
     override fun renderState(state: ConversationState) {
         when{
             state.messages.isNotEmpty() -> conversationAdapter.items = state.messages
