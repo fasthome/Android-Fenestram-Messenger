@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
+import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UserDetail
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
@@ -45,19 +46,11 @@ class CodeViewModel(
 
     fun checkCode(code: String) {
         viewModelScope.launch {
-            when (val loginResult = authInteractor.login(params.phoneNumber, code)) {
-                is CallResult.Success -> personalityLauncher.launch(NoParams)
-                is CallResult.Error -> {
-                    when (loginResult.error) {
-                        is WrongServerResponseException -> updateState {
-                            CodeState.GlobalState(
-                                error = true,
-                                filled = false,
-                                autoFilling = null
-                            )
-                        }
-                        else -> onError(ShowErrorType.Popup, loginResult.error)
-                    }
+            when(val loginResult = authInteractor.login(params.phoneNumber, code).successOrSendError()){
+                is LoginResult.Success->{
+                    personalityLauncher.launch(PersonalityNavigationContract.Params(
+                        userDetail = loginResult.userDetail
+                    ))
                 }
             }
         }

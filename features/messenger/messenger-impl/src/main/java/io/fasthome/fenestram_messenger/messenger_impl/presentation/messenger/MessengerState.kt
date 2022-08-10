@@ -3,11 +3,13 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 
 data class MessengerState(
-    val chats:List<MessengerViewItem>
-){
+    val chats: List<Chat>,
+    val messengerViewItems: List<MessengerViewItem>
+) {
 
 }

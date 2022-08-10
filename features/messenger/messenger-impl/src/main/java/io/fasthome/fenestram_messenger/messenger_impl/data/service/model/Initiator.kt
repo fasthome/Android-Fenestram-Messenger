@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class Initiator(
     @SerialName("id")
-    val id: Int?,
+    val id: Long,
 
     @SerialName("phone")
     val phone: String?,

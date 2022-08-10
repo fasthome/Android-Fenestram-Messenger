@@ -34,6 +34,8 @@ object ContactsModule {
         viewModel(::ContactsViewModel)
         viewModel(::ContactAddViewModel)
 
+        factory(ContactsViewModel::Features)
+
         single {
             ContactsLoader(context = get())
         }

@@ -9,13 +9,16 @@ class LoginResponse(
     val accessToken: String,
 
     @SerialName("id")
-    val id: Int,
+    val id: Long,
 
     @SerialName("phone")
     val phone: String,
 
     @SerialName("name")
     val name: String?,
+
+    @SerialName("nickname")
+    val nickname: String?,
 
     @SerialName("email")
     val email: String?,

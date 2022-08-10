@@ -10,6 +10,8 @@ import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.AuthRepoImpl
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.ProfileRepoImpl
 import io.fasthome.fenestram_messenger.auth_impl.data.service.ProfileService
+import io.fasthome.fenestram_messenger.auth_impl.data.service.UsersService
+import io.fasthome.component.storage.UserStorage
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.ProfileRepo
@@ -21,14 +23,15 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigat
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
+import io.fasthome.fenestram_messenger.core.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.network.client.ForceLogoutManager
 import io.fasthome.network.di.NetworkClientFactoryQualifier
+import io.fasthome.network.di.singleAuthorizedService
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 import org.koin.dsl.module
 
@@ -48,8 +51,11 @@ object AuthModule {
         single(::AuthRepoImpl) bindSafe AuthRepo::class
         single(::ProfileRepoImpl) bindSafe ProfileRepo::class
 
-        single { ProfileService(get(named(NetworkClientFactoryQualifier.Authorized))) }
+        singleAuthorizedService (::ProfileService)
+        singleAuthorizedService (::UsersService)
         single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get()) }
+
+        single { UserStorage(get(named(StorageQualifier.Simple))) }
     }
 
     private fun createDomainModule() = module {

@@ -16,7 +16,7 @@ class TokensService(
         )
         //todo подкинуть нужный путь
         return client.runSubmitForm(
-            path = "/token",
+            path = "token",
             params = params,
             encodeInQuery = false
         )

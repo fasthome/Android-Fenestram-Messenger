@@ -1,6 +1,7 @@
 package io.fasthome.network.client
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.network.tokens.TokenUpdateException
 import io.fasthome.network.tokens.TokensRepo
 import io.fasthome.network.util.NetworkUtils
@@ -38,21 +39,21 @@ internal class JwtNetworkClientFactory(
             header(HttpHeaders.Authorization, NetworkUtils.buildAuthHeader(accessToken))
         }
 
-        install(NeedRetry) {
-            retryCondition { _: HttpRequest, response: HttpResponse ->
-                if (response.status.value == HttpStatusCode.Unauthorized.value) {
-                    tokensRepo.updateToken()
-                    true
-                } else {
-                    false
-                }
-            }
-        }
+//        install(NeedRetry) {
+//            retryCondition { _: HttpRequest, response: HttpResponse ->
+//                if (response.status.value == HttpStatusCode.Unauthorized.value) {
+//                    tokensRepo.updateToken()
+//                    true
+//                } else {
+//                    false
+//                }
+//            }
+//        }
 
         HttpResponseValidator {
             handleResponseException { cause: Throwable ->
                 when (cause) {
-                    is TokenUpdateException -> forceLogoutManager.value.forceLogout()
+                    is TokenUpdateException, is UnauthorizedException  -> forceLogoutManager.value.forceLogout()
                 }
             }
         }

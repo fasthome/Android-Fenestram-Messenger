@@ -1,6 +1,7 @@
 package io.fasthome.network.tokens
 
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
+import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.util.NonCancellableAction
 
 @JvmInline
@@ -19,6 +20,7 @@ interface TokensRepo {
 
 class TokensRepoImpl(
     private val refreshTokenStorage: RefreshTokenStorage,
+    private val accessTokenStorage: AccessTokenStorage,
     private val inMemoryTokensStorage: InMemoryTokensStorage,
     private val tokensService: TokensService,
 ) : TokensRepo {
@@ -26,13 +28,13 @@ class TokensRepoImpl(
     private val updateTokensAction: NonCancellableAction<AccessToken> =
         NonCancellableAction(action = {
             try {
-                val prevRefreshToken =
-                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
-                val response = tokensService.callUpdateToken(prevRefreshToken)
-                val accessToken = AccessToken(response.accessToken)
-                val refreshToken = RefreshToken(response.refreshToken)
-                saveTokens(accessToken, refreshToken)
-                accessToken
+//                val prevRefreshToken =
+//                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
+//                val response = tokensService.callUpdateToken(prevRefreshToken)
+//                val accessToken = AccessToken(response.accessToken)
+//                val refreshToken = RefreshToken(response.refreshToken)
+//                saveTokens(accessToken, refreshToken)
+                accessTokenStorage.getAccessToken() ?: throw UnauthorizedException()
             } catch (exception: Exception) {
                 throw when (exception) {
                     is InternetConnectionException -> exception
@@ -43,6 +45,7 @@ class TokensRepoImpl(
 
     override suspend fun saveTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
         inMemoryTokensStorage.saveAccessToken(accessToken)
+        accessTokenStorage.setAccessToken(accessToken)
         refreshTokenStorage.setRefreshToken(refreshToken)
     }
 

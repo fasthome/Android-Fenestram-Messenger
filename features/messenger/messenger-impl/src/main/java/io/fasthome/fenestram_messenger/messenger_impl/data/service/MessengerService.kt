@@ -17,7 +17,7 @@ import io.fasthome.network.model.BaseResponse
 class MessengerService(clientFactory: NetworkClientFactory) {
     private val client = clientFactory.create()
 
-    suspend fun sendMessage(id: Int, text: String, type: String): SendMessageResult {
+    suspend fun sendMessage(id: Long, text: String, type: String): SendMessageResult {
         val response: SendMessageResponse = client.runPost(
             path = "api/v1/chats/message/$id",
             body = SendMessageRequest(text, type)
@@ -26,16 +26,16 @@ class MessengerService(clientFactory: NetworkClientFactory) {
         return SendMessageMapper.responseToSendMessageResult(response)
     }
 
-    suspend fun getChats(limit: Int, page: Int): GetChatsResult {
+    suspend fun getChats(selfUserId : Long, limit: Int, page: Int): GetChatsResult {
         val response: GetChatsResponse = client.runGet(
             path = "api/v1/chats",
             params = mapOf("limit" to limit, "page" to page)
         )
 
-        return GetChatsMapper.responseToGetChatsResult(response)
+        return GetChatsMapper.responseToGetChatsResult(response, selfUserId)
     }
 
-    suspend fun postChats(name: String, users: List<Int>): PostChatsResult {
+    suspend fun postChats(name: String, users: List<Long>): PostChatsResult {
         val response: BaseResponse<PostChatsResponse> = client.runPost(
             path = "api/v1/chats",
             body = PostChatsRequest(name, users)
@@ -44,7 +44,7 @@ class MessengerService(clientFactory: NetworkClientFactory) {
         return PostChatsMapper.responseToPostChatsResult(response)
     }
 
-    suspend fun getChatById(id: Int): GetChatByIdResult {
+    suspend fun getChatById(id: Long): GetChatByIdResult {
         val response: BaseResponse<GetChatByIdResponse> = client.runGet(
             path = "api/v1/chats/$id"
         )

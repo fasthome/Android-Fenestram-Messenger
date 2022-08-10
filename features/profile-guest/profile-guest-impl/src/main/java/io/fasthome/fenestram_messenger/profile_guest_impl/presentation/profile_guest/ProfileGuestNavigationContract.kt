@@ -5,4 +5,4 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
 object ProfileGuestNavigationContract :
-    NavigationContract<NoParams, NoResult>(ProfileGuestFragment::class)
+    NavigationContract<NoParams, NoResult>(ProfileGuestBottomFragment::class)

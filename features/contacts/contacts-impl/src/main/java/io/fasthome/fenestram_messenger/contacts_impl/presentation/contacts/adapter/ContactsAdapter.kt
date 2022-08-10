@@ -6,18 +6,22 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
 import io.fasthome.fenestram_messenger.util.bindWithBinding
+import io.fasthome.fenestram_messenger.util.onClick
 
-class ContactsAdapter : AsyncListDifferDelegationAdapter<ContactsViewItem>(
+class ContactsAdapter(onItemClicked : (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
-        createContactsAdapterDelegate()
+        createContactsAdapterDelegate(onItemClicked)
     )
 ) {}
 
-fun createContactsAdapterDelegate() =
+fun createContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
     adapterDelegateViewBinding<ContactsViewItem, ContactItemBinding>(
         ContactItemBinding::inflate,
     ) {
+        binding.root.onClick{
+            onItemClicked(item)
+        }
         bindWithBinding {
             contactName.text = item.name
             newMessage.visibility = item.newMessageVisibility
