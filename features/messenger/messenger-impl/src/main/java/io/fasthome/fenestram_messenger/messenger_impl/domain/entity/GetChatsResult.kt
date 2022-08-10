@@ -12,7 +12,8 @@ sealed class GetChatsResult {
 @Parcelize
 data class Chat(
     val id : Long?,
-    val user: User
+    val user: User,
+    val messages : List<Message>
 ) : Parcelable
 
 @Parcelize

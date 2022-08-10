@@ -1,12 +1,14 @@
+/**
+ * Created by Dmitry Popov on 08.08.2022.
+ */
 package io.fasthome.fenestram_messenger.auth_impl.data.service.model
 
+import android.provider.ContactsContract
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class LoginResponse(
-    @SerialName("access_token")
-    val accessToken: String,
+class ProfileResponse(
 
     @SerialName("id")
     val id: Long,
@@ -24,11 +26,5 @@ class LoginResponse(
     val email: String?,
 
     @SerialName("birth")
-    val birth: String?,
-
-    @SerialName("player_id")
-    val playerId: String?,
-
-    @SerialName("socket_id")
-    val sockedId: String?
+    val birth: String?
 )

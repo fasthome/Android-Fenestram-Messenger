@@ -13,6 +13,7 @@ object GetChatsMapper {
         response.data?.let { list ->
             return GetChatsResult.Success(
                 chats = list.map { chat ->
+                    val lastMessage = chat.message?.lastOrNull()
                     Chat(
                         id = chat.id,
                         user = User(
@@ -20,7 +21,17 @@ object GetChatsMapper {
                             id = chat.users.filter {
                                 it != selfUserId
                             }.random(),
-                        ))
+                        ),
+                        messages = listOf(
+                            Message(
+                                id = lastMessage?.id ?: 0L,
+                                text = lastMessage?.text ?: "",
+                                userSenderId = lastMessage?.initiator ?: 0L,
+                                messageType = lastMessage?.type ?: "text",
+                                createdAt = lastMessage?.date ?: ""
+                            )
+                        )
+                    )
                 }
             )
         }

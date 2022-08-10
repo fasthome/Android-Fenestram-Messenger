@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mod
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import kotlinx.coroutines.launch
 
@@ -54,7 +55,8 @@ class MessengerViewModel(
                                 id = it.id ?: return@mapNotNull null,
                                 avatar = 0,
                                 name = it.user.name,
-                                newMessages = 0
+                                newMessages = 0,
+                                lastMessage = PrintableText.Raw(it.messages.last().text)
                             )
                         }
                         updateState {

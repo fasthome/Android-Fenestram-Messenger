@@ -13,7 +13,7 @@ sealed class LoginResult {
     data class Success(
         val accessToken: AccessToken,
         val refreshToken: RefreshToken,
-        val userId: String,
+        val userDetail: UserDetail
     ) : LoginResult()
 
     /**

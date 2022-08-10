@@ -49,7 +49,7 @@ class AuthInteractor(
             loginResult: LoginResult.Success,
         ) {
             tokensRepo.saveTokens(loginResult.accessToken, loginResult.refreshToken)
-            authRepo.saveUserId(loginResult.userId.toLong())
+            authRepo.saveUserId(loginResult.userDetail.id)
         }
     }
 }

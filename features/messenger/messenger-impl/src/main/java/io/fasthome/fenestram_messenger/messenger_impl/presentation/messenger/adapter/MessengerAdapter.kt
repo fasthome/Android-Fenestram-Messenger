@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mod
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
 import io.fasthome.fenestram_messenger.util.bindWithBinding
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class MessengerAdapter(OnClickChat:(Long) -> Unit) : AsyncListDifferDelegationAdapter<MessengerViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
@@ -22,6 +23,7 @@ fun createMessengerAdapter(chatClicked:(Long) -> Unit) = adapterDelegateViewBind
     }
     bindWithBinding {
         nameView.text = item.name
+        lastMessage.setPrintableText(item.lastMessage)
 
     }
 

@@ -26,9 +26,11 @@ class PersonalityFragment :
     BaseFragment<PersonalityState, PersonalityEvent>(R.layout.fragment_personality) {
 
     private val permissionInterface by registerFragment(PermissionComponentContract)
+
     override val vm: PersonalityViewModel by viewModel(
+        getParamsInterface = PersonalityNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::permissionInterface)
+            .register(::permissionInterface),
     )
 
     private val galleryLauncher = resultLauncher { result ->
@@ -39,48 +41,50 @@ class PersonalityFragment :
     private val binding by fragmentViewBinding(FragmentPersonalityBinding::bind)
 
     override fun renderState(state: PersonalityState): Unit = with(binding) {
-        when (state.key) {
-            EditTextKey.NameKey -> nameInput.includeEditText
-            EditTextKey.UserNameKey -> userNameInput.includeEditText
-            EditTextKey.BirthdateKey -> birthdateInput
-            EditTextKey.MailKey -> mailInput.includeEditText
-            else -> null
-        }?.let { editText ->
-            if (state.visibility) {
-                editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_baseline_check_24,
-                    0
-                )
+        state.fieldsData.forEach { field->
+            when (field.key) {
+                EditTextKey.NameKey -> nameInput.includeEditText
+                EditTextKey.UserNameKey -> userNameInput.includeEditText
+                EditTextKey.BirthdateKey -> birthdateInput
+                EditTextKey.MailKey -> mailInput.includeEditText
+            }.let { editText ->
+                editText.setPrintableText(field.text)
+                if (field.visibility) {
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        0,
+                        0,
+                        R.drawable.ic_baseline_check_24,
+                        0
+                    )
 
-                if (arrayOf(
-                        nameInput.includeEditText,
-                        userNameInput.includeEditText,
-                        birthdateInput,
-                        mailInput.includeEditText
-                    ).count { it.compoundDrawablesRelative[2] != null } == 4
-                )
-                    buttonReady.apply {
-                        setBackgroundResource(R.drawable.rounded_button)
-                        isEnabled = true
-                    }
-                else
+                    if (arrayOf(
+                            nameInput.includeEditText,
+                            userNameInput.includeEditText,
+                            birthdateInput,
+                            mailInput.includeEditText
+                        ).count { it.compoundDrawablesRelative[2] != null } == 4
+                    )
+                        buttonReady.apply {
+                            setBackgroundResource(R.drawable.rounded_button)
+                            isEnabled = true
+                        }
+                    else
+                        buttonReady.apply {
+                            setBackgroundResource(R.drawable.rounded_gray_button)
+                            isEnabled = false
+                        }
+                } else {
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        0,
+                        0,
+                        0,
+                        0
+                    )
+
                     buttonReady.apply {
                         setBackgroundResource(R.drawable.rounded_gray_button)
                         isEnabled = false
                     }
-            } else {
-                editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    0,
-                    0,
-                    0,
-                    0
-                )
-
-                buttonReady.apply {
-                    setBackgroundResource(R.drawable.rounded_gray_button)
-                    isEnabled = false
                 }
             }
         }
@@ -115,8 +119,8 @@ class PersonalityFragment :
                         userNameInput.includeEditText.text.toString(),
                         birthdateInput.masked,
                         mailInput.includeEditText.text.toString(),
-                        "",
-                        ""
+//                        "https://www.interfax.ru/ftproot/textphotos/2019/05/17/700gc.jpg",
+//                        ""
                     )
                 )
             }
@@ -150,7 +154,7 @@ class PersonalityFragment :
             }
 
             nameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillingPersonalData(
+                vm.fillData(
                     (v as EditText).text.toString(),
                     hasFocus,
                     EditTextKey.NameKey
@@ -158,7 +162,7 @@ class PersonalityFragment :
             }
 
             userNameInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillingPersonalData(
+                vm.fillData(
                     (v as EditText).text.toString(),
                     hasFocus,
                     EditTextKey.UserNameKey
@@ -166,7 +170,7 @@ class PersonalityFragment :
             }
 
             birthdateInput.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillingBirthdate(
+                vm.fillData(
                     (v as MaskEditText).masked,
                     hasFocus,
                     EditTextKey.BirthdateKey
@@ -174,7 +178,7 @@ class PersonalityFragment :
             }
 
             mailInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillingEmail(
+                vm.fillData(
                     (v as EditText).text.toString(),
                     hasFocus,
                     EditTextKey.MailKey
