@@ -61,7 +61,10 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
 
     override fun renderState(state: ConversationState) {
         when{
-            state.messages.isNotEmpty() -> conversationAdapter.items = state.messages
+            state.messages.isNotEmpty() -> {
+                conversationAdapter.items = state.messages
+                binding.messagesList.smoothScrollToPosition(state.messages.size - 1)
+            }
         }
         binding.username.setPrintableText(state.userName)
     }
