@@ -15,7 +15,7 @@ class InfoappViewModel(
         return InfoappState()
     }
 
-    fun backSettings() {
+    fun onSettings() {
         exitWithoutResult()
     }
 

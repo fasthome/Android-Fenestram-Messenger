@@ -11,7 +11,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tb_settings"
         android:layout_width="match_parent"
-        android:layout_height="51dp"
+        android:layout_height="50dp"
         android:background="@color/dark2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -28,14 +28,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="12dp"
-        android:text="Настройки"
+        android:text="@string/settings"
         android:textColor="@color/white"
-        android:textSize="20dp"
-        app:layout_constraintStart_toEndOf="@+id/ib_appBar"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/ib_Cancel"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/ib_appBar"
+        android:id="@+id/ib_Cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -54,14 +54,14 @@
         android:layout_marginTop="40dp"
         android:drawableLeft="@drawable/ic_palitra"
         android:drawablePadding="20dp"
-        android:text="Изменить цвет"
+        android:text="@string/changeColor"
         android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tb_settings" />
 
     <ImageButton
-        android:id="@+id/ib_changes_blue"
+        android:id="@+id/ib_blue_button"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="36dp"
@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tb_settings" />
 
     <ImageButton
-        android:id="@+id/ib_changes_green"
+        android:id="@+id/ib_green_button"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="36dp"
@@ -83,16 +83,16 @@
         app:layout_constraintTop_toBottomOf="@+id/tb_settings" />
 
     <TextView
-        android:id="@+id/tv_aboutTheApp"
+        android:id="@+id/tv_aboutApp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
         android:drawableLeft="@drawable/ic_info"
         android:drawablePadding="20dp"
-        android:text="О приложении"
+        android:text="@string/aboutAppendix"
         android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_changes_color" />
 
@@ -104,10 +104,10 @@
         android:layout_marginTop="40dp"
         android:drawableLeft="@drawable/ic_exit"
         android:drawablePadding="20dp"
-        android:text="Выход из учётной записи"
+        android:text="@string/exitAccount"
         android:textColor="@color/white"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_aboutTheApp" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_aboutApp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

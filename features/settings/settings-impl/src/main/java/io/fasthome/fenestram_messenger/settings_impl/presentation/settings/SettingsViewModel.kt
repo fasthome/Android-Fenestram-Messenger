@@ -42,13 +42,13 @@ class SettingsViewModel(
         infoappLauncher.launch(NoParams)
     }
 
-    fun changesGreen() {
+    fun onGreenClicked() {
         updateState { state ->
             state.copy(blueSelected = true, greenSelected = false)
         }
     }
 
-    fun changesBlue() {
+    fun onBlueClicked() {
         updateState { state ->
             state.copy(greenSelected = true, blueSelected = false)
         }

@@ -24,31 +24,29 @@ class SettingsFragment: BaseFragment<SettingsState, SettingsEvent>(R.layout.frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding){
         super.onViewCreated(view, savedInstanceState)
 
-        ibAppBar.increaseHitArea(8.dp)
-        ibAppBar.onClick { vm.backProfile() }
+        ibCancel.increaseHitArea(8.dp)
+        ibCancel.onClick { vm.backProfile() }
 
         tvExitProfile.onClick {
             vm.onLogoutClicked()
         }
 
-        tvAboutTheApp.setOnClickListener{
+        tvAboutApp.setOnClickListener{
             vm.startInfoapp()
         }
 
-        ibChangesBlue.setOnClickListener{
-            vm.changesBlue()
+        ibBlueButton.setOnClickListener{
+            vm.onBlueClicked()
         }
-        ibChangesGreen.setOnClickListener{
-            vm.changesGreen()
+        ibGreenButton.setOnClickListener{
+            vm.onGreenClicked()
         }
     }
 
     override fun renderState(state: SettingsState) {
-        binding.ibChangesBlue.isActivated = state.blueSelected
-        binding.ibChangesGreen.isActivated = state.greenSelected
+        binding.ibBlueButton.isActivated = state.blueSelected
+        binding.ibGreenButton.isActivated = state.greenSelected
     }
 
     override fun handleEvent(event: SettingsEvent) = noEventsExpected()
-
-
 }
