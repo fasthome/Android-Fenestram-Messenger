@@ -62,25 +62,25 @@
 
     <ImageButton
         android:id="@+id/ib_changes_blue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="100dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/blueselector"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="48dp"
-        app:layout_constraintTop_toBottomOf="@+id/tb_settings"
-        app:srcCompat="@drawable/ic_ellipse_blue" />
+        app:layout_constraintTop_toBottomOf="@+id/tb_settings" />
 
     <ImageButton
         android:id="@+id/ib_changes_green"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="48dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/greenselector"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="100dp"
-        app:layout_constraintTop_toBottomOf="@+id/tb_settings"
-        app:srcCompat="@drawable/ic_ellipse_green" />
+        app:layout_constraintTop_toBottomOf="@+id/tb_settings" />
 
     <TextView
         android:id="@+id/tv_aboutTheApp"

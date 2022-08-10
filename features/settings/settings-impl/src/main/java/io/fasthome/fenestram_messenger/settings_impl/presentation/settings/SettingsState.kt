@@ -1,4 +1,7 @@
 package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
-class SettingsState {
-}
+
+data class SettingsState(
+    val greenSelected: Boolean,
+    val blueSelected: Boolean
+)

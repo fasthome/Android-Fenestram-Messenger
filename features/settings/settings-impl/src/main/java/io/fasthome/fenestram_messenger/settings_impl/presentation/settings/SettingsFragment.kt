@@ -3,6 +3,8 @@ package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.*
 import io.fasthome.fenestram_messenger.settings_impl.R
@@ -29,11 +31,22 @@ class SettingsFragment: BaseFragment<SettingsState, SettingsEvent>(R.layout.frag
             vm.onLogoutClicked()
         }
 
+        tvAboutTheApp.setOnClickListener{
+            vm.startInfoapp()
+        }
 
-
+        ibChangesBlue.setOnClickListener{
+            vm.changesBlue()
+        }
+        ibChangesGreen.setOnClickListener{
+            vm.changesGreen()
+        }
     }
 
-    override fun renderState(state: SettingsState) = nothingToRender()
+    override fun renderState(state: SettingsState) {
+        binding.ibChangesBlue.isActivated = state.blueSelected
+        binding.ibChangesGreen.isActivated = state.greenSelected
+    }
 
     override fun handleEvent(event: SettingsEvent) = noEventsExpected()
 
