@@ -8,7 +8,7 @@ object PostChatsMapper {
 
     fun responseToPostChatsResult(response: BaseResponse<PostChatsResponse>): PostChatsResult {
         response.data?.let {
-            return PostChatsResult.Success
+            return PostChatsResult.Success(chatId = it.id)
         }
         throw Exception()
     }

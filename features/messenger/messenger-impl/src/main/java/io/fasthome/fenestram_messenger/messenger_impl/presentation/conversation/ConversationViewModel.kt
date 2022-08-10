@@ -17,7 +17,10 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.getOrThrow
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class ConversationViewModel(
@@ -28,36 +31,30 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
-    init {
+    private var chatId = params.chat.id
+    fun fetchMessages() {
         viewModelScope.launch {
             val selfUserId = features.authFeature.getUserId().getOrNull()
-            if(selfUserId == null){
+            if (selfUserId == null) {
                 features.authFeature.logout()
                 return@launch
             }
-            if(params.chat.id == null){
-                messengerInteractor.postChats(name = "123", users = listOf(selfUserId, params.chat.user.id)).onSuccess {
-                    if(it is PostChatsResult.Success) {
 
+            if (params.chat.id == null) {
+                messengerInteractor.postChats(name = "123", users = listOf(selfUserId, params.chat.user.id))
+                    .withErrorHandled {
+                        if (it is PostChatsResult.Success) {
+                            chatId = it.chatId
+                        }
                     }
-                }
-                return@launch
             }
-            messengerInteractor.getMessagesFromChat(params.chat.id).collectLatest { message ->
-                updateState { state ->
-                    state.copy(
-                        messages = state.messages.plus(
-                            message.toConversationViewItem(selfUserId)
-                        )
-                    )
-                }
-            }
+            subscribeMessages(chatId ?: return@launch, selfUserId)
         }
     }
 
     class Features(
         val profileGuestFeature: ProfileGuestFeature,
-        val authFeature : AuthFeature
+        val authFeature: AuthFeature
     )
 
     private val profileGuestLauncher =
@@ -89,7 +86,7 @@ class ConversationViewModel(
 //        }
         viewModelScope.launch {
             messengerInteractor.sendMessage(
-                id = params.chat.id ?: return@launch,
+                id = chatId ?: return@launch,
                 text = mess,
                 type = "text"
             ).getOrThrow()
@@ -103,5 +100,19 @@ class ConversationViewModel(
 
     fun closeSocket() {
         messengerInteractor.closeSocket()
+    }
+
+    private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
+        messengerInteractor.getMessagesFromChat(chatId).collectWhenViewActive().onEach { messages ->
+            updateState { state ->
+                state.copy(
+                    messages = state.messages.plus(
+                        messages.map {
+                            it.toConversationViewItem(selfUserId)
+                        }
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 }

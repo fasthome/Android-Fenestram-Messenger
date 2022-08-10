@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class PostChatsResponse(
     @SerialName("id")
-    val id: Int?,
+    val id: Long,
 
     @SerialName("name")
     val name: String?,

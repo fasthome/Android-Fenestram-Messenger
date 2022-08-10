@@ -45,7 +45,7 @@ class MessengerViewModel(
         viewModelScope.launch {
             messengerInteractor.getChats(
                 selfUserId = authFeature.getUserId().getOrNull() ?: return@launch,
-                limit = 10,
+                limit = 50,
                 page = 1
             ).withErrorHandled { result ->
                 when (result) {
