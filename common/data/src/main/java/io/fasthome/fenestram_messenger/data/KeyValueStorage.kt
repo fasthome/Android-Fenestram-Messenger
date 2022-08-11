@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.core.data
+package io.fasthome.fenestram_messenger.data
 
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

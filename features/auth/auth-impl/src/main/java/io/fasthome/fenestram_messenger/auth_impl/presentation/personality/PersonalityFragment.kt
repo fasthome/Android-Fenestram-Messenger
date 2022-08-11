@@ -9,6 +9,8 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.santalu.maskara.widget.MaskEditText
 import io.fasthome.component.permission.PermissionComponentContract
+import io.fasthome.component.pick_file.PickFileComponentContract
+import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
@@ -19,83 +21,35 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getGalleryIntent
+import io.fasthome.fenestram_messenger.util.model.Bytes
+import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
 import io.fasthome.fenestram_messenger.util.resultLauncher
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class PersonalityFragment :
     BaseFragment<PersonalityState, PersonalityEvent>(R.layout.fragment_personality) {
 
-    private val permissionInterface by registerFragment(PermissionComponentContract)
+
+    private val pickImageFragment by registerFragment(
+        componentFragmentContractInterface = PickFileComponentContract,
+        paramsProvider = {
+            PickFileComponentParams(
+                mimeType = PickFileComponentParams.MimeType.Image(
+                    compressToSize = Bytes(
+                        BYTES_PER_MB
+                    )
+                )
+            )
+        }
+    )
 
     override val vm: PersonalityViewModel by viewModel(
         getParamsInterface = PersonalityNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::permissionInterface),
+            .register(::pickImageFragment),
     )
 
-    private val galleryLauncher = resultLauncher { result ->
-        vm.onUpdatePhoto(result.data?.data)
-    }
-
-
     private val binding by fragmentViewBinding(FragmentPersonalityBinding::bind)
-
-    override fun renderState(state: PersonalityState): Unit = with(binding) {
-        state.fieldsData.forEach { field->
-            when (field.key) {
-                EditTextKey.NameKey -> nameInput.includeEditText
-                EditTextKey.UserNameKey -> userNameInput.includeEditText
-                EditTextKey.BirthdateKey -> birthdateInput
-                EditTextKey.MailKey -> mailInput.includeEditText
-            }.let { editText ->
-                editText.setPrintableText(field.text)
-                if (field.visibility) {
-                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_baseline_check_24,
-                        0
-                    )
-
-                    if (arrayOf(
-                            nameInput.includeEditText,
-                            userNameInput.includeEditText,
-                            birthdateInput,
-                            mailInput.includeEditText
-                        ).count { it.compoundDrawablesRelative[2] != null } == 4
-                    )
-                        buttonReady.apply {
-                            setBackgroundResource(R.drawable.rounded_button)
-                            isEnabled = true
-                        }
-                    else
-                        buttonReady.apply {
-                            setBackgroundResource(R.drawable.rounded_gray_button)
-                            isEnabled = false
-                        }
-                } else {
-                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        0,
-                        0,
-                        0,
-                        0
-                    )
-
-                    buttonReady.apply {
-                        setBackgroundResource(R.drawable.rounded_gray_button)
-                        isEnabled = false
-                    }
-                }
-            }
-        }
-
-        if (state.avatar != null)
-            userPhoto.load(state.avatar) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
-            }
-
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -119,8 +73,7 @@ class PersonalityFragment :
                         userNameInput.includeEditText.text.toString(),
                         birthdateInput.masked,
                         mailInput.includeEditText.text.toString(),
-//                        "https://www.interfax.ru/ftproot/textphotos/2019/05/17/700gc.jpg",
-//                        ""
+                        null
                     )
                 )
             }
@@ -186,16 +139,73 @@ class PersonalityFragment :
             }
 
             userPhoto.setOnClickListener {
-                vm.requestPermissionAndLoadPhoto()
+                vm.onSelectPhotoClicked()
             }
         }
 
     }
 
+    override fun renderState(state: PersonalityState): Unit = with(binding) {
+        state.fieldsData.forEach { field ->
+            when (field.key) {
+                EditTextKey.NameKey -> nameInput.includeEditText
+                EditTextKey.UserNameKey -> userNameInput.includeEditText
+                EditTextKey.BirthdateKey -> birthdateInput
+                EditTextKey.MailKey -> mailInput.includeEditText
+            }.let { editText ->
+                editText.setPrintableText(field.text)
+                if (field.visibility) {
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        0,
+                        0,
+                        R.drawable.ic_baseline_check_24,
+                        0
+                    )
+
+                    if (arrayOf(
+                            nameInput.includeEditText,
+                            userNameInput.includeEditText,
+                            birthdateInput,
+                            mailInput.includeEditText
+                        ).count { it.compoundDrawablesRelative[2] != null } == 4
+                    )
+                        buttonReady.apply {
+                            setBackgroundResource(R.drawable.rounded_button)
+                            isEnabled = true
+                        }
+                    else
+                        buttonReady.apply {
+                            setBackgroundResource(R.drawable.rounded_gray_button)
+                            isEnabled = false
+                        }
+                } else {
+                    editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        0,
+                        0,
+                        0,
+                        0
+                    )
+
+                    buttonReady.apply {
+                        setBackgroundResource(R.drawable.rounded_gray_button)
+                        isEnabled = false
+                    }
+                }
+            }
+        }
+
+        state.avatarBitmap?.let { bitmap ->
+            userPhoto.load(bitmap) {
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_baseline_account_circle_24)
+            }
+        }
+    }
+
     override fun handleEvent(event: PersonalityEvent) {
         when (event) {
             is PersonalityEvent.LaunchGallery -> {
-                galleryLauncher.launch(getGalleryIntent())
+//                galleryLauncher.launch(getGalleryIntent())
             }
         }
     }

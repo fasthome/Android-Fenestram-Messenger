@@ -48,6 +48,11 @@ fun <PD : Parcelable> NavigationContractApi<PD, NoResult>.mapNoParams(
     paramsMapper: (NoParams) -> PD,
 ) = mapParams<NoParams, PD>(paramsMapper)
 
+fun <PD : Parcelable, R : Parcelable, RD : Parcelable> NavigationContractApi<PD, RD>.mapNoParams(
+    paramsMapper: (NoParams) -> PD,
+    resultMapper: (RD) -> R,
+) = map(paramsMapper, resultMapper)
+
 fun <R : Parcelable, RD : Parcelable> NavigationContractApi<NoParams, RD>.mapResult(
     resultMapper: (RD) -> R,
 ) = map({ params: NoParams -> params }, resultMapper)

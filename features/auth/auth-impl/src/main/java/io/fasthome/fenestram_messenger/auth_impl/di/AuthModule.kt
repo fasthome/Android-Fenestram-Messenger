@@ -7,6 +7,8 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.AuthFeatureImpl
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.ProfileImageUtilImpl
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.AuthRepoImpl
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.ProfileRepoImpl
 import io.fasthome.fenestram_messenger.auth_impl.data.service.ProfileService
@@ -23,7 +25,7 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigat
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
-import io.fasthome.fenestram_messenger.core.data.StorageQualifier
+import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
@@ -51,8 +53,8 @@ object AuthModule {
         single(::AuthRepoImpl) bindSafe AuthRepo::class
         single(::ProfileRepoImpl) bindSafe ProfileRepo::class
 
-        singleAuthorizedService (::ProfileService)
-        singleAuthorizedService (::UsersService)
+        singleAuthorizedService(::ProfileService)
+        singleAuthorizedService(::UsersService)
         single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get()) }
 
         single { UserStorage(get(named(StorageQualifier.Simple))) }
@@ -73,6 +75,9 @@ object AuthModule {
         viewModel(::WelcomeViewModel)
         viewModel(::CodeViewModel)
         viewModel(::PersonalityViewModel)
+
+        factory(::ProfileImageUtilImpl) bindSafe ProfileImageUtil::class
+
     }
 
 }

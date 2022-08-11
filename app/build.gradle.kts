@@ -60,6 +60,7 @@ dependencies {
     implementation(Deps.kotlin)
 
     implementation(project(Modules.Common.core))
+    implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.di))
     implementation(project(Modules.Common.mvi))
     implementation(project(Modules.Common.navigation))

@@ -1,12 +1,15 @@
 package io.fasthome.fenestram_messenger.auth_impl.data.service
 
 import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.ProfileMapper
+import io.fasthome.fenestram_messenger.auth_impl.data.service.model.ProfileImageResponse
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.ProfileRequest
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.ProfileResponse
+import io.fasthome.fenestram_messenger.auth_impl.domain.entity.ProfileImageResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.ProfileResult
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
+import io.fasthome.network.util.requireData
 
 class ProfileService(
     clientFactory: NetworkClientFactory,
@@ -15,7 +18,7 @@ class ProfileService(
 
     suspend fun sendPersonalData(personalData: PersonalData): ProfileResult {
         val body = with(personalData) {
-            ProfileRequest(name, userName, email, birth/*, avatar, player_id*/)
+            ProfileRequest(name, userName, email, birth, avatar, /*player_id*/)
         }
 
         val response: BaseResponse<ProfileResponse> = client.runPatch(
@@ -24,5 +27,16 @@ class ProfileService(
         )
 
         return ProfileMapper.responseToLogInResult(response)
+    }
+
+    suspend fun uploadProfileImage(photoBytes: ByteArray, guid: String): ProfileImageResult {
+        val response = client
+            .runSubmitFormWithFile<BaseResponse<ProfileImageResponse>>(
+                path = "api/v1/files/upload",
+                binaryData = photoBytes,
+                filename = "$guid.jpg",
+            )
+            .requireData()
+        return ProfileImageResult(profileImagePath = response.pathToFile)
     }
 }

@@ -1,11 +1,14 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
+import android.graphics.Bitmap
 import android.net.Uri
 import io.fasthome.fenestram_messenger.util.PrintableText
+import java.io.File
 
 data class PersonalityState(
     val fieldsData: List<Field>,
-    val avatar: Uri?
+    val avatarBitmap : Bitmap?,
+    val originalProfileImageFile : File?
 ){
 
     data class Field(

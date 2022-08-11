@@ -5,6 +5,6 @@ data class PersonalData(
     val userName: String,
     val birth: String,
     val email: String,
-//    val avatar: String,
+    val avatar: String?,
 //    val player_id: String
 )

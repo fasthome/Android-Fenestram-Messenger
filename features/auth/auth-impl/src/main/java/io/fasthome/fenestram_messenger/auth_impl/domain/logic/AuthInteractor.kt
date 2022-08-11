@@ -7,10 +7,12 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UsersResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
+import io.fasthome.fenestram_messenger.auth_impl.domain.repo.ProfileRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.map
 import io.fasthome.fenestram_messenger.util.onSuccess
 import io.fasthome.network.tokens.TokensRepo
+import java.util.*
 
 class AuthInteractor(
     private val authRepo: AuthRepo,
@@ -36,7 +38,7 @@ class AuthInteractor(
             it.users.map {
                 AuthFeature.User(id = it.id, name = it.name)
             }
-        }else{
+        } else {
             listOf()
         }
     }

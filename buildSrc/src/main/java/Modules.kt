@@ -4,6 +4,7 @@ object Modules {
 
     object Common {
         const val core = ":common:core"
+        const val data = ":common:data"
         const val util = ":common:util"
         const val di = ":common:di"
         const val presentation = ":common:presentation:base"

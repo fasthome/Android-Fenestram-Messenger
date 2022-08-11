@@ -17,8 +17,8 @@ class ProfileRequest(
     @SerialName("birth")
     val birth: String?,
 
-//    @SerialName("avatar")
-//    val avatar: String?,
+    @SerialName("avatar")
+    val avatar: String?,
 //
 //    @SerialName("player_id")
 //    val playerId: String?,

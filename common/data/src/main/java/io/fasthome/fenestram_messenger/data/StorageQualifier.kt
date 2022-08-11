@@ -1,3 +1,3 @@
-package io.fasthome.fenestram_messenger.core.data
+package io.fasthome.fenestram_messenger.data
 
 enum class StorageQualifier { InMemory, Simple, Secure }

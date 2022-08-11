@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.core.prefs
+package io.fasthome.fenestram_messenger.data.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,20 +7,19 @@ import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.security.crypto.MasterKey.KeyScheme
-import io.fasthome.fenestram_messenger.core.data.KeyValueStorage
 
 internal class PreferenceKeyValueStorage(
     private val prefs: SharedPreferences,
-) : KeyValueStorage {
+) : io.fasthome.fenestram_messenger.data.KeyValueStorage {
 
-    class SimpleFactory(private val context: Context) : KeyValueStorage.Factory {
-        override fun create(name: String): KeyValueStorage =
+    class SimpleFactory(private val context: Context) : io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory {
+        override fun create(name: String): io.fasthome.fenestram_messenger.data.KeyValueStorage =
             context.getSharedPreferences(name, Context.MODE_PRIVATE)
                 .let(::PreferenceKeyValueStorage)
     }
 
-    class SecureFactory(private val context: Context) : KeyValueStorage.Factory {
-        override fun create(name: String): KeyValueStorage =
+    class SecureFactory(private val context: Context) : io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory {
+        override fun create(name: String): io.fasthome.fenestram_messenger.data.KeyValueStorage =
             EncryptedSharedPreferences.create(
                 context,
                 name,
