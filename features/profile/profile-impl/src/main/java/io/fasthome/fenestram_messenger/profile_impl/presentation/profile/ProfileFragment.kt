@@ -17,10 +17,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.databinding.FragmentProfileBinding
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getGalleryIntent
-import io.fasthome.fenestram_messenger.util.resultLauncher
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
 
 class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragment_profile) {
 
@@ -40,9 +37,9 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        ivAvatar.setOnClickListener {
-            vm.requestPermissionAndLoadPhoto()
-        }
+        ivAvatar.increaseHitArea(8.dp)
+        ivAvatar.onClick{ vm.requestPermissionAndLoadPhoto() }
+
         ibEditData.setOnClickListener {
             vm.editClicked()
         }
@@ -51,6 +48,9 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         }
         bDone.setOnClickListener {
             vm.cancelClicked()
+        }
+        ibSettings.setOnClickListener{
+            vm.startSettings()
         }
 
         labelNicknameU.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
@@ -78,4 +78,5 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
     }
+
 }

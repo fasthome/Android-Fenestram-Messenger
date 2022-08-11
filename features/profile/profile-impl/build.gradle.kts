@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(project(Modules.Feature.profile.api))
+    implementation(project(Modules.Feature.settings.api))
 
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.di))
@@ -15,8 +16,8 @@ dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.component))
 
+
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)
     implementation(Deps.Coil.svg)
-
 }

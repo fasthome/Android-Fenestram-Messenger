@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Настройки</string>
+    <string name="changeColor">Изменить цвет</string>
+    <string name="aboutAppendix">О приложении</string>
+    <string name="exitAccount">Выход из учетной записи</string>
+</resources>
