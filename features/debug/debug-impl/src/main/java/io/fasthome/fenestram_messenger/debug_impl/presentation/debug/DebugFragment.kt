@@ -31,12 +31,16 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onSocketClicked()
         }
 
-
         debugProfileGuest.onClick {
             vm.onProfileGuestClicked()
         }
+
         debugLogout.onClick {
             vm.onLogoutClicked()
+        }
+
+        debugPersonalData.onClick {
+            vm.onPersonalDataClicked()
         }
 
     }

@@ -1,12 +1,12 @@
 package io.fasthome.component.storage
 
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
-import io.fasthome.fenestram_messenger.core.data.KeyValueStorage
-import io.fasthome.fenestram_messenger.core.data.stored
+import io.fasthome.fenestram_messenger.data.KeyValueStorage
+import io.fasthome.fenestram_messenger.data.stored
 import kotlinx.coroutines.withContext
 
 class UserStorage(
-    persistentStorageFactory: KeyValueStorage.Factory,
+    persistentStorageFactory: io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory,
 ) {
     private val preferencesStorage = persistentStorageFactory.create("user.prefs")
 

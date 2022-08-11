@@ -15,6 +15,8 @@ interface AuthFeature {
 
     val authNavigationContract: NavigationContractApi<NoParams, AuthResult>
 
+    val personalDataNavigationContract: NavigationContractApi<NoParams, AuthResult>
+
     suspend fun getUserId(): CallResult<Long?>
 
     suspend fun getUsers(): CallResult<List<User>>

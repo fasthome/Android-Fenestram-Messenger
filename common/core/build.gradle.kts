@@ -8,7 +8,6 @@ dependencies {
 
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
-    implementation(Deps.AndroidX.crypto)
     implementation(Deps.Android.material)
 
     implementation(Deps.Coroutines.core)

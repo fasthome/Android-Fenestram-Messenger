@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class DebugViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    val features : Features
+    private val features : Features
 ) : BaseViewModel<DebugState, DebugEvent>(router, requestParams) {
 
     class Features(
@@ -26,6 +26,7 @@ class DebugViewModel(
     )
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
+    private val personalDataLauncher = registerScreen(features.authFeature.personalDataNavigationContract) {}
     private val profileGuestLauncher = registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
     private val socketLauncher = registerScreen(SocketNavigationContract)
 
@@ -47,6 +48,10 @@ class DebugViewModel(
 
     fun onProfileGuestClicked() {
         profileGuestLauncher.launch(NoParams)
+    }
+
+    fun onPersonalDataClicked() {
+        personalDataLauncher.launch(NoParams)
     }
 
 }

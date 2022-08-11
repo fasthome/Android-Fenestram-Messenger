@@ -19,6 +19,14 @@
             tools:ignore="HardcodedText" />
 
         <Button
+            android:id="@+id/debug_personal_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Персолнальные данные"
+            tools:ignore="HardcodedText" />
+
+        <Button
             android:id="@+id/debug_profile_guest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

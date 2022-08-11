@@ -39,21 +39,22 @@ internal class JwtNetworkClientFactory(
             header(HttpHeaders.Authorization, NetworkUtils.buildAuthHeader(accessToken))
         }
 
-//        install(NeedRetry) {
-//            retryCondition { _: HttpRequest, response: HttpResponse ->
-//                if (response.status.value == HttpStatusCode.Unauthorized.value) {
+        install(NeedRetry) {
+            retryCondition { _: HttpRequest, response: HttpResponse ->
+                if (response.status.value == HttpStatusCode.Unauthorized.value) {
 //                    tokensRepo.updateToken()
-//                    true
-//                } else {
-//                    false
-//                }
-//            }
-//        }
+                    forceLogoutManager.value.forceLogout()
+                    true
+                } else {
+                    false
+                }
+            }
+        }
 
         HttpResponseValidator {
             handleResponseException { cause: Throwable ->
                 when (cause) {
-                    is TokenUpdateException, is UnauthorizedException  -> forceLogoutManager.value.forceLogout()
+                    is TokenUpdateException, is UnauthorizedException -> forceLogoutManager.value.forceLogout()
                 }
             }
         }
