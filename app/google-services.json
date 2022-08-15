@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "272282963093",
+    "project_id": "hoolichat-a7077",
+    "storage_bucket": "hoolichat-a7077.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272282963093:android:7391cb060be6593d089f9c",
+        "android_client_info": {
+          "package_name": "io.fasthome.fenestram_messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272282963093-u0ccui39sj8bei592osiidc0fbt1bjvc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeBy0ic8dmNPc1VJ3fGJVaYJdGD9pusEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272282963093-u0ccui39sj8bei592osiidc0fbt1bjvc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "272282963093-feohmalc2pd6hsclmre7l0hu40g1onrt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.fasthome.FenestramMessanger"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
