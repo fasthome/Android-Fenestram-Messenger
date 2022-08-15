@@ -42,7 +42,7 @@ class ConversationViewModel(
             }
 
             if (params.chat.id == null) {
-                messengerInteractor.postChats(name = "123", users = listOf(selfUserId, params.chat.user.id))
+                messengerInteractor.postChats(name = "123", users = listOf(params.chat.user.id))
                     .withErrorHandled {
                         if (it is PostChatsResult.Success) {
                             chatId = it.chatId
