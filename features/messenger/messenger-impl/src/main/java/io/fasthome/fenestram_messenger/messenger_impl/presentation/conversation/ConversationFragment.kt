@@ -34,14 +34,8 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
         binding.messagesList.adapter = conversationAdapter
 
         binding.sendButton.setOnClickListener(){
-
-            val currentTime = LocalTime.now()
-
-            val formater = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-
-            val formated = currentTime.format(formater)
             when{
-                !binding.inputMessage.text.toString().isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString(),formated)
+                !binding.inputMessage.text.toString().isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString())
             }
             binding.inputMessage.text.clear()
             binding.messagesList.scrollToPosition(conversationAdapter.itemCount)

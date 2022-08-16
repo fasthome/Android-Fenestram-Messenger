@@ -9,5 +9,13 @@
     <color name="purple">#32283B</color>
     <color name="purple_back">#251B2D</color>
     <color name="purple_transparent">#8E86A5</color>
-
+    <color name="dark1">#1B1728</color>
+    <color name="dark2">#2E283B</color>
+    <color name="dark3">#332E42</color>
+    <color name="dark4">#1B1728</color>
+    <color name="gray1">#4B455C</color>
+    <color name="gray2">#635C78</color>
+    <color name="gray3">#8E86A5</color>
+    <color name="gray4">#C9C9C9</color>
+    <color name="blue">#076ED1</color>
 </resources>

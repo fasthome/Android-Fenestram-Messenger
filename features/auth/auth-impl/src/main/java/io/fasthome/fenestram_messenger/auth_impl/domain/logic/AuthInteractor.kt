@@ -36,7 +36,7 @@ class AuthInteractor(
     suspend fun getUsers() = authRepo.getUsers().map {
         if (it is UsersResult.Success) {
             it.users.map {
-                AuthFeature.User(id = it.id, name = it.name)
+                AuthFeature.User(id = it.id, name = it.name, phone = it.phone)
             }
         } else {
             listOf()

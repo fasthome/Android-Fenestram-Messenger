@@ -17,12 +17,10 @@ object GetChatsMapper {
                     val lastMessage = chat.message?.lastOrNull()
                     Chat(
                         id = chat.id,
-                        user = User(
-                            name = chat.name ?: "",
-                            id = chat.users.filter {
-                                it != selfUserId
-                            }.random(),
-                        ),
+                        users = chat.users.map {
+                            User(it)
+                        },
+                        name = chat.name ?: "",
                         messages = listOfNotNull(lastMessage?.let {
                             Message(
                                 id = lastMessage.id,

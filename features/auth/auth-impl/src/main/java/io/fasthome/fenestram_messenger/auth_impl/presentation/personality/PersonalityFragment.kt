@@ -8,7 +8,6 @@ import android.widget.EditText
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.santalu.maskara.widget.MaskEditText
-import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.auth_impl.R
@@ -20,10 +19,8 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getGalleryIntent
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
-import io.fasthome.fenestram_messenger.util.resultLauncher
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class PersonalityFragment :
@@ -158,7 +155,7 @@ class PersonalityFragment :
                     editText.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         0,
                         0,
-                        R.drawable.ic_baseline_check_24,
+                        R.drawable.ic_check,
                         0
                     )
 

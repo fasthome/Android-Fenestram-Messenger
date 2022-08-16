@@ -33,5 +33,11 @@ class Initiator(
     val playerId: String?,
 
     @SerialName("socket_id")
-    val socketId: String?
+    val socketId: String?,
+
+    @SerialName("is_online")
+    val isOnline: Boolean,
+
+    @SerialName("last_active")
+    val lastActive: String
 )
