@@ -116,6 +116,31 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <LinearLayout
+        android:id="@+id/empty_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/messages_list"
+        app:layout_constraintTop_toBottomOf="@+id/profileToolBar">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/image_chat_empty" />
+
+        <TextView
+            style="@style/LightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="@string/messenger_chat_empty" />
+
+    </LinearLayout>
 
     <EditText
         android:id="@+id/input_message"
@@ -135,9 +160,9 @@
         android:minWidth="64dp"
         android:minHeight="43dp"
         android:paddingStart="48dp"
+        android:paddingTop="4dp"
         android:paddingEnd="48dp"
         android:paddingBottom="4dp"
-        android:paddingTop="4dp"
         android:textColor="@color/white"
         android:textColorHint="@color/text_color_grey"
         app:layout_constraintBottom_toBottomOf="parent"

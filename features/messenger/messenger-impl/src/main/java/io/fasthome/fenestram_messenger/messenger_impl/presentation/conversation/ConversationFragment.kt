@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
@@ -18,7 +19,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 
-class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (R.layout.fragment_conversation) {
+class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
 
     override val vm: ConversationViewModel by viewModel(getParamsInterface = ConversationNavigationContract.getParams)
 
@@ -33,14 +34,15 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
 
         binding.messagesList.adapter = conversationAdapter
 
-        binding.sendButton.setOnClickListener(){
-            when{
-                !binding.inputMessage.text.toString().isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString())
+        binding.sendButton.setOnClickListener() {
+            when {
+                !binding.inputMessage.text.toString()
+                    .isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString())
             }
             binding.inputMessage.text.clear()
             binding.messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
-        binding.backButton.setOnClickListener(){
+        binding.backButton.setOnClickListener() {
             vm.exitToMessenger()
         }
         binding.profileToolBar.onClick {
@@ -53,14 +55,13 @@ class ConversationFragment : BaseFragment<ConversationState,ConversationEvent> (
         vm.fetchMessages()
     }
 
-    override fun renderState(state: ConversationState) {
-        when{
-            state.messages.isNotEmpty() -> {
-                conversationAdapter.items = state.messages
-                binding.messagesList.smoothScrollToPosition(state.messages.size - 1)
-            }
+    override fun renderState(state: ConversationState) = with(binding) {
+        emptyContainer.isVisible = state.messages.isEmpty()
+        conversationAdapter.items = state.messages
+        if (state.messages.isNotEmpty()) {
+            messagesList.smoothScrollToPosition(state.messages.size - 1)
         }
-        binding.username.setPrintableText(state.userName)
+        username.setPrintableText(state.userName)
     }
 
     override fun handleEvent(event: ConversationEvent) = noEventsExpected()
