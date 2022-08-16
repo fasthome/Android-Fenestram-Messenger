@@ -9,10 +9,12 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.util.PrintableText
 
 class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
+    private val params: ProfileGuestNavigationContract.Params
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     private val filesProfileGuestLauncher = registerScreen(ProfileGuestFilesNavigationContract) { result ->
@@ -23,7 +25,13 @@ class ProfileGuestViewModel(
         exitWithResult(ProfileGuestNavigationContract.createResult(result))
     }
 
-    override fun createInitialState() = ProfileGuestState(listOf(), listOf())
+    override fun createInitialState() =
+        ProfileGuestState(
+            userName = PrintableText.Raw(params.userName),
+            userNickname = PrintableText.Raw(params.userNickname),
+            recentFiles = listOf(),
+            recentImages = listOf()
+        )
 
     fun fetchFilesAndPhotos() {
         val files = listOf(
@@ -41,7 +49,12 @@ class ProfileGuestViewModel(
             RecentImagesViewItem(R.drawable.shape_button_standart, 0, false)
         )
 
-        updateState { ProfileGuestState(files, photos) }
+        updateState { state ->
+            state.copy(
+                recentImages = photos,
+                recentFiles = files
+            )
+        }
     }
 
     fun onShowFilesClicked() {
