@@ -24,8 +24,9 @@ class SettingsFragment: BaseFragment<SettingsState, SettingsEvent>(R.layout.frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding){
         super.onViewCreated(view, savedInstanceState)
 
-        ibCancel.increaseHitArea(8.dp)
-        ibCancel.onClick { vm.backProfile() }
+        hooliToolbar.setOnButtonClickListener {
+            onBackPressed()
+        }
 
         tvExitProfile.onClick {
             vm.onLogoutClicked()

@@ -15,8 +15,9 @@ class InfoappViewModel(
         return InfoappState()
     }
 
-    fun onSettings() {
+    override fun onBackPressed(): Boolean {
         exitWithoutResult()
+        return true
     }
 
 }
