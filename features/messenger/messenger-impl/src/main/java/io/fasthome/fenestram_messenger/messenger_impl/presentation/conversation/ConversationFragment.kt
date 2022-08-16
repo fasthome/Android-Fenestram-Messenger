@@ -56,7 +56,12 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        emptyContainer.isVisible = state.messages.isEmpty()
+        if (state.isChatEmpty && emptyContainer.alpha == 0f) {
+            emptyContainer
+                .animate()
+                .alpha(1f)
+                .duration = 500
+        }
         conversationAdapter.items = state.messages
         if (state.messages.isNotEmpty()) {
             messagesList.smoothScrollToPosition(state.messages.size - 1)

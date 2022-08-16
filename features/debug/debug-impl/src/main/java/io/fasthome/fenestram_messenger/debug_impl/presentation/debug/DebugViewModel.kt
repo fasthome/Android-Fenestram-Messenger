@@ -47,7 +47,7 @@ class DebugViewModel(
     }
 
     fun onProfileGuestClicked() {
-        profileGuestLauncher.launch(NoParams)
+        profileGuestLauncher.launch(ProfileGuestFeature.ProfileGuestParams(userName = "Example username", userNickname = "examplenickname"))
     }
 
     fun onPersonalDataClicked() {

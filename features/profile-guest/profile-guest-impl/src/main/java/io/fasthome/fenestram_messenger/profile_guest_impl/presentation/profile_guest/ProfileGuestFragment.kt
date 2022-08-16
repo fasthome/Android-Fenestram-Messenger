@@ -24,7 +24,9 @@ class ProfileGuestFragment :
     private val recentFilesAdapter = RecentFilesAdapter()
     private val recentImagesAdapter = RecentImagesAdapter()
 
-    override val vm: ProfileGuestViewModel by viewModel()
+    override val vm: ProfileGuestViewModel by viewModel(
+        getParamsInterface = ProfileGuestNavigationContract.getParams
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +40,7 @@ class ProfileGuestFragment :
             }
         }
 
-        vm.fetchFilesAndPhotos()
+//        vm.fetchFilesAndPhotos()
 
         recentFilesHeader.recentFilesShowAll.setOnClickListener {
             vm.onShowFilesClicked()
@@ -80,6 +82,8 @@ class ProfileGuestFragment :
         }
 
         with(binding) {
+            profileGuestName.setPrintableText(state.userName)
+            profileGuestNickname.setPrintableText(state.userNickname)
             recentFilesHeader.recentFileCount.setPrintableText(
                 PrintableText.PluralResource(
                     R.plurals.file_quantity,

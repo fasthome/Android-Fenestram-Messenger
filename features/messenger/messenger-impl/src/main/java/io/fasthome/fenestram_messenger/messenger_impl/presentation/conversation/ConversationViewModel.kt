@@ -62,7 +62,8 @@ class ConversationViewModel(
         return ConversationState(
             messages = listOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userOnline = false
+            userOnline = false,
+            isChatEmpty = false
         )
     }
 
@@ -79,7 +80,12 @@ class ConversationViewModel(
     }
 
     fun onUserClicked() {
-        profileGuestLauncher.launch(NoParams)
+        profileGuestLauncher.launch(
+            ProfileGuestFeature.ProfileGuestParams(
+                userName = params.chat.name,
+                userNickname = "nickname"
+            )
+        )
     }
 
     fun closeSocket() {
@@ -96,7 +102,8 @@ class ConversationViewModel(
                             messages.map {
                                 it.toConversationViewItem(selfUserId)
                             }
-                        )
+                        ),
+                        isChatEmpty = messages.isEmpty()
                     )
                 }
             }
