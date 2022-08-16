@@ -5,8 +5,7 @@
     android:id="@+id/GoToConversationButton"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background">
-
+    android:fitsSystemWindows="true">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -31,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="23dp"
-        android:layout_marginTop="63dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/montserrat"
         android:text="@string/AppName"
         android:textColor="@color/white"
@@ -40,26 +39,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="18dp"
-        android:background="@drawable/ic_settings"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
+        android:id="@+id/ib_settings"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+        app:srcCompat="@drawable/ic_settings" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/chat_add"
         style="@style/FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="30dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginEnd="30dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
