@@ -5,6 +5,8 @@ import io.fasthome.fenestram_messenger.contacts_impl.ContactsFeatureImpl
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddViewModel
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsViewModel
+import io.fasthome.fenestram_messenger.contacts_impl.data.repo_impl.ContactsRepoImpl
+import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.viewModel
@@ -23,7 +25,7 @@ object ContactsModule {
     }
 
     private fun createDataModule() = module {
-
+        factory(::ContactsRepoImpl) bindSafe ContactsRepo::class
     }
 
     private fun createDomainModule() = module {

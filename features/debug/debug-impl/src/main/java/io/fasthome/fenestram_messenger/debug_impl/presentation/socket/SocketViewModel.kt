@@ -30,10 +30,10 @@ class SocketViewModel(
 
     fun onSendMessageClicked() {
         viewModelScope.launch {
-            interactor.messengerInteractor.postChats(name, users)
-            interactor.messengerInteractor.sendMessage(id, message, type)
-            interactor.messengerInteractor.getChats(0, limit, page)
-            interactor.messengerInteractor.getChatById(id)
+//            interactor.messengerInteractor.postChats(name, users)
+//            interactor.messengerInteractor.sendMessage(id, message, type)
+//            interactor.messengerInteractor.getChats(0, limit, page)
+//            interactor.messengerInteractor.getChatById(id)
         }
     }
 

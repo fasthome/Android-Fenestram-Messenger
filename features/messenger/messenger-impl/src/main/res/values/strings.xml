@@ -10,4 +10,8 @@
     <string name="timeviewcheck">22:22</string>
     <string name="name">Username</string>
     <string name="statusonline">Online</string>
+    <string name="messenger_creating_chat">Создание чата</string>
+    <string name="messenger_chat_participants">Участники чата</string>
+    <string name="messenger_input_chat_name">Введите имя чата</string>
+    <string name="messenger_select_hint">Выберите участников чата</string>
 </resources>

@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.toMessage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatByIdResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.User
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.util.onSuccess
 import io.fasthome.network.tokens.TokensRepo
@@ -24,8 +25,8 @@ class MessengerInteractor(
 
     suspend fun getChats(selfUserId: Long, limit: Int, page: Int) = messageRepo.getChats(selfUserId, limit, page)
 
-    suspend fun postChats(name: String, users: List<Long>) =
-        messageRepo.postChats(name, users)
+    suspend fun postChats(name: String, users: List<User>) =
+        messageRepo.postChats(name, users.map { it.id })
 
     suspend fun getChatById(id: Long) = messageRepo.getChatById(id).onSuccess { }
 

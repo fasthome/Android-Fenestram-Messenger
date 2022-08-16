@@ -11,7 +11,7 @@ fun toMessengerViewItem(chat : Chat): MessengerViewItem? {
     return MessengerViewItem(
         id = chat.id ?: return null,
         avatar = 0,
-        name = PrintableText.Raw(chat.user.name),
+        name = PrintableText.Raw(chat.name),
         newMessages = 0,
         lastMessage = chat.messages.lastOrNull()?.let { message ->
             PrintableText.Raw(message.text)

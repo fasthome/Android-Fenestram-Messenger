@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="srcCompat">@drawable/bg_add_contact_cross</item>
+        <item name="tint">@color/white</item>
+        <item name="fabSize">normal</item>
+        <item name="backgroundTint">@color/blue</item>
+    </style>
+
 </resources>

@@ -10,6 +10,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatViewModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.MessengerImpl
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
@@ -17,7 +19,6 @@ import io.fasthome.network.di.NetworkClientFactoryQualifier
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 
 object MessengerModule {
     operator fun invoke() = listOf(
@@ -46,6 +47,8 @@ object MessengerModule {
 
         viewModel(::MessengerViewModel)
         viewModel(::ConversationViewModel)
+        viewModel(::CreateGroupChatViewModel)
+        viewModel(::CreateInfoViewModel)
 
         factory(ConversationViewModel::Features)
     }

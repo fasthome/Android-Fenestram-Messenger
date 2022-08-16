@@ -9,5 +9,6 @@ sealed class UsersResult {
 
 class User(
     val id: Long,
-    val name: String
+    val name: String,
+    val phone : String
 )

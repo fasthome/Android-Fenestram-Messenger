@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.onClick
 
 class MessengerFragment :
     BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
@@ -25,7 +26,9 @@ class MessengerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.chatList.adapter = messageAdapter
-
+        binding.chatAdd.onClick {
+            vm.onCreateChatClicked()
+        }
         vm.fetchChats()
     }
 

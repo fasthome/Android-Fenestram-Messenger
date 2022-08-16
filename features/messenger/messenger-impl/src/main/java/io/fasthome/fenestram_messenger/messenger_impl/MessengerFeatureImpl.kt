@@ -10,7 +10,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerNavigationContract
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.contract.mapParams
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
 class MessengerFeatureImpl : MessengerFeature {
@@ -20,7 +19,7 @@ class MessengerFeatureImpl : MessengerFeature {
     override val conversationNavigationContract: NavigationContractApi<MessengerFeature.Params, NoResult> =
         ConversationNavigationContract.mapParams {
             ConversationNavigationContract.Params(
-                chat = Chat(id = null, user = User(name = it.userName, id = it.userId), messages = listOf(), time = null)
+                chat = Chat(id = null, users = listOf(User(id = it.userId)), messages = listOf(), time = null, name = it.userName)
             )
         }
 

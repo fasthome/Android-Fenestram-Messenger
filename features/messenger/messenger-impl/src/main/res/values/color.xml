@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="app_background">#251B2D</color>
+    <color name="app_background">#1B1728</color>
     <color name="text_color_grey">#635C78</color>
     <color name="send_message_background_color">#332E42</color>
     <color name="hint_text_color">#8E86A5</color>

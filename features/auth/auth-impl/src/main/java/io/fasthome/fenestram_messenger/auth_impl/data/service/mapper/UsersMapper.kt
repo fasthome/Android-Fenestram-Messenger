@@ -14,7 +14,8 @@ object UsersMapper {
                 users = response.map {
                     User(
                         id = it.id,
-                        name = it.name ?: it.phone
+                        name = it.name ?: it.phone,
+                        phone = it.phone
                     )
                 }
             )
