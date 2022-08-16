@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
+package io.fasthome.component.pick_file
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

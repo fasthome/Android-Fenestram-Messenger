@@ -1,32 +1,25 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
-import android.Manifest
-import android.net.Uri
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
-import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
+import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ProfileInteractor
-import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.InputStream
-import java.net.URI
-import java.nio.file.Files.createFile
 
 class PersonalityViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val profileInteractor: ProfileInteractor,
+    private val profileFeature: ProfileFeature,
     private val pickFileInterface: PickFileInterface,
     private val params: PersonalityNavigationContract.Params,
     private val profileImageUtil: ProfileImageUtil,
@@ -80,12 +73,12 @@ class PersonalityViewModel(
         viewModelScope.launch {
             var avatar: String? = null
             currentViewState.originalProfileImageFile?.let {
-                profileInteractor.uploadProfileImage(it.readBytes()).onSuccess { result->
+                profileFeature.uploadProfileImage(it.readBytes()).onSuccess { result ->
                     avatar = result.profileImagePath
                 }
             }
 
-            profileInteractor.sendPersonalData(
+            profileFeature.sendPersonalData(
                 personalData.copy(avatar = avatar)
             ).onSuccess {
                 exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))

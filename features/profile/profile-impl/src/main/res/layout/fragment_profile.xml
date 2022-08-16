@@ -53,13 +53,12 @@
         app:srcCompat="@drawable/ic_setting"/>
 
     <TextView
-        android:id="@+id/tv_Nickname"
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:text="Александр Петров"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +75,7 @@
         android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toTopOf="@id/nick_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_Nickname"/>
+        app:layout_constraintTop_toBottomOf="@+id/username"/>
 
     <include
         android:id="@+id/nick_container"

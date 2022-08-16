@@ -4,8 +4,17 @@
 package io.fasthome.fenestram_messenger.profile_impl
 
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
+import io.fasthome.fenestram_messenger.profile_api.model.ProfileImageResult
+import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileNavigationContract
+import io.fasthome.fenestram_messenger.util.CallResult
 
-class ProfileFeatureImpl : ProfileFeature {
+class ProfileFeatureImpl (val profileInteractor: ProfileInteractor) : ProfileFeature {
+
+    override suspend fun uploadProfileImage(readBytes: ByteArray): CallResult<ProfileImageResult> = profileInteractor.uploadProfileImage(readBytes)
+
+    override suspend fun sendPersonalData(personalData: PersonalData): CallResult<Unit> = profileInteractor.sendPersonalData(personalData)
+
     override val profileNavigationContract = ProfileNavigationContract
 }
