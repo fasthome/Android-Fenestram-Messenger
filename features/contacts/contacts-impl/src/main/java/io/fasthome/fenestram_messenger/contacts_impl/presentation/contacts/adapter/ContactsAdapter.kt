@@ -3,10 +3,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adap
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.*
 
 class ContactsAdapter(onItemClicked : (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
@@ -23,7 +20,7 @@ fun createContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
             onItemClicked(item)
         }
         bindWithBinding {
-            contactName.text = item.name
+            contactName.setPrintableText(item.name)
             newMessage.visibility = item.newMessageVisibility
         }
     }

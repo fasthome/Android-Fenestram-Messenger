@@ -4,10 +4,15 @@
 package io.fasthome.fenestram_messenger.contacts_impl.domain.repo
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.util.CallResult
 
 interface ContactsRepo {
 
     suspend fun getContacts() : List<Contact>
+
+    suspend fun uploadContacts(contacts: List<Contact>): CallResult<Unit>
+    suspend fun loadContacts() : CallResult<List<Contact>>
+
 
 }

@@ -10,5 +10,5 @@ import kotlinx.parcelize.Parcelize
 data class Contact(
     val phone : String,
     val userName : String?,
-    val userId : Long
+    val userId : Long?
 ) : Parcelable

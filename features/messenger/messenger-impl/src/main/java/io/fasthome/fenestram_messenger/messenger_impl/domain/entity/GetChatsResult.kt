@@ -22,7 +22,7 @@ data class Chat(
 
 @Parcelize
 data class User(
-    val id : Long
+    val id : Long?
 ): Parcelable
 
 @Parcelize
