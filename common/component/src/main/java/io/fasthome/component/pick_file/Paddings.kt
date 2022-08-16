@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
+package io.fasthome.component.pick_file
 
 import androidx.annotation.Px
 

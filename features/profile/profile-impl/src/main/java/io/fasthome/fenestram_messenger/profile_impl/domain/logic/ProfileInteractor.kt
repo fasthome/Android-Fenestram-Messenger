@@ -1,8 +1,7 @@
-package io.fasthome.fenestram_messenger.auth_impl.domain.logic
+package io.fasthome.fenestram_messenger.profile_impl.domain.logic
 
-import io.fasthome.fenestram_messenger.auth_impl.domain.repo.ProfileRepo
-import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.model.PersonalData
-import io.fasthome.fenestram_messenger.util.onSuccess
+import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
+import io.fasthome.fenestram_messenger.profile_impl.domain.repo.ProfileRepo
 import java.util.*
 
 class ProfileInteractor(
@@ -10,7 +9,10 @@ class ProfileInteractor(
 ) {
 
     suspend fun sendPersonalData(personalData: PersonalData) =
-        profileRepo.sendPersonalData(personalData).onSuccess { }
+        profileRepo.sendPersonalData(personalData)
+
+    suspend fun getPersonalData() =
+        profileRepo.getPersonalData()
 
     /**
      * Метод для установки/обновления аватарки пользователя
@@ -18,4 +20,6 @@ class ProfileInteractor(
      */
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         profileRepo.uploadProfileImage(photoBytes, UUID.randomUUID().toString())
+
+
 }
