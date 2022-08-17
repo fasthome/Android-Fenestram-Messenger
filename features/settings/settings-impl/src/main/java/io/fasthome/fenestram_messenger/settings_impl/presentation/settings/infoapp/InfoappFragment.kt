@@ -24,8 +24,9 @@ class InfoappFragment: BaseFragment<InfoappState, InfoappEvent>(R.layout.fragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding){
         super.onViewCreated(view, savedInstanceState)
 
-        ibCancel.increaseHitArea(8.dp)
-        ibCancel.onClick { vm.onSettings() }
+        hooliToolbar.setOnButtonClickListener {
+            onBackPressed()
+        }
     }
 
     override fun renderState(state: InfoappState) = nothingToRender()
