@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:fontFamily="@font/poppins"
+        android:fontFamily="@font/poppins_regular"
         android:text="@string/timeviewcheck"
         android:textColor="@color/grey"
         android:textSize="11sp"

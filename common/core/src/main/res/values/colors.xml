@@ -19,4 +19,5 @@
     <color name="gray4">#C9C9C9</color>
     <color name="blue">#076ED1</color>
     <color name="status_bar">#272333</color>
+    <color name="red">#FF4B4B</color>
 </resources>

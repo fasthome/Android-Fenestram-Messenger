@@ -30,6 +30,7 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
             when (event) {
                 is BaseViewEvent.ScreenEvent -> handleEvent(event.event)
                 is BaseViewEvent.ShowMessage -> showMessage(event.message)
+                is BaseViewEvent.ShowDialog -> showMessage(event.message)
             }
         }
 

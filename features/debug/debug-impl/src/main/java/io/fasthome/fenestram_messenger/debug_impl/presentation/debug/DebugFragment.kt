@@ -43,6 +43,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onPersonalDataClicked()
         }
 
+        debugErrorDialog.onClick {
+            vm.onErrorDialogClicked()
+        }
+
     }
 
     override fun renderState(state: DebugState) = nothingToRender()
