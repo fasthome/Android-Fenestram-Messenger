@@ -6,7 +6,7 @@ import io.fasthome.fenestram_messenger.data.stored
 import kotlinx.coroutines.withContext
 
 class RefreshTokenStorage(
-    persistentStorageFactory: io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory,
+    persistentStorageFactory: KeyValueStorage.Factory,
 ) {
     private val preferencesStorage = persistentStorageFactory.create("tokens_persistent.prefs")
 
