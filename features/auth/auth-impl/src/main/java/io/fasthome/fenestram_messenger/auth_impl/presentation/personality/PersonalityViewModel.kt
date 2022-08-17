@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -33,7 +34,11 @@ class PersonalityViewModel(
                     is PickFileInterface.ResultEvent.Picked -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
                         updateState { state ->
-                            state.copy(avatarBitmap = bitmap, originalProfileImageFile = it.tempFile)
+                            state.copy(
+                                avatarBitmap = bitmap,
+                                originalProfileImageFile = it.tempFile,
+                                profileImageUrl = null
+                            )
                         }
                     }
                 }
@@ -65,18 +70,37 @@ class PersonalityViewModel(
                     text = PrintableText.Raw(detail.email),
                     visibility = detail.email.isNotEmpty()
                 )
-            ), null, null
+            ),
+            avatarBitmap = null,
+            originalProfileImageFile = null,
+            profileImageUrl = detail.profileImageUrl
         )
     }
 
-    fun checkPersonalData(personalData: PersonalData) {
+    fun checkPersonalData(name: String, nickname: String, birthday: String, mail: String) {
         viewModelScope.launch {
-            var avatar: String? = null
-            currentViewState.originalProfileImageFile?.let {
-                profileFeature.uploadProfileImage(it.readBytes()).onSuccess { result ->
-                    avatar = result.profileImagePath
+            val avatarFile = currentViewState.originalProfileImageFile
+            val avatarUrl = params.userDetail.profileImageUrl
+            val avatar = when {
+                avatarFile != null -> {
+                    profileFeature.uploadProfileImage(avatarFile.readBytes())
+                        .getOrNull()?.profileImagePath
+                }
+                avatarUrl != null -> {
+                    avatarUrl.substring(20, avatarUrl.length)
+                }
+                else -> {
+                    null
                 }
             }
+
+            val personalData = PersonalData(
+                username = name,
+                nickname = nickname,
+                birth = birthday,
+                email = mail,
+                avatar = avatar
+            )
 
             profileFeature.sendPersonalData(
                 personalData.copy(avatar = avatar)

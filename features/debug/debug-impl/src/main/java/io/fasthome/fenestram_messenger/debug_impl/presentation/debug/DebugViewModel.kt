@@ -11,19 +11,33 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
+import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
 
 class DebugViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val features : Features
+    private val features: Features
 ) : BaseViewModel<DebugState, DebugEvent>(router, requestParams) {
 
     class Features(
-        val authFeature : AuthFeature,
-        val profileGuestFeature: ProfileGuestFeature
+        val authFeature: AuthFeature,
+        val profileGuestFeature: ProfileGuestFeature,
+        val profileFeature: ProfileFeature
     )
+
+    private var personalData : PersonalData? = null
+
+    init {
+        viewModelScope.launch {
+            features.profileFeature.getPersonalData().onSuccess {
+                personalData = it
+            }
+        }
+    }
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
     private val personalDataLauncher = registerScreen(features.authFeature.personalDataNavigationContract) {}
@@ -47,11 +61,22 @@ class DebugViewModel(
     }
 
     fun onProfileGuestClicked() {
-        profileGuestLauncher.launch(ProfileGuestFeature.ProfileGuestParams(userName = "Example username", userNickname = "examplenickname"))
+        profileGuestLauncher.launch(
+            ProfileGuestFeature.ProfileGuestParams(
+                userName = "Example username",
+                userNickname = "examplenickname"
+            )
+        )
     }
 
     fun onPersonalDataClicked() {
-        personalDataLauncher.launch(NoParams)
+        personalDataLauncher.launch(AuthFeature.PersonalDataParams(
+            username = personalData?.username,
+            nickname = personalData?.nickname,
+            birth = personalData?.birth,
+            email = personalData?.email,
+            avatar = personalData?.avatar
+        ))
     }
 
 }

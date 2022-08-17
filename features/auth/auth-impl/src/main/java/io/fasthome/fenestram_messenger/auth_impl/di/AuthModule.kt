@@ -21,6 +21,7 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigat
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
+import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.LoginMapper
 import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
@@ -47,9 +48,11 @@ object AuthModule {
     private fun createDataModule() = module {
         single(::AuthRepoImpl) bindSafe AuthRepo::class
         singleAuthorizedService(::UsersService)
-        single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get()) }
+        single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get(), get()) }
 
         single { UserStorage(get(named(StorageQualifier.Simple))) }
+
+        factory(::LoginMapper)
     }
 
     private fun createDomainModule() = module {
