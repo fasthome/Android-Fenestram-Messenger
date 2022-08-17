@@ -20,6 +20,7 @@ object Modules {
     }
 
     object Feature {
+        val onboarding = FeatureTemplate("onboarding")
         val main = FeatureTemplate("main")
         val auth = FeatureTemplate("auth")
         val contacts = FeatureTemplate("contacts")
