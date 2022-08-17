@@ -14,6 +14,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.util.getOrNull
 import kotlinx.coroutines.launch
 
@@ -21,7 +22,8 @@ class MessengerViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val messengerInteractor: MessengerInteractor,
-    private val authFeature: AuthFeature
+    private val authFeature: AuthFeature,
+    private val profileGuestFeature: ProfileGuestFeature
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
     private val conversationlauncher = registerScreen(ConversationNavigationContract) {
@@ -29,6 +31,7 @@ class MessengerViewModel(
     }
 
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
+    private val profileGuestLauncher = registerScreen(profileGuestFeature.profileGuestNavigationContract)
 
     fun launchConversation(chatId: Long) {
         val chat = currentViewState.chats.find { it.id == chatId } ?: return
@@ -67,8 +70,17 @@ class MessengerViewModel(
         }
     }
 
-    fun onCreateChatClicked(){
+    fun onCreateChatClicked() {
         createGroupChatLauncher.launch(NoParams)
+    }
+
+    fun onProfileClicked(username: String) {
+        profileGuestLauncher.launch(
+            ProfileGuestFeature.ProfileGuestParams(
+                userName = username,
+                userNickname = ""
+            )
+        )
     }
 
 }
