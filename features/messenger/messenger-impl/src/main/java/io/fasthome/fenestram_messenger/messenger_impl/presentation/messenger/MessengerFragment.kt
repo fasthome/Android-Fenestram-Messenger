@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.getPrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 
 class MessengerFragment :
@@ -21,7 +22,14 @@ class MessengerFragment :
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
 
-    private var messageAdapter = MessengerAdapter { vm.launchConversation(it) }
+    private var messageAdapter = MessengerAdapter(
+        onChatClicked = {
+            vm.launchConversation(it)
+        },
+        onProfileClicked = {
+            vm.onProfileClicked(requireContext().getPrintableText(it.name))
+        }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
