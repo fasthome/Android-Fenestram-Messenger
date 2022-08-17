@@ -7,7 +7,7 @@
     </style>
 
     <style name="text_2" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/text_color_grey</item>
+        <item name="android:textColor">@color/gray2</item>
         <item name="android:fontFamily">@font/geometria</item>
     </style>
 

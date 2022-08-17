@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/recent_file_name"
-        style="@style/ProfileGuestFileText"
+        style="@style/Text.Dark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/recent_file_name_margin_start"

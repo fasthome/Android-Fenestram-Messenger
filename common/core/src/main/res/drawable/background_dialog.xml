@@ -6,6 +6,6 @@
         />
 
     <solid
-        android:color="@color/dark3"
+        android:color="@color/dark2"
         />
 </shape>

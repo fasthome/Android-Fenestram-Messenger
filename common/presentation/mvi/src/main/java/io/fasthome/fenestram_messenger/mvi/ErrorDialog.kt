@@ -12,23 +12,23 @@ object ErrorDialog {
 
     fun create(
         fragment: Fragment,
-        title: PrintableText?,
-        message: PrintableText
+        titleText: PrintableText?,
+        messageText: PrintableText
     ): Dialog {
         val errorBinding = DialogErrorBinding.inflate(fragment.layoutInflater)
 
         with(errorBinding) {
 
             val dialog = DialogBuilder(fragment)
-                .addCustomView(errorBinding.root)
+                .addCustomView(root)
                 .setCancelable(true)
 
-            title?.let {
-                errorBinding.title.setPrintableText(it)
+            titleText?.let {
+                title.setPrintableText(it)
             }
-            errorBinding.description.setPrintableText(message)
+            description.setPrintableText(messageText)
 
-            errorBinding.close.onClick {
+            close.onClick {
                 dialog.dismiss()
             }
             return dialog.build()
