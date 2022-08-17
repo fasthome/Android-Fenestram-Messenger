@@ -16,5 +16,7 @@ class ProfileFeatureImpl (val profileInteractor: ProfileInteractor) : ProfileFea
 
     override suspend fun sendPersonalData(personalData: PersonalData): CallResult<Unit> = profileInteractor.sendPersonalData(personalData)
 
+    override suspend fun getPersonalData(): CallResult<PersonalData> = profileInteractor.getPersonalData()
+
     override val profileNavigationContract = ProfileNavigationContract
 }

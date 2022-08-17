@@ -16,6 +16,7 @@ interface ProfileFeature {
 
     suspend fun uploadProfileImage(readBytes: ByteArray): CallResult<ProfileImageResult>
     suspend fun sendPersonalData(personalData: PersonalData): CallResult<Unit>
+    suspend fun getPersonalData(): CallResult<PersonalData>
 
     val profileNavigationContract: NavigationContractApi<NoParams, NoResult>
 
