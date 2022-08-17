@@ -19,7 +19,4 @@ class UsersResponse(
 
     @SerialName("email")
     val email: String?,
-
-    @SerialName("socket_id")
-    val socketId: String?,
 )
