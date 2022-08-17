@@ -7,8 +7,20 @@
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
+    <style name="Text.Dark">
+        <item name="android:textColor">@color/dark1</item>
+    </style>
+
     <style name="Text.Light">
-        <item name="android:textColor">@color/gray3</item>
+        <item name="android:textColor">@color/gray2</item>
+    </style>
+
+    <style name="Text.Light.12sp">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Text.Light.16sp">
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="Text.White">

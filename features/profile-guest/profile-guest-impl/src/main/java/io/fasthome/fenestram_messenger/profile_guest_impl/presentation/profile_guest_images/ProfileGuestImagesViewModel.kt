@@ -15,8 +15,6 @@ class ProfileGuestImagesViewModel(
 
     fun fetchImages() {
         val images = listOf(
-            RecentImagesViewItem(R.drawable.bg_call),
-            RecentImagesViewItem(R.drawable.bg_account_circle),
             RecentImagesViewItem(R.drawable.shape_button_standart),
             RecentImagesViewItem(R.drawable.shape_button_standart)
         )

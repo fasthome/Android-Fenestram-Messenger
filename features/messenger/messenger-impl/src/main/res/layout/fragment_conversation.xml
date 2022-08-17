@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
     android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
-        android:background="@color/toolbar_background"
+        android:background="@color/dark2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,7 +22,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="14dp"
             android:layout_marginBottom="5dp"
-            android:background="@color/toolbar_background"
+            android:background="@color/dark2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +35,7 @@
             android:layout_height="24dp"
             android:layout_marginVertical="10dp"
             android:layout_marginStart="10dp"
-            android:background="@color/toolbar_background"
+            android:background="@color/dark2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -45,14 +44,14 @@
 
         <ImageView
             android:id="@+id/avatar_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginStart="10dp"
             android:layout_marginVertical="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/back_button"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/bg_account_circle" />
+            app:srcCompat="@drawable/common_avatar" />
 
         <TextView
             android:id="@+id/username"
@@ -73,7 +72,7 @@
             android:layout_marginStart="11dp"
             android:layout_marginBottom="5dp"
             android:text="@string/statusonline"
-            android:textColor="@color/text_color_grey"
+            android:textColor="@color/gray2"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/avatar_image"
@@ -86,7 +85,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="66dp"
             android:layout_marginBottom="5dp"
-            android:background="@color/toolbar_background"
+            android:background="@color/dark2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -149,7 +148,7 @@
         android:layout_marginBottom="12dp"
         android:layout_weight="1"
         android:background="@drawable/ic_send_message"
-        android:backgroundTint="@color/send_message_background_color"
+        android:backgroundTint="@color/dark1"
         android:ems="10"
         android:fontFamily="@font/geometria"
         android:gravity="start|center"
@@ -162,7 +161,7 @@
         android:paddingEnd="48dp"
         android:paddingBottom="4dp"
         android:textColor="@color/white"
-        android:textColorHint="@color/text_color_grey"
+        android:textColorHint="@color/gray2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -174,7 +173,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
-        android:background="@color/send_message_background_color"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/AttachButtonPresentText"
         android:minHeight="43dp"
         app:layout_constraintBottom_toBottomOf="@id/input_message"
@@ -188,7 +187,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
-        android:background="@color/send_message_background_color"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/SendButtonPresentText"
         android:minHeight="43dp"
         app:layout_constraintBottom_toBottomOf="@id/input_message"
