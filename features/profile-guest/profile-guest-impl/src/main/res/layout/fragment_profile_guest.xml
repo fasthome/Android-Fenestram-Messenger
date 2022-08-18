@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_rv"
+    android:background="@color/dark1"
     android:fitsSystemWindows="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/appbar_color">
+        android:background="@color/dark2">
 
         <ImageView
             android:id="@+id/profile_guest_avatar"
@@ -22,7 +22,7 @@
             android:layout_height="80dp"
             android:layout_marginStart="@dimen/profile_guest_avatar_margin_start_top"
             android:layout_marginTop="@dimen/profile_guest_avatar_margin_start_top"
-            android:src="@drawable/bg_account_circle"
+            android:src="@drawable/common_avatar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,11 +50,11 @@
 
         <ImageButton
             android:id="@+id/profile_guest_video_chat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_marginTop="30dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/bg_video_chat"
+            android:src="@drawable/ic_facecall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.3"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,10 +62,10 @@
 
         <ImageButton
             android:id="@+id/profile_guest_call"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/bg_call"
+            android:src="@drawable/ic_call"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.7"
             app:layout_constraintStart_toStartOf="parent"

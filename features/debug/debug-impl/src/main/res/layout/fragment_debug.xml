@@ -50,5 +50,13 @@
             android:text="Выход"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/debug_error_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Error dialog"
+            tools:ignore="HardcodedText" />
+
     </LinearLayout>
 </ScrollView>
