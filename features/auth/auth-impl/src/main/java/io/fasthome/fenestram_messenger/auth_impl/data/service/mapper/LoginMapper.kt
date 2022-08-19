@@ -17,7 +17,7 @@ class LoginMapper(
         response.data?.let {
             return LoginResult.Success(
                 accessToken = AccessToken(it.accessToken),
-                refreshToken = RefreshToken("refresh"),
+                refreshToken = RefreshToken(it.refreshToken),
                 userDetail = UserDetail(
                     id =  it.id,
                     phone = it.phone,

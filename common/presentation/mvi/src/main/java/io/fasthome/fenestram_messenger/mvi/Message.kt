@@ -19,6 +19,14 @@ sealed class Message : Parcelable {
     ) : Message()
 
     @Parcelize
+    data class Dialog(
+        override val id: String = ID_NO_MATTER,
+        override val messageText: PrintableText,
+        val titleText: PrintableText? = null,
+        val actionText: PrintableText? = null,
+    ) : Message()
+
+    @Parcelize
     data class PopUp(
         override val messageText: PrintableText,
     ) : Message() {

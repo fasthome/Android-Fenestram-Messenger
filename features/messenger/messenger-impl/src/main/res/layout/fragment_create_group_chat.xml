@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_background"
     android:fitsSystemWindows="true">
 
     <io.fasthome.fenestram_messenger.core.ui.custom_view.HooliToolbar
@@ -27,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:text="@string/messenger_select_hint"
-        android:textColor="@color/gray3"
+        style="@style/Text.Light"
         app:layout_constraintBottom_toBottomOf="@+id/list_added_in_chat"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />

@@ -28,13 +28,13 @@ class TokensRepoImpl(
     private val updateTokensAction: NonCancellableAction<AccessToken> =
         NonCancellableAction(action = {
             try {
-//                val prevRefreshToken =
-//                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
-//                val response = tokensService.callUpdateToken(prevRefreshToken)
-//                val accessToken = AccessToken(response.accessToken)
-//                val refreshToken = RefreshToken(response.refreshToken)
-//                saveTokens(accessToken, refreshToken)
-                accessTokenStorage.getAccessToken() ?: throw UnauthorizedException()
+                val prevRefreshToken = checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
+                val prevAccessToken = checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                val response = tokensService.callUpdateToken(prevAccessToken, prevRefreshToken)
+                val accessToken = AccessToken(response.accessToken)
+                val refreshToken = RefreshToken(response.refreshToken)
+                saveTokens(accessToken, refreshToken)
+                accessToken
             } catch (exception: Exception) {
                 throw when (exception) {
                     is InternetConnectionException -> exception

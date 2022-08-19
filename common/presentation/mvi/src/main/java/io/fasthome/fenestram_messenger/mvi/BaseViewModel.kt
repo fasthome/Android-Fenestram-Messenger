@@ -129,12 +129,20 @@ abstract class BaseViewModel<S : Any, E : Any>(
         )
     }
 
+    protected fun showDialog(titleText: PrintableText, messageText: PrintableText) {
+        sendEvent(BaseViewEvent.ShowMessage(Message.Dialog(messageText = messageText, titleText = titleText)))
+    }
+
     protected fun onError(showErrorType: ShowErrorType, throwable: Throwable) {
         val errorInfo = errorConverter.convert(throwable)
 
         when (showErrorType) {
             ShowErrorType.Popup -> showPopup(errorInfo.description)
             ShowErrorType.Alert -> showAlert(
+                titleText = errorInfo.title,
+                messageText = errorInfo.description,
+            )
+            ShowErrorType.Dialog -> showDialog(
                 titleText = errorInfo.title,
                 messageText = errorInfo.description,
             )

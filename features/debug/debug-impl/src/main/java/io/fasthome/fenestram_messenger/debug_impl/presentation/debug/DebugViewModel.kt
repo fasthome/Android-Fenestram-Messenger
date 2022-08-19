@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.debug_impl.presentation.socket.SocketNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -77,6 +78,10 @@ class DebugViewModel(
             email = personalData?.email,
             avatar = personalData?.avatar
         ))
+    }
+
+    fun onErrorDialogClicked() {
+        onError(ShowErrorType.Dialog, Throwable())
     }
 
 }

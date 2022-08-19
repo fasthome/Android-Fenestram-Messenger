@@ -40,8 +40,6 @@ class ProfileGuestViewModel(
         )
 
         val photos = listOf(
-            RecentImagesViewItem(R.drawable.bg_call, 0, false),
-            RecentImagesViewItem(R.drawable.bg_account_circle, 0, false),
             RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),
             RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),
             RecentImagesViewItem(R.drawable.shape_button_standart, 0, false),

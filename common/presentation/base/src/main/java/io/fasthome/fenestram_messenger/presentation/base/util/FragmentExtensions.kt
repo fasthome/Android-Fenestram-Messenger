@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
+import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -61,6 +62,7 @@ fun <B : ViewBinding> Fragment.nestedViewBinding(
     inflate: ViewBindingInflate<B>,
 ) = object : ReadOnlyProperty<Fragment, B> {
     private var binding: B? = null
+
     @SuppressLint("StaticFieldLeak")
     private var nestedRoot: ViewGroup? = null
 
@@ -103,6 +105,11 @@ fun Fragment.showMessage(message: Message): Unit = when (message) {
     is Message.PopUp -> Toast
         .makeText(requireContext(), getPrintableText(message.messageText), Toast.LENGTH_LONG)
         .show()
+    is Message.Dialog ->
+        ErrorDialog
+            .create(this, message.titleText, message.messageText)
+            .show()
+
 }
 
 
