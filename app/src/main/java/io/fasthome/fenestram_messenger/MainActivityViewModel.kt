@@ -60,7 +60,15 @@ class MainActivityViewModel(
     }
 
     fun onAppStarted() {
-        startAuth()
+        viewModelScope.launch {
+            when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
+                is CallResult.Success -> when {
+                    !isAuthedResult.data -> startAuth()
+                    else -> openAuthedRootScreen()
+                }
+                is CallResult.Error -> startAuth()
+            }
+        }
     }
 
     private fun startAuth() {
