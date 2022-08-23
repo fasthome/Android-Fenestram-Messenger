@@ -27,11 +27,6 @@ class SettingsViewModel(
 
     private val infoappLauncher = registerScreen(InfoappNavigationContact)
 
-
-    fun backProfile() {
-        exitWithoutResult()
-    }
-
     fun onLogoutClicked() {
         viewModelScope.launch {
             features.authFeature.logout().withErrorHandled {}
@@ -54,5 +49,8 @@ class SettingsViewModel(
         }
     }
 
-
+    override fun onBackPressed(): Boolean {
+        exitWithoutResult()
+        return true
+    }
 }

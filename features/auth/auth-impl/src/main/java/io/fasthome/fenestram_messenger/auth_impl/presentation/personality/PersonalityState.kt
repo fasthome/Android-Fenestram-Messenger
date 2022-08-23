@@ -8,7 +8,8 @@ import java.io.File
 data class PersonalityState(
     val fieldsData: List<Field>,
     val avatarBitmap : Bitmap?,
-    val originalProfileImageFile : File?
+    val originalProfileImageFile : File?,
+    val profileImageUrl : String?
 ){
 
     data class Field(

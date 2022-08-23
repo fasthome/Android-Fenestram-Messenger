@@ -2,6 +2,6 @@
 <resources>
     <string name="settings">Настройки</string>
     <string name="changeColor">Изменить цвет</string>
-    <string name="aboutAppendix">О приложении</string>
+    <string name="settings_about_app">О приложении</string>
     <string name="exitAccount">Выход из учетной записи</string>
 </resources>

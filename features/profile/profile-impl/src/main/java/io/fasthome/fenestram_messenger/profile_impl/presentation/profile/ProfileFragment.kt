@@ -3,53 +3,65 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
-import io.fasthome.component.permission.PermissionComponentContract
+import io.fasthome.component.pick_file.PickFileComponentContract
+import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.databinding.FragmentProfileBinding
+import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileState.EditTextKey
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.model.Bytes
 
 class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragment_profile) {
 
-    private val permissionInterface by registerFragment(PermissionComponentContract)
+    private val pickImageFragment by registerFragment(
+        componentFragmentContractInterface = PickFileComponentContract,
+        paramsProvider = {
+            PickFileComponentParams(
+                mimeType = PickFileComponentParams.MimeType.Image(
+                    compressToSize = Bytes(
+                        Bytes.BYTES_PER_MB
+                    )
+                )
+            )
+        }
+    )
+
     override val vm: ProfileViewModel by viewModel(
         getParamsInterface = ProfileNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::permissionInterface)
+            .register(::pickImageFragment)
     )
-    private val galleryLauncher = resultLauncher { result ->
-        val data: Uri? = result.data?.data
-        vm.onUpdatePhoto(data)
-    }
 
     private val binding by fragmentViewBinding(FragmentProfileBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        ivAvatar.increaseHitArea(8.dp)
-        ivAvatar.onClick{ vm.requestPermissionAndLoadPhoto() }
+        ivAvatar.onClick {
+            vm.onAvatarClicked()
+        }
 
-        ibEditData.setOnClickListener {
+        ibEditData.onClick {
             vm.editClicked()
         }
-        bCancel.setOnClickListener {
+        bCancel.onClick {
             vm.cancelClicked()
         }
-        bDone.setOnClickListener {
+        bDone.onClick {
             vm.cancelClicked()
         }
-        ibSettings.setOnClickListener{
+        ibSettings.onClick {
             vm.startSettings()
         }
 
@@ -59,9 +71,29 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
-        ivAvatar.load(state.avatar) {
-            transformations(CircleCropTransformation())
-            placeholder(R.drawable.ic_baseline_account_circle_24)
+        state.fieldsData.forEach { field ->
+            when (field.key) {
+                EditTextKey.NicknameKey -> nickContainer.includeEditText
+                EditTextKey.BirthdateKey -> hbDayContainer.includeEditText
+                EditTextKey.MailKey -> emailContainer.includeEditText
+                EditTextKey.UsernameKey -> username
+            }.let { view ->
+                view.setPrintableText(field.text)
+            }
+        }
+
+        state.avatarBitmap?.let { bitmap ->
+            ivAvatar.load(bitmap) {
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_baseline_account_circle_24)
+            }
+        }
+
+        state.avatarUrl?.let { url ->
+            ivAvatar.load(url) {
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_baseline_account_circle_24)
+            }
         }
 
         llButtons.isVisible = state.isEdit
@@ -71,12 +103,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         hbDayContainer.includeEditText.isEnabled = state.isEdit
     }
 
-    override fun handleEvent(event: ProfileEvent) {
-        when (event) {
-            ProfileEvent.LaunchGallery -> {
-                galleryLauncher.launch(getGalleryIntent())
-            }
-        }
-    }
+    override fun handleEvent(event: ProfileEvent) = noEventsExpected()
 
 }

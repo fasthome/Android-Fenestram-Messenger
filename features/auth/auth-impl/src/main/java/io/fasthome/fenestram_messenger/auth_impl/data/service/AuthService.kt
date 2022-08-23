@@ -16,7 +16,8 @@ import io.fasthome.network.tokens.TokensRepo
 
 class AuthService(
     clientFactory: NetworkClientFactory,
-    private val tokensRepo: TokensRepo
+    private val tokensRepo: TokensRepo,
+    private val loginMapper: LoginMapper
 ) {
     private val client = clientFactory.create()
 
@@ -37,6 +38,6 @@ class AuthService(
             body = LoginRequest(phoneNumber, code)
         )
 
-        return LoginMapper.responseToLogInResult(response)
+        return loginMapper.responseToLogInResult(response)
     }
 }

@@ -8,10 +8,11 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class UserDetail(
-    val id : Long,
+    val id: Long,
     val phone: String,
     val name: String,
     val email: String,
     val nickname: String,
-    val birth: String
+    val birth: String,
+    val profileImageUrl: String?
 ) : Parcelable

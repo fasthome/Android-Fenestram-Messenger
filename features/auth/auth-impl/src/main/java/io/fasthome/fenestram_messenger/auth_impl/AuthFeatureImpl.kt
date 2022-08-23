@@ -11,10 +11,7 @@ import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigat
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeNavigationContract
-import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
-import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
-import io.fasthome.fenestram_messenger.navigation.contract.mapNoParams
-import io.fasthome.fenestram_messenger.navigation.contract.mapParams
+import io.fasthome.fenestram_messenger.navigation.contract.*
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -28,11 +25,19 @@ class AuthFeatureImpl(
 ) : AuthFeature {
 
     override val authNavigationContract = WelcomeNavigationContract
-    override val personalDataNavigationContract: NavigationContractApi<NoParams, AuthFeature.AuthResult> =
-        PersonalityNavigationContract.mapNoParams(
+    override val personalDataNavigationContract: NavigationContractApi<AuthFeature.PersonalDataParams, AuthFeature.AuthResult> =
+        PersonalityNavigationContract.map(
             paramsMapper = {
                 PersonalityNavigationContract.Params(
-                    userDetail = UserDetail(0, "", "", "", "", "")
+                    userDetail = UserDetail(
+                        id = 0,
+                        phone = "",
+                        name = it.username ?: "",
+                        email = it.email ?: "",
+                        nickname = it.nickname ?: "",
+                        birth = it.birth ?: "",
+                        profileImageUrl = it.avatar ?: ""
+                    )
                 )
             },
             resultMapper = { it }

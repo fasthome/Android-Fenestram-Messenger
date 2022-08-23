@@ -2,6 +2,10 @@ plugins {
     `android-common`
 }
 
+android {
+    enableViewBinding()
+}
+
 dependencies {
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.util))

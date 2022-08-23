@@ -3,6 +3,6 @@
     android:shape="rectangle">
     <stroke
         android:width="@dimen/bg_sv_width"
-        android:color="@color/manatee" />
+        android:color="@color/gray1" />
     <corners android:radius="@dimen/bg_sv_radius" />
 </shape>

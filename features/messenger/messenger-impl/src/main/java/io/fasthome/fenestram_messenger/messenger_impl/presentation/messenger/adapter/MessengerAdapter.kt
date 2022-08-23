@@ -3,25 +3,26 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.ad
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MessangerChatItemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
 
-class MessengerAdapter(OnClickChat: (Long) -> Unit) : AsyncListDifferDelegationAdapter<MessengerViewItem>(
-    AdapterUtil.diffUtilItemCallbackEquals(),
-    AdapterUtil.adapterDelegatesManager(
-        createMessengerAdapter(OnClickChat)
-    )
-) {}
+class MessengerAdapter(onChatClicked: (Long) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) :
+    AsyncListDifferDelegationAdapter<MessengerViewItem>(
+        AdapterUtil.diffUtilItemCallbackEquals(),
+        AdapterUtil.adapterDelegatesManager(
+            createMessengerAdapter(onChatClicked, onProfileClicked)
+        )
+    ) {}
 
-fun createMessengerAdapter(chatClicked: (Long) -> Unit) =
+fun createMessengerAdapter(chatClicked: (Long) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) =
     adapterDelegateViewBinding<MessengerViewItem, MessangerChatItemBinding>(
         MessangerChatItemBinding::inflate
     ) {
 
-        binding.root.setOnClickListener {
+        binding.root.onClick {
             chatClicked(item.id)
+        }
+        binding.profilePicture.onClick {
+            onProfileClicked(item)
         }
         bindWithBinding {
             nameView.setPrintableText(item.name)

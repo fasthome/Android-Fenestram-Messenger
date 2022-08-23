@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/app_background"
     android:clickable="true">
 
     <TextView
@@ -37,9 +36,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:fontFamily="@font/poppins"
+        android:fontFamily="@font/poppins_regular"
         android:text="@string/timeviewcheck"
-        android:textColor="@color/grey"
+        android:textColor="@color/gray1"
         android:textSize="11sp"
         android:layout_marginStart="10dp"
         app:layout_constraintStart_toStartOf="parent"

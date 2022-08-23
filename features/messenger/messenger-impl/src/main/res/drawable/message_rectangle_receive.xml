@@ -9,7 +9,7 @@
         android:topRightRadius="10dp"
     />
     <solid
-        android:color="@color/toolbar_background"
+        android:color="@color/dark2"
     />
 
 

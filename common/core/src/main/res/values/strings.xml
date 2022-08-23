@@ -16,4 +16,5 @@
     <string name="common_input_code_label">Введите код из СМС</string>
     <string name="common_incorrect_code_label">Неверный код</string>
     <string name="common_resend_code_button">Отправить заново?</string>
+    <string name="common_close">Закрыть</string>
 </resources>

@@ -15,7 +15,7 @@ interface AuthFeature {
 
     val authNavigationContract: NavigationContractApi<NoParams, AuthResult>
 
-    val personalDataNavigationContract: NavigationContractApi<NoParams, AuthResult>
+    val personalDataNavigationContract: NavigationContractApi<PersonalDataParams, AuthResult>
 
     suspend fun getUserId(): CallResult<Long?>
 
@@ -51,4 +51,13 @@ interface AuthFeature {
         val name: String,
         val phone : String
     )
+
+    @Parcelize
+    data class PersonalDataParams(
+        val username: String?,
+        val nickname: String?,
+        val birth: String?,
+        val email: String?,
+        val avatar: String?
+    ) : Parcelable
 }

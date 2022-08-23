@@ -8,6 +8,9 @@ class LoginResponse(
     @SerialName("access_token")
     val accessToken: String,
 
+    @SerialName("refresh_token")
+    val refreshToken: String,
+
     @SerialName("id")
     val id: Long,
 
@@ -25,6 +28,9 @@ class LoginResponse(
 
     @SerialName("birth")
     val birth: String?,
+
+    @SerialName("avatar")
+    val avatar: String?,
 
     @SerialName("player_id")
     val playerId: String?,

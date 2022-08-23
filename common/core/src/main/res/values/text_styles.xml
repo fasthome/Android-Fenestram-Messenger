@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LightText">
-        <item name="android:textColor">@color/gray3</item>
+    <style name="Text">
         <item name="android:textSize">16sp</item>
-        <item name="fontFamily">@font/geometria</item>
+        <item name="fontFamily">@font/poppins_regular</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
-    
+
+    <style name="Text.Dark">
+        <item name="android:textColor">@color/dark1</item>
+    </style>
+
+    <style name="Text.Light">
+        <item name="android:textColor">@color/gray2</item>
+    </style>
+
+    <style name="Text.Light.12sp">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Text.Light.16sp">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.White">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="Text.Red">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <style name="Text.Red.16sp">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.Red.Medium">
+        <item name="android:fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="Text.Red.Medium.16sp">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.Red.Medium.18sp">
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>
