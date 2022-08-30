@@ -13,7 +13,6 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.Co
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper.contactsListToViewList
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -29,7 +28,8 @@ class ContactsViewModel(
     requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
     private val contactsInteractor: ContactsInteractor,
-    private val messengerFeature: MessengerFeature
+    private val messengerFeature: MessengerFeature,
+    private val contactsMapper: ContactsMapper
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
 
     init {
@@ -58,7 +58,7 @@ class ContactsViewModel(
             if (permissionGranted) {
                 contactsInteractor.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts->
                     updateState { state ->
-                        originalContacts = contactsListToViewList(contacts).toMutableList()
+                        originalContacts = contactsMapper.contactsListToViewList(contacts).toMutableList()
                         if (originalContacts.isEmpty()) {
                             state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
                         } else {

@@ -24,11 +24,10 @@ class ContactsService(clientFactory: NetworkClientFactory) {
             .let(ContactsMapper::responseToContactsList)
 
     suspend fun sendContacts(contacts: List<Contact>) {
-        val contactsRequest = contacts.map(ContactsMapper::contactToRequest)
         return client
             .runPost<List<ContactsRequest>, BaseResponse<Unit>>(
                 path = "api/v1/contacts",
-                body = contactsRequest
+                body = ContactsMapper.contactListToRequest(contacts)
             )
             .requireData()
     }

@@ -66,5 +66,14 @@
             android:text="Delete contacts"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/debug_group_guest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Group guest"
+            android:visibility="gone"
+            tools:ignore="HardcodedText" />
+
     </LinearLayout>
 </ScrollView>

@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.data.KeyValueStorage
 import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.data.prefs.InMemoryKeyValueStorage
 import io.fasthome.fenestram_messenger.data.prefs.PreferenceKeyValueStorage
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.single
 import org.koin.core.module.Module
@@ -16,7 +17,8 @@ object DataModule {
     operator fun invoke(): List<Module> =
         listOf(
             createKeyValue(),
-            createFile()
+            createFile(),
+            createExt()
         )
 
     private fun createKeyValue() = module {
@@ -38,6 +40,10 @@ object DataModule {
 
     private fun createFile() = module{
         single(::FileSystemInterfaceImpl) bindSafe FileSystemInterface::class
+    }
+
+    private fun createExt() = module{
+        single(::ProfileImageUrlConverter)
     }
 
 }

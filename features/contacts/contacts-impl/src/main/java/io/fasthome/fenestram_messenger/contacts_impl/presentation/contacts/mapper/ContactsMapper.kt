@@ -3,9 +3,10 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapp
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.util.PrintableText
 
-object ContactsMapper {
+class ContactsMapper(private val profileImageUrlConverter : ProfileImageUrlConverter) {
 
     fun contactsListToViewList(contacts: List<Contact>) : List<ContactsViewItem>{
         val viewItems = contacts.map {
@@ -34,7 +35,7 @@ object ContactsMapper {
                 val user = contact.user!!
                 ContactsViewItem.Api(
                     userId = user.id,
-                    avatar = user.avatar,
+                    avatar = profileImageUrlConverter.convert(user.avatar),
                     name = PrintableText.Raw(user.name)
                 )
             }

@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.debug_impl.presentation.socket.SocketNavigationContract
+import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -29,7 +30,8 @@ class DebugViewModel(
         val authFeature: AuthFeature,
         val profileGuestFeature: ProfileGuestFeature,
         val profileFeature: ProfileFeature,
-        val contactsFeature: ContactsFeature
+        val contactsFeature: ContactsFeature,
+        val groupGuestFeature: GroupGuestFeature
     )
 
     private var personalData: PersonalData? = null
@@ -46,6 +48,7 @@ class DebugViewModel(
     private val personalDataLauncher = registerScreen(features.authFeature.personalDataNavigationContract) {}
     private val profileGuestLauncher = registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
     private val socketLauncher = registerScreen(SocketNavigationContract)
+    private val groupGuestLauncher = registerScreen(features.groupGuestFeature.groupGuestNavigationContract)
 
     override fun createInitialState() = DebugState()
 
@@ -95,6 +98,10 @@ class DebugViewModel(
                     sendEvent(DebugEvent.ContactsDeleted)
                 })
         }
+    }
+
+    fun onGroupGuestClicked() {
+        groupGuestLauncher.launch(NoParams)
     }
 
 }

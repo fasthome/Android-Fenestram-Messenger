@@ -11,12 +11,24 @@ import java.util.Collections.sort
 
 object ContactsMapper {
 
-    fun contactToRequest(contact: Contact): ContactsRequest {
+    fun contactListToRequest(contacts: List<Contact>): List<ContactsRequest> =
+        contacts.mapNotNull {
+            contactToRequest(it)
+        }
+
+
+    fun contactToRequest(contact: Contact): ContactsRequest? {
         val phone = contact.phone
             .replace("-", "")
             .replace("(", "")
             .replace(")", "")
             .trim()
+
+        if (phone.length < 9
+            || phone.contains('*')
+            || phone.contains('#')){
+            return null
+        }
 
         var subphone = phone
         if (phone.length >= 10) {
@@ -41,11 +53,11 @@ object ContactsMapper {
                     User(
                         id = user.id,
                         phone = user.phone,
-                        name = user.name,
-                        nickname = user.nickname,
-                        email = user.email,
-                        birth = user.birth,
-                        avatar = user.avatar,
+                        name = user.name ?: "",
+                        nickname = user.nickname ?: "",
+                        email = user.email ?: "",
+                        birth = user.birth ?: "",
+                        avatar = user.avatar ?: "",
                         isOnline = user.isOnline,
                         lastActive = ZonedDateTime.now()
                     )

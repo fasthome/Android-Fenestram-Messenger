@@ -45,8 +45,13 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         debugErrorDialog.onClick {
             vm.onErrorDialogClicked()
         }
+
         debugDeleteContacts.onClick {
             vm.onDeleteContactsClicked()
+        }
+
+        debugGroupGuest.onClick {
+            vm.onGroupGuestClicked()
         }
 
     }
