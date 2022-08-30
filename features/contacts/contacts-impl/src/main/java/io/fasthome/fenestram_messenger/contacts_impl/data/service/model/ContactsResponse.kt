@@ -22,4 +22,20 @@ class ContactsResponse(
 class User(
     @SerialName("id")
     val id: Long,
+    @SerialName("phone")
+    val phone: String,
+    @SerialName("name")
+    val name: String,
+    @SerialName("nickname")
+    val nickname: String,
+    @SerialName("email")
+    val email: String,
+    @SerialName("birth")
+    val birth: String,
+    @SerialName("avatar")
+    val avatar: String,
+    @SerialName("is_online")
+    val isOnline: Boolean,
+    @SerialName("last_active")
+    val lastActive: String,
 )

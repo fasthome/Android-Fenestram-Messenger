@@ -18,7 +18,7 @@ class ProfileService(
 
     suspend fun sendPersonalData(personalData: PersonalData) {
         val body = with(personalData) {
-            ProfileRequest(username, nickname, email, birth, avatar /*player_id*/)
+            ProfileRequest(username, nickname, email, birth, avatar, playerId)
         }
 
         return client.runPatch<ProfileRequest, BaseResponse<Unit>>(

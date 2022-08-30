@@ -14,6 +14,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.MessengerImpl
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.network.di.NetworkClientFactoryQualifier
 import io.fasthome.fenestram_messenger.core.environment.Environment
@@ -35,8 +36,10 @@ object MessengerModule {
     private fun createDataModule() = module {
         single(::MessengerImpl) bindSafe MessengerRepo::class
 
+        factory(::GetChatsMapper)
+
         single { MessengerSocket(get<Environment>().endpoints.apiBaseUrl) }
-        single { MessengerService(get(named(NetworkClientFactoryQualifier.Authorized))) }
+        single { MessengerService(get(named(NetworkClientFactoryQualifier.Authorized)), get()) }
     }
 
     private fun createDomainModule() = module {

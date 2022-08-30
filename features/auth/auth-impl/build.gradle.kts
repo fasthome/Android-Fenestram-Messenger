@@ -22,6 +22,7 @@ dependencies {
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)
     implementation(Deps.Coil.svg)
+    implementation(Deps.Firebase.messaging)
 
     api(Deps.maskara)
 }

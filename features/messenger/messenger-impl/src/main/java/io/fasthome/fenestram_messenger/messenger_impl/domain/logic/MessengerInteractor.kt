@@ -9,7 +9,6 @@ import io.fasthome.fenestram_messenger.util.onSuccess
 import io.fasthome.network.tokens.TokensRepo
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 
 class MessengerInteractor(
@@ -25,8 +24,8 @@ class MessengerInteractor(
 
     suspend fun getChats(selfUserId: Long, limit: Int, page: Int) = messageRepo.getChats(selfUserId, limit, page)
 
-    suspend fun postChats(name: String, users: List<User>) =
-        messageRepo.postChats(name, users.mapNotNull { it.id })
+    suspend fun postChats(name: String, users: List<User>, isGroup : Boolean) =
+        messageRepo.postChats(name, users.mapNotNull { it.id }, isGroup)
 
     suspend fun getChatById(id: Long) = messageRepo.getChatById(id).onSuccess { }
 

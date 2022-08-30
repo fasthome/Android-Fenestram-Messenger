@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.GetChatsResponse
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
@@ -8,7 +9,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.User
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
 
-object GetChatsMapper {
+class GetChatsMapper(private val environment: Environment) {
 
     fun responseToGetChatsResult(response: GetChatsResponse, selfUserId: Long): GetChatsResult {
         response.data?.let { list ->
@@ -27,14 +28,15 @@ object GetChatsMapper {
                                 text = lastMessage.text,
                                 userSenderId = lastMessage.initiator,
                                 messageType = lastMessage.type,
-                                date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime)
+                                date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
                             )
                         }
                         ),
                         time = lastMessage?.date?.let(NetworkMapperUtil::parseZonedDateTime)
                             ?.withZoneSameInstant(ZoneId.systemDefault()) ?: chat.date.let(
                             NetworkMapperUtil::parseZonedDateTime
-                        ).withZoneSameInstant(ZoneId.systemDefault())
+                        ).withZoneSameInstant(ZoneId.systemDefault()),
+                        avatar = chat.avatar?.let { environment.endpoints.apiBaseUrl.dropLast(1) + it }
                     )
                 }
             )

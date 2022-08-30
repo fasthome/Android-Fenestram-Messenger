@@ -18,4 +18,7 @@ dependencies {
 
 //    implementation(Deps.Firebase.firestore)
 
+    implementation(Deps.Coil.coil)
+    implementation(Deps.Coil.base)
+    implementation(Deps.Coil.svg)
 }

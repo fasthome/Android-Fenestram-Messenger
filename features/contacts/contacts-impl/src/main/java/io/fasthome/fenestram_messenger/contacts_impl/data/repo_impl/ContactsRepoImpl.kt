@@ -12,14 +12,17 @@ import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.fenestram_messenger.util.getOrThrow
 
-class ContactsRepoImpl(private val authFeature: AuthFeature, private val contactsService: ContactsService) : ContactsRepo {
+class ContactsRepoImpl(private val authFeature: AuthFeature, private val contactsService: ContactsService) :
+    ContactsRepo {
 
     override suspend fun getContacts(): List<Contact> =
         authFeature.getUsers().getOrThrow().map {
             Contact(
+                id = it.id,
                 phone = it.phone,
                 userName = it.name,
-                userId = it.id
+                userId = it.id,
+                user = null
             )
         }
 
@@ -29,6 +32,10 @@ class ContactsRepoImpl(private val authFeature: AuthFeature, private val contact
 
     override suspend fun loadContacts(): CallResult<List<Contact>> = callForResult {
         contactsService.getContacts()
+    }
+
+    override suspend fun deleteContacts(contactIds: List<Long>) = callForResult {
+        contactsService.deleteContacts(contactIds)
     }
 
 

@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsRes
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -36,7 +37,7 @@ class ConversationViewModel(
             }
 
             if (params.chat.id == null) {
-                messengerInteractor.postChats(name = params.chat.name, users = params.chat.users)
+                messengerInteractor.postChats(name = params.chat.name, users = params.chat.users, isGroup = false)
                     .withErrorHandled {
                         if (it is PostChatsResult.Success) {
                             chatId = it.chatId
@@ -74,9 +75,10 @@ class ConversationViewModel(
                 id = chatId ?: return@launch,
                 text = mess,
                 type = "text"
-            ).getOrThrow()
+            ).withErrorHandled(
+                showErrorType = ShowErrorType.Dialog,
+                onSuccess = {})
         }
-
     }
 
     fun onUserClicked() {

@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.debug_impl.presentation.socket.SocketNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -27,10 +28,11 @@ class DebugViewModel(
     class Features(
         val authFeature: AuthFeature,
         val profileGuestFeature: ProfileGuestFeature,
-        val profileFeature: ProfileFeature
+        val profileFeature: ProfileFeature,
+        val contactsFeature: ContactsFeature
     )
 
-    private var personalData : PersonalData? = null
+    private var personalData: PersonalData? = null
 
     init {
         viewModelScope.launch {
@@ -71,17 +73,28 @@ class DebugViewModel(
     }
 
     fun onPersonalDataClicked() {
-        personalDataLauncher.launch(AuthFeature.PersonalDataParams(
-            username = personalData?.username,
-            nickname = personalData?.nickname,
-            birth = personalData?.birth,
-            email = personalData?.email,
-            avatar = personalData?.avatar
-        ))
+        personalDataLauncher.launch(
+            AuthFeature.PersonalDataParams(
+                username = personalData?.username,
+                nickname = personalData?.nickname,
+                birth = personalData?.birth,
+                email = personalData?.email,
+                avatar = personalData?.avatar
+            )
+        )
     }
 
     fun onErrorDialogClicked() {
         onError(ShowErrorType.Dialog, Throwable())
+    }
+
+    fun onDeleteContactsClicked() {
+        viewModelScope.launch {
+            features.contactsFeature.deleteAllContacts()
+                .withErrorHandled(showErrorType = ShowErrorType.Dialog, onSuccess = {
+                    sendEvent(DebugEvent.ContactsDeleted)
+                })
+        }
     }
 
 }

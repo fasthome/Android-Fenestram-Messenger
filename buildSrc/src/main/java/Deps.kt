@@ -12,9 +12,11 @@ object Deps {
         const val coordinatorLayout =
             "androidx.coordinatorlayout:coordinatorlayout:${Versions.AndroidX.coordinatorLayout}"
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.AndroidX.constraintLayout}"
-        const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.AndroidX.swipeRefreshLayout}"
+        const val swipeRefreshLayout =
+            "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.AndroidX.swipeRefreshLayout}"
 
-        const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.AndroidX.navigationVersion}"
+        const val navigationFragment =
+            "androidx.navigation:navigation-fragment-ktx:${Versions.AndroidX.navigationVersion}"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Versions.AndroidX.navigationVersion}"
         const val paging = "androidx.paging:paging-runtime-ktx:3.1.0"
         const val legacy = "androidx.legacy:legacy-support-v4:1.0.0"
@@ -43,11 +45,12 @@ object Deps {
         const val crashlitycs = "com.google.firebase:firebase-crashlytics:18.2.7"
         const val analitycs = "com.google.firebase:firebase-analytics:20.0.2"
         const val firestore = "com.google.firebase:firebase-firestore-ktx:24.1.2"
+        const val messaging = "com.google.firebase:firebase-messaging-ktx:23.0.5"
     }
 
     object Moxy {
         const val moxy = "com.github.moxy-community:moxy:2.2.2"
-        const val androidx ="com.github.moxy-community:moxy-androidx:${Versions.moxy}"
+        const val androidx = "com.github.moxy-community:moxy-androidx:${Versions.moxy}"
         const val ktx = "com.github.moxy-community:moxy-ktx:${Versions.moxy}"
         const val compiler = "com.github.moxy-community:moxy-compiler:${Versions.moxy}"
     }

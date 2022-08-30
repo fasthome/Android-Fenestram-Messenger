@@ -12,13 +12,16 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.Co
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.onSuccess
+import io.ktor.util.reflect.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -26,6 +29,7 @@ class ContactsViewModel(
     requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
     private val contactsInteractor: ContactsInteractor,
+    private val messengerFeature: MessengerFeature
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
 
     init {
@@ -38,6 +42,8 @@ class ContactsViewModel(
             is ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
         }
     }
+
+    private val conversationLauncher = registerScreen(messengerFeature.conversationNavigationContract)
 
     @SuppressLint("MissingPermission")
     fun requestPermissionAndLoadContacts() {
@@ -93,12 +99,14 @@ class ContactsViewModel(
     }
 
     fun onContactClicked(contactsViewItem: ContactsViewItem) {
-//        conversationLauncher.launch(
-//            MessengerFeature.Params(
-//                userId = contactsViewItem.id,
-//                userName = contactsViewItem.name
-//            )
-//        )
+        if(contactsViewItem is ContactsViewItem.Api){
+            conversationLauncher.launch(
+                MessengerFeature.Params(
+                    userId = contactsViewItem.userId,
+                    userName = getPrintableRawText(contactsViewItem.name)
+                )
+            )
+        }
     }
 
 }

@@ -9,5 +9,8 @@ class PostChatsRequest(
     val name: String?,
 
     @SerialName("users")
-    val users: List<Long?>?
+    val users: List<Long?>?,
+
+    @SerialName("is_group")
+    val isGroup: Boolean
 )

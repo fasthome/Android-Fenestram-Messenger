@@ -14,4 +14,8 @@ interface ContactsFeature {
     val contactsNavigationContract : NavigationContractApi<NoParams, NoResult>
 
     suspend fun getContacts(): CallResult<List<Contact>>
+
+    suspend fun deleteContacts(contactIds : List<Long>) : CallResult<Unit>
+
+    suspend fun deleteAllContacts() : CallResult<Unit>
 }

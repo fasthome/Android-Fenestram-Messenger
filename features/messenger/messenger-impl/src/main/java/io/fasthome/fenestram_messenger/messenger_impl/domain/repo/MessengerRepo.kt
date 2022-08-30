@@ -11,7 +11,7 @@ import io.fasthome.network.tokens.AccessToken
 interface MessengerRepo {
     suspend fun sendMessage(id: Long, text: String, type: String): CallResult<SendMessageResult>
     suspend fun getChats(selfUserId : Long, limit: Int, page: Int): CallResult<GetChatsResult>
-    suspend fun postChats(name: String, users: List<Long>): CallResult<PostChatsResult>
+    suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean): CallResult<PostChatsResult>
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
     fun closeSocket()
     fun getClientSocket(token: AccessToken, callback: MessageResponse.() -> Unit)

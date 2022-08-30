@@ -7,6 +7,7 @@ import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.ContactsMapper
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsRequest
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsResponse
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.DeleteContactsRequest
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
@@ -30,6 +31,16 @@ class ContactsService(clientFactory: NetworkClientFactory) {
                 body = contactsRequest
             )
             .requireData()
+    }
+
+    suspend fun deleteContacts(contactIds: List<Long>) {
+        val body = DeleteContactsRequest(
+            contacts = contactIds
+        )
+        return client.runDelete<DeleteContactsRequest, BaseResponse<Unit>>(
+            path = "api/v1/contacts",
+            body = body
+        ).requireData()
     }
 
 }

@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter
 
+import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
@@ -21,6 +22,6 @@ fun createContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
         }
         bindWithBinding {
             contactName.setPrintableText(item.name)
-            newMessage.visibility = item.newMessageVisibility
+            newMessage.isVisible = false
         }
     }

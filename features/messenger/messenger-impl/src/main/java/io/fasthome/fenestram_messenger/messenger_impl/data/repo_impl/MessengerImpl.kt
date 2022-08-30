@@ -29,9 +29,9 @@ class MessengerImpl(
             messengerService.getChats(selfUserId, limit, page)
         }
 
-    override suspend fun postChats(name: String, users: List<Long>): CallResult<PostChatsResult> =
+    override suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean): CallResult<PostChatsResult> =
         callForResult {
-            messengerService.postChats(name, users)
+            messengerService.postChats(name, users, isGroup)
         }
 
     override suspend fun getChatById(id: Long): CallResult<GetChatByIdResult> = callForResult {

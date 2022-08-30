@@ -12,7 +12,9 @@ interface ContactsRepo {
     suspend fun getContacts() : List<Contact>
 
     suspend fun uploadContacts(contacts: List<Contact>): CallResult<Unit>
+
     suspend fun loadContacts() : CallResult<List<Contact>>
 
+    suspend fun deleteContacts(contactIds: List<Long>): CallResult<Unit>
 
 }
