@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.terrakok.cicerone.NavigatorHolder
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -48,6 +49,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycle.doOnStartStop(onStart = vm::onViewActive, onStop = vm::onViewInactive)
+
+
     }
 
     override fun onResumeFragments() {

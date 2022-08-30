@@ -37,7 +37,8 @@ class CreateInfoViewModel(
                     name = chatName,
                     users = params.contacts.map { User(id = it.userId) },
                     messages = listOf(),
-                    time = null
+                    time = null,
+                    avatar = null
                 )
             )
         )

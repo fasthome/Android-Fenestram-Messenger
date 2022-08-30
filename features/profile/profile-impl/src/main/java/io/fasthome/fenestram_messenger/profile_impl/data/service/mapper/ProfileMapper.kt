@@ -14,7 +14,8 @@ class ProfileMapper(
             nickname = response.nickname,
             birth = response.birth,
             email = response.email,
-            avatar = environment.endpoints.apiBaseUrl.dropLast(1) + response.avatar
+            avatar = environment.endpoints.apiBaseUrl.dropLast(1) + response.avatar,
+            playerId = ""
         )
 
 }

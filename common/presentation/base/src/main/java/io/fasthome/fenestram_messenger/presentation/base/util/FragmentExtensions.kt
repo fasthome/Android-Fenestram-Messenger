@@ -14,6 +14,7 @@ import androidx.viewbinding.ViewBinding
 import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
+import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.util.doOnDestroy
 import io.fasthome.fenestram_messenger.util.getPrintableText
@@ -91,6 +92,9 @@ fun <B : ViewBinding> Fragment.nestedViewBinding(
 
 internal fun FragmentManager.onBackPressed(): Boolean =
     fragments.any { it is BackPressConsumer && it.onBackPressed() }
+
+internal fun FragmentManager.onFabClicked(): Boolean =
+    fragments.any { it is FabConsumer && it.onFabClicked() }
 
 fun Fragment.showMessage(message: Message): Unit = when (message) {
     is Message.Alert -> {

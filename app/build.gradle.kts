@@ -110,6 +110,7 @@ dependencies {
 
     implementation(Deps.Firebase.crashlitycs)
     implementation(Deps.Firebase.analitycs)
+    implementation(Deps.Firebase.messaging)
 
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)

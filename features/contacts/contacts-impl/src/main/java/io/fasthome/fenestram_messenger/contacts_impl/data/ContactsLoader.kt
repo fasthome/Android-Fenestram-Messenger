@@ -1,19 +1,23 @@
-package io.fasthome.fenestram_messenger.contacts_impl.presentation.util
+package io.fasthome.fenestram_messenger.contacts_impl.data
 
+import android.Manifest
 import android.content.ContentProviderOperation
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
+import androidx.annotation.RequiresPermission
+import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 
 
 class ContactsLoader(private val context: Context) {
 
-    private var _contactsList: MutableList<ContactsViewItem> = ArrayList()
+    private var _contactsList: MutableList<LocalContact> = ArrayList()
 
-    fun onStartLoading(): List<ContactsViewItem> {
+    @RequiresPermission(Manifest.permission.READ_CONTACTS)
+    fun fetchLocalContacts(): List<LocalContact> {
         val cr = context.contentResolver
         _contactsList = ArrayList()
 
@@ -44,11 +48,9 @@ class ContactsLoader(private val context: Context) {
                             .replace(" ", "")
                     if (!mobileNoSet.contains(number)) {
                         _contactsList.add(
-                            ContactsViewItem(
-                                id.toLong(),
-                                0,
-                                name,
-                                8,
+                            LocalContact(
+                                name = name,
+                                phone = number
                             )
                         )
                         mobileNoSet.add(number)

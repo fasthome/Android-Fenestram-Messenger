@@ -24,5 +24,6 @@
     <string name="contact_add_second_name_hint">(необязательно)</string>
     <string name="no_permission">Вы не разрешили приложению доступ\nк контактам</string>
     <string name="contacts_allow">Разрешить</string>
+    <string name="contacts_unregister_users">Пока не зарегистрированы в приложении</string>
 
 </resources>

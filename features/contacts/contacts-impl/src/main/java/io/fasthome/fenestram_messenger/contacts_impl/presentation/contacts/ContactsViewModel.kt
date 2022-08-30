@@ -4,57 +4,37 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.telecom.Call
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper.contactsListToViewList
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import io.fasthome.fenestram_messenger.util.*
+import io.ktor.util.reflect.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
-    private val contactsLoader: ContactsLoader,
-    private val features: Features
+    private val contactsInteractor: ContactsInteractor,
+    private val messengerFeature: MessengerFeature
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
 
     init {
-//        requestPermissionAndLoadContacts()
-
-        viewModelScope.launch {
-            features.authFeature.getUsers().onSuccess { users ->
-                updateState { state ->
-                    state.copy(loadingState = LoadingState.Success(users.map {
-                        ContactsViewItem(
-                            id = it.id,
-                            avatar = 0,
-                            name = it.name,
-                            newMessageVisibility = 0
-                        )
-                    }))
-                }
-            }
-        }
+        requestPermissionAndLoadContacts()
     }
-
-    class Features(
-        val authFeature: AuthFeature,
-        val messengerFeature: MessengerFeature
-    )
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
@@ -62,20 +42,30 @@ class ContactsViewModel(
             is ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
         }
     }
-    private val conversationLauncher =
-        registerScreen(features.messengerFeature.conversationNavigationContract)
 
-    private var currentContacts: List<ContactsViewItem> = listOf()
+    private var originalContacts = mutableListOf<ContactsViewItem>()
 
-    private val contactsLoaderScope = CoroutineScope(Job() + Dispatchers.IO)
-    private var contactsLoaderJob: Job? = null
+    private val conversationLauncher = registerScreen(messengerFeature.conversationNavigationContract)
 
+    @SuppressLint("MissingPermission")
     fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
+            updateState { state ->
+                state.copy(loadingState = LoadingState.Loading)
+            }
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
 
             if (permissionGranted) {
-                fetchContacts()
+                contactsInteractor.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts->
+                    updateState { state ->
+                        originalContacts = contactsListToViewList(contacts).toMutableList()
+                        if (originalContacts.isEmpty()) {
+                            state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
+                        } else {
+                            state.copy(loadingState = LoadingState.Success(data = originalContacts))
+                        }
+                    }
+                }
             } else {
                 updateState {
                     ContactsState(
@@ -91,44 +81,38 @@ class ContactsViewModel(
         return ContactsState(LoadingState.None, true)
     }
 
-    private fun fetchContacts() {
-        contactsLoaderJob = contactsLoaderScope.launch {
-            currentContacts = contactsLoader.onStartLoading()
-            if (currentContacts.isEmpty()) {
-                updateState {
-                    ContactsState(
-                        LoadingState.Error(error = ErrorInfo.createEmpty()),
-                        true
-                    )
-                }
-            } else {
-                updateState { ContactsState(LoadingState.Success(currentContacts), true) }
-            }
-        }
-    }
-
-    fun stopJob() {
-        contactsLoaderJob?.cancel()
-    }
-
     fun addContact() {
         addContactLauncher.launch(NoParams)
     }
 
     fun filterContacts(text: String) {
-        val filteredContacts = currentContacts.filter {
-            it.name.startsWith(text.trim(), true)
+        val filteredContacts = if (text.isEmpty()) {
+            originalContacts
+        } else {
+            currentViewState.loadingState.dataOrNull?.filter {
+                if (it !is ContactsViewItem.Header) {
+                    getPrintableRawText(it.name).startsWith(text.trim(), true)
+                } else {
+                    false
+                }
+            } ?: listOf()
         }
-        updateState { ContactsState(LoadingState.Success(filteredContacts), true) }
+        updateState { state ->
+            state.copy(
+                loadingState = LoadingState.Success(filteredContacts)
+            )
+        }
     }
 
     fun onContactClicked(contactsViewItem: ContactsViewItem) {
-        conversationLauncher.launch(
-            MessengerFeature.Params(
-                userId = contactsViewItem.id,
-                userName = contactsViewItem.name
+        if (contactsViewItem is ContactsViewItem.Api) {
+            conversationLauncher.launch(
+                MessengerFeature.Params(
+                    userId = contactsViewItem.userId,
+                    userName = getPrintableRawText(contactsViewItem.name)
+                )
             )
-        )
+        }
     }
 
 }

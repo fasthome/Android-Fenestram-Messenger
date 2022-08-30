@@ -1,7 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service
 
-import android.util.Log
-import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.PostChatsMapper
@@ -14,7 +12,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageR
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 
-class MessengerService(clientFactory: NetworkClientFactory) {
+class MessengerService(clientFactory: NetworkClientFactory, private val getChatsMapper: GetChatsMapper) {
     private val client = clientFactory.create()
 
     suspend fun sendMessage(id: Long, text: String, type: String): SendMessageResult {
@@ -32,13 +30,13 @@ class MessengerService(clientFactory: NetworkClientFactory) {
             params = mapOf("limit" to limit, "page" to page)
         )
 
-        return GetChatsMapper.responseToGetChatsResult(response, selfUserId)
+        return getChatsMapper.responseToGetChatsResult(response, selfUserId)
     }
 
-    suspend fun postChats(name: String, users: List<Long>): PostChatsResult {
+    suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean): PostChatsResult {
         val response: BaseResponse<PostChatsResponse> = client.runPost(
             path = "api/v1/chats",
-            body = PostChatsRequest(name, users)
+            body = PostChatsRequest(name, users, isGroup)
         )
 
         return PostChatsMapper.responseToPostChatsResult(response)

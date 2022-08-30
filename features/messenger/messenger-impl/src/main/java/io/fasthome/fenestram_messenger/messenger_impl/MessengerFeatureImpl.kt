@@ -19,7 +19,7 @@ class MessengerFeatureImpl : MessengerFeature {
     override val conversationNavigationContract: NavigationContractApi<MessengerFeature.Params, NoResult> =
         ConversationNavigationContract.mapParams {
             ConversationNavigationContract.Params(
-                chat = Chat(id = null, users = listOf(User(id = it.userId)), messages = listOf(), time = null, name = it.userName)
+                chat = Chat(id = null, users = listOf(User(id = it.userId)), messages = listOf(), time = null, name = it.userName, avatar = null)
             )
         }
 

@@ -16,6 +16,7 @@ fun toMessengerViewItem(chat : Chat): MessengerViewItem? {
         lastMessage = chat.messages.lastOrNull()?.let { message ->
             PrintableText.Raw(message.text)
         } ?: PrintableText.EMPTY,
-        time = PrintableText.Raw(dateFormatter.format(chat.time))
+        time = PrintableText.Raw(dateFormatter.format(chat.time)),
+        profileImageUrl = chat.avatar
     )
 }

@@ -16,6 +16,10 @@ import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import com.google.firebase.messaging.FirebaseMessaging
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
+import kotlin.coroutines.suspendCoroutine
+
 
 class PersonalityViewModel(
     router: ContractRouter,
@@ -94,17 +98,22 @@ class PersonalityViewModel(
                 }
             }
 
+            val playerId = getFirebaseToken()
+
             val personalData = PersonalData(
                 username = name,
                 nickname = nickname,
                 birth = birthday,
                 email = mail,
-                avatar = avatar
+                avatar = avatar,
+                playerId = playerId
             )
 
             profileFeature.sendPersonalData(
                 personalData.copy(avatar = avatar)
-            ).onSuccess {
+            ).withErrorHandled(
+                showErrorType = ShowErrorType.Dialog
+            ) {
                 exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
             }
         }
@@ -136,6 +145,16 @@ class PersonalityViewModel(
 
     fun onSelectPhotoClicked() {
         pickFileInterface.pickFile()
+    }
+
+    private suspend fun getFirebaseToken() = suspendCoroutine<String> { continuation ->
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                val token: String = task.result
+                continuation.resumeWith(Result.success(token))
+            }.addOnFailureListener {
+                continuation.resumeWith(Result.failure(it))
+            }
     }
 
 }

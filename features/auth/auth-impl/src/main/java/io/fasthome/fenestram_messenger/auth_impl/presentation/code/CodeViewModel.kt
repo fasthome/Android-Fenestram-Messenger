@@ -62,22 +62,12 @@ class CodeViewModel(
 
     fun resendCode() {
         resendCodeTimer.start()
-//        viewModelScope.launch {
-//            /**
-//             * Отпрвка кода на телефон
-//             */
-//            authInteractor.sendCode(params.phoneNumber) {
-//                when (this) {
-//                    is LoginResult.SuccessSendRequest -> {}
-//                    is LoginResult.ConnectionError -> {
-//                        sendEvent(CodeEvent.ConnectionError)
-//                    }
-//                    else -> {
-//                        sendEvent(CodeEvent.IndefiniteError)
-//                    }
-//                }
-//            }
-//        }
+        viewModelScope.launch {
+            /**
+             * Отпрвка кода на телефон
+             */
+            authInteractor.sendCode(params.phoneNumber)
+        }
     }
 
     fun overWriteCode(code: String) {

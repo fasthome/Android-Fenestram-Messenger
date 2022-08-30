@@ -10,11 +10,11 @@ import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteract
 import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileNavigationContract
 import io.fasthome.fenestram_messenger.util.CallResult
 
-class ProfileFeatureImpl (val profileInteractor: ProfileInteractor) : ProfileFeature {
+class ProfileFeatureImpl (private val profileInteractor: ProfileInteractor) : ProfileFeature {
 
     override suspend fun uploadProfileImage(readBytes: ByteArray): CallResult<ProfileImageResult> = profileInteractor.uploadProfileImage(readBytes)
 
-    override suspend fun sendPersonalData(personalData: PersonalData): CallResult<Unit> = profileInteractor.sendPersonalData(personalData)
+    override suspend fun sendPersonalData(personalData: PersonalData): CallResult<PersonalData> = profileInteractor.sendPersonalData(personalData)
 
     override suspend fun getPersonalData(): CallResult<PersonalData> = profileInteractor.getPersonalData()
 

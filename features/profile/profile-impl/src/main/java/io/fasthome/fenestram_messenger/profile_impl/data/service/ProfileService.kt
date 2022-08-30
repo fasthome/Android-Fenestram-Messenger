@@ -16,15 +16,18 @@ class ProfileService(
 ) {
     private val client = clientFactory.create()
 
-    suspend fun sendPersonalData(personalData: PersonalData) {
+    suspend fun sendPersonalData(personalData: PersonalData): PersonalData {
         val body = with(personalData) {
-            ProfileRequest(username, nickname, email, birth, avatar /*player_id*/)
+            ProfileRequest(username, nickname, email, birth, avatar, playerId)
         }
 
-        return client.runPatch<ProfileRequest, BaseResponse<Unit>>(
-            path = "api/v1/profile",
-            body = body
-        ).requireData()
+        return client
+            .runPatch<ProfileRequest, BaseResponse<ProfileResponse>>(
+                path = "api/v1/profile",
+                body = body
+            )
+            .requireData()
+            .let(profileMapper::responseToPersonalData)
     }
 
     suspend fun uploadProfileImage(photoBytes: ByteArray, guid: String): ProfileImageResult {
