@@ -7,6 +7,21 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 
 object ContactsMapper {
 
+    fun contactsListToViewList(contacts: List<Contact>) : List<ContactsViewItem>{
+        val viewItems = contacts.map {
+            contactToViewItem(it)
+        }.toMutableList()
+
+        val apiContactsSize = viewItems.filterIsInstance<ContactsViewItem.Api>().size
+
+        viewItems.add(apiContactsSize, ContactsViewItem.Header(
+            avatar = Any(),
+            name = PrintableText.StringResource(R.string.contacts_unregister_users)
+        ))
+
+        return viewItems
+    }
+
     fun contactToViewItem(contact: Contact): ContactsViewItem {
         return when {
             contact.user == null -> {

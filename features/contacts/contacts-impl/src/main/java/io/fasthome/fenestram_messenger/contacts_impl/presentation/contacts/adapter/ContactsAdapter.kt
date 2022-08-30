@@ -3,25 +3,50 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adap
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
+import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemHeaderBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.util.*
 
-class ContactsAdapter(onItemClicked : (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
+class ContactsAdapter(onItemClicked: (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
-        createContactsAdapterDelegate(onItemClicked)
+        createApiContactsAdapterDelegate(onItemClicked),
+        createLocalContactsAdapterDelegate(onItemClicked),
+        createHeaderAdapterDelegate()
     )
 ) {}
 
-fun createContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
-    adapterDelegateViewBinding<ContactsViewItem, ContactItemBinding>(
+fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
+    adapterDelegateViewBinding<ContactsViewItem.Api, ContactItemBinding>(
         ContactItemBinding::inflate,
     ) {
-        binding.root.onClick{
+        binding.root.onClick {
             onItemClicked(item)
         }
         bindWithBinding {
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
+        }
+    }
+
+fun createLocalContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
+    adapterDelegateViewBinding<ContactsViewItem.Local, ContactItemBinding>(
+        ContactItemBinding::inflate,
+    ) {
+        binding.root.onClick {
+            onItemClicked(item)
+        }
+        bindWithBinding {
+            contactName.setPrintableText(item.name)
+            newMessage.isVisible = false
+        }
+    }
+
+fun createHeaderAdapterDelegate() =
+    adapterDelegateViewBinding<ContactsViewItem.Header, ContactItemHeaderBinding>(
+        ContactItemHeaderBinding::inflate,
+    ) {
+        bindWithBinding {
+            contactName.setPrintableText(item.name)
         }
     }

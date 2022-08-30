@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.telecom.Call
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
@@ -12,15 +13,14 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.Co
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper.contactsListToViewList
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
-import io.fasthome.fenestram_messenger.util.onSuccess
+import io.fasthome.fenestram_messenger.util.*
 import io.ktor.util.reflect.*
 import kotlinx.coroutines.launch
 
@@ -43,17 +43,27 @@ class ContactsViewModel(
         }
     }
 
+    private var originalContacts = mutableListOf<ContactsViewItem>()
+
     private val conversationLauncher = registerScreen(messengerFeature.conversationNavigationContract)
 
     @SuppressLint("MissingPermission")
     fun requestPermissionAndLoadContacts() {
         viewModelScope.launch {
+            updateState { state ->
+                state.copy(loadingState = LoadingState.Loading)
+            }
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
 
             if (permissionGranted) {
-                contactsInteractor.getContactsAndUploadContacts().onSuccess {
+                contactsInteractor.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts->
                     updateState { state ->
-                        state.copy(loadingState = LoadingState.Success(data = it.map(ContactsMapper::contactToViewItem)))
+                        originalContacts = contactsListToViewList(contacts).toMutableList()
+                        if (originalContacts.isEmpty()) {
+                            state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
+                        } else {
+                            state.copy(loadingState = LoadingState.Success(data = originalContacts))
+                        }
                     }
                 }
             } else {
@@ -71,35 +81,31 @@ class ContactsViewModel(
         return ContactsState(LoadingState.None, true)
     }
 
-    private fun fetchContacts() {
-//        contactsLoaderJob = contactsLoaderScope.launch {
-//            currentContacts = contactsLoader.fetchLocalContacts()
-//            if (currentContacts.isEmpty()) {
-//                updateState {
-//                    ContactsState(
-//                        LoadingState.Error(error = ErrorInfo.createEmpty()),
-//                        true
-//                    )
-//                }
-//            } else {
-//                updateState { ContactsState(LoadingState.Success(currentContacts), true) }
-//            }
-//        }
-    }
-
     fun addContact() {
         addContactLauncher.launch(NoParams)
     }
 
     fun filterContacts(text: String) {
-//        val filteredContacts = currentContacts.filter {
-//            it.name.startsWith(text.trim(), true)
-//        }
-//        updateState { ContactsState(LoadingState.Success(filteredContacts), true) }
+        val filteredContacts = if (text.isEmpty()) {
+            originalContacts
+        } else {
+            currentViewState.loadingState.dataOrNull?.filter {
+                if (it !is ContactsViewItem.Header) {
+                    getPrintableRawText(it.name).startsWith(text.trim(), true)
+                } else {
+                    false
+                }
+            } ?: listOf()
+        }
+        updateState { state ->
+            state.copy(
+                loadingState = LoadingState.Success(filteredContacts)
+            )
+        }
     }
 
     fun onContactClicked(contactsViewItem: ContactsViewItem) {
-        if(contactsViewItem is ContactsViewItem.Api){
+        if (contactsViewItem is ContactsViewItem.Api) {
             conversationLauncher.launch(
                 MessengerFeature.Params(
                     userId = contactsViewItem.userId,

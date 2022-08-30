@@ -3,15 +3,22 @@
  */
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.ContactsAdapter
+import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -22,7 +29,7 @@ import io.fasthome.fenestram_messenger.util.isLoading
 import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 
-class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts) {
+class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts), FabConsumer {
 
     private val permissionInterface by registerFragment(PermissionComponentContract)
 
@@ -43,10 +50,18 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         with(binding) {
             contactsList.adapter = contactsAdapter
 
-            contactsAdd.setOnClickListener {
-                vm.addContact()
-            }
+            binding.contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
 
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    newText?.let {
+                        vm.filterContacts(it)
+                    }
+                    return true
+                }
+            })
             contactsAddFirst.setOnClickListener {
                 vm.addContact()
             }
@@ -57,28 +72,15 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        binding.contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                vm.filterContacts(newText)
-                return false
-            }
-        })
-    }
-
     override fun renderState(state: ContactsState) = with(binding){
+        noPermissionContainer.isVisible = false
+        errorContainer.isVisible = false
         when (state.permissionGranted) {
             true -> {
                 noPermissionContainer.isVisible = false
                 renderLoadingState(
                     loadingState = state.loadingState,
-                    progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = contentContainer,
+                    progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = null,
                     renderData = {
                         contactsAdapter.items = it
                     }
@@ -89,8 +91,8 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
                 renderLoadingState(
                     loadingState = state.loadingState,
                     progressContainer = progressContainer,
-                    errorContainer = noPermissionContainer,
-                    contentContainer = contentContainer,
+                    errorContainer = errorContainer,
+                    contentContainer = null,
                     renderData = {
                         contactsAdapter.items = it
                     }
@@ -103,6 +105,11 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         when(event) {
             ContactsEvent.ContactAddCancelled -> Toast.makeText(context, "Не удалось сохранить контакт", Toast.LENGTH_SHORT)
         }
+    }
+
+    override fun onFabClicked(): Boolean {
+        vm.addContact()
+        return super.onFabClicked()
     }
 
 

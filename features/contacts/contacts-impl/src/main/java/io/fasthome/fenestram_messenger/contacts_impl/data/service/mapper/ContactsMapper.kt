@@ -16,11 +16,16 @@ object ContactsMapper {
             .replace("-", "")
             .replace("(", "")
             .replace(")", "")
-            .replace("+", "")
+            .trim()
+
+        var subphone = phone
+        if (phone.length >= 10) {
+            subphone = "+7" + phone.substring(phone.length - 10, phone.length)
+        }
 
         return ContactsRequest(
             name = contact.userName,
-            phone = phone
+            phone = subphone
         )
     }
 
@@ -55,9 +60,9 @@ object ContactsMapper {
             collator.compare(o1.userName, o2.userName)
         }
 
-        return contacts.sortedBy {
-            it.userId != null
-        }
+        return contacts.sortedWith(compareBy {
+            it.user == null
+        })
     }
 
 }

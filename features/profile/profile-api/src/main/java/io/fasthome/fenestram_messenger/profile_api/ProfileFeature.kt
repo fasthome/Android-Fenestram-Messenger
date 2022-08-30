@@ -15,7 +15,7 @@ import kotlinx.parcelize.Parcelize
 interface ProfileFeature {
 
     suspend fun uploadProfileImage(readBytes: ByteArray): CallResult<ProfileImageResult>
-    suspend fun sendPersonalData(personalData: PersonalData): CallResult<Unit>
+    suspend fun sendPersonalData(personalData: PersonalData): CallResult<PersonalData>
     suspend fun getPersonalData(): CallResult<PersonalData>
 
     val profileNavigationContract: NavigationContractApi<NoParams, NoResult>

@@ -18,4 +18,9 @@ sealed class ContactsViewItem {
         override val avatar: String,
         override val name: PrintableText,
     ) : ContactsViewItem()
+
+    class Header(
+        override val avatar: Any,
+        override val name: PrintableText
+    ) : ContactsViewItem()
 }

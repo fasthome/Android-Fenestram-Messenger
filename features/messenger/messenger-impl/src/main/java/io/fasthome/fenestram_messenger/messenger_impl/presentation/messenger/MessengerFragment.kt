@@ -34,9 +34,6 @@ class MessengerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.chatList.adapter = messageAdapter
-        binding.chatAdd.onClick {
-            vm.onCreateChatClicked()
-        }
         vm.fetchChats()
     }
 
@@ -46,5 +43,9 @@ class MessengerFragment :
 
     override fun handleEvent(event: MessengerEvent) = noEventsExpected()
 
+    override fun onFabClicked(): Boolean {
+        vm.onCreateChatClicked()
+        return super.onFabClicked()
+    }
 
 }

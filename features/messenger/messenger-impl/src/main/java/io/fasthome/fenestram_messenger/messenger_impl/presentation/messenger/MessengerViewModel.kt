@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.toMessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -23,7 +24,7 @@ class MessengerViewModel(
     requestParams: RequestParams,
     private val messengerInteractor: MessengerInteractor,
     private val authFeature: AuthFeature,
-    private val profileGuestFeature: ProfileGuestFeature
+    profileGuestFeature: ProfileGuestFeature
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
     private val conversationlauncher = registerScreen(ConversationNavigationContract) {
@@ -52,7 +53,9 @@ class MessengerViewModel(
                 selfUserId = authFeature.getUserId().getOrNull() ?: return@launch,
                 limit = 50,
                 page = 1
-            ).withErrorHandled { result ->
+            ).withErrorHandled(
+                showErrorType = ShowErrorType.Dialog
+            ) { result ->
                 when (result) {
                     is GetChatsResult.Success -> {
                         val chats = result.chats

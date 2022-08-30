@@ -26,6 +26,9 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
         debug.onClick{
             vm.debugClicked()
         }
+        fab.onClick {
+            onFabClicked()
+        }
         navigationView.setOnItemSelectedListener { item ->
             val tabType = TabsMapper.mapItemIdToTab(item) ?: return@setOnItemSelectedListener false
             vm.onShowFragment(tabType)
@@ -35,6 +38,7 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
 
     override fun renderState(state: MainState) {
         binding.debug.isVisible = state.debugVisible
+        binding.fab.isVisible = state.fabVisible
         val tabToOpen = state.currentTab
 
         binding.navigationView.selectedItemId = TabsMapper.mapTabToItemId(tabToOpen)

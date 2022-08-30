@@ -19,5 +19,9 @@ dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.network))
 
+    androidTestImplementation(Deps.Tests.androidxJunit)
+    androidTestImplementation(Deps.Tests.espresso)
+    androidTestImplementation(Deps.Tests.junit)
+
     api(Deps.maskara)
 }
