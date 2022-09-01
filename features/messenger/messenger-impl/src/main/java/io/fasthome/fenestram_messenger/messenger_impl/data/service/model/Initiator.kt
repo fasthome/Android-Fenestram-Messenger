@@ -11,9 +11,6 @@ class Initiator(
     @SerialName("phone")
     val phone: String?,
 
-    @SerialName("code")
-    val code: String?,
-
     @SerialName("name")
     val name: String?,
 
@@ -28,12 +25,6 @@ class Initiator(
 
     @SerialName("birth")
     val birth: String?,
-
-    @SerialName("player_id")
-    val playerId: String?,
-
-    @SerialName("socket_id")
-    val socketId: String?,
 
     @SerialName("is_online")
     val isOnline: Boolean,

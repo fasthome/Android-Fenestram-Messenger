@@ -27,7 +27,7 @@ class MessengerFragment :
             vm.launchConversation(it)
         },
         onProfileClicked = {
-            vm.onProfileClicked(requireContext().getPrintableText(it.name))
+            vm.onProfileClicked(it)
         }
     )
 

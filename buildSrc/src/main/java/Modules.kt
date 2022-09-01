@@ -28,5 +28,6 @@ object Modules {
         val settings = FeatureTemplate("settings")
         val profileGuest = FeatureTemplate("profile-guest")
         val debug = FeatureTemplate("debug")
+        val groupGuest = FeatureTemplate("group-guest")
     }
 }

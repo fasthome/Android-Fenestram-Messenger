@@ -9,10 +9,9 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
-import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
+import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
-import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

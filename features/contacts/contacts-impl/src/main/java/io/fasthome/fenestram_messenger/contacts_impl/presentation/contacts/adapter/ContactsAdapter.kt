@@ -5,6 +5,7 @@ import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemHeaderBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.util.*
 
 class ContactsAdapter(onItemClicked: (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
@@ -26,6 +27,9 @@ fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) 
         bindWithBinding {
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
+            contactAvatar.loadCircle(
+                url = item.avatar
+            )
         }
     }
 

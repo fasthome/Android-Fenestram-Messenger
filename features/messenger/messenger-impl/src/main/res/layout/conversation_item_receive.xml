@@ -35,12 +35,12 @@
         android:id="@+id/send_time_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/poppins_regular"
         android:text="@string/timeviewcheck"
         android:textColor="@color/gray1"
         android:textSize="11sp"
-        android:layout_marginStart="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message_content" />
 

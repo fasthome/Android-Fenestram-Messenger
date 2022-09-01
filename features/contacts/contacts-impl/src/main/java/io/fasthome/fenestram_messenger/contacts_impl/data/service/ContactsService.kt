@@ -12,7 +12,7 @@ import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
 
-class ContactsService(clientFactory: NetworkClientFactory) {
+class ContactsService(clientFactory: NetworkClientFactory, private val contactsMapper: ContactsMapper) {
     private val client = clientFactory.create()
 
     suspend fun getContacts(): List<Contact> =
@@ -21,14 +21,13 @@ class ContactsService(clientFactory: NetworkClientFactory) {
                 path = "api/v1/contacts"
             )
             .requireData()
-            .let(ContactsMapper::responseToContactsList)
+            .let(contactsMapper::responseToContactsList)
 
     suspend fun sendContacts(contacts: List<Contact>) {
-        val contactsRequest = contacts.map(ContactsMapper::contactToRequest)
         return client
             .runPost<List<ContactsRequest>, BaseResponse<Unit>>(
                 path = "api/v1/contacts",
-                body = contactsRequest
+                body = contactsMapper.contactListToRequest(contacts)
             )
             .requireData()
     }

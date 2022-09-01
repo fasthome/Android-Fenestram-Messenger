@@ -1,5 +1,7 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
+import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
+import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
@@ -14,7 +16,8 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val params: ProfileGuestNavigationContract.Params
+    private val params: ProfileGuestNavigationContract.Params,
+    private val groupParticipantsInterface : GroupParticipantsInterface
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     private val filesProfileGuestLauncher = registerScreen(ProfileGuestFilesNavigationContract) { result ->
@@ -29,8 +32,10 @@ class ProfileGuestViewModel(
         ProfileGuestState(
             userName = PrintableText.Raw(params.userName),
             userNickname = PrintableText.Raw(params.userNickname),
+            userAvatar = params.userAvatar,
             recentFiles = listOf(),
-            recentImages = listOf()
+            recentImages = listOf(),
+            isGroup = params.isGroup,
         )
 
     fun fetchFilesAndPhotos() {

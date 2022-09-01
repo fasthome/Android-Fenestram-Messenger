@@ -7,11 +7,13 @@ import io.fasthome.fenestram_messenger.contacts_impl.data.ContactsLoader
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsViewModel
 import io.fasthome.fenestram_messenger.contacts_impl.data.repo_impl.ContactsRepoImpl
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.ContactsService
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.ContactsMapper
 import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
 import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.viewModel
+import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.network.di.singleAuthorizedService
 import org.koin.dsl.module
 
@@ -30,6 +32,7 @@ object ContactsModule {
     private fun createDataModule() = module {
         factory(::ContactsRepoImpl) bindSafe ContactsRepo::class
         singleAuthorizedService(::ContactsService)
+        single(::ContactsMapper)
     }
 
     private fun createDomainModule() = module {
@@ -40,8 +43,6 @@ object ContactsModule {
         viewModel(::ContactsViewModel)
         viewModel(::ContactAddViewModel)
 
-        single {
-            ContactsLoader(context = get())
-        }
+        single(::ContactsLoader)
     }
 }

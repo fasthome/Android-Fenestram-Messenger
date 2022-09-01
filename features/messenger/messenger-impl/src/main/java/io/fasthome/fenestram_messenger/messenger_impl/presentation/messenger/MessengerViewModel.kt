@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInte
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.toMessengerViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -17,6 +18,7 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.launch
 
 class MessengerViewModel(
@@ -77,11 +79,14 @@ class MessengerViewModel(
         createGroupChatLauncher.launch(NoParams)
     }
 
-    fun onProfileClicked(username: String) {
+    fun onProfileClicked(messengerViewItem: MessengerViewItem) {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
-                userName = username,
-                userNickname = ""
+                userName = getPrintableRawText(messengerViewItem.name),
+                userNickname = "",
+                userAvatar = messengerViewItem.profileImageUrl ?: "",
+                listOf(),
+                false
             )
         )
     }

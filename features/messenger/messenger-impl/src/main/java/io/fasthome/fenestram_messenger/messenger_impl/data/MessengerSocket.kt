@@ -1,8 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data
 
 import android.util.Log
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessage
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -28,11 +27,12 @@ class MessengerSocket(private val baseUrl: String) {
                 val message = Json.decodeFromString<SocketMessage>(it[0].toString())
                 callback(with(message.message) {
                     MessageResponse(
-                        this?.id?.toLong() ?: 1,
-                        this?.initiatorId ?: 1L,
-                        this?.text ?: "",
-                        this?.type ?: "",
-                        this?.date ?: ""
+                        id = this?.id ?: 1,
+                        initiatorId = this?.initiatorId ?: 1L,
+                        text = this?.text ?: "",
+                        type = this?.type ?: "",
+                        date = this?.date ?: "",
+                        initiator = this?.initiator
                     )
                 })
 

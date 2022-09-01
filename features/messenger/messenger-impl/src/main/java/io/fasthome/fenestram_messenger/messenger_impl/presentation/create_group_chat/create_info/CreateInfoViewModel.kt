@@ -3,8 +3,8 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info
 
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.User
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.mapper.mapToContactViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -35,10 +35,11 @@ class CreateInfoViewModel(
                 Chat(
                     null,
                     name = chatName,
-                    users = params.contacts.map { User(id = it.userId) },
+                    users = params.contacts.map { it.userId ?: 0 },
                     messages = listOf(),
                     time = null,
-                    avatar = null
+                    avatar = null,
+                    isGroup = true
                 )
             )
         )

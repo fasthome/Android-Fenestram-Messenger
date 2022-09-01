@@ -27,4 +27,6 @@ data class User(
     val avatar : String,
     val isOnline : Boolean,
     val lastActive : ZonedDateTime
-) : Parcelable
+) : Parcelable {
+    constructor(id : Long) : this(id, "", "", "", "", "", "", true, ZonedDateTime.now())
+}

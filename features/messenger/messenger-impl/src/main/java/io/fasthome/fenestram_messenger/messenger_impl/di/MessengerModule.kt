@@ -12,12 +12,15 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.Mes
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
-import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.MessengerImpl
+import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.MessengerRepoImpl
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.network.di.NetworkClientFactoryQualifier
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.network.di.singleAuthorizedService
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -34,12 +37,14 @@ object MessengerModule {
     }
 
     private fun createDataModule() = module {
-        single(::MessengerImpl) bindSafe MessengerRepo::class
+        single(::MessengerRepoImpl) bindSafe MessengerRepo::class
 
         factory(::GetChatsMapper)
+        factory(::GetChatByIdMapper)
+        factory(::ChatsMapper)
 
         single { MessengerSocket(get<Environment>().endpoints.apiBaseUrl) }
-        single { MessengerService(get(named(NetworkClientFactoryQualifier.Authorized)), get()) }
+        singleAuthorizedService(::MessengerService)
     }
 
     private fun createDomainModule() = module {

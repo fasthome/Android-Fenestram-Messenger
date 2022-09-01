@@ -4,8 +4,8 @@
 package io.fasthome.fenestram_messenger.profile_impl
 
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
-import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
-import io.fasthome.fenestram_messenger.profile_api.model.ProfileImageResult
+import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
+import io.fasthome.fenestram_messenger.profile_api.entity.ProfileImageResult
 import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileNavigationContract
 import io.fasthome.fenestram_messenger.util.CallResult

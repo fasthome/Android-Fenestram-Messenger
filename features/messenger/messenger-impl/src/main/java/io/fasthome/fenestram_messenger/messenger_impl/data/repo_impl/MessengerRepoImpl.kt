@@ -3,16 +3,13 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatByIdResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.network.tokens.AccessToken
 
-class MessengerImpl(
+class MessengerRepoImpl(
     private val messengerService: MessengerService,
     private val socket: MessengerSocket
 ) : MessengerRepo {
@@ -38,6 +35,9 @@ class MessengerImpl(
         messengerService.getChatById(id)
     }
 
+    override suspend fun getMessagesFromChat(id: Long): CallResult<List<Message>> = callForResult {
+        messengerService.getMessagesByChat(id)
+    }
 
     override fun getClientSocket(token: AccessToken, callback: MessageResponse.() -> Unit) {
         socket.setClientSocket(token) {
