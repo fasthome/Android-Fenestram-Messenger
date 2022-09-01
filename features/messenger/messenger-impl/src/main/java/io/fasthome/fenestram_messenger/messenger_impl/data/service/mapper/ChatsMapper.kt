@@ -1,17 +1,34 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
+import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
-object ChatsMapper {
+class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
 
-    fun MessageResponse.toMessage() : Message = Message(
-        id = id,
-        text = text,
-        userSenderId = initiator,
-        messageType = type,
-        date = date.let(NetworkMapperUtil::parseZonedDateTime).withZoneSameInstant(ZoneId.systemDefault())
+    fun toMessage(messageResponse: MessageResponse): Message = Message(
+        id = messageResponse.id,
+        text = messageResponse.text,
+        userSenderId = messageResponse.initiatorId,
+        messageType = messageResponse.type,
+        date = messageResponse.date.let(NetworkMapperUtil::parseZonedDateTime)
+            .withZoneSameInstant(ZoneId.systemDefault()),
+        initiator = messageResponse.initiator?.let { user ->
+            User(
+                id = user.id,
+                phone = user.phone ?: "",
+                name = user.name ?: "",
+                nickname = user.nickname ?: "",
+                email = user.email ?: "",
+                birth = user.birth ?: "",
+                avatar = profileImageUrlConverter.convert(user.avatar),
+                isOnline = user.isOnline,
+                lastActive = ZonedDateTime.now()
+            )
+        }
     )
 }

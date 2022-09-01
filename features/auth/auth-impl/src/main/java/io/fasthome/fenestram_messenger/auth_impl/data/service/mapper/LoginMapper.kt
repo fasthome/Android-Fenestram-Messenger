@@ -4,7 +4,6 @@ import io.fasthome.fenestram_messenger.auth_impl.data.service.model.LoginRespons
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UserDetail
 import io.fasthome.fenestram_messenger.core.environment.Environment
-import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.tokens.AccessToken
 import io.fasthome.network.tokens.RefreshToken

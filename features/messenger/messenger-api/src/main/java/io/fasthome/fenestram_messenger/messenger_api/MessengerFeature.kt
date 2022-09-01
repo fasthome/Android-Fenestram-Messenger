@@ -17,8 +17,9 @@ interface MessengerFeature {
 
     @Parcelize
     data class Params(
-        val userId : Long,
-        val userName : String
+        val userIds : List<Long>,
+        val chatName : String,
+        val isGroup : Boolean
     ) : Parcelable
 
 }

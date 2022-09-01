@@ -2,8 +2,8 @@ package io.fasthome.fenestram_messenger.profile_impl.data.service
 
 import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileImageResponse
 import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileRequest
-import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
-import io.fasthome.fenestram_messenger.profile_api.model.ProfileImageResult
+import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
+import io.fasthome.fenestram_messenger.profile_api.entity.ProfileImageResult
 import io.fasthome.fenestram_messenger.profile_impl.data.service.mapper.ProfileMapper
 import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileResponse
 import io.fasthome.network.client.NetworkClientFactory

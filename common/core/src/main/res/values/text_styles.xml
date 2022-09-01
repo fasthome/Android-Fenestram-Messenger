@@ -31,6 +31,10 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="Text.White.24sp">
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="Text.Red">
         <item name="android:textColor">@color/red</item>
     </style>

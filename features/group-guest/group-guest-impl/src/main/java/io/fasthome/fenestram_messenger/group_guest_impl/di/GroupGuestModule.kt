@@ -7,6 +7,7 @@ import org.koin.dsl.module
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.group_guest_impl.GroupGuestFeatureImpl
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestViewModel
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.GroupParticipantsViewModel
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
@@ -32,5 +33,6 @@ object GroupGuestModule {
 
     private fun createPresentationModule() = module {
         viewModel(::GroupGuestViewModel)
+        viewModel(::GroupParticipantsViewModel)
     }
 }

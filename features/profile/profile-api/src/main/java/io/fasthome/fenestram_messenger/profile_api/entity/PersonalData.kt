@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.profile_api.model
+package io.fasthome.fenestram_messenger.profile_api.entity
 
 data class PersonalData(
     val username: String?,

@@ -7,6 +7,9 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 data class ProfileGuestState(
     val userName : PrintableText,
     val userNickname : PrintableText,
+    val userAvatar: String,
     val recentFiles: List<RecentFilesViewItem>,
-    val recentImages: List<RecentImagesViewItem>
-)
+    val recentImages: List<RecentImagesViewItem>,
+    val isGroup : Boolean,
+) {
+}

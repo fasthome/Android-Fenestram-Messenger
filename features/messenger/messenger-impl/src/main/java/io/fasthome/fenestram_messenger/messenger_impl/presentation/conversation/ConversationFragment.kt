@@ -5,6 +5,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
 import androidx.core.view.size
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
@@ -56,11 +57,14 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
+        avatarImage.loadCircle(state.avatar)
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer
                 .animate()
                 .alpha(1f)
                 .duration = 500
+        }else {
+            emptyContainer.isVisible = false
         }
         conversationAdapter.items = state.messages
         if (state.messages.isNotEmpty()) {

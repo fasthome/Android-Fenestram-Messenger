@@ -7,8 +7,12 @@ import io.fasthome.fenestram_messenger.core.environment.Environment
 
 class ProfileImageUrlConverter(private val environment: Environment) {
 
-    fun convert(path: String) =
-        environment.endpoints.apiBaseUrl.dropLast(1) + path
+    fun convert(path: String?) =
+        if (path.isNullOrEmpty() || path == "null") {
+            ""
+        } else {
+            environment.endpoints.apiBaseUrl.dropLast(1) + path
+        }
 
 
 }

@@ -1,7 +1,7 @@
 package io.fasthome.fenestram_messenger.profile_impl.domain.repo
 
-import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
-import io.fasthome.fenestram_messenger.profile_api.model.ProfileImageResult
+import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
+import io.fasthome.fenestram_messenger.profile_api.entity.ProfileImageResult
 import io.fasthome.fenestram_messenger.util.CallResult
 
 interface ProfileRepo {

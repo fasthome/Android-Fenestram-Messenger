@@ -6,8 +6,7 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.util.PrintableText
 
-class ContactsMapper(private val profileImageUrlConverter : ProfileImageUrlConverter) {
-
+object ContactsMapper{
     fun contactsListToViewList(contacts: List<Contact>) : List<ContactsViewItem>{
         val viewItems = contacts.map {
             contactToViewItem(it)
@@ -35,7 +34,7 @@ class ContactsMapper(private val profileImageUrlConverter : ProfileImageUrlConve
                 val user = contact.user!!
                 ContactsViewItem.Api(
                     userId = user.id,
-                    avatar = profileImageUrlConverter.convert(user.avatar),
+                    avatar = user.avatar,
                     name = PrintableText.Raw(user.name)
                 )
             }

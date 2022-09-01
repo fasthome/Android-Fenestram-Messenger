@@ -4,13 +4,13 @@
 package io.fasthome.fenestram_messenger.group_guest_impl
 
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
-import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestContract
-import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
+import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.GroupParticipantsComponentContract
+import io.fasthome.fenestram_messenger.navigation.contract.ComponentFragmentContractApi
 
 class GroupGuestFeatureImpl : GroupGuestFeature {
 
-    override val groupGuestNavigationContract: NavigationContractApi<NoParams, NoResult> = GroupGuestContract
+    override val groupGuestComponentContract: ComponentFragmentContractApi<GroupParticipantsInterface, ParticipantsParams> = GroupParticipantsComponentContract
 
 }

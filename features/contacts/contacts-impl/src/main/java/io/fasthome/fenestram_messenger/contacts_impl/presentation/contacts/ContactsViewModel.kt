@@ -5,7 +5,6 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.telecom.Call
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
@@ -29,7 +28,6 @@ class ContactsViewModel(
     private val permissionInterface: PermissionInterface,
     private val contactsInteractor: ContactsInteractor,
     private val messengerFeature: MessengerFeature,
-    private val contactsMapper: ContactsMapper
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
 
     init {
@@ -58,7 +56,7 @@ class ContactsViewModel(
             if (permissionGranted) {
                 contactsInteractor.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts->
                     updateState { state ->
-                        originalContacts = contactsMapper.contactsListToViewList(contacts).toMutableList()
+                        originalContacts = ContactsMapper.contactsListToViewList(contacts).toMutableList()
                         if (originalContacts.isEmpty()) {
                             state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
                         } else {
@@ -108,8 +106,9 @@ class ContactsViewModel(
         if (contactsViewItem is ContactsViewItem.Api) {
             conversationLauncher.launch(
                 MessengerFeature.Params(
-                    userId = contactsViewItem.userId,
-                    userName = getPrintableRawText(contactsViewItem.name)
+                    userIds = listOf(contactsViewItem.userId),
+                    chatName = getPrintableRawText(contactsViewItem.name),
+                    isGroup = false
                 )
             )
         }
