@@ -9,6 +9,7 @@ android {
 dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.di))
+    implementation(project(Modules.Common.uikit))
 
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)

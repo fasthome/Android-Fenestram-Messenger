@@ -32,10 +32,10 @@ class ContactAddFragment :
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-
-            contactAddAppbar.setNavigationOnClickListener {
+            toolbar.setOnButtonClickListener {
                 vm.navigateBack()
             }
+            contactAddInputSecondName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
 
             contactAddLabelFirstName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.contact_add_first_name_label))
 
@@ -88,21 +88,16 @@ class ContactAddFragment :
         when (state.contactAddStatus) {
             EditTextStatus.NameIdle -> {
                 renderNameIdle()
-                renderButtonDisabled()
+                contactAddButtonReady.isEnabled = false
             }
 
             EditTextStatus.NumberIdle -> {
                 renderNumberIdle()
-                renderButtonDisabled()
+                contactAddButtonReady.isEnabled = false
             }
 
             EditTextStatus.NameFilledAndNumberCorrect -> {
-                contactAddButtonReady.setBackgroundColor(
-                    ContextCompat.getColor(
-                        contactAddButtonReady.context,
-                        R.color.blue
-                    )
-                )
+                contactAddButtonReady.isEnabled = true
                 renderNameIdle()
                 renderNumberIdle()
             }
@@ -132,15 +127,6 @@ class ContactAddFragment :
     }
 
     override fun handleEvent(event: ContactAddEvent) = noEventsExpected()
-
-    private fun renderButtonDisabled() = with(binding) {
-        contactAddButtonReady.setBackgroundColor(
-            ContextCompat.getColor(
-                contactAddButtonReady.context,
-                R.color.appbar_color
-            )
-        )
-    }
 
     private fun renderNameIdle() = with(binding) {
         contactAddInputFirstName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)

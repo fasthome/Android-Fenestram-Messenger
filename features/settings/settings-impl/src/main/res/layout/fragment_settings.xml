@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true">
 
 
-    <io.fasthome.fenestram_messenger.core.ui.custom_view.HooliToolbar
+    <io.fasthome.fenestram_messenger.uikit.custom_view.HooliToolbar
         android:id="@+id/hooliToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

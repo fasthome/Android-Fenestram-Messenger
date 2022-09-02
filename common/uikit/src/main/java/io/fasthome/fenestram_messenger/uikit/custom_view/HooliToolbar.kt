@@ -1,7 +1,7 @@
 /**
  * Created by Dmitry Popov on 15.08.2022.
  */
-package io.fasthome.fenestram_messenger.core.ui.custom_view
+package io.fasthome.fenestram_messenger.uikit.custom_view
 
 import android.content.Context
 import android.content.res.TypedArray
@@ -11,8 +11,8 @@ import android.widget.ImageView
 import androidx.annotation.StyleableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isInvisible
-import io.fasthome.fenestram_messenger.core.R
-import io.fasthome.fenestram_messenger.core.databinding.ToolbarCommonBinding
+import io.fasthome.fenestram_messenger.uikit.R
+import io.fasthome.fenestram_messenger.uikit.databinding.ToolbarCommonBinding
 import io.fasthome.fenestram_messenger.util.android.drawable
 import io.fasthome.fenestram_messenger.util.onClick
 
