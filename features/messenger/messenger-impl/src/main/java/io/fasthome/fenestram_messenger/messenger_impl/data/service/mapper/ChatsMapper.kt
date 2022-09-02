@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
@@ -10,7 +11,7 @@ import java.time.ZonedDateTime
 
 class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
 
-    fun toMessage(messageResponse: MessageResponse): Message = Message(
+    fun toMessage(messageResponse: MessageResponseWithChatId): Message = Message(
         id = messageResponse.id,
         text = messageResponse.text,
         userSenderId = messageResponse.initiatorId,
@@ -29,6 +30,7 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
                 isOnline = user.isOnline,
                 lastActive = ZonedDateTime.now()
             )
-        }
+        },
+        chatId = messageResponse.chatId
     )
 }

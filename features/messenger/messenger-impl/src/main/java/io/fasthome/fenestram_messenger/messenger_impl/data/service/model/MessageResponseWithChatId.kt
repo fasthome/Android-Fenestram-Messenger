@@ -18,7 +18,7 @@ class MessageResponseWithChatId(
     val text: String,
 
     @SerialName("chat_id")
-    val chatId: String,
+    val chatId: String?,
 
     @SerialName("message_type")
     val type: String,

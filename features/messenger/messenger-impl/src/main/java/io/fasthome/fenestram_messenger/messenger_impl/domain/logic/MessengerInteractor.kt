@@ -17,8 +17,11 @@ class MessengerInteractor(
 ) {
     private val _messagesChannel =
         Channel<List<Message>>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _newMessagesChannel =
+        Channel<Message>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val messagesFlow: Flow<List<Message>> = _messagesChannel.receiveAsFlow()
+    private val newMessagesFlow: Flow<Message> = _newMessagesChannel.receiveAsFlow()
 
     suspend fun sendMessage(id: Long, text: String, type: String) =
         messageRepo.sendMessage(id, text, type).onSuccess { }
@@ -46,5 +49,12 @@ class MessengerInteractor(
         }
 
         return messagesFlow
+    }
+
+    suspend fun getNewMessages() : Flow<Message> {
+        messageRepo.getClientSocket(tokensRepo.getAccessToken()) {
+            _newMessagesChannel.trySend(chatsMapper.toMessage(this))
+        }
+        return newMessagesFlow
     }
 }
