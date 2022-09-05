@@ -55,13 +55,15 @@
 
         <TextView
             android:id="@+id/username"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
             android:layout_marginTop="8dp"
             android:text="@string/name"
             android:textColor="@color/white"
             android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/facecall_button"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/avatar_image"
             app:layout_constraintTop_toTopOf="parent" />
 

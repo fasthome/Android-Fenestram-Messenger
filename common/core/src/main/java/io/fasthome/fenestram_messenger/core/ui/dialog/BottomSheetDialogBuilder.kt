@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.fasthome.fenestram_messenger.core.R
-import io.fasthome.fenestram_messenger.core.databinding.ViewBottomDialogContentBinding
+import io.fasthome.fenestram_messenger.uikit.databinding.ViewBottomDialogContentBinding
 
 
 class BottomSheetDialogBuilder(fragment: Fragment) {

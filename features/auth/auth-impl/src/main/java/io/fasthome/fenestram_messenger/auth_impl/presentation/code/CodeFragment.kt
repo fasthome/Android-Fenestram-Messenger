@@ -1,10 +1,8 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.code
 
 import android.content.IntentFilter
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import io.fasthome.component.permission.PermissionComponentContract
@@ -52,7 +50,7 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
                     state.filled -> {
                         buttonSendCode.apply {
                             isEnabled = true
-                            setBackgroundResource(R.drawable.rounded_button)
+                            setBackgroundResource(R.drawable.rounded_blue_button)
                         }
                     }
                     state.error -> {

@@ -163,7 +163,7 @@ class PersonalityFragment :
                         ).count { it.compoundDrawablesRelative[2] != null } == 4
                     )
                         buttonReady.apply {
-                            setBackgroundResource(R.drawable.rounded_button)
+                            setBackgroundResource(R.drawable.rounded_blue_button)
                             isEnabled = true
                         }
                     else

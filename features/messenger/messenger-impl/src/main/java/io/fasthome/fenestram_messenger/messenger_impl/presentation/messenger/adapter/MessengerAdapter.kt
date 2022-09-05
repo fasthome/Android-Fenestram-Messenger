@@ -9,7 +9,9 @@ import io.fasthome.fenestram_messenger.util.*
 
 class MessengerAdapter(onChatClicked: (Long) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) :
     AsyncListDifferDelegationAdapter<MessengerViewItem>(
-        AdapterUtil.diffUtilItemCallbackEquals(),
+        AdapterUtil.diffUtilItemCallbackEquals(
+            keyExtractor = MessengerViewItem::lastMessage
+        ),
         AdapterUtil.adapterDelegatesManager(
             createMessengerAdapter(onChatClicked, onProfileClicked)
         )

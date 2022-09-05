@@ -6,8 +6,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import io.fasthome.fenestram_messenger.core.R
-import io.fasthome.fenestram_messenger.core.databinding.ViewBottomDialogContentBinding
-import io.fasthome.fenestram_messenger.core.databinding.ViewDialogContentBinding
+import io.fasthome.fenestram_messenger.uikit.databinding.ViewDialogContentBinding
 
 
 class DialogBuilder(fragment: Fragment) {
