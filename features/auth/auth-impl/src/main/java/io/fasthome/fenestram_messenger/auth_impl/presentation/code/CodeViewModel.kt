@@ -4,17 +4,11 @@ import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
-import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UserDetail
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
-import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
-import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
-import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.launch
 
 class CodeViewModel(
@@ -46,11 +40,21 @@ class CodeViewModel(
 
     fun checkCode(code: String) {
         viewModelScope.launch {
-            when(val loginResult = authInteractor.login(params.phoneNumber, code).successOrSendError()){
-                is LoginResult.Success->{
-                    personalityLauncher.launch(PersonalityNavigationContract.Params(
-                        userDetail = loginResult.userDetail
-                    ))
+            when (val loginResult =
+                authInteractor.login(params.phoneNumber, code).successOrSendError()) {
+                is LoginResult.Success -> {
+                    personalityLauncher.launch(
+                        PersonalityNavigationContract.Params(
+                            userDetail = loginResult.userDetail
+                        )
+                    )
+                }
+                else -> updateState {
+                    CodeState.GlobalState(
+                        filled = false,
+                        error = true,
+                        autoFilling = null
+                    )
                 }
             }
         }
