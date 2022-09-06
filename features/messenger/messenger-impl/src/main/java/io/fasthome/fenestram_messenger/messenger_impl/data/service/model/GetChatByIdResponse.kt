@@ -15,8 +15,8 @@ class GetChatByIdResponse(
     val date: String?,
 
     @SerialName("users")
-    val users: List<Int?>?,
+    val users: List<Long?>?,
 
-    @SerialName("message")
-    val message: List<MessageResponse?>?
+    @SerialName("chatUsers")
+    val chatUsers: List<UserResponse>
 )

@@ -9,13 +9,15 @@ import androidx.fragment.app.Fragment
 import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
 import io.fasthome.fenestram_messenger.mvi.ViewModelInterface
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
+import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.util.onBackPressed
+import io.fasthome.fenestram_messenger.presentation.base.util.onFabClicked
 import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnCreate
 import io.fasthome.fenestram_messenger.util.doOnStartStop
 
-abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsumer {
+abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsumer, FabConsumer {
 
     constructor() : super()
     constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
@@ -48,6 +50,10 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
 
     override fun onBackPressed(): Boolean =
         childFragmentManager.onBackPressed() || vm.onBackPressed()
+
+    override fun onFabClicked(): Boolean =
+        childFragmentManager.onFabClicked()
+
 
     protected abstract fun renderState(state: State)
     protected abstract fun handleEvent(event: Event)

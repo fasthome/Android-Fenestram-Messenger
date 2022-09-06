@@ -92,6 +92,9 @@ dependencies {
     implementation(project(Modules.Feature.debug.api))
     implementation(project(Modules.Feature.debug.impl))
 
+    implementation(project(Modules.Feature.groupGuest.api))
+    implementation(project(Modules.Feature.groupGuest.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)
@@ -110,6 +113,7 @@ dependencies {
 
     implementation(Deps.Firebase.crashlitycs)
     implementation(Deps.Firebase.analitycs)
+    implementation(Deps.Firebase.messaging)
 
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)

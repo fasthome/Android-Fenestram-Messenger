@@ -29,9 +29,11 @@ class CreateGroupChatViewModel(
     init {
         viewModelScope.launch {
             contactsFeature.getContacts().onSuccess {
-                originalContacts = it
+                originalContacts = it.filter {  contact ->
+                    contact.user != null
+                }
                 updateState { state ->
-                    state.copy(contacts = it.map(::mapToContactViewItem))
+                    state.copy(contacts = originalContacts.map(::mapToContactViewItem))
                 }
             }
         }

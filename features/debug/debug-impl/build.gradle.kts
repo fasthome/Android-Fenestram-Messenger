@@ -12,7 +12,9 @@ dependencies {
     implementation(project(Modules.Feature.messenger.impl))
     implementation(project(Modules.Feature.profileGuest.api))
     implementation(project(Modules.Feature.profile.api))
-
+    implementation(project(Modules.Feature.contacts.api))
+    implementation(project(Modules.Feature.groupGuest.api))
+    implementation(project(Modules.Common.uikit))
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.di))
     implementation(project(Modules.Common.presentation))

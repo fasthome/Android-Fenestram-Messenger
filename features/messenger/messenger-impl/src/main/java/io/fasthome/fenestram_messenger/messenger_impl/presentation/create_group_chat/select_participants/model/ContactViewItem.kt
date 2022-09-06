@@ -10,7 +10,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class ContactViewItem(
-    val userId : Long,
+    val userId : Long?,
     val userName : PrintableText
 ) {
     var isSelected : Boolean = true

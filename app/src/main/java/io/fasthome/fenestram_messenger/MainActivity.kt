@@ -2,8 +2,10 @@ package io.fasthome.fenestram_messenger
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.terrakok.cicerone.NavigatorHolder
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -30,16 +32,25 @@ class MainActivity : AppCompatActivity() {
         owner = { ViewModelOwner.from(this, this) },
     )
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        navigatorHolder.removeNavigator()
+        navigatorHolder.setNavigator(navigator)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
         if (savedInstanceState == null) {
             vm.onAppStarted()
 //            handleIntent(intent)
         }
 
         lifecycle.doOnStartStop(onStart = vm::onViewActive, onStop = vm::onViewInactive)
+
+
     }
 
     override fun onResumeFragments() {

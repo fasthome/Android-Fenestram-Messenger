@@ -2,9 +2,14 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
@@ -16,6 +21,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getPrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
+import org.koin.android.ext.android.inject
 
 class ProfileGuestFragment :
     BaseFragment<ProfileGuestState, ProfileGuestEvent>(R.layout.fragment_profile_guest) {
@@ -24,8 +30,18 @@ class ProfileGuestFragment :
     private val recentFilesAdapter = RecentFilesAdapter()
     private val recentImagesAdapter = RecentImagesAdapter()
 
+    private val groupGuestFeature: GroupGuestFeature by inject()
+
+    private val groupParticipantsInterface by registerFragment(
+        componentFragmentContractInterface = groupGuestFeature.groupGuestComponentContract,
+        paramsProvider = { ProfileGuestNavigationContract.getParams.getParams(this).groupParticipantsParams },
+        containerViewId = R.id.participants_container
+    )
+
     override val vm: ProfileGuestViewModel by viewModel(
-        getParamsInterface = ProfileGuestNavigationContract.getParams
+        getParamsInterface = ProfileGuestNavigationContract.getParams,
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::groupParticipantsInterface)
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
@@ -82,8 +98,10 @@ class ProfileGuestFragment :
         }
 
         with(binding) {
+            participantsContainer.isVisible = state.isGroup
             profileGuestName.setPrintableText(state.userName)
             profileGuestNickname.setPrintableText(state.userNickname)
+            profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)
             recentFilesHeader.recentFileCount.setPrintableText(
                 PrintableText.PluralResource(
                     R.plurals.file_quantity,

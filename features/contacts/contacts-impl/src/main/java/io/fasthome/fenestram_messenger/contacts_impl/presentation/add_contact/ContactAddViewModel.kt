@@ -3,7 +3,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
+import io.fasthome.fenestram_messenger.contacts_impl.data.ContactsLoader
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams

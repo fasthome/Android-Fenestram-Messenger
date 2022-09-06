@@ -2,17 +2,18 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
-import io.fasthome.fenestram_messenger.util.getOrThrow
+import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -26,6 +27,7 @@ class ConversationViewModel(
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private var chatId = params.chat.id
+    private var chatUsers = listOf<User>()
 
     fun fetchMessages() {
         viewModelScope.launch {
@@ -36,7 +38,11 @@ class ConversationViewModel(
             }
 
             if (params.chat.id == null) {
-                messengerInteractor.postChats(name = params.chat.name, users = params.chat.users)
+                messengerInteractor.postChats(
+                    name = params.chat.name,
+                    users = params.chat.users,
+                    isGroup = params.chat.isGroup
+                )
                     .withErrorHandled {
                         if (it is PostChatsResult.Success) {
                             chatId = it.chatId
@@ -63,7 +69,8 @@ class ConversationViewModel(
             messages = listOf(),
             userName = PrintableText.Raw(params.chat.name),
             userOnline = false,
-            isChatEmpty = false
+            isChatEmpty = false,
+            avatar = params.chat.avatar ?: ""
         )
     }
 
@@ -74,16 +81,20 @@ class ConversationViewModel(
                 id = chatId ?: return@launch,
                 text = mess,
                 type = "text"
-            ).getOrThrow()
+            ).withErrorHandled(
+                showErrorType = ShowErrorType.Dialog,
+                onSuccess = {})
         }
-
     }
 
     fun onUserClicked() {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
                 userName = params.chat.name,
-                userNickname = "nickname"
+                userNickname = "",
+                userAvatar = params.chat.avatar ?: "",
+                chatParticipants = chatUsers,
+                isGroup = params.chat.isGroup
             )
         )
     }
@@ -100,7 +111,7 @@ class ConversationViewModel(
                     state.copy(
                         messages = state.messages.plus(
                             messages.map {
-                                it.toConversationViewItem(selfUserId)
+                                it.toConversationViewItem(selfUserId, params.chat.isGroup)
                             }
                         ),
                         isChatEmpty = messages.isEmpty()
@@ -108,5 +119,8 @@ class ConversationViewModel(
                 }
             }
             .launchIn(viewModelScope)
+        messengerInteractor.getChatById(chatId).onSuccess {
+            chatUsers = it.chatUsers
+        }
     }
 }

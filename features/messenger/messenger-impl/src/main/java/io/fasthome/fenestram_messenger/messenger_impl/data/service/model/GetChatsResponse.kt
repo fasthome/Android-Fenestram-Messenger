@@ -25,6 +25,9 @@ class GetChatsResponse(
         @SerialName("name")
         val name: String?,
 
+        @SerialName("avatar")
+        val avatar: String?,
+
         @SerialName("created_at")
         val date: String,
 
@@ -32,6 +35,9 @@ class GetChatsResponse(
         val users: List<Long>,
 
         @SerialName("message")
-        val message: List<MessageResponse>?
+        val message: List<MessageResponseWithoutInitiator>?,
+
+        @SerialName("is_group")
+        val isGroup : Boolean
     )
 }

@@ -12,6 +12,7 @@ object Modules {
         const val mvi = ":common:presentation:mvi"
         const val component = ":common:component"
         const val network = ":common:network"
+        const val uikit = ":common:uikit"
     }
 
     class FeatureTemplate(name: String) {
@@ -29,5 +30,6 @@ object Modules {
         val settings = FeatureTemplate("settings")
         val profileGuest = FeatureTemplate("profile-guest")
         val debug = FeatureTemplate("debug")
+        val groupGuest = FeatureTemplate("group-guest")
     }
 }
