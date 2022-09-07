@@ -15,7 +15,9 @@ import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.FabConsumer
+import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.MessageDialogFragment
 import io.fasthome.fenestram_messenger.util.doOnDestroy
 import io.fasthome.fenestram_messenger.util.getPrintableText
 import kotlin.properties.ReadOnlyProperty
@@ -98,12 +100,12 @@ internal fun FragmentManager.onFabClicked(): Boolean =
 
 fun Fragment.showMessage(message: Message): Unit = when (message) {
     is Message.Alert -> {
-//        val tag = message.id
-//        (childFragmentManager.findFragmentByTag(tag) as MessageDialogFragment?)
-//            ?.dismissAllowingStateLoss()
-//        MessageDialogFragment
-//            .create(requestParams.requestKey, message)
-//            .show(childFragmentManager, tag)
+        val tag = message.id
+        (childFragmentManager.findFragmentByTag(tag) as MessageDialogFragment?)
+            ?.dismissAllowingStateLoss()
+        MessageDialogFragment
+            .create(requestParams.requestKey, message)
+            .show(childFragmentManager, tag)
     }
 
     is Message.PopUp -> Toast

@@ -62,7 +62,7 @@ class PickFileViewModel(
     override fun pickFile() {
         viewModelScope.launch {
             val permissionGranted =
-                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE, canOpenSettings = true)
             if (permissionGranted) {
                 pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
             }
