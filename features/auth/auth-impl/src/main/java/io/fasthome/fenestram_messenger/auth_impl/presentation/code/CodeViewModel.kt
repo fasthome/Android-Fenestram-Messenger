@@ -6,9 +6,11 @@ import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
+import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.launch
 
 class CodeViewModel(
@@ -41,20 +43,12 @@ class CodeViewModel(
     fun checkCode(code: String) {
         viewModelScope.launch {
             when (val loginResult =
-                authInteractor.login(params.phoneNumber, code).successOrSendError()) {
-                is LoginResult.Success -> {
-                    personalityLauncher.launch(
-                        PersonalityNavigationContract.Params(
-                            userDetail = loginResult.userDetail
-                        )
-                    )
+                authInteractor.login(params.phoneNumber, code)) {
+                is CallResult.Error -> {
+                    onError(loginResult.error)
                 }
-                else -> updateState {
-                    CodeState.GlobalState(
-                        filled = false,
-                        error = true,
-                        autoFilling = null
-                    )
+                is CallResult.Success -> {
+                    onSuccess(loginResult.data)
                 }
             }
         }
@@ -79,6 +73,28 @@ class CodeViewModel(
             updateState { CodeState.GlobalState(filled = true, error = false, autoFilling = null) }
         else
             updateState { CodeState.GlobalState(filled = false, error = false, autoFilling = null) }
+    }
+
+    private fun onSuccess(result: LoginResult) {
+        personalityLauncher.launch(
+            PersonalityNavigationContract.Params(
+                userDetail = result.userDetail
+            )
+        )
+    }
+    
+    private fun onError(error: Throwable) {
+        when (error) {
+            is UnauthorizedException -> {
+                updateState {
+                    CodeState.GlobalState(
+                        filled = false,
+                        error = true,
+                        autoFilling = null
+                    )
+                }
+            }
+        }
     }
 
     companion object {
