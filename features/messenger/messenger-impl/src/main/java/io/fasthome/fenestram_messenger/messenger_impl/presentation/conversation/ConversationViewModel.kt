@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -42,11 +43,8 @@ class ConversationViewModel(
                     name = params.chat.name,
                     users = params.chat.users,
                     isGroup = params.chat.isGroup
-                )
-                    .withErrorHandled {
-                        if (it is PostChatsResult.Success) {
-                            chatId = it.chatId
-                        }
+                ).withErrorHandled {
+                        chatId = it.chatId
                     }
             }
             subscribeMessages(chatId ?: return@launch, selfUserId)
@@ -109,11 +107,15 @@ class ConversationViewModel(
             .onEach { messages ->
                 updateState { state ->
                     state.copy(
-                        messages = state.messages.plus(
-                            messages.map {
-                                it.toConversationViewItem(selfUserId, params.chat.isGroup)
-                            }
-                        ),
+                        messages = state.messages
+                            .plus(
+                                messages.toConversationItems(
+                                    selfUserId,
+                                    params.chat.isGroup,
+                                    lastMessage = state.messages.lastOrNull(),
+                                    messagesEmpty = state.messages.isEmpty()
+                                )
+                            ),
                         isChatEmpty = messages.isEmpty()
                     )
                 }

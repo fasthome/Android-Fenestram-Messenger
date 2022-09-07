@@ -10,6 +10,8 @@ android {
 dependencies {
     implementation(project(Modules.Feature.push.api))
     implementation(project(Modules.Feature.auth.api))
+    implementation(project(Modules.Feature.main.api))
+    implementation(project(Modules.Feature.messenger.api))
 
     implementation(Deps.Firebase.messaging)
 

@@ -28,5 +28,11 @@ class UserResponse(
     val birth: String?,
 
     @SerialName("avatar")
-    val avatar: String?
+    val avatar: String?,
+
+    @SerialName("is_online")
+    val isOnline: Boolean?,
+
+    @SerialName("last_active")
+    val lastActive: String?
 )

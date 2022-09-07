@@ -16,4 +16,7 @@ interface MainFeature {
         Chats,
         Profile
     }
+
+    fun returnToMainScreenAndOpenTab(tab: TabType)
+
 }

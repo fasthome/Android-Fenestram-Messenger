@@ -11,6 +11,8 @@ import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.main_impl.presentation.main.MainViewModel
 import io.fasthome.fenestram_messenger.main_impl.MainFeatureImpl
 import io.fasthome.fenestram_messenger.main_impl.domain.logic.OuterTabNavigator
+import io.fasthome.fenestram_messenger.navigation.model.DeepLinkNavigator
+import io.fasthome.fenestram_messenger.main_api.DeepLinkNavigatorImpl
 import org.koin.dsl.factory
 import org.koin.dsl.module
 
@@ -24,6 +26,7 @@ object MainModule {
 
     private fun createFeatureModule() = module {
         factory(::MainFeatureImpl) bindSafe MainFeature::class
+        factory(::DeepLinkNavigatorImpl) bindSafe DeepLinkNavigator::class
     }
 
     private fun createDataModule() = module {

@@ -16,10 +16,10 @@ class PushRepoImpl(private val pushService: PushService, private val pushesStora
         pushService.sendTestPush()
     }
 
-    override suspend fun sendPushToken(): CallResult<Unit> =
+    override suspend fun sendPushToken(): CallResult<List<String>> =
         when (val deviceTokenResult = pushesStorage.getDeviceToken()) {
             DeviceTokenResult.PlayServicesNotAvailable -> {
-                CallResult.Success(Unit)
+                CallResult.Success(listOf())
             }
             is DeviceTokenResult.TokenReceivingError -> {
                 CallResult.Error(deviceTokenResult.error)

@@ -9,7 +9,7 @@ interface PushRepo {
 
     suspend fun sendTestPush() : CallResult<Unit>
 
-    suspend fun sendPushToken() : CallResult<Unit>
+    suspend fun sendPushToken() : CallResult<List<String>>
 
     suspend fun clearPushToken() : CallResult<Unit>
 

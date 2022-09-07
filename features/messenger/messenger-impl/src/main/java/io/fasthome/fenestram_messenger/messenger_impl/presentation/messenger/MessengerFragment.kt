@@ -39,6 +39,9 @@ class MessengerFragment :
 
     override fun renderState(state: MessengerState) {
         messageAdapter.items = state.messengerViewItems
+        if (state.messengerViewItems.isNotEmpty()) {
+            binding.chatList.smoothScrollToPosition(0)
+        }
     }
 
     override fun handleEvent(event: MessengerEvent) = noEventsExpected()

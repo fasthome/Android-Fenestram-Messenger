@@ -25,6 +25,7 @@ import kotlinx.parcelize.Parcelize
 import java.util.*
 import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.util.onSuccess
 
 class MainViewModel(
     router: ContractRouter,
@@ -60,7 +61,7 @@ class MainViewModel(
         }
 
         viewModelScope.launch {
-            features.pushFeature.updateToken()
+            updateFbToken()
 
             outerTabNavigator.tabToOpenFlow
                 .collectWhenViewActive()
@@ -126,6 +127,14 @@ class MainViewModel(
 
     fun debugClicked() {
         debugLauncher.launch(NoParams)
+    }
+
+    private suspend fun updateFbToken() {
+        features.pushFeature.updateToken().onSuccess {
+            if(it.isEmpty()){
+                updateFbToken()
+            }
+        }
     }
 
     @Parcelize

@@ -11,15 +11,16 @@ import kotlinx.parcelize.Parcelize
 
 interface MessengerFeature {
 
-    val messengerNavigationContract : NavigationContractApi<NoParams, NoResult>
+    val messengerNavigationContract: NavigationContractApi<NoParams, NoResult>
 
-    val conversationNavigationContract : NavigationContractApi<Params, NoResult>
+    val conversationNavigationContract: NavigationContractApi<Params, NoResult>
 
     @Parcelize
     data class Params(
-        val userIds : List<Long>,
-        val chatName : String,
-        val isGroup : Boolean
+        val chatId: String? = null,
+        val userIds: List<Long>,
+        val chatName: String,
+        val isGroup: Boolean
     ) : Parcelable
 
 }

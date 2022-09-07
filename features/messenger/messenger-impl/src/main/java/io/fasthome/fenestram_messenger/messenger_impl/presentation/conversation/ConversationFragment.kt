@@ -59,12 +59,14 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
     override fun renderState(state: ConversationState) = with(binding) {
         avatarImage.loadCircle(state.avatar)
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
+            emptyContainer.isVisible = true
             emptyContainer
                 .animate()
                 .alpha(1f)
                 .duration = 500
         }else {
             emptyContainer.isVisible = false
+            emptyContainer.alpha = 0f
         }
         conversationAdapter.items = state.messages
         if (state.messages.isNotEmpty()) {

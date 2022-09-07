@@ -15,5 +15,8 @@ class PostChatsResponse(
     val date: String?,
 
     @SerialName("users")
-    val users: List<Int?>?
+    val users: List<Int?>?,
+
+    @SerialName("chatUsers")
+    val chatUsers: List<UserResponse>?
 )

@@ -9,8 +9,10 @@ import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.push_impl.PushFeatureImpl
 import io.fasthome.fenestram_messenger.push_impl.data.service.PushService
 import io.fasthome.fenestram_messenger.push_impl.data.storage.PushesStorage
+import io.fasthome.fenestram_messenger.push_impl.data.service.mapper.RemoteMessagesMapper
 import io.fasthome.fenestram_messenger.push_impl.data.repo_impl.PushRepoImpl
 import io.fasthome.fenestram_messenger.push_impl.domain.repo.PushRepo
+import io.fasthome.fenestram_messenger.push_impl.presentation.PushClickHandler
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
@@ -37,12 +39,13 @@ object PushModule {
 
         single(::PushesStorage)
         single { RemoteMessagesStorage(storageFactory = get(qualifier = named(StorageQualifier.Simple))) }
-
+        factory(::RemoteMessagesMapper)
     }
 
     private fun createDomainModule() = module {
     }
 
     private fun createPresentationModule() = module {
+        factory(::PushClickHandler)
     }
 }

@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemGroupBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemReceiveBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSelfBinding
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSystemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
@@ -16,7 +17,8 @@ class ConversationAdapter : AsyncListDifferDelegationAdapter<ConversationViewIte
     AdapterUtil.adapterDelegatesManager(
         createConversationSelfAdapterDelegate(),
         createConversationReceiveAdapterDelegate(),
-        createConversationGroupAdapterDelegate()
+        createConversationGroupAdapterDelegate(),
+        createConversationSystemAdapterDelegate()
     )
 ) {}
 
@@ -43,5 +45,12 @@ fun createConversationGroupAdapterDelegate() = adapterDelegateViewBinding<Conver
         messageContent.setPrintableText(item.content)
         sendTimeView.setPrintableText(item.time)
         avatar.loadCircle(url = item.avatar)
+    }
+}
+
+fun createConversationSystemAdapterDelegate() = adapterDelegateViewBinding<ConversationViewItem.System, ConversationItemSystemBinding>(
+    ConversationItemSystemBinding::inflate){
+    bindWithBinding {
+        date.setPrintableText(item.content)
     }
 }
