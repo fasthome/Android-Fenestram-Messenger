@@ -54,6 +54,14 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onGroupGuestClicked()
         }
 
+        debugSendPush.onClick {
+            vm.sendTestPushNotification()
+        }
+
+        debugUpdatePush.onClick {
+            vm.updatePushToken()
+        }
+
     }
 
     override fun renderState(state: DebugState) = nothingToRender()

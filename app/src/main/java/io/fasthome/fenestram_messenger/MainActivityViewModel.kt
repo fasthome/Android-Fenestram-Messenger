@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.navigation.model.createParams
+import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

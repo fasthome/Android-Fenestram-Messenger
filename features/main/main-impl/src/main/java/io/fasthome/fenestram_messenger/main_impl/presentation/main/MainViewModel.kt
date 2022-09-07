@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.*
 import io.fasthome.fenestram_messenger.navigation.model.createParams
+import io.fasthome.fenestram_messenger.push_api.PushFeature
 
 class MainViewModel(
     router: ContractRouter,
@@ -38,7 +39,8 @@ class MainViewModel(
         val chatsFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
         val profileFeature: ProfileFeature,
-        val debugFeature: DebugFeature
+        val debugFeature: DebugFeature,
+        val pushFeature: PushFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -46,7 +48,6 @@ class MainViewModel(
     private val debugLauncher = registerScreen(features.debugFeature.navigationContract)
 
     init {
-
         val savedState = savedStateHandle.provideSavedState { SavedState(tabsStack = fragmentsStack) }
         val tabsStack = savedState?.tabsStack ?: Stack()
 
@@ -59,6 +60,8 @@ class MainViewModel(
         }
 
         viewModelScope.launch {
+            features.pushFeature.updateToken()
+
             outerTabNavigator.tabToOpenFlow
                 .collectWhenViewActive()
                 .collect { newTab ->

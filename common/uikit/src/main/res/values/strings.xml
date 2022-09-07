@@ -17,4 +17,7 @@
     <string name="common_incorrect_code_label">Неверный код</string>
     <string name="common_resend_code_button">Отправить заново?</string>
     <string name="common_close">Закрыть</string>
+
+    <string name="common_notification_channel_title_push">PUSH-уведомления</string>
+    <string name="common_notification_channel_description_push">Получение PUSH-уведомлений</string>
 </resources>

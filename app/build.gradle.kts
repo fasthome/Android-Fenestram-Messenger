@@ -62,6 +62,7 @@ dependencies {
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.di))
+    implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.mvi))
     implementation(project(Modules.Common.navigation))
     implementation(project(Modules.Common.util))
@@ -95,6 +96,9 @@ dependencies {
     implementation(project(Modules.Feature.groupGuest.api))
     implementation(project(Modules.Feature.groupGuest.impl))
 
+    implementation(project(Modules.Feature.push.api))
+    implementation(project(Modules.Feature.push.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)
@@ -113,7 +117,6 @@ dependencies {
 
     implementation(Deps.Firebase.crashlitycs)
     implementation(Deps.Firebase.analitycs)
-    implementation(Deps.Firebase.messaging)
 
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)
