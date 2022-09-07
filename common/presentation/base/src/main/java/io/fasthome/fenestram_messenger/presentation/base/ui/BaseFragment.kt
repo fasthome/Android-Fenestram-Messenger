@@ -8,8 +8,10 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
 import io.fasthome.fenestram_messenger.mvi.ViewModelInterface
+import io.fasthome.fenestram_messenger.mvi.messageResult
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.FabConsumer
+import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.util.onBackPressed
 import io.fasthome.fenestram_messenger.presentation.base.util.onFabClicked
 import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
@@ -40,12 +42,12 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
         //TODO придумать более подходящее решение
         lifecycle.doOnCreate(vm::onCreate)
 
-//        childFragmentManager.setFragmentResultListener(
-//            requestParams.requestKey,
-//            this
-//        ) { _, bundle ->
-//            vm.onMessageResult(bundle.messageResult)
-//        }
+        childFragmentManager.setFragmentResultListener(
+            requestParams.requestKey,
+            this
+        ) { _, bundle ->
+            vm.onMessageResult(bundle.messageResult)
+        }
     }
 
     override fun onBackPressed(): Boolean =
