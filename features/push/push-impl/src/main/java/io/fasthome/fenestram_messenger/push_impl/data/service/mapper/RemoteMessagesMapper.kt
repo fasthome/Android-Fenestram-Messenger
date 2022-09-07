@@ -12,10 +12,15 @@ class RemoteMessagesMapper {
         Log.d("Push-Notification", "data=$data")
 
         if (data == null) return PushClickData.Unknown
+        val chatName = if(data["is_group"]?.toString().toBoolean()) {
+            data["chat_name"]?.toString()
+        }else{
+            data["user_name"]?.toString()
+        }
         return PushClickData.Chat(
             chatId = data["chat_id"]?.toString(),
             userAvatar = data["user_avatar"]?.toString(),
-            userName = data["chat_name"]?.toString(),
+            chatName = chatName,
             isGroup = data["is_group"]?.toString().toBoolean()
         )
     }

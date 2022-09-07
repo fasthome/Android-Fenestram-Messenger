@@ -6,11 +6,13 @@ import java.time.ZonedDateTime
 
 sealed interface ConversationViewItem {
 
+    val id : Long
     val content: PrintableText
     val time: PrintableText
     val date: ZonedDateTime?
 
     data class Self(
+        override val id: Long,
         override val content: PrintableText,
         override val time: PrintableText,
         override val date: ZonedDateTime?,
@@ -18,6 +20,7 @@ sealed interface ConversationViewItem {
     ) : ConversationViewItem
 
     data class Receive(
+        override val id: Long,
         override val content: PrintableText,
         override val time: PrintableText,
         override val date: ZonedDateTime?,
@@ -25,6 +28,7 @@ sealed interface ConversationViewItem {
     ) : ConversationViewItem
 
     data class Group(
+        override val id: Long,
         override val content: PrintableText,
         override val time: PrintableText,
         override val date: ZonedDateTime?,
@@ -34,6 +38,7 @@ sealed interface ConversationViewItem {
     ) : ConversationViewItem
 
     data class System(
+        override val id: Long,
         override val content: PrintableText,
         override val time: PrintableText,
         override val date: ZonedDateTime?

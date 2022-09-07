@@ -61,7 +61,8 @@ fun Message.toConversationViewItem(
         return ConversationViewItem.System(
             content = getFuzzyDateString(date),
             time = PrintableText.EMPTY,
-            date = date
+            date = date,
+            id = id
         )
     }
     return when (selfUserId) {
@@ -70,7 +71,8 @@ fun Message.toConversationViewItem(
                 content = PrintableText.Raw(text),
                 time = PrintableText.Raw(timeFormatter.format(date)),
                 sendStatus = false,
-                date = date
+                date = date,
+                id = id
             )
         }
         else -> {
@@ -81,14 +83,16 @@ fun Message.toConversationViewItem(
                     sendStatus = false,
                     userName = PrintableText.Raw(initiator?.name ?: ""),
                     avatar = initiator?.avatar ?: "",
-                    date = date
+                    date = date,
+                    id = id
                 )
             } else {
                 ConversationViewItem.Receive(
                     content = PrintableText.Raw(text),
                     time = PrintableText.Raw(timeFormatter.format(date)),
                     sendStatus = false,
-                    date = date
+                    date = date,
+                    id = id
                 )
             }
         }

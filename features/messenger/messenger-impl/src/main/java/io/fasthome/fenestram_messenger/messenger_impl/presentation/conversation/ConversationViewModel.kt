@@ -47,7 +47,7 @@ class ConversationViewModel(
                         chatId = it.chatId
                     }
             }
-            subscribeMessages(chatId ?: return@launch, selfUserId)
+            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId)
         }
     }
 
@@ -103,7 +103,6 @@ class ConversationViewModel(
 
     private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
         messengerInteractor.getMessagesFromChat(chatId)
-            .collectWhenViewActive()
             .onEach { messages ->
                 updateState { state ->
                     state.copy(

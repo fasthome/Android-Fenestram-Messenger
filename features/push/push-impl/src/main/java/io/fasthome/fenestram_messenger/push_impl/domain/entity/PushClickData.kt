@@ -4,7 +4,7 @@ sealed interface PushClickData {
 
     class Chat(
         val chatId : String?,
-        val userName : String?,
+        val chatName : String?,
         val userAvatar : String?,
         val isGroup : Boolean?
     ) : PushClickData

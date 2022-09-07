@@ -13,7 +13,9 @@ import io.fasthome.fenestram_messenger.util.bindWithBinding
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class ConversationAdapter : AsyncListDifferDelegationAdapter<ConversationViewItem>(
-    AdapterUtil.diffUtilItemCallbackEquals(),
+    AdapterUtil.diffUtilItemCallbackEquals(
+        ConversationViewItem::id
+    ),
     AdapterUtil.adapterDelegatesManager(
         createConversationSelfAdapterDelegate(),
         createConversationReceiveAdapterDelegate(),

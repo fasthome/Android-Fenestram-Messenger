@@ -13,6 +13,8 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.dp
+import io.fasthome.fenestram_messenger.util.increaseHitArea
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
 import java.time.LocalTime
@@ -49,6 +51,7 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
         binding.profileToolBar.onClick {
             vm.onUserClicked()
         }
+        binding.backButton.increaseHitArea(16.dp)
     }
 
     override fun onResume() {
@@ -64,7 +67,7 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
                 .animate()
                 .alpha(1f)
                 .duration = 500
-        }else {
+        } else {
             emptyContainer.isVisible = false
             emptyContainer.alpha = 0f
         }
@@ -77,8 +80,8 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
 
     override fun handleEvent(event: ConversationEvent) = noEventsExpected()
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         vm.closeSocket()
     }
 }

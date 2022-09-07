@@ -37,6 +37,12 @@ class MessengerFragment :
         vm.fetchChats()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.fetchChats()
+        vm.fetchNewMessages()
+    }
+
     override fun renderState(state: MessengerState) {
         messageAdapter.items = state.messengerViewItems
         if (state.messengerViewItems.isNotEmpty()) {
@@ -49,6 +55,11 @@ class MessengerFragment :
     override fun onFabClicked(): Boolean {
         vm.onCreateChatClicked()
         return super.onFabClicked()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.unsubscribeMessages()
     }
 
 }
