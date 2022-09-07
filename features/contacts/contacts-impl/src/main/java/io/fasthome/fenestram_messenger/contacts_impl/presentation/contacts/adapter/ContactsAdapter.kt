@@ -25,7 +25,10 @@ fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) 
             onItemClicked(item)
         }
         bindWithBinding {
-            contactName.setPrintableText(item.name)
+            if (item.name.toString().isEmpty())
+                contactName.setPrintableText(item.phone)
+            else
+                contactName.setPrintableText(item.name)
             newMessage.isVisible = false
             contactAvatar.loadCircle(
                 url = item.avatar

@@ -35,7 +35,8 @@ object ContactsMapper{
                 ContactsViewItem.Api(
                     userId = user.id,
                     avatar = user.avatar,
-                    name = PrintableText.Raw(user.name)
+                    name = PrintableText.Raw(user.name),
+                    phone = PrintableText.Raw(user.phone)
                 )
             }
             else -> {
