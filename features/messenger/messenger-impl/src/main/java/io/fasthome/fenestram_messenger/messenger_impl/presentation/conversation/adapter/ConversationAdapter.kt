@@ -7,19 +7,16 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationIt
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSelfBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSystemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
 
-class ConversationAdapter : AsyncListDifferDelegationAdapter<ConversationViewItem>(
+class ConversationAdapter(onGroupProfileItemClicked : (ConversationViewItem.Group) -> Unit) : AsyncListDifferDelegationAdapter<ConversationViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(
         ConversationViewItem::id
     ),
     AdapterUtil.adapterDelegatesManager(
         createConversationSelfAdapterDelegate(),
         createConversationReceiveAdapterDelegate(),
-        createConversationGroupAdapterDelegate(),
+        createConversationGroupAdapterDelegate(onGroupProfileItemClicked),
         createConversationSystemAdapterDelegate()
     )
 ) {}
@@ -40,8 +37,11 @@ fun createConversationReceiveAdapterDelegate() = adapterDelegateViewBinding<Conv
     }
 }
 
-fun createConversationGroupAdapterDelegate() = adapterDelegateViewBinding<ConversationViewItem.Group, ConversationItemGroupBinding>(
+fun createConversationGroupAdapterDelegate(onGroupProfileItemClicked : (ConversationViewItem.Group) -> Unit) = adapterDelegateViewBinding<ConversationViewItem.Group, ConversationItemGroupBinding>(
     ConversationItemGroupBinding::inflate){
+    binding.root.onClick {
+        onGroupProfileItemClicked(item)
+    }
     bindWithBinding {
         username.setPrintableText(item.userName)
         messageContent.setPrintableText(item.content)

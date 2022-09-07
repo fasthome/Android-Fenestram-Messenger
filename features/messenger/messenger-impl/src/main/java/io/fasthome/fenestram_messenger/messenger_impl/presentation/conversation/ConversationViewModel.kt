@@ -7,6 +7,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsRes
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -14,6 +15,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -123,5 +125,17 @@ class ConversationViewModel(
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
         }
+    }
+
+    fun onGroupProfileClicked(item: ConversationViewItem.Group) {
+        profileGuestLauncher.launch(
+            ProfileGuestFeature.ProfileGuestParams(
+                userName = getPrintableRawText(item.userName),
+                userNickname = "",
+                userAvatar = item.avatar,
+                chatParticipants = listOf(),
+                isGroup = false
+            )
+        )
     }
 }

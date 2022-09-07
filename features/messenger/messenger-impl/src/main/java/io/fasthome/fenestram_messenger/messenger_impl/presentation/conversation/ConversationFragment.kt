@@ -28,7 +28,9 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
 
-    private val conversationAdapter = ConversationAdapter()
+    private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
+        vm.onGroupProfileClicked(it)
+    })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,7 +44,7 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
                 !binding.inputMessage.text.toString()
                     .isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString())
             }
-            binding.inputMessage.text.clear()
+            binding.inputMessage.text?.clear()
             binding.messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
         binding.backButton.setOnClickListener() {
