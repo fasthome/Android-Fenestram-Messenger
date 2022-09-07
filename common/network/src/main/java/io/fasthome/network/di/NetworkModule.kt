@@ -43,7 +43,8 @@ object NetworkModule {
                     httpClientEngine = get(),
                     environment = get(),
                     baseUrl = get<Environment>().endpoints.refreshTokenUrl,
-                    networkLogger = get()
+                    networkLogger = get(),
+                    forceLogoutManager = lazy { get() }
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.RefreshToken)
@@ -55,7 +56,8 @@ object NetworkModule {
                     httpClientEngine = get(),
                     environment = get(),
                     baseUrl = get<Environment>().endpoints.apiBaseUrl,
-                    networkLogger = get()
+                    networkLogger = get(),
+                    forceLogoutManager = lazy { get() },
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.Unauthorized)
