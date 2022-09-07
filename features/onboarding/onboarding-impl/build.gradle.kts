@@ -15,5 +15,5 @@ dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.uikit))
 
-    implementation("com.tbuonomo:dotsindicator:4.2")
+    implementation(Deps.dotsindicator)
 }

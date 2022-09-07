@@ -11,32 +11,15 @@ class OnboardingViewModel(
     requestParams: RequestParams
 ) : BaseViewModel<OnboardingState, OnboardingEvent>(router, requestParams) {
 
-    private var viewPager2: ViewPager2? = null
-
-    private val pager2Callback = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            super.onPageSelected(position)
-
-            if (position == PageLists.introSlides.size - 1) {
-
-
-            } else {
-                viewPager2?.currentItem = position + 1
-            }
-        }
-    }
-
     override fun createInitialState(): OnboardingState {
         return OnboardingState(PageLists.introSlides)
     }
 
-//    private fun setupViewPager()
-//    {
-//        val adapter = OnboardingAdapter(PageLists.introSlides)
-//        viewPager2?.adapter = adapter
-//        viewPager2?.registerOnPageChangeCallback()
-//
-//    }
+    fun skipOnboarding(){
+        exitWithoutResult()
+    }
+
+
 
 
 }
