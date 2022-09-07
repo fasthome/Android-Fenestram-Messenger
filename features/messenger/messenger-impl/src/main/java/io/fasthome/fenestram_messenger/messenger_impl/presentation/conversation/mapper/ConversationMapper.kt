@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 
 private val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-fun Message.toConversationViewItem(selfUserId: Long) =
+fun Message.toConversationViewItem(selfUserId: Long, isGroup: Boolean) =
     when (selfUserId) {
         userSenderId -> {
             ConversationViewItem.Self(
@@ -17,10 +17,20 @@ fun Message.toConversationViewItem(selfUserId: Long) =
             )
         }
         else -> {
-            ConversationViewItem.Receive(
-                content = PrintableText.Raw(text),
-                time = PrintableText.Raw(dateFormatter.format(date)),
-                sendStatus = false
-            )
+            if (isGroup) {
+                ConversationViewItem.Group(
+                    content = PrintableText.Raw(text),
+                    time = PrintableText.Raw(dateFormatter.format(date)),
+                    sendStatus = false,
+                    userName = PrintableText.Raw(initiator?.name ?: ""),
+                    avatar = initiator?.avatar ?: ""
+                )
+            } else {
+                ConversationViewItem.Receive(
+                    content = PrintableText.Raw(text),
+                    time = PrintableText.Raw(dateFormatter.format(date)),
+                    sendStatus = false
+                )
+            }
         }
     }

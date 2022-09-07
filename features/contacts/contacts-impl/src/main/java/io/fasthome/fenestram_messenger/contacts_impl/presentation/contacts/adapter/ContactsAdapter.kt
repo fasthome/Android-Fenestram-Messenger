@@ -1,29 +1,56 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter
 
+import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
+import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemHeaderBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.util.*
 
-class ContactsAdapter(onItemClicked : (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
+class ContactsAdapter(onItemClicked: (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
-        createContactsAdapterDelegate(onItemClicked)
+        createApiContactsAdapterDelegate(onItemClicked),
+        createLocalContactsAdapterDelegate(onItemClicked),
+        createHeaderAdapterDelegate()
     )
 ) {}
 
-fun createContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
-    adapterDelegateViewBinding<ContactsViewItem, ContactItemBinding>(
+fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
+    adapterDelegateViewBinding<ContactsViewItem.Api, ContactItemBinding>(
         ContactItemBinding::inflate,
     ) {
-        binding.root.onClick{
+        binding.root.onClick {
             onItemClicked(item)
         }
         bindWithBinding {
-            contactName.text = item.name
-            newMessage.visibility = item.newMessageVisibility
+            contactName.setPrintableText(item.name)
+            newMessage.isVisible = false
+            contactAvatar.loadCircle(
+                url = item.avatar
+            )
+        }
+    }
+
+fun createLocalContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
+    adapterDelegateViewBinding<ContactsViewItem.Local, ContactItemBinding>(
+        ContactItemBinding::inflate,
+    ) {
+        binding.root.onClick {
+            onItemClicked(item)
+        }
+        bindWithBinding {
+            contactName.setPrintableText(item.name)
+            newMessage.isVisible = false
+        }
+    }
+
+fun createHeaderAdapterDelegate() =
+    adapterDelegateViewBinding<ContactsViewItem.Header, ContactItemHeaderBinding>(
+        ContactItemHeaderBinding::inflate,
+    ) {
+        bindWithBinding {
+            contactName.setPrintableText(item.name)
         }
     }

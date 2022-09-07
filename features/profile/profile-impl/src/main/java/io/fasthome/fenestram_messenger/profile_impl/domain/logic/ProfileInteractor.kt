@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.profile_impl.domain.logic
 
-import io.fasthome.fenestram_messenger.profile_api.model.PersonalData
+import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_impl.domain.repo.ProfileRepo
 import java.util.*
 

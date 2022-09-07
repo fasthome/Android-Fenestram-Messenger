@@ -3,4 +3,8 @@
  */
 package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
-sealed interface DebugEvent
+sealed interface DebugEvent {
+
+    object ContactsDeleted : DebugEvent
+
+}

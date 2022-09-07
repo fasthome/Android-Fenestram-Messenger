@@ -38,7 +38,7 @@ class MainViewModel(
         val chatsFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
         val profileFeature: ProfileFeature,
-        val debugFeature : DebugFeature
+        val debugFeature: DebugFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -71,7 +71,7 @@ class MainViewModel(
     }
 
     override fun createInitialState(): MainState {
-        return MainState(currentTab = fragmentsStack.peek(), debugVisible = environment.isDebug)
+        return MainState(currentTab = fragmentsStack.peek(), debugVisible = environment.isDebug, fabVisible = true)
     }
 
     override fun onBackPressed(): Boolean {
@@ -95,8 +95,16 @@ class MainViewModel(
 
         fragmentsStack.remove(tab)
         fragmentsStack.push(tab)
+        val fabVisible = when (tab) {
+            MainFeature.TabType.Contacts,
+            MainFeature.TabType.Chats -> true
+            else -> false
+        }
         updateState {
-            it.copy(currentTab = tab)
+            it.copy(
+                currentTab = tab,
+                fabVisible = fabVisible
+            )
         }
     }
 

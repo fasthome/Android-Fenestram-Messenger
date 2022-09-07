@@ -6,11 +6,10 @@ import io.fasthome.network.model.BaseResponse
 
 object PostChatsMapper {
 
-    fun responseToPostChatsResult(response: BaseResponse<PostChatsResponse>): PostChatsResult {
-        response.data?.let {
+    fun responseToPostChatsResult(response: PostChatsResponse): PostChatsResult {
+        response.let {
             return PostChatsResult.Success(chatId = it.id)
         }
-        throw Exception()
     }
 
 }

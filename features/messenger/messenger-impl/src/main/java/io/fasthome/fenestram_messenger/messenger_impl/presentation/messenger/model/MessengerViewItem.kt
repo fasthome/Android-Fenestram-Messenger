@@ -9,5 +9,6 @@ data class MessengerViewItem(
     val name: PrintableText,
     val newMessages: Int,
     val time : PrintableText,
-    val lastMessage: PrintableText
+    val lastMessage: PrintableText,
+    val profileImageUrl : String?
 )

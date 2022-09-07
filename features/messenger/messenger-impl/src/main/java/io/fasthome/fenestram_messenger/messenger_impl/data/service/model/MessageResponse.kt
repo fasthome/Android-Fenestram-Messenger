@@ -9,7 +9,10 @@ class MessageResponse(
     val id: Long,
 
     @SerialName("initiator_id")
-    val initiator: Long,
+    val initiatorId: Long,
+
+    @SerialName("user")
+    val initiator: Initiator?,
 
     @SerialName("text")
     val text: String,

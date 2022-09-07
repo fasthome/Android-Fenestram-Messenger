@@ -11,6 +11,7 @@ dependencies {
     implementation(project(Modules.Feature.auth.api))
     implementation(project(Modules.Feature.profile.api))
 
+    implementation(project(Modules.Common.uikit))
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.di))
@@ -22,6 +23,7 @@ dependencies {
     implementation(Deps.Coil.coil)
     implementation(Deps.Coil.base)
     implementation(Deps.Coil.svg)
+    implementation(Deps.Firebase.messaging)
 
     api(Deps.maskara)
 }

@@ -1,9 +1,11 @@
 package io.fasthome.fenestram_messenger.data.prefs
 
+import io.fasthome.fenestram_messenger.data.KeyValueStorage
 
-class InMemoryKeyValueStorage : io.fasthome.fenestram_messenger.data.KeyValueStorage {
 
-    class Factory : io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory {
+class InMemoryKeyValueStorage : KeyValueStorage {
+
+    class Factory : KeyValueStorage.Factory {
         override fun create(name: String) = InMemoryKeyValueStorage()
     }
 
