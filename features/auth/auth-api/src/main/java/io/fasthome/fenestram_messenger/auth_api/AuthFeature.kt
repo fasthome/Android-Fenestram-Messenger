@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.flow.Flow
 
+
 interface AuthFeature {
 
     val authNavigationContract: NavigationContractApi<NoParams, AuthResult>

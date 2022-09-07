@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
+import io.fasthome.fenestram_messenger.onboarding_impl.presentation.onboarding.OnboardingViewModel
 
 //TODO: add to AppModule.
 object OnboardingModule {
@@ -31,5 +32,6 @@ object OnboardingModule {
     }
 
     private fun createPresentationModule() = module {
+        viewModel(::OnboardingViewModel)
     }
 }

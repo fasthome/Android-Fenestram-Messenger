@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.profile_impl.di.ProfileModule
 import io.fasthome.fenestram_messenger.settings_impl.di.SettingsModule
 import io.fasthome.fenestram_messenger.debug_impl.di.DebugModule
 import io.fasthome.fenestram_messenger.group_guest_impl.di.GroupGuestModule
+import io.fasthome.fenestram_messenger.onboarding_impl.di.OnboardingModule
 import io.fasthome.fenestram_messenger.profile_guest_impl.di.ProfileGuestModule
 import io.fasthome.network.di.NetworkModule
 import org.koin.core.module.Module
@@ -35,6 +36,7 @@ object AppModule {
         ProfileModule(),
         ProfileGuestModule(),
         DebugModule(),
-        GroupGuestModule()
+        GroupGuestModule(),
+        OnboardingModule()
     ).flatten()
 }

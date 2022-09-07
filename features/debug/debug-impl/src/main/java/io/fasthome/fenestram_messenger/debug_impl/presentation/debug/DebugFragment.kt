@@ -54,6 +54,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onGroupGuestClicked()
         }
 
+        debugOnboarding.onClick {
+            vm.onOnboardingClicked()
+        }
+
     }
 
     override fun renderState(state: DebugState) = nothingToRender()
