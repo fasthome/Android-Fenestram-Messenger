@@ -35,7 +35,7 @@
         app:selectedDotColor="@color/dark2"
         app:progressMode="true"/>
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonOnb"
         android:layout_width="match_parent"
         android:layout_height="50dp"

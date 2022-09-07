@@ -6,7 +6,8 @@ package io.fasthome.fenestram_messenger.onboarding_api
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.navigation.model.UnitResult
 
 interface OnboardingFeature {
-    val onboardingNavigationContract: NavigationContractApi<NoParams,NoResult>
+    val onboardingNavigationContract: NavigationContractApi<NoParams, UnitResult>
 }

@@ -33,14 +33,14 @@ class OnboardingFragment :
         with(binding) {
             viewPager2.adapter = onboardingAdapter
             indicator.setViewPager2(viewPager2)
+            skipOnboarding.setOnClickListener() {
+                vm.skipOnboarding()
+            }
             viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     if (position == PageLists.introSlides.size - 1) {
                         buttonOnb.setPrintableText(PrintableText.StringResource(R.string.onboarding_letsgo_button))
                         skipOnboarding.isVisible = false
-                        skipOnboarding.setOnClickListener() {
-                            vm.skipOnboarding()
-                        }
                         buttonOnb.setOnClickListener(){
                             vm.skipOnboarding()
                         }
