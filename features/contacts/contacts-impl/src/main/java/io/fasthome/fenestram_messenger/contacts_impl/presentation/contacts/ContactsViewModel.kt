@@ -108,6 +108,7 @@ class ContactsViewModel(
                 MessengerFeature.Params(
                     userIds = listOf(contactsViewItem.userId),
                     chatName = getPrintableRawText(contactsViewItem.name),
+                    avatar = contactsViewItem.avatar,
                     isGroup = false
                 )
             )

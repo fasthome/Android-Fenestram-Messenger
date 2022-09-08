@@ -24,7 +24,7 @@ class MessengerFeatureImpl : MessengerFeature {
                     messages = listOf(),
                     time = null,
                     name = it.chatName,
-                    avatar = null,
+                    avatar = it.avatar,
                     isGroup = it.isGroup
                 )
             )
