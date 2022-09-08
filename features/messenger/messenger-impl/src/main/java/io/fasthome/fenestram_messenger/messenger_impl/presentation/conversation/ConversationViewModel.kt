@@ -17,6 +17,8 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -105,6 +107,7 @@ class ConversationViewModel(
 
     private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
         messengerInteractor.getMessagesFromChat(chatId)
+            .flowOn(Dispatchers.Main)
             .onEach { messages ->
                 updateState { state ->
                     state.copy(
