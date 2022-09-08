@@ -54,7 +54,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         ivAvatar.onClick {
             vm.onAvatarClicked()
         }
-
         ibEditData.onClick {
             vm.editClicked()
         }

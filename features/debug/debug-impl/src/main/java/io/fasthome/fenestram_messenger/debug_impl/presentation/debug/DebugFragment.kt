@@ -62,6 +62,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.updatePushToken()
         }
 
+        debugOnboarding.onClick {
+            vm.onOnboardingClicked()
+        }
+
     }
 
     override fun renderState(state: DebugState) = nothingToRender()

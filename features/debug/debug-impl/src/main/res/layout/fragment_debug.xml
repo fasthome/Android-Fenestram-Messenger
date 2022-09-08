@@ -91,5 +91,13 @@
             android:visibility="gone"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/debug_onboarding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Onboarding"
+            tools:ignore="HardcodedText" />
+
     </LinearLayout>
 </ScrollView>
