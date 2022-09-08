@@ -2,7 +2,6 @@ package io.fasthome.network.client
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
-import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
 import io.ktor.client.*
 import io.ktor.client.engine.*
@@ -65,7 +64,11 @@ internal class SimpleNetworkClientFactory(
                             cause.response.status.value == HttpStatusCode.Forbidden.value
                         ) {
                             forceLogoutManager.value.forceLogout()
-                            throw UnauthorizedException(cause)
+                            /*
+                                if(cause.message.contains("refresh token invalid")) {
+                                    forceLogoutManager.value.forceLogout()
+                                }
+                                else throw UnauthorizedException()*/
                         }
                     }
                     is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(
