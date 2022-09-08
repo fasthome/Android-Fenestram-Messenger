@@ -1,8 +1,9 @@
 package io.fasthome.network.tokens
 
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
-import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.util.NonCancellableAction
+import io.fasthome.fenestram_messenger.util.callForResult
+import io.fasthome.fenestram_messenger.util.getOrThrow
 
 @JvmInline
 value class AccessToken(val s: String)
@@ -28,9 +29,14 @@ class TokensRepoImpl(
     private val updateTokensAction: NonCancellableAction<AccessToken> =
         NonCancellableAction(action = {
             try {
-                val prevRefreshToken = checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
-                val prevAccessToken = checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
-                val response = tokensService.callUpdateToken(prevAccessToken, prevRefreshToken)
+                val prevRefreshToken =
+                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
+                val prevAccessToken =
+                    checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                val updateResult = callForResult {
+                    tokensService.callUpdateToken(prevAccessToken, prevRefreshToken)
+                }
+                val response = updateResult.getOrThrow()
                 val accessToken = AccessToken(response.accessToken)
                 val refreshToken = RefreshToken(response.refreshToken)
                 saveTokens(accessToken, refreshToken)

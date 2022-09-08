@@ -9,7 +9,9 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.MessageResult
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.AppSettingsNavigationContract
 import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
@@ -39,6 +41,10 @@ class PermissionViewModel(
     private var appSettingNavigationDeferred: CompletableDeferred<Unit>? = null
 
     private val alertsDeferred = mutableMapOf<String, CompletableDeferred<MessageResult>>()
+
+    private val locationSettingsLauncher = registerScreen(AppSettingsNavigationContract) {
+        appSettingNavigationDeferred?.complete(Unit)
+    }
 
     override fun createInitialState() = PermissionState()
 
@@ -129,6 +135,7 @@ class PermissionViewModel(
     private suspend fun suspendLaunchAppSettings() {
         val completableDeferred = CompletableDeferred<Unit>()
         appSettingNavigationDeferred = completableDeferred
+        locationSettingsLauncher.launch(NoParams)
         completableDeferred.await()
     }
 

@@ -18,12 +18,14 @@ import io.fasthome.fenestram_messenger.mvi.provideSavedState
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.util.onSuccess
+import java.util.*
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.util.*
-import io.fasthome.fenestram_messenger.navigation.model.createParams
 
 class MainViewModel(
     router: ContractRouter,
@@ -38,7 +40,8 @@ class MainViewModel(
         val chatsFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
         val profileFeature: ProfileFeature,
-        val debugFeature: DebugFeature
+        val debugFeature: DebugFeature,
+        val pushFeature: PushFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -46,7 +49,6 @@ class MainViewModel(
     private val debugLauncher = registerScreen(features.debugFeature.navigationContract)
 
     init {
-
         val savedState = savedStateHandle.provideSavedState { SavedState(tabsStack = fragmentsStack) }
         val tabsStack = savedState?.tabsStack ?: Stack()
 
@@ -59,6 +61,8 @@ class MainViewModel(
         }
 
         viewModelScope.launch {
+            updateFbToken()
+
             outerTabNavigator.tabToOpenFlow
                 .collectWhenViewActive()
                 .collect { newTab ->
@@ -123,6 +127,14 @@ class MainViewModel(
 
     fun debugClicked() {
         debugLauncher.launch(NoParams)
+    }
+
+    private suspend fun updateFbToken() {
+        features.pushFeature.updateToken().onSuccess {
+            if (it.isEmpty()) {
+                updateFbToken()
+            }
+        }
     }
 
     @Parcelize

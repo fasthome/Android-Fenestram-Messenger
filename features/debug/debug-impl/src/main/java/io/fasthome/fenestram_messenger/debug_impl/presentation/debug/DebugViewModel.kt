@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
+import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
 
@@ -30,7 +31,8 @@ class DebugViewModel(
         val profileGuestFeature: ProfileGuestFeature,
         val profileFeature: ProfileFeature,
         val contactsFeature: ContactsFeature,
-        val groupGuestFeature: GroupGuestFeature
+        val groupGuestFeature: GroupGuestFeature,
+        val pushFeature: PushFeature
     )
 
     private var personalData: PersonalData? = null
@@ -104,6 +106,18 @@ class DebugViewModel(
 
     fun onGroupGuestClicked() {
 //        groupGuestLauncher.launch(NoParams)
+    }
+
+    fun sendTestPushNotification() {
+        viewModelScope.launch {
+            features.pushFeature.sendTestPush()
+        }
+    }
+
+    fun updatePushToken() {
+        viewModelScope.launch {
+            features.pushFeature.updateToken()
+        }
     }
 
 }

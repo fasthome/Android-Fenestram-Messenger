@@ -12,8 +12,6 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import io.fasthome.fenestram_messenger.util.getPrintableText
-import io.fasthome.fenestram_messenger.util.onClick
 
 class MessengerFragment :
     BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
@@ -37,8 +35,17 @@ class MessengerFragment :
         vm.fetchChats()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.fetchChats()
+        vm.fetchNewMessages()
+    }
+
     override fun renderState(state: MessengerState) {
         messageAdapter.items = state.messengerViewItems
+        if (state.messengerViewItems.isNotEmpty()) {
+            binding.chatList.smoothScrollToPosition(0)
+        }
     }
 
     override fun handleEvent(event: MessengerEvent) = noEventsExpected()
@@ -46,6 +53,11 @@ class MessengerFragment :
     override fun onFabClicked(): Boolean {
         vm.onCreateChatClicked()
         return super.onFabClicked()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.unsubscribeMessages()
     }
 
 }

@@ -1,6 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
+import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.util.onSuccess
@@ -16,7 +18,13 @@ class MessengerInteractor(
     private val chatsMapper: ChatsMapper
 ) {
     private val _messagesChannel =
-        Channel<List<Message>>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
+        Channel<List<Message>>(
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+            onUndeliveredElement = { list ->
+                list.forEach {
+                    Log.d("MessengerInteractor", "onUndeliveredElement " + it)
+                }
+            })
     private val _newMessagesChannel =
         Channel<Message>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
@@ -44,17 +52,27 @@ class MessengerInteractor(
                 _messagesChannel.trySend(it)
             }
         }
-        messageRepo.getClientSocket(tokensRepo.getAccessToken()) {
-            _messagesChannel.trySend(listOf(chatsMapper.toMessage(this)))
-        }
+        messageRepo.getClientSocket(
+            tokensRepo.getAccessToken(),
+            callback = object : MessengerRepo.SocketMessageCallback {
+                override fun onNewMessage(message: MessageResponseWithChatId) {
+                    this
+                    _messagesChannel.trySend(listOf(chatsMapper.toMessage(message)))
+                }
+            })
 
         return messagesFlow
     }
 
-    suspend fun getNewMessages() : Flow<Message> {
-        messageRepo.getClientSocket(tokensRepo.getAccessToken()) {
-            _newMessagesChannel.trySend(chatsMapper.toMessage(this))
-        }
+    suspend fun getNewMessages(): Flow<Message> {
+        messageRepo.getClientSocket(
+            tokensRepo.getAccessToken(),
+            callback = object : MessengerRepo.SocketMessageCallback {
+                override fun onNewMessage(message: MessageResponseWithChatId) {
+                    this
+                    _messagesChannel.trySend(listOf(chatsMapper.toMessage(message)))
+                }
+            })
         return newMessagesFlow
     }
 }

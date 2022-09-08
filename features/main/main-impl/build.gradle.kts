@@ -12,6 +12,7 @@ dependencies {
     implementation(project(Modules.Feature.profile.api))
     implementation(project(Modules.Feature.contacts.api))
     implementation(project(Modules.Feature.debug.api))
+    implementation(project(Modules.Feature.push.api))
 
     implementation(project(Modules.Common.core))
     api(project(Modules.Common.di))

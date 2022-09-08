@@ -2,9 +2,11 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatByIdResult
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
@@ -40,9 +42,12 @@ class MessengerRepoImpl(
         messengerService.getMessagesByChat(id)
     }
 
-    override fun getClientSocket(token: AccessToken, callback: MessageResponseWithChatId.() -> Unit) {
+    override fun getClientSocket(
+        token: AccessToken,
+        callback: MessengerRepo.SocketMessageCallback
+    ) {
         socket.setClientSocket(token) {
-            callback(this)
+            callback.onNewMessage(this)
         }
     }
 

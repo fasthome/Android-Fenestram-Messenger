@@ -20,6 +20,7 @@ internal class SimpleNetworkClientFactory(
     private val environment: Environment,
     private val baseUrl: String,
     private val networkLogger: Logger,
+    private val forceLogoutManager: Lazy<ForceLogoutManager>,
 ) : NetworkClientFactory {
 
     override fun create(
@@ -60,10 +61,11 @@ internal class SimpleNetworkClientFactory(
             handleResponseException { cause: Throwable ->
                 when (cause) {
                     is ClientRequestException -> {
-                        if (cause.response.status.value == HttpStatusCode.Unauthorized.value) {
+                        if (cause.response.status.value == HttpStatusCode.Unauthorized.value ||
+                            cause.response.status.value == HttpStatusCode.Forbidden.value
+                        ) {
+                            forceLogoutManager.value.forceLogout()
                             throw UnauthorizedException(cause)
-                        } else {
-                            throw WrongServerResponseException(cause)
                         }
                     }
                     is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(

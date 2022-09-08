@@ -2,10 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.entity
 
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.Initiator
-import kotlinx.parcelize.Parcelize
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import kotlinx.parcelize.Parcelize
 
 sealed class GetChatsResult {
     class Success(
@@ -21,7 +19,7 @@ data class Chat(
     val messages: List<Message>,
     val time: ZonedDateTime?,
     val avatar: String?,
-    val isGroup : Boolean
+    val isGroup: Boolean
 ) : Parcelable
 
 @Parcelize
@@ -31,6 +29,18 @@ data class Message(
     val userSenderId: Long,
     val messageType: String,
     val date: ZonedDateTime?,
-    val initiator : User?,
-    val chatId : String? = null
-) : Parcelable
+    val initiator: User?,
+    val chatId: String? = null
+) : Parcelable {
+    companion object {
+        fun onlyDate(date: ZonedDateTime) = Message(
+            id = 0,
+            text = "",
+            userSenderId = 0,
+            messageType = "",
+            date = date,
+            initiator = null,
+            chatId = null
+        )
+    }
+}
