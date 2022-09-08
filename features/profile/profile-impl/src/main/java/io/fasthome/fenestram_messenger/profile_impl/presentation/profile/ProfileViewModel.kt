@@ -27,7 +27,7 @@ class ProfileViewModel(
     private val pickFileInterface: PickFileInterface,
     private val profileInteractor: ProfileInteractor,
     private val profileImageUtil: ProfileImageUtil,
-    ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
+) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
 
@@ -70,7 +70,10 @@ class ProfileViewModel(
                     is PickFileInterface.ResultEvent.Picked -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
                         updateState { state ->
-                            state.copy(avatarBitmap = bitmap, originalProfileImageFile = it.tempFile)
+                            state.copy(
+                                avatarBitmap = bitmap,
+                                originalProfileImageFile = it.tempFile
+                            )
                         }
                     }
                 }

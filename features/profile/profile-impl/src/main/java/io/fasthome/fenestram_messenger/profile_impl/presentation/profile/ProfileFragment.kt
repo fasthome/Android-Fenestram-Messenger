@@ -52,6 +52,10 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             vm.onAvatarClicked()
         }
 
+        ibAdd.onClick {
+            vm.onAvatarClicked()
+        }
+
         ibEditData.onClick {
             vm.editClicked()
         }

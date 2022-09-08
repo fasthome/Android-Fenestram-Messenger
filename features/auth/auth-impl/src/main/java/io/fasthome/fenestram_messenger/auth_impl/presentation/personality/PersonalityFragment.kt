@@ -134,6 +134,10 @@ class PersonalityFragment :
             userPhoto.setOnClickListener {
                 vm.onSelectPhotoClicked()
             }
+
+            userPhotoAdd.setOnClickListener{
+                vm.onSelectPhotoClicked()
+            }
         }
 
     }
