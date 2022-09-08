@@ -28,7 +28,7 @@ class WelcomeViewModel(
             viewModelScope.launch {
                 when (authInteractor.sendCode("+$phoneNumber").successOrSendError()) {
                     is CodeResult.Success ->
-                        checkCodeLauncher.launch(CodeNavigationContract.Params("+7$phoneNumber"))
+                        checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
                 }
             }
         } else
