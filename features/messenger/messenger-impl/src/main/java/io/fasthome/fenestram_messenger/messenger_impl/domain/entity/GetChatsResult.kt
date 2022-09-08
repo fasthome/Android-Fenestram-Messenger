@@ -31,5 +31,6 @@ data class Message(
     val userSenderId: Long,
     val messageType: String,
     val date: ZonedDateTime?,
-    val initiator : User?
+    val initiator : User?,
+    val chatId : String? = null
 ) : Parcelable
