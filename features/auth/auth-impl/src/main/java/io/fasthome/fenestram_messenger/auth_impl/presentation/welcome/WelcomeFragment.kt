@@ -55,6 +55,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
             }
 
             with(phoneInput) {
+                filters = arrayOf(PhoneNumberInputFilter())
                 addTextChangedListener(phoneNumberInputManager)
                 addTextChangedListener(PhoneNumberFormattingTextWatcher())
                 addTextChangedListener {

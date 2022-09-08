@@ -25,5 +25,5 @@ dependencies {
     implementation(Deps.Firebase.messaging)
 
     api(Deps.maskara)
-    implementation("io.michaelrocks:libphonenumber-android:8.12.52")
+    api(Deps.libphonenumber)
 }

@@ -32,10 +32,14 @@ class PhoneNumberInputManager(
 
         val countryIsoCode = getCountryIsoCode(number)
 
-        val country = countryIsoCode?.let {
-            Locale("", it).displayCountry
-        } ?: "Некорректный код страны"
-        setCountryName(country)
+        if (number.filter { it.isDigit() }.length <= 3) {
+            return setCountryName("")
+        } else {
+            val country = countryIsoCode?.let {
+                Locale("", it).displayCountry
+            } ?: "Некорректный код страны"
+            setCountryName(country)
+        }
     }
 
     private fun getCountryIsoCode(number: String): String? {

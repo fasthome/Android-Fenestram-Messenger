@@ -38,7 +38,6 @@
         android:fontFamily="@font/geometria"
         android:importantForAutofill="no"
         android:inputType="phone"
-        android:digits="0123456789+ -()"
         android:padding="10dp"
         android:text="@string/common_country_code_text"
         android:textColor="@color/auth_labels"
