@@ -40,9 +40,9 @@ class MessengerRepoImpl(
         messengerService.getMessagesByChat(id)
     }
 
-    override fun getClientSocket(token: AccessToken, callback: MessageResponseWithChatId.() -> Unit) {
+    override fun getClientSocket(token: AccessToken, callback: MessengerRepo.SocketMessageCallback) {
         socket.setClientSocket(token) {
-            callback(this)
+            callback.onNewMessage(this)
         }
     }
 

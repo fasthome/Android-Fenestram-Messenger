@@ -67,6 +67,22 @@
             tools:ignore="HardcodedText" />
 
         <Button
+            android:id="@+id/debug_send_push"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Send test push"
+            tools:ignore="HardcodedText" />
+
+        <Button
+            android:id="@+id/debug_update_push"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Update push token"
+            tools:ignore="HardcodedText" />
+
+        <Button
             android:id="@+id/debug_group_guest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

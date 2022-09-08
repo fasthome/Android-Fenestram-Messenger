@@ -9,6 +9,7 @@ import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
+import io.ktor.http.*
 import kotlinx.serialization.SerializationException
 import java.io.IOException
 import java.time.Duration
@@ -18,6 +19,7 @@ internal class SimpleNetworkClientFactory(
     private val environment: Environment,
     private val baseUrl: String,
     private val networkLogger: Logger,
+    private val forceLogoutManager: Lazy<ForceLogoutManager>,
 ) : NetworkClientFactory {
 
     override fun create(
@@ -57,6 +59,13 @@ internal class SimpleNetworkClientFactory(
         HttpResponseValidator {
             handleResponseException { cause: Throwable ->
                 when (cause) {
+                    is ClientRequestException -> {
+                        if (cause.response.status.value == HttpStatusCode.Unauthorized.value ||
+                            cause.response.status.value == HttpStatusCode.Forbidden.value
+                        ) {
+                            forceLogoutManager.value.forceLogout()
+                        }
+                    }
                     is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(cause)
                     is ResponseException, is SerializationException -> throw WrongServerResponseException(cause)
                 }

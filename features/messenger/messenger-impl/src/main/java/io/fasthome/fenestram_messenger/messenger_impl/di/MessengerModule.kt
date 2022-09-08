@@ -48,7 +48,7 @@ object MessengerModule {
     }
 
     private fun createDomainModule() = module {
-        factory(::MessengerInteractor)
+        single (::MessengerInteractor)
     }
 
     private fun createPresentationModule() = module {

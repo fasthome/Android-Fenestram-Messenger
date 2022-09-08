@@ -40,7 +40,7 @@ class MessengerViewModel(
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
     private val profileGuestLauncher = registerScreen(profileGuestFeature.profileGuestNavigationContract)
 
-    init {
+    fun fetchNewMessages() {
         viewModelScope.launch {
             subscribeMessages()
         }
@@ -108,6 +108,10 @@ class MessengerViewModel(
                 fetchChats()
             }
             .launchIn(viewModelScope)
+    }
+
+    fun unsubscribeMessages() {
+        messengerInteractor.closeSocket()
     }
 
 }

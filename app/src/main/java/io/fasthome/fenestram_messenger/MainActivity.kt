@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.databinding.ActivityMainBinding
 import io.fasthome.fenestram_messenger.mvi.ScreenLauncherImpl
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.doOnStartStop
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private val navigatorHolder: NavigatorHolder by inject()
     private val router: ContractRouter by inject()
     private val authFeature: AuthFeature by inject()
+    private val pushFeature: PushFeature by inject()
+
     private val vm: MainActivityViewModel by getKoin().viewModel(
         owner = { ViewModelOwner.from(this, this) },
     )
@@ -45,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             vm.onAppStarted()
-//            handleIntent(intent)
+            handleIntent(intent)
         }
 
         lifecycle.doOnStartStop(onStart = vm::onViewActive, onStop = vm::onViewInactive)
@@ -79,6 +82,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
-
+        val pushClickResult = pushFeature.handlePushClick(intent)
+        if (pushClickResult != null) {
+            vm.handleDeepLinkResult(pushClickResult)
+        }
     }
 }
