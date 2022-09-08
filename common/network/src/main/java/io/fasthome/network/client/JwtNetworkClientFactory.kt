@@ -31,7 +31,8 @@ internal class JwtNetworkClientFactory(
         httpClientEngine = httpClientEngine,
         environment = environment,
         baseUrl = baseUrl,
-        networkLogger = networkLogger
+        networkLogger = networkLogger,
+        forceLogoutManager = forceLogoutManager
     ).create {
 
         defaultRequestSuspend {

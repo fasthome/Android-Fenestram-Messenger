@@ -19,7 +19,7 @@ class MessengerFeatureImpl : MessengerFeature {
         ConversationNavigationContract.mapParams {
             ConversationNavigationContract.Params(
                 chat = Chat(
-                    id = null,
+                    id = it.chatId?.toLong(),
                     users = it.userIds,
                     messages = listOf(),
                     time = null,

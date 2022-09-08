@@ -5,18 +5,19 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemGroupBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemReceiveBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSelfBinding
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSystemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
 
-class ConversationAdapter : AsyncListDifferDelegationAdapter<ConversationViewItem>(
-    AdapterUtil.diffUtilItemCallbackEquals(),
+class ConversationAdapter(onGroupProfileItemClicked : (ConversationViewItem.Group) -> Unit) : AsyncListDifferDelegationAdapter<ConversationViewItem>(
+    AdapterUtil.diffUtilItemCallbackEquals(
+        ConversationViewItem::id
+    ),
     AdapterUtil.adapterDelegatesManager(
         createConversationSelfAdapterDelegate(),
         createConversationReceiveAdapterDelegate(),
-        createConversationGroupAdapterDelegate()
+        createConversationGroupAdapterDelegate(onGroupProfileItemClicked),
+        createConversationSystemAdapterDelegate()
     )
 ) {}
 
@@ -36,12 +37,22 @@ fun createConversationReceiveAdapterDelegate() = adapterDelegateViewBinding<Conv
     }
 }
 
-fun createConversationGroupAdapterDelegate() = adapterDelegateViewBinding<ConversationViewItem.Group, ConversationItemGroupBinding>(
+fun createConversationGroupAdapterDelegate(onGroupProfileItemClicked : (ConversationViewItem.Group) -> Unit) = adapterDelegateViewBinding<ConversationViewItem.Group, ConversationItemGroupBinding>(
     ConversationItemGroupBinding::inflate){
+    binding.root.onClick {
+        onGroupProfileItemClicked(item)
+    }
     bindWithBinding {
         username.setPrintableText(item.userName)
         messageContent.setPrintableText(item.content)
         sendTimeView.setPrintableText(item.time)
         avatar.loadCircle(url = item.avatar)
+    }
+}
+
+fun createConversationSystemAdapterDelegate() = adapterDelegateViewBinding<ConversationViewItem.System, ConversationItemSystemBinding>(
+    ConversationItemSystemBinding::inflate){
+    bindWithBinding {
+        date.setPrintableText(item.content)
     }
 }

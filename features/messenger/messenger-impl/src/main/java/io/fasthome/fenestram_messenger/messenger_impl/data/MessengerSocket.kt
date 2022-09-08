@@ -44,5 +44,6 @@ class MessengerSocket(private val baseUrl: String) {
 
     fun closeClientSocket() {
         socket?.close()
+        socket = null
     }
 }

@@ -7,11 +7,12 @@ import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
-import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.navigation.model.createParams
+import io.fasthome.fenestram_messenger.navigation.model.*
+import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.getOrDefault
+import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 class MainActivityViewModel(
     router: ContractRouter,
     private val features: Features,
+    private val deepLinkNavigator: DeepLinkNavigator,
 ) : BaseViewModel<MainActivityState, Nothing>(requestParams = REQUEST_PARAMS, router = router) {
 
     class Features(
@@ -46,6 +48,12 @@ class MainActivityViewModel(
             AuthFeature.AuthResult.Success -> openAuthedRootScreen()
         }
     }
+
+    private var deepLinkResult: IDeepLinkResult? = null
+        set(value) {
+            field = value
+            handleDeepLink()
+        }
 
     init {
         features.authFeature.startAuthEvents
@@ -78,6 +86,23 @@ class MainActivityViewModel(
 
     private fun openAuthedRootScreen() {
         router.newRootScreen(features.mainFeature.mainNavigationContract.createParams())
+    }
+
+    fun handleDeepLinkResult(deepLinkResult: IDeepLinkResult) {
+        viewModelScope.launch {
+            if (features.authFeature.isUserAuthorized().getOrDefault(false)) {
+                this@MainActivityViewModel.deepLinkResult = deepLinkResult
+            }
+        }
+    }
+
+    private fun handleDeepLink() {
+        viewModelScope.launch {
+            if (deepLinkResult == null) return@launch
+
+            val deepLinkResult = ::deepLinkResult.getAndSet(null) ?: return@launch
+            deepLinkNavigator.navigateToDeepLink(deepLinkResult)
+        }
     }
 
     companion object {
