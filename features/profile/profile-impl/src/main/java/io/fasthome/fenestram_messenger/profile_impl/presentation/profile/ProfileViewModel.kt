@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.Manifest
+import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.component.permission.PermissionInterface
@@ -19,6 +20,7 @@ import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
 class ProfileViewModel(
     router: ContractRouter,

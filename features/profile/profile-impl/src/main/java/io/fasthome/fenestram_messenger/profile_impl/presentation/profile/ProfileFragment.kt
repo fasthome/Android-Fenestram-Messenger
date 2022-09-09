@@ -4,7 +4,9 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -52,6 +54,10 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             vm.onAvatarClicked()
         }
 
+        ibAdd.onClick {
+            vm.onAvatarClicked()
+        }
+
         ibEditData.onClick {
             vm.editClicked()
         }
@@ -68,6 +74,85 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         labelNicknameU.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
         labelHBDay.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_birthday_label))
         labelEmail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_email_label))
+    }
+
+    private fun nicknamePassage() = with(binding) {
+        nickContainer.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
+        nickContainer.includeEditText.visibility = View.VISIBLE
+        labelNicknameU.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                labelNicknameU.includeTextView.context,
+                R.color.gray
+            )
+        )
+    }
+
+    private fun nicknameEmpty() = with(binding) {
+        nickContainer.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        profileInvalidNickname.includeTextInvalide.run {
+            setPrintableText(
+                PrintableText.StringResource(
+                    R.string.profile_nickname_empty
+                )
+            )
+            visibility = View.VISIBLE
+        }
+        labelNicknameU.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                labelNicknameU.includeTextView.context,
+                (R.color.red)
+            )
+
+        )
+    }
+
+
+    private fun emailPassage() = with(binding) {
+        emailContainer.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
+        emailContainer.includeEditText.visibility = View.VISIBLE
+        labelEmail.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                labelEmail.includeTextView.context,
+                R.color.gray
+            )
+        )
+    }
+
+    private fun emailEmpty() = with(binding) {
+        emailContainer.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        profileInvalidEmail.includeTextInvalide.run {
+            setPrintableText(
+                PrintableText.StringResource(
+                    R.string.profile_email_empty
+                )
+            )
+            visibility = View.VISIBLE
+        }
+        labelEmail.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                labelEmail.includeTextView.context,
+                (R.color.red)
+            )
+
+        )
+    }
+
+    private fun emailIncorrect() = with(binding) {
+        emailContainer.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        profileInvalidEmail.includeTextInvalid.run {
+            setPrintableText(
+                PrintableText.StringResource(
+                    R.string.profile_email_invalid
+                )
+            )
+            visibility = View.VISIBLE
+        }
+        labelEmail.includeTextView.setTextColor(
+            ContextCompat.getColor(
+                labelEmail.includeTextView.context,
+                R.color.red
+            )
+        )
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
@@ -96,8 +181,11 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
 
+        ibAdd.isVisible = state.isEdit
         llButtons.isVisible = state.isEdit
 
+        ibAdd.isEnabled = state.isEdit
+        ivAvatar.isEnabled = state.isEdit
         nickContainer.includeEditText.isEnabled = state.isEdit
         emailContainer.includeEditText.isEnabled = state.isEdit
         hbDayContainer.includeEditText.isEnabled = state.isEdit
@@ -105,4 +193,13 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
     override fun handleEvent(event: ProfileEvent) = noEventsExpected()
 
+
+    enum class StatusText{
+        nicknamePassage,
+        emailPassage,
+        nicknameEmpty,
+        emailEmpty,
+        emailIncorrect,
+
+    }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_nickname_empty">Не добавлен никнейм</string>
+    <string name="profile_nickname_invalid">Некорректный номер телефона</string>
+    <string name="profile_email_empty">Не добавлен email</string>
+    <string name="profile_email_invalid">Некорректный email</string>
+</resources>
