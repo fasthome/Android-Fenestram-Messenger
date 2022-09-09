@@ -133,5 +133,22 @@
             tools:listitem="@layout/recent_image_item"
             tools:spanCount="3" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonDeleteChat"
+            style="@style/ProfileGuestDeleteChat"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/dark2"
+            android:backgroundTint="@color/dark2"
+            android:drawableLeft="@drawable/ic_delete"
+            android:drawablePadding="10dp"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:text="@string/profile_guest_delete_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recent_images_list" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -19,7 +19,6 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getPrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
 
@@ -64,6 +63,10 @@ class ProfileGuestFragment :
         recentImagesHeader.imagesShowAll.setOnClickListener {
             vm.onShowPhotosClicked()
         }
+
+        binding.buttonDeleteChat.setOnClickListener {
+            vm.onDeleteChatClicked(431)
+        }
     }
 
     override fun renderState(state: ProfileGuestState) {
@@ -101,7 +104,10 @@ class ProfileGuestFragment :
             participantsContainer.isVisible = state.isGroup
             profileGuestName.setPrintableText(state.userName)
             profileGuestNickname.setPrintableText(state.userNickname)
-            profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)
+            profileGuestAvatar.loadCircle(
+                url = state.userAvatar,
+                placeholderRes = R.drawable.common_avatar
+            )
             recentFilesHeader.recentFileCount.setPrintableText(
                 PrintableText.PluralResource(
                     R.plurals.file_quantity,
