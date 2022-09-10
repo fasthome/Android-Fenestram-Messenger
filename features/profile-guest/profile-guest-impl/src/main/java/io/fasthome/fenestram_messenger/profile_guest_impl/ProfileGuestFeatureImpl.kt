@@ -14,6 +14,7 @@ class ProfileGuestFeatureImpl : ProfileGuestFeature {
     override val profileGuestNavigationContract: NavigationContractApi<ProfileGuestFeature.ProfileGuestParams, NoResult> =
         ProfileGuestNavigationContract.mapParams {
             ProfileGuestNavigationContract.Params(
+                id = it.id,
                 userNickname = it.userNickname,
                 userName = it.userName,
                 userAvatar = it.userAvatar,

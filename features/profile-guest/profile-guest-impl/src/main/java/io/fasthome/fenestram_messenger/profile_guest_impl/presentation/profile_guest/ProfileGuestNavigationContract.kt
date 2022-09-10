@@ -10,13 +10,14 @@ import kotlinx.parcelize.Parcelize
 object ProfileGuestNavigationContract :
     NavigationContract<ProfileGuestNavigationContract.Params, NoResult>(ProfileGuestBottomFragment::class) {
 
-        @Parcelize
-        data class Params(
-            val userName : String,
-            val userNickname : String,
-            val userAvatar : String,
-            val isGroup : Boolean,
-            val groupParticipantsParams : ParticipantsParams
-        ) : Parcelable
+    @Parcelize
+    data class Params(
+        val id: Long?,
+        val userName: String,
+        val userNickname: String,
+        val userAvatar: String,
+        val isGroup: Boolean,
+        val groupParticipantsParams: ParticipantsParams
+    ) : Parcelable
 
-    }
+}

@@ -5,7 +5,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.domain.repo.ProfileGue
 import io.fasthome.fenestram_messenger.util.callForResult
 
 class ProfileGuestImpl(private val profileGuestService: ProfileGuestService) : ProfileGuestRepo {
-    override suspend fun deleteChat(id: Int) = callForResult {
+    override suspend fun deleteChat(id: Long) = callForResult {
         profileGuestService.deleteChat(id)
     }
 }

@@ -65,7 +65,7 @@ class ProfileGuestFragment :
         }
 
         binding.buttonDeleteChat.setOnClickListener {
-            vm.onDeleteChatClicked(431)
+            vm.onDeleteChatClicked()
         }
     }
 

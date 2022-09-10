@@ -92,6 +92,7 @@ class MessengerViewModel(
     fun onProfileClicked(messengerViewItem: MessengerViewItem) {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                id = messengerViewItem.id,
                 userName = getPrintableRawText(messengerViewItem.name),
                 userNickname = "",
                 userAvatar = messengerViewItem.profileImageUrl ?: "",

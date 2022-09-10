@@ -15,6 +15,7 @@ interface ProfileGuestFeature {
 
     @Parcelize
     class ProfileGuestParams(
+        val id : Long?,
         val userName : String,
         val userNickname : String,
         val userAvatar : String,

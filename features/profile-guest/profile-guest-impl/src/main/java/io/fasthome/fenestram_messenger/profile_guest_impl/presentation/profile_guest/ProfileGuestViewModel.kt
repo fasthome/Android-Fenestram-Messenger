@@ -39,7 +39,9 @@ class ProfileGuestViewModel(
         }
 
     class Features(val messengerFeature: MessengerFeature)
-    private val messengerLauncher = registerScreen(features.messengerFeature.messengerNavigationContract)
+
+    private val messengerLauncher =
+        registerScreen(features.messengerFeature.messengerNavigationContract)
 
     override fun createInitialState() =
         ProfileGuestState(
@@ -81,13 +83,16 @@ class ProfileGuestViewModel(
         imagesProfileGuestLauncher.launch(NoParams)
     }
 
-    fun onDeleteChatClicked(id: Int) {
+    fun onDeleteChatClicked() {
         viewModelScope.launch {
-            when (val deleteChatResult = deleteChatUseCase.deleteChat(id).successOrSendError()) {
-                is DeleteChatResult.Success -> {
-                    messengerLauncher.launch(NoParams)
+            if (params.id != null)
+                when (val deleteChatResult =
+                    deleteChatUseCase.deleteChat(params.id).successOrSendError()) {
+                    is DeleteChatResult.Success -> {
+                        //exitWithoutResult()
+                        //messengerLauncher.launch(NoParams)
+                    }
                 }
-            }
         }
     }
 }

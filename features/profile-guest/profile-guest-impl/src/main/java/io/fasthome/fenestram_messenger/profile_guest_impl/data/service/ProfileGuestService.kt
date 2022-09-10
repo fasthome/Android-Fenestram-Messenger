@@ -10,12 +10,12 @@ import io.fasthome.network.model.BaseResponse
 class ProfileGuestService(clientFactory: NetworkClientFactory) {
     private val client = clientFactory.create()
 
-    suspend fun deleteChat(id: Int): DeleteChatResult {
-        val response: BaseResponse<DeleteChatResponse> = client.runDelete(
-            path = "api/v1/chats",
-            params = mapOf("chat_id" to id),
-            body = DeleteChatRequest()
-        )
+    suspend fun deleteChat(id: Long): DeleteChatResult {
+        val response: BaseResponse<DeleteChatResponse> =
+            client.runDelete<DeleteChatRequest?, BaseResponse<DeleteChatResponse>>(
+                path = "api/v1/chats/$id",
+                body = null
+            )
 
         return DeleteMapper.responseToDeleteChatResult(response)
     }

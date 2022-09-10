@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class DeleteChatResponse(
     @SerialName("raw")
-    val raw: List<String>,
+    val raw: List<String?>?,
 
     @SerialName("affected")
     val affected: Int

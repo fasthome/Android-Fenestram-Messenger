@@ -4,5 +4,5 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.DeleteCh
 import io.fasthome.fenestram_messenger.util.CallResult
 
 interface ProfileGuestRepo {
-    suspend fun deleteChat(id : Int): CallResult<DeleteChatResult>
+    suspend fun deleteChat(id: Long): CallResult<DeleteChatResult>
 }

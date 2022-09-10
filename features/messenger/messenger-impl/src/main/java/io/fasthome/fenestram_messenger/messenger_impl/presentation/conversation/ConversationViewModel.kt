@@ -90,6 +90,7 @@ class ConversationViewModel(
     fun onUserClicked() {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                id = chatId,
                 userName = params.chat.name,
                 userNickname = "",
                 userAvatar = params.chat.avatar ?: "",
@@ -130,6 +131,7 @@ class ConversationViewModel(
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                id = item.id,
                 userName = getPrintableRawText(item.userName),
                 userNickname = "",
                 userAvatar = item.avatar,

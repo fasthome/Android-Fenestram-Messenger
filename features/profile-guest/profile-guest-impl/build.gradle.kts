@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlinx-serialization`
 }
 
 android {
