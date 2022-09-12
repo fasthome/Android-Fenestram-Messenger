@@ -42,9 +42,16 @@ class TokensRepoImpl(
                 saveTokens(accessToken, refreshToken)
                 accessToken
             } catch (exception: Exception) {
-                throw when (exception) {
-                    is InternetConnectionException -> exception
-                    else -> TokenUpdateException(exception)
+                when (exception) {
+                    is IllegalStateException -> {
+                        if (exception.message == "No access token!") {
+                            throw exception
+                        } else {
+                            checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                        }
+                    }
+                    is InternetConnectionException -> checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                    else -> throw TokenUpdateException(exception)
                 }
             }
         })
