@@ -43,12 +43,12 @@ object MessengerModule {
         factory(::GetChatByIdMapper)
         factory(::ChatsMapper)
 
-        single { MessengerSocket(get<Environment>().endpoints.apiBaseUrl) }
+        factory { MessengerSocket(get<Environment>().endpoints.apiBaseUrl) }
         singleAuthorizedService(::MessengerService)
     }
 
     private fun createDomainModule() = module {
-        single (::MessengerInteractor)
+        factory (::MessengerInteractor)
     }
 
     private fun createPresentationModule() = module {

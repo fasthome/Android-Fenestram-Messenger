@@ -22,8 +22,8 @@ class PushClickHandler(
                         MessengerFeature.Params(
                             chatId = pushData.chatId,
                             userIds = listOf(),
-                            chatName = pushData.chatName ?: "",
-                            isGroup = pushData.isGroup ?: false
+                            chatName = pushData.chatName ?: return null,
+                            isGroup = pushData.isGroup ?: return null
                         )
                     ),
                 )

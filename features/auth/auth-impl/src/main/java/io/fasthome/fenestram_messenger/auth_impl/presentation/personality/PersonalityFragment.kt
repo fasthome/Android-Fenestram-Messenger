@@ -25,7 +25,6 @@ import io.fasthome.fenestram_messenger.util.setPrintableText
 class PersonalityFragment :
     BaseFragment<PersonalityState, PersonalityEvent>(R.layout.fragment_personality) {
 
-
     private val pickImageFragment by registerFragment(
         componentFragmentContractInterface = PickFileComponentContract,
         paramsProvider = {

@@ -33,10 +33,11 @@ class ConversationViewModel(
 
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
+    private var selfUserId: Long? = null
 
     fun fetchMessages() {
         viewModelScope.launch {
-            val selfUserId = features.authFeature.getUserId().getOrNull()
+            selfUserId = features.authFeature.getUserId().getOrNull()
             if (selfUserId == null) {
                 features.authFeature.logout()
                 return@launch
@@ -48,10 +49,10 @@ class ConversationViewModel(
                     users = params.chat.users,
                     isGroup = params.chat.isGroup
                 ).withErrorHandled {
-                        chatId = it.chatId
-                    }
+                    chatId = it.chatId
+                }
             }
-            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId)
+            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId ?: return@launch)
         }
     }
 

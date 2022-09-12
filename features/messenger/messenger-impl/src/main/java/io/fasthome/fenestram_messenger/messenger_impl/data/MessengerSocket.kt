@@ -15,32 +15,34 @@ class MessengerSocket(private val baseUrl: String) {
 
     private var socket: Socket? = null
 
-    fun setClientSocket(token: AccessToken, callback: MessageResponseWithChatId.() -> Unit) {
+    fun setClientSocket(chatId: String?, token: AccessToken, callback: MessageResponseWithChatId.() -> Unit) {
         try {
             val opts = IO.Options()
             opts.extraHeaders =
                 singletonMap("Authorization", singletonList("Bearer ${token.s}"))
+            opts.reconnection = true
             socket = IO.socket(baseUrl.dropLast(1), opts)
             socket?.connect()
             socket?.on("receiveMessage") {
                 Log.d(this.javaClass.simpleName, "receiveMessage: " + it[0].toString())
                 val message = Json.decodeFromString<SocketMessage>(it[0].toString())
-                callback(with(message.message) {
-                    MessageResponseWithChatId(
-                        id = this?.id ?: 1,
-                        initiatorId = this?.initiatorId ?: 1L,
-                        text = this?.text ?: "",
-                        type = this?.type ?: "",
-                        date = this?.date ?: "",
-                        initiator = this?.initiator,
-                        chatId = this?.chatId
-                    )
-                })
-
+                if (chatId == null || chatId == message.message?.chatId) {
+                    callback(messageToMessageResponse(message.message))
+                }
             }
-        } catch (e: URISyntaxException) {
+        } catch (e: Exception) {
         }
     }
+
+    fun messageToMessageResponse(message: MessageResponseWithChatId?) = MessageResponseWithChatId(
+        id = message?.id ?: 1,
+        initiatorId = message?.initiatorId ?: 1L,
+        text = message?.text ?: "",
+        type = message?.type ?: "",
+        date = message?.date ?: "",
+        initiator = message?.initiator,
+        chatId = message?.chatId
+    )
 
     fun closeClientSocket() {
         socket?.close()
