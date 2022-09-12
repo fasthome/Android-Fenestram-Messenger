@@ -114,7 +114,7 @@ class DebugViewModel(
         }
     }
 
-    fun updatePushToken(){
+    fun updatePushToken() {
         viewModelScope.launch {
             features.pushFeature.updateToken()
         }

@@ -7,10 +7,10 @@ import io.fasthome.fenestram_messenger.util.CallResult
 
 interface PushRepo {
 
-    suspend fun sendTestPush() : CallResult<Unit>
+    suspend fun sendTestPush(): CallResult<Unit>
 
-    suspend fun sendPushToken() : CallResult<List<String>>
+    suspend fun sendPushToken(): CallResult<List<String>>
 
-    suspend fun clearPushToken() : CallResult<Unit>
+    suspend fun clearPushToken(): CallResult<Unit>
 
 }

@@ -1,15 +1,16 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data
 
 import android.util.Log
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessage
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
 import io.socket.client.Socket
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import java.net.URISyntaxException
 import java.util.Collections.singletonList
 import java.util.Collections.singletonMap
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 class MessengerSocket(private val baseUrl: String) {
 

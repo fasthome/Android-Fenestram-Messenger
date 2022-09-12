@@ -26,4 +26,5 @@ dependencies {
     implementation(Deps.Firebase.messaging)
 
     api(Deps.maskara)
+    api(Deps.libphonenumber)
 }

@@ -10,7 +10,7 @@ class DeepLinkNavigatorImpl(
 ) : DeepLinkNavigator {
 
     override fun navigateToDeepLink(iDeepLinkResult: IDeepLinkResult) {
-        when(val deepLinkResult = iDeepLinkResult as DeepLinkResult) {
+        when (val deepLinkResult = iDeepLinkResult as DeepLinkResult) {
             is DeepLinkResult.MainScreen -> mainFeature.returnToMainScreenAndOpenTab(deepLinkResult.tab)
             is DeepLinkResult.NewChain -> router.newChain(*deepLinkResult.screens.toTypedArray())
         }.let { }

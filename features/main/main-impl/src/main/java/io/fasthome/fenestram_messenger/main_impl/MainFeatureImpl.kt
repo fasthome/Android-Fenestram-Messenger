@@ -7,9 +7,6 @@ import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.main_impl.domain.logic.OuterTabNavigator
 import io.fasthome.fenestram_messenger.main_impl.presentation.main.MainNavigationContract
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
 class MainFeatureImpl(
     private val router: ContractRouter,

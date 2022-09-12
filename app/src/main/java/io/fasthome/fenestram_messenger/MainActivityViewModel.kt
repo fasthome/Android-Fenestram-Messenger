@@ -8,11 +8,9 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.*
-import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -42,12 +40,13 @@ class MainActivityViewModel(
         val mainFeature: MainFeature
     )
 
-    private val authLauncher = registerScreen(features.authFeature.authNavigationContract) { result ->
-        when (result) {
-            AuthFeature.AuthResult.Canceled -> router.finishChain()
-            AuthFeature.AuthResult.Success -> openAuthedRootScreen()
+    private val authLauncher =
+        registerScreen(features.authFeature.authNavigationContract) { result ->
+            when (result) {
+                AuthFeature.AuthResult.Canceled -> router.finishChain()
+                AuthFeature.AuthResult.Success -> openAuthedRootScreen()
+            }
         }
-    }
 
     private var deepLinkResult: IDeepLinkResult? = null
         set(value) {
@@ -111,6 +110,7 @@ class MainActivityViewModel(
             resultKey = ContractRouter.IGNORE_RESULT,
         )
 
-        object GuestModeRootNavigationContract : NavigationContract<NoParams, NoResult>(Fragment::class)
+        object GuestModeRootNavigationContract :
+            NavigationContract<NoParams, NoResult>(Fragment::class)
     }
 }

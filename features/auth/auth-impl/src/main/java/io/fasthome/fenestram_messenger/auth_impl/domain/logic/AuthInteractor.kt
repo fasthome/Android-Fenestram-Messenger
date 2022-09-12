@@ -22,8 +22,7 @@ class AuthInteractor(
 
     suspend fun login(phoneNumber: String, code: String) =
         authRepo.login(phoneNumber, code).onSuccess {
-            if (it is LoginResult.Success)
-                onLoginResultSuccess(tokensRepo = tokensRepo, authRepo = authRepo, loginResult = it)
+            onLoginResultSuccess(tokensRepo = tokensRepo, authRepo = authRepo, loginResult = it)
         }
 
 
@@ -46,7 +45,7 @@ class AuthInteractor(
         suspend fun onLoginResultSuccess(
             tokensRepo: TokensRepo,
             authRepo: AuthRepo,
-            loginResult: LoginResult.Success,
+            loginResult: LoginResult,
         ) {
             tokensRepo.saveTokens(loginResult.accessToken, loginResult.refreshToken)
             authRepo.saveUserId(loginResult.userDetail.id)
