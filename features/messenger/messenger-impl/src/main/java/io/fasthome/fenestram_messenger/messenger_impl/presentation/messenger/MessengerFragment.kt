@@ -37,7 +37,6 @@ class MessengerFragment :
 
     override fun onResume() {
         super.onResume()
-//        vm.fetchChats()
         vm.fetchNewMessages()
     }
 
