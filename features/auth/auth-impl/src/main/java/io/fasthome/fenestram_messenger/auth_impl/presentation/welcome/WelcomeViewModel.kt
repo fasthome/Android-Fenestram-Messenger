@@ -45,7 +45,9 @@ class WelcomeViewModel(
     }
 
     fun updateCountry(countryName: String) {
-        updateState { WelcomeState(country = countryName, error = false) }
+        updateState { state->
+            state.copy(country = countryName, error = false)
+        }
     }
 
     fun overWritePhoneNumber() {

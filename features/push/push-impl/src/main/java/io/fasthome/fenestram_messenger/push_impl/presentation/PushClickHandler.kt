@@ -23,7 +23,8 @@ class PushClickHandler(
                             chatId = pushData.chatId,
                             userIds = listOf(),
                             chatName = pushData.chatName ?: return null,
-                            isGroup = pushData.isGroup ?: return null
+                            isGroup = pushData.isGroup ?: return null,
+                            avatar = pushData.userAvatar ?: ""
                         )
                     ),
                 )

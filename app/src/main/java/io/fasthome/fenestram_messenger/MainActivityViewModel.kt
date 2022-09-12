@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -130,6 +131,7 @@ class MainActivityViewModel(
         viewModelScope.launch {
 
             if (deepLinkResult == null) return@launch
+
             viewState.first {
                 it.viewActiveConsumed
             }

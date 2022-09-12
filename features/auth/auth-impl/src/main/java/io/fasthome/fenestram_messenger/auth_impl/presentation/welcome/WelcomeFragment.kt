@@ -26,14 +26,6 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
     private lateinit var phoneNumberUtil: PhoneNumberUtil
 
-    override fun renderState(state: WelcomeState): Unit = with(binding) {
-        binding.countryName.text = state.country
-        if (state.error)
-            phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
-        else
-            phoneInput.setBackgroundResource(R.drawable.rounded_border)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -74,6 +66,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
     }
 
     override fun renderState(state: WelcomeState): Unit = with(binding) {
+        binding.countryName.text = state.country
         if (state.error)
             phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
         else
