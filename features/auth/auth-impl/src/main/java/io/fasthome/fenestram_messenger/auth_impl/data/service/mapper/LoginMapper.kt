@@ -14,11 +14,11 @@ class LoginMapper(
 
     fun responseToLogInResult(response: BaseResponse<LoginResponse>): LoginResult {
         response.data?.let {
-            return LoginResult.Success(
+            return LoginResult(
                 accessToken = AccessToken(it.accessToken),
                 refreshToken = RefreshToken(it.refreshToken),
                 userDetail = UserDetail(
-                    id =  it.id,
+                    id = it.id,
                     phone = it.phone,
                     name = it.name ?: "",
                     email = it.email ?: "",

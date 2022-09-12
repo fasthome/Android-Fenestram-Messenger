@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
-import androidx.core.view.size
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
@@ -17,9 +16,6 @@ import io.fasthome.fenestram_messenger.util.dp
 import io.fasthome.fenestram_messenger.util.increaseHitArea
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 
 class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {

@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 data class TestPushRequest(
 
     @SerialName("text")
-    val text : String,
+    val text: String,
 
     @SerialName("message_type")
-    val messageType : String,
+    val messageType: String,
 
-)
+    )

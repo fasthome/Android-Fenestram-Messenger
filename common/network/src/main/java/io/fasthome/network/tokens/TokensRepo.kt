@@ -1,9 +1,9 @@
 package io.fasthome.network.tokens
 
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
-import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
-import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.NonCancellableAction
+import io.fasthome.fenestram_messenger.util.callForResult
+import io.fasthome.fenestram_messenger.util.getOrThrow
 
 @JvmInline
 value class AccessToken(val s: String)
@@ -29,8 +29,10 @@ class TokensRepoImpl(
     private val updateTokensAction: NonCancellableAction<AccessToken> =
         NonCancellableAction(action = {
             try {
-                val prevRefreshToken = checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
-                val prevAccessToken = checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                val prevRefreshToken =
+                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
+                val prevAccessToken =
+                    checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
                 val updateResult = callForResult {
                     tokensService.callUpdateToken(prevAccessToken, prevRefreshToken)
                 }
@@ -40,9 +42,16 @@ class TokensRepoImpl(
                 saveTokens(accessToken, refreshToken)
                 accessToken
             } catch (exception: Exception) {
-                throw when (exception) {
-                    is InternetConnectionException -> exception
-                    else -> TokenUpdateException(exception)
+                when (exception) {
+                    is IllegalStateException -> {
+                        if (exception.message == "No access token!") {
+                            throw exception
+                        } else {
+                            checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                        }
+                    }
+                    is InternetConnectionException -> checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                    else -> throw TokenUpdateException(exception)
                 }
             }
         })

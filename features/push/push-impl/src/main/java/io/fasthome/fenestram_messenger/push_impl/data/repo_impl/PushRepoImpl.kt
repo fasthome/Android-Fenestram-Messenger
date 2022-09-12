@@ -10,7 +10,8 @@ import io.fasthome.fenestram_messenger.push_impl.domain.repo.PushRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 
-class PushRepoImpl(private val pushService: PushService, private val pushesStorage: PushesStorage) : PushRepo {
+class PushRepoImpl(private val pushService: PushService, private val pushesStorage: PushesStorage) :
+    PushRepo {
 
     override suspend fun sendTestPush(): CallResult<Unit> = callForResult {
         pushService.sendTestPush()

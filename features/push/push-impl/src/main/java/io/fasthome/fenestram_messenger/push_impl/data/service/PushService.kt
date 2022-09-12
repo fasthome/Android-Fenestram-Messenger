@@ -21,7 +21,7 @@ class PushService(clientFactory: NetworkClientFactory) {
             )
             .requireData()
 
-    suspend fun sendPushToken(deviceToken: String) : List<String> =
+    suspend fun sendPushToken(deviceToken: String): List<String> =
         client
             .runPost<SendTokenRequest, BaseResponse<List<String>>>(
                 path = "api/v1/authorization/firebase_token",

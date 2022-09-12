@@ -17,7 +17,6 @@ import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -48,16 +47,17 @@ class MainActivityViewModel(
         val onboardingFeature : OnboardingFeature
     )
 
-    private val authLauncher = registerScreen(features.authFeature.authNavigationContract) { result ->
-        when (result) {
-            AuthFeature.AuthResult.Canceled -> router.finishChain()
-            AuthFeature.AuthResult.Success -> onboardingLauncher.launch()
+    private val authLauncher =
+        registerScreen(features.authFeature.authNavigationContract) { result ->
+            when (result) {
+                AuthFeature.AuthResult.Canceled -> router.finishChain()
+                AuthFeature.AuthResult.Success -> onboardingLauncher.launch()
         }
     }
 
     private val onboardingLauncher = registerScreen(features.onboardingFeature.onboardingNavigationContract) {
         openAuthedRootScreen()
-    }
+        }
 
     private var deepLinkResult: IDeepLinkResult? = null
         set(value) {
@@ -146,6 +146,7 @@ class MainActivityViewModel(
             resultKey = ContractRouter.IGNORE_RESULT,
         )
 
-        object GuestModeRootNavigationContract : NavigationContract<NoParams, NoResult>(Fragment::class)
+        object GuestModeRootNavigationContract :
+            NavigationContract<NoParams, NoResult>(Fragment::class)
     }
 }

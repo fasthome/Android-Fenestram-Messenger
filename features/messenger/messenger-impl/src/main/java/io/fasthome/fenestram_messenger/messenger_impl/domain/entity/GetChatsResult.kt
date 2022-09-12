@@ -2,10 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.entity
 
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.Initiator
-import kotlinx.parcelize.Parcelize
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import kotlinx.parcelize.Parcelize
 
 sealed class GetChatsResult {
     class Success(

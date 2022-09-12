@@ -33,7 +33,8 @@ class PushesStorage(
     }
 
     private fun isGooglePlayServicesAvailable(): Boolean {
-        val availableResult = GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(context)
+        val availableResult =
+            GoogleApiAvailabilityLight.getInstance().isGooglePlayServicesAvailable(context)
         return availableResult == ConnectionResult.SUCCESS
     }
 }

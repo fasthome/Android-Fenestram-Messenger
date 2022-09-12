@@ -8,11 +8,11 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.presentation.base.navigation.PickFileNavigationContract
+import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.io.File
 
 class PickFileViewModel(
     requestParams: RequestParams,
@@ -62,7 +62,10 @@ class PickFileViewModel(
     override fun pickFile() {
         viewModelScope.launch {
             val permissionGranted =
-                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE, canOpenSettings = true)
+                permissionInterface.request(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    canOpenSettings = true
+                )
             if (permissionGranted) {
                 pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
             }

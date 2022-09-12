@@ -4,9 +4,9 @@ import io.fasthome.fenestram_messenger.navigation.contract.CreateParamsInterface
 import io.fasthome.fenestram_messenger.navigation.model.IDeepLinkResult
 import kotlinx.parcelize.Parcelize
 
-sealed interface DeepLinkResult: IDeepLinkResult {
+sealed interface DeepLinkResult : IDeepLinkResult {
     @Parcelize
-    data class NewChain(val screens: List<CreateParamsInterface>): DeepLinkResult {
+    data class NewChain(val screens: List<CreateParamsInterface>) : DeepLinkResult {
 
         constructor(vararg screens: CreateParamsInterface) : this(screens.toList())
 
@@ -18,6 +18,5 @@ sealed interface DeepLinkResult: IDeepLinkResult {
     }
 
     @Parcelize
-    data class MainScreen(val tab: MainFeature.TabType): DeepLinkResult
+    data class MainScreen(val tab: MainFeature.TabType) : DeepLinkResult
 }
-

@@ -13,7 +13,8 @@ fun Context.createNotificationChannel(
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val androidNotificationChannel = channel.toAndroidNotificationChannel(applicationContext)
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         notificationManager?.createNotificationChannel(androidNotificationChannel)
     }
 }
@@ -53,6 +54,3 @@ enum class Channel(
         mapImportance(importance)
     ).apply { this.description = context.getString(this@Channel.description) }
 }
-
-
-
