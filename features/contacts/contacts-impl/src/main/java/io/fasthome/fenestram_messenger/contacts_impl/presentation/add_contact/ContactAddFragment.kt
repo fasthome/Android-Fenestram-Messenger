@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -12,6 +13,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.*
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getPrintableText
+import io.fasthome.fenestram_messenger.util.model.EditTextFilter
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
@@ -50,6 +52,9 @@ class ContactAddFragment :
                 getPrintableText(PrintableText.StringResource(R.string.contact_add_first_name_hint))
             contactAddInputSecondName.includeEditText.hint =
                 getPrintableText(PrintableText.StringResource(R.string.contact_add_second_name_hint))
+
+            contactAddInputFirstName.includeEditText.filters = arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+            contactAddInputSecondName.includeEditText.filters = arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
 
             contactAddInvalidFirstName.includeTextInvalid.run {
                 setPrintableText(
