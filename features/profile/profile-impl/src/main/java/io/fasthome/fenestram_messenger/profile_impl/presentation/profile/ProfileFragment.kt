@@ -4,8 +4,10 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -94,17 +96,26 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
 
-        state.avatarUrl?.let { url ->
-            ivAvatar.load(url) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
+        if (state.avatarUrl == null && state.avatarBitmap == null) {
+            ivAvatar.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_account_circle_24
+                )
+            )
+        } else {
+            state.avatarUrl?.let { url ->
+                ivAvatar.load(url) {
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_baseline_account_circle_24)
+                }
             }
-        }
 
-        state.avatarBitmap?.let { bitmap ->
-            ivAvatar.load(bitmap) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
+            state.avatarBitmap?.let { bitmap ->
+                ivAvatar.load(bitmap) {
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_baseline_account_circle_24)
+                }
             }
         }
 
