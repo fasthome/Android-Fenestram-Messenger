@@ -55,13 +55,14 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             vm.onAvatarClicked()
         }
 
+        ibAdd.onClick {
+            vm.onAvatarClicked()
+        }
+
         ibEditData.onClick {
             vm.editClicked()
         }
         bCancel.onClick {
-            vm.cancelClicked()
-        }
-        bDone.onClick {
             vm.cancelClicked()
         }
         ibSettings.onClick {
@@ -71,6 +72,14 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         labelNicknameU.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
         labelHBDay.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_birthday_label))
         labelEmail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_email_label))
+        bDone.onClick {
+            vm.checkPersonalData(
+                name = username.text.toString(),
+                nickname = nickContainer.includeEditText.text.toString(),
+                birthday = hbDayContainer.includeEditText.text.toString(),
+                mail = emailContainer.includeEditText.text.toString(),
+            )
+        }
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
@@ -85,13 +94,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
 
-        state.avatarBitmap?.let { bitmap ->
-            ivAvatar.load(bitmap) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
-            }
-        }
-
         state.avatarUrl?.let { url ->
             ivAvatar.load(url) {
                 transformations(CircleCropTransformation())
@@ -99,8 +101,20 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
 
+        state.avatarBitmap?.let { bitmap ->
+            ivAvatar.load(bitmap) {
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_baseline_account_circle_24)
+            }
+        }
+
         llButtons.isVisible = state.isEdit
 
+        ivAvatar.isEnabled = state.isEdit
+        ibAdd.isVisible = state.isEdit
+        progress.isVisible = state.isLoad
+        bCancel.isVisible = !state.isLoad
+        bDone.isVisible = !state.isLoad
         nickContainer.includeEditText.isEnabled = state.isEdit
         emailContainer.includeEditText.isEnabled = state.isEdit
         hbDayContainer.includeEditText.isEnabled = state.isEdit

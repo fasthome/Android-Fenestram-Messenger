@@ -8,9 +8,16 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.*
+import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.navigation.model.createParams
+import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -37,15 +44,20 @@ class MainActivityViewModel(
 
     class Features(
         val authFeature: AuthFeature,
-        val mainFeature: MainFeature
+        val mainFeature: MainFeature,
+        val onboardingFeature : OnboardingFeature
     )
 
     private val authLauncher =
         registerScreen(features.authFeature.authNavigationContract) { result ->
             when (result) {
                 AuthFeature.AuthResult.Canceled -> router.finishChain()
-                AuthFeature.AuthResult.Success -> openAuthedRootScreen()
-            }
+                AuthFeature.AuthResult.Success -> onboardingLauncher.launch()
+        }
+    }
+
+    private val onboardingLauncher = registerScreen(features.onboardingFeature.onboardingNavigationContract) {
+        openAuthedRootScreen()
         }
 
     private var deepLinkResult: IDeepLinkResult? = null
@@ -63,7 +75,7 @@ class MainActivityViewModel(
     }
 
     override fun createInitialState(): MainActivityState {
-        return MainActivityState()
+        return MainActivityState(false)
     }
 
     fun onAppStarted() {
@@ -95,11 +107,37 @@ class MainActivityViewModel(
         }
     }
 
+    override fun onViewActive() {
+        super.onViewActive()
+        viewModelScope.launch {
+            /**
+             * Необходимо дождаться окончания запуска стартового экрана,
+             * и только после этого запрашивать ПИН или сбрасывать на Главный экран.
+             */
+            updateState { it.copy(viewActiveConsumed = true) }
+        }
+    }
+
+    override fun onViewInactive() {
+        super.onViewInactive()
+        updateState {
+            it.copy(
+                viewActiveConsumed = false,
+            )
+        }
+    }
+
     private fun handleDeepLink() {
         viewModelScope.launch {
+
             if (deepLinkResult == null) return@launch
 
+            viewState.first {
+                it.viewActiveConsumed
+            }
+
             val deepLinkResult = ::deepLinkResult.getAndSet(null) ?: return@launch
+
             deepLinkNavigator.navigateToDeepLink(deepLinkResult)
         }
     }

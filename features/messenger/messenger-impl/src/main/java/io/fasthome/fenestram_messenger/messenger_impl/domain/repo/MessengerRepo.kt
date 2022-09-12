@@ -21,7 +21,7 @@ interface MessengerRepo {
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
     suspend fun getMessagesFromChat(id: Long): CallResult<List<Message>>
     fun closeSocket()
-    fun getClientSocket(token: AccessToken, callback: SocketMessageCallback)
+    fun getClientSocket(chatId : String?, token: AccessToken, callback: SocketMessageCallback)
 
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)

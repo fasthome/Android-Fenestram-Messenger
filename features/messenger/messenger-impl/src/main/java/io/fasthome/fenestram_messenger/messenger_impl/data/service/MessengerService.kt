@@ -57,7 +57,8 @@ class MessengerService(
 
     suspend fun getMessagesByChat(id: Long): List<Message> {
         val response: BaseResponse<List<MessageResponse>> = client.runGet(
-            path = "api/v1/chats/$id/messages"
+            path = "api/v1/chats/$id/messages",
+            params = mapOf("limit" to 1000, "page" to 1)
         )
 
         return response.requireData().let(getChatsMapper::responseToGetMessagesByChat)
