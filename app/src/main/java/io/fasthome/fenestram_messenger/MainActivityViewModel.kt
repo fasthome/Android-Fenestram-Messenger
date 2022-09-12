@@ -8,16 +8,12 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.*
-import io.fasthome.fenestram_messenger.push_api.PushFeature
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
-import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -46,7 +42,7 @@ class MainActivityViewModel(
         val authFeature: AuthFeature,
         val profileFeature: ProfileFeature,
         val mainFeature: MainFeature,
-        val onboardingFeature : OnboardingFeature
+        val onboardingFeature: OnboardingFeature
     )
 
     private val authLauncher =
@@ -54,11 +50,12 @@ class MainActivityViewModel(
             when (result) {
                 AuthFeature.AuthResult.Canceled -> router.finishChain()
                 AuthFeature.AuthResult.Success -> onboardingLauncher.launch()
+            }
         }
-    }
 
-    private val onboardingLauncher = registerScreen(features.onboardingFeature.onboardingNavigationContract) {
-        openAuthedRootScreen()
+    private val onboardingLauncher =
+        registerScreen(features.onboardingFeature.onboardingNavigationContract) {
+            openAuthedRootScreen()
         }
 
     private val personalityLauncher =
