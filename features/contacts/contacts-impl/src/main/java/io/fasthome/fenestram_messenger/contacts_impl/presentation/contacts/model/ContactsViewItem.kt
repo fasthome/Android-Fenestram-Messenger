@@ -17,7 +17,6 @@ sealed class ContactsViewItem {
         val userId: Long,
         override val avatar: String,
         override val name: PrintableText,
-        val phone: PrintableText
     ) : ContactsViewItem()
 
     class Header(

@@ -4,7 +4,7 @@ import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
-import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.*
 
 object ContactsMapper{
     fun contactsListToViewList(contacts: List<Contact>) : List<ContactsViewItem>{
@@ -32,12 +32,18 @@ object ContactsMapper{
             }
             contact.user != null -> {
                 val user = contact.user!!
-                ContactsViewItem.Api(
-                    userId = user.id,
-                    avatar = user.avatar,
-                    name = PrintableText.Raw(user.name),
-                    phone = PrintableText.Raw(user.phone)
-                )
+                if (user.name.isNotEmpty())
+                    ContactsViewItem.Api(
+                        userId = user.id,
+                        avatar = user.avatar,
+                        name = PrintableText.Raw(user.name)
+                    )
+                else
+                    ContactsViewItem.Api(
+                        userId = user.id,
+                        avatar = user.avatar,
+                        name = PrintableText.Raw(user.phone.setMaskByCountry(Country.RUSSIA))
+                    )
             }
             else -> {
                 error("Unknown type contact")
