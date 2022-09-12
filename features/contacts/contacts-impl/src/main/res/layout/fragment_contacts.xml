@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:orientation="vertical"
-        app:elevation="0dp">
+        app:elevation="0dp"
+        android:paddingBottom="15dp">
 
         <TextView
             android:id="@+id/contacts_header"

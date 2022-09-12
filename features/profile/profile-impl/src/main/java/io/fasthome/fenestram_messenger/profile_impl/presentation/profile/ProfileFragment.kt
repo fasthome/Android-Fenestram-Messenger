@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -47,6 +48,8 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
         ivAvatar.onClick {
             vm.onAvatarClicked()

@@ -10,6 +10,9 @@ import androidx.annotation.RequiresPermission
 import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class ContactsLoader(private val context: Context) {
@@ -95,10 +98,13 @@ class ContactsLoader(private val context: Context) {
         )
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
-            callback(ContactAddResult.Success)
+            CoroutineScope(Dispatchers.Main).launch {
+                callback(ContactAddResult.Success)
+            }
         } catch (e: Exception) {
             callback(ContactAddResult.Canceled)
         }
+
     }
 
 }
