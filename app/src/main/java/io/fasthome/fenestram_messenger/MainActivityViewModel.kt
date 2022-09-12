@@ -8,12 +8,8 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.*
-import io.fasthome.fenestram_messenger.push_api.PushFeature
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
-import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
+import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
@@ -44,8 +40,9 @@ class MainActivityViewModel(
 
     class Features(
         val authFeature: AuthFeature,
+        val profileFeature: ProfileFeature,
         val mainFeature: MainFeature,
-        val onboardingFeature : OnboardingFeature
+        val onboardingFeature: OnboardingFeature
     )
 
     private val authLauncher =
@@ -53,11 +50,20 @@ class MainActivityViewModel(
             when (result) {
                 AuthFeature.AuthResult.Canceled -> router.finishChain()
                 AuthFeature.AuthResult.Success -> onboardingLauncher.launch()
+            }
         }
-    }
 
-    private val onboardingLauncher = registerScreen(features.onboardingFeature.onboardingNavigationContract) {
-        openAuthedRootScreen()
+    private val onboardingLauncher =
+        registerScreen(features.onboardingFeature.onboardingNavigationContract) {
+            openAuthedRootScreen()
+        }
+
+    private val personalityLauncher =
+        registerScreen(features.authFeature.personalDataNavigationContract) { result ->
+            when (result) {
+                AuthFeature.AuthResult.Canceled -> router.finishChain()
+                AuthFeature.AuthResult.Success -> openAuthedRootScreen()
+            }
         }
 
     private var deepLinkResult: IDeepLinkResult? = null
@@ -83,10 +89,33 @@ class MainActivityViewModel(
             when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
                 is CallResult.Success -> when {
                     !isAuthedResult.data -> startAuth()
-                    else -> openAuthedRootScreen()
+                    else -> checkPersonalData()
                 }
                 is CallResult.Error -> startAuth()
             }
+        }
+    }
+
+    private suspend fun checkPersonalData() {
+        when (val personalDataResult = features.profileFeature.getPersonalData()) {
+            is CallResult.Success -> {
+                with(personalDataResult.data) {
+                    if (username != null && nickname != null && birth != null && email != null) {
+                        openAuthedRootScreen()
+                    } else {
+                        openPersonalityScreen(
+                            AuthFeature.PersonalDataParams(
+                                username = username,
+                                nickname = nickname,
+                                birth = birth,
+                                email = email,
+                                avatar = avatar,
+                            )
+                        )
+                    }
+                }
+            }
+            is CallResult.Error -> startAuth()
         }
     }
 
@@ -97,6 +126,10 @@ class MainActivityViewModel(
 
     private fun openAuthedRootScreen() {
         router.newRootScreen(features.mainFeature.mainNavigationContract.createParams())
+    }
+
+    private fun openPersonalityScreen(personalDataParams: AuthFeature.PersonalDataParams) {
+        personalityLauncher.launch(personalDataParams)
     }
 
     fun handleDeepLinkResult(deepLinkResult: IDeepLinkResult) {
