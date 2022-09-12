@@ -35,6 +35,7 @@
         app:layout_constraintTop_toBottomOf="@id/label_welcome_end" />
 
     <ImageButton
+        android:id="@+id/user_photo_add"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:background="@drawable/ic_baseline_add_circle_24"

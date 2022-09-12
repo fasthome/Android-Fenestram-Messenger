@@ -31,7 +31,7 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         binding.messagesList.adapter = conversationAdapter
 
@@ -78,8 +78,8 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
 
     override fun handleEvent(event: ConversationEvent) = noEventsExpected()
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         vm.closeSocket()
     }
 }

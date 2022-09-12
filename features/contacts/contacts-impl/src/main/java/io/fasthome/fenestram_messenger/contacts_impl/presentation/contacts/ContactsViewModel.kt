@@ -89,7 +89,7 @@ class ContactsViewModel(
         } else {
             currentViewState.loadingState.dataOrNull?.filter {
                 if (it !is ContactsViewItem.Header) {
-                    getPrintableRawText(it.name).startsWith(text.trim(), true)
+                    getPrintableRawText(it.name).contains(text.trim(), true)
                 } else {
                     false
                 }
@@ -108,6 +108,7 @@ class ContactsViewModel(
                 MessengerFeature.Params(
                     userIds = listOf(contactsViewItem.userId),
                     chatName = getPrintableRawText(contactsViewItem.name),
+                    avatar = contactsViewItem.avatar,
                     isGroup = false
                 )
             )

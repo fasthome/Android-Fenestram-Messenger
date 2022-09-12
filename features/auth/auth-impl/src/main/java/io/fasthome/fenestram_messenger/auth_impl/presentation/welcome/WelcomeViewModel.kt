@@ -20,27 +20,40 @@ class WelcomeViewModel(
     }
 
     override fun createInitialState(): WelcomeState {
-        return WelcomeState(country = "", error = false)
+        return WelcomeState(country = "", error = false, isLoad = false)
     }
 
     fun checkPhoneNumber(phoneNumber: String, isValid: Boolean) {
+        updateState { state->
+            state.copy(isLoad = true)
+        }
         if (isValid) {
             viewModelScope.launch {
                 when (authInteractor.sendCode("+$phoneNumber").successOrSendError()) {
-                    is CodeResult.Success ->
+                    is CodeResult.Success -> {
+                        updateState { state->
+                            state.copy(isLoad = false)
+                        }
                         checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
+                    }
                 }
             }
         } else
-            updateState { WelcomeState(country = "", error = true) }
+            updateState { state->
+                state.copy(country = "", error = true, isLoad = false)
+            }
     }
 
     fun updateCountry(countryName: String) {
-        updateState { WelcomeState(country = countryName, error = false) }
+        updateState { state->
+            state.copy(country = countryName, error = false)
+        }
     }
 
     fun overWritePhoneNumber() {
-        updateState { WelcomeState(country = currentViewState.country, error = false) }
+        updateState { state->
+            state.copy(country = currentViewState.country, error = false)
+        }
     }
 
 }

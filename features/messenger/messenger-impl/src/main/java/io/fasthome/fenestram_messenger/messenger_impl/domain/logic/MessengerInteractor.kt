@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsM
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.onSuccess
 import io.fasthome.network.tokens.TokensRepo
 import kotlinx.coroutines.channels.BufferOverflow
@@ -53,10 +54,10 @@ class MessengerInteractor(
             }
         }
         messageRepo.getClientSocket(
-            tokensRepo.getAccessToken(),
+            chatId = id.toString(),
+            token = tokensRepo.getAccessToken(),
             callback = object : MessengerRepo.SocketMessageCallback {
                 override fun onNewMessage(message: MessageResponseWithChatId) {
-                    this
                     _messagesChannel.trySend(listOf(chatsMapper.toMessage(message)))
                 }
             })
@@ -64,9 +65,12 @@ class MessengerInteractor(
         return messagesFlow
     }
 
+    suspend fun getMessages(id: Long): CallResult<List<Message>> = messageRepo.getMessagesFromChat(id)
+
     suspend fun getNewMessages(): Flow<Message> {
         messageRepo.getClientSocket(
-            tokensRepo.getAccessToken(),
+            chatId = null,
+            token = tokensRepo.getAccessToken(),
             callback = object : MessengerRepo.SocketMessageCallback {
                 override fun onNewMessage(message: MessageResponseWithChatId) {
                     this

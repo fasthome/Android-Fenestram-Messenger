@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.contacts_impl.di.ContactsModule
 import io.fasthome.fenestram_messenger.data.di.DataModule
 import io.fasthome.fenestram_messenger.debug_impl.di.DebugModule
 import io.fasthome.fenestram_messenger.group_guest_impl.di.GroupGuestModule
+import io.fasthome.fenestram_messenger.onboarding_impl.di.OnboardingModule
 import io.fasthome.fenestram_messenger.main_impl.di.MainModule
 import io.fasthome.fenestram_messenger.messenger_impl.di.MessengerModule
 import io.fasthome.fenestram_messenger.profile_guest_impl.di.ProfileGuestModule
@@ -37,6 +38,7 @@ object AppModule {
         ProfileGuestModule(),
         DebugModule(),
         GroupGuestModule(),
+        OnboardingModule(),
         PushModule()
     ).flatten()
 }

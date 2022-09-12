@@ -96,6 +96,7 @@ object Deps {
     const val gms = "com.google.android.gms:play-services-location:19.0.1"
     const val playCore = "com.google.android.play:core:1.10.3"
     const val onesignal = "com.onesignal:OneSignal:4.6.3"
+    const val dotsindicator = "com.tbuonomo:dotsindicator:4.2"
 
     const val map = "org.osmdroid:osmdroid-android:6.1.6"
 

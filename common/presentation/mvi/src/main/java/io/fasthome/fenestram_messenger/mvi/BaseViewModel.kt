@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.CreateResultInterface
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.navigation.model.UnitResult
@@ -195,4 +196,8 @@ abstract class BaseViewModel<S : Any, E : Any>(
         navigationContractApi = navigationContractApi,
         consumeResult = {},
     )
+
+    protected fun ScreenLauncher<NoParams>.launch() {
+        launch(NoParams)
+    }
 }

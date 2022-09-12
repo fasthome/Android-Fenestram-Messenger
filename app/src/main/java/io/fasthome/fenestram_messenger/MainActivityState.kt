@@ -1,3 +1,10 @@
 package io.fasthome.fenestram_messenger
 
-class MainActivityState()
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+data class MainActivityState(
+    val viewActiveConsumed: Boolean,
+) {
+
+}
