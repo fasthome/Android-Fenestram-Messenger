@@ -21,8 +21,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label_welcome_start"
-        />
+        app:layout_constraintTop_toBottomOf="@id/label_welcome_start" />
 
     <ImageView
         android:id="@+id/user_photo"
@@ -97,7 +96,7 @@
         app:layout_constraintBottom_toTopOf="@id/birthdate_input"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.santalu.maskara.widget.MaskEditText
+    <TextView
         android:id="@+id/birthdate_input"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -106,15 +105,13 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/rounded_border"
         android:fontFamily="@font/geometria"
-        android:imeOptions="actionDone"
         android:padding="10dp"
         android:singleLine="true"
         android:textColor="@color/auth_labels"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_name_input"
-        app:mask="##.##.####" />
+        app:layout_constraintTop_toBottomOf="@+id/user_name_input" />
 
     <include
         android:id="@+id/label_mail"
@@ -137,7 +134,7 @@
         android:layout_marginBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/birthdate_input"/>
+        app:layout_constraintTop_toBottomOf="@+id/birthdate_input" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_ready"
