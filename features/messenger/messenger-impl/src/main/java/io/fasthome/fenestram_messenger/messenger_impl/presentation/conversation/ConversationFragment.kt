@@ -1,8 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
+import android.util.Log
+import android.view.*
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -50,6 +51,28 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
             vm.onUserClicked()
         }
         binding.backButton.increaseHitArea(16.dp)
+
+        binding.dropdownMenu.setOnClickListener{
+            showMenu(it)
+        }
+
+
+
+    }
+
+    private fun showMenu(view: View) {
+        val menu = PopupMenu(context,view)
+        menu.inflate(R.menu.conversation_menu)
+
+        menu.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.action_delete -> { Log.d("here", "here")
+                    return@setOnMenuItemClickListener true
+                }
+                else -> { return@setOnMenuItemClickListener false}
+            }
+        }
+        menu.show()
     }
 
     override fun onResume() {

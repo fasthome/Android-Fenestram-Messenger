@@ -1,11 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.repo
 
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatByIdResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.network.tokens.AccessToken
 
