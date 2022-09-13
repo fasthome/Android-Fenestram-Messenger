@@ -37,21 +37,28 @@ class PickImageOperationsImpl(
                 BitmapFactory.decodeStream(input)
             }
 
-            val scaledBitmap = if (compressToSize != null) {
-                JpgUtil.downscale(
-                    originalBitmap = bitmap,
-                    downscaleParams = JpgUtil.DownscaleParams(maxSize = compressToSize),
-                )
-            } else {
-                bitmap
-            }
+            if (bitmap != null) {
 
-            FileOutputStream(tempFile).use { output ->
-                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
-            }
+                val scaledBitmap = if (compressToSize != null) {
+                    JpgUtil.downscale(
+                        originalBitmap = bitmap,
+                        downscaleParams = JpgUtil.DownscaleParams(maxSize = compressToSize),
+                    )
+                } else {
+                    bitmap
+                }
 
-            bitmap.recycle()
-            scaledBitmap.recycle()
+                FileOutputStream(tempFile).use { output ->
+                    scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                }
+
+                bitmap.recycle()
+                scaledBitmap.recycle()
+            }
+            else {
+                tempFile.delete()
+                tempFile.createNewFile()
+            }
         }
 
     }

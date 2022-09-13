@@ -9,6 +9,7 @@ import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -29,6 +30,7 @@ class ProfileViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     settingsFeature: SettingsFeature,
+    private val environment: Environment,
     private val pickFileInterface: PickFileInterface,
     private val profileInteractor: ProfileInteractor,
     private val profileImageUtil: ProfileImageUtil,
@@ -41,7 +43,11 @@ class ProfileViewModel(
         viewModelScope.launch {
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
-                    avatarUrl = personalData.avatar
+                    avatarUrl = if (personalData.avatar != null )
+                        environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar
+                    else
+                        personalData.avatar
+
                     state.copy(
                         fieldsData = listOf(
                             ProfileState.Field(
@@ -65,7 +71,7 @@ class ProfileViewModel(
                                 visibility = !personalData.email.isNullOrEmpty()
                             )
                         ),
-                        avatarUrl = personalData.avatar.toString(),
+                        avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar,
                         avatarBitmap = null
                     )
                 }
@@ -77,12 +83,23 @@ class ProfileViewModel(
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
                     is PickFileInterface.ResultEvent.Picked -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
-                        updateState { state ->
-                            state.copy(
-                                avatarUrl = null,
-                                avatarBitmap = bitmap,
-                                originalProfileImageFile = it.tempFile
-                            )
+                        if (bitmap != null) {
+                            updateState { state ->
+                                state.copy(
+                                    avatarUrl = null,
+                                    avatarBitmap = bitmap,
+                                    originalProfileImageFile = it.tempFile
+                                )
+                            }
+                        } else {
+                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_error_photo)))
+                            updateState { state ->
+                                state.copy(
+                                    avatarUrl = avatarUrl,
+                                    avatarBitmap = null,
+                                    originalProfileImageFile = null
+                                )
+                            }
                         }
                     }
                 }
@@ -99,7 +116,10 @@ class ProfileViewModel(
             val avatar = when {
                 avatarFile != null -> {
                     profileInteractor.uploadProfileImage(avatarFile.readBytes())
-                        .getOrNull()?.profileImagePath
+                        .getOrNull()?.profileImagePath.let {
+                            avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + it
+                            it
+                        }
                 }
                 avatarUrl != null -> {
                     avatarUrl!!.substring(20, avatarUrl!!.length)
