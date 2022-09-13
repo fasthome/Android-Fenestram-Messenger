@@ -1,16 +1,21 @@
 package io.fasthome.network.di
 
-import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.network.client.JwtNetworkClientFactory
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.client.SimpleNetworkClientFactory
-import io.fasthome.network.tokens.*
-import io.fasthome.network.util.NetworkLogger
+import io.fasthome.network.tokens.AccessTokenStorage
+import io.fasthome.network.tokens.InMemoryTokensStorage
+import io.fasthome.network.tokens.RefreshTokenStorage
+import io.fasthome.network.tokens.TokensRepo
+import io.fasthome.network.tokens.TokensRepoImpl
+import io.fasthome.network.tokens.TokensService
 import io.fasthome.network.util.NetworkController
+import io.fasthome.network.util.NetworkLogger
 import io.ktor.client.engine.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.logging.*

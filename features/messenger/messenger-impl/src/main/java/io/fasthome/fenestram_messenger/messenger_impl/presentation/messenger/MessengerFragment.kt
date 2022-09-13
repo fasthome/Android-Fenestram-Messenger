@@ -50,7 +50,6 @@ class MessengerFragment :
 
     override fun onResume() {
         super.onResume()
-        vm.fetchChats()
         vm.fetchNewMessages()
     }
 
@@ -78,8 +77,8 @@ class MessengerFragment :
         return super.onFabClicked()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         vm.unsubscribeMessages()
     }
 

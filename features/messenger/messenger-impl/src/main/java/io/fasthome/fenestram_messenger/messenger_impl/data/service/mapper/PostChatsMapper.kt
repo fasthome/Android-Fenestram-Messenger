@@ -8,7 +8,11 @@ object PostChatsMapper {
 
     fun responseToPostChatsResult(response: PostChatsResponse): PostChatsResult {
         response.let {
-            return PostChatsResult(chatId = it.id, isOnline = false, lastActive = ZonedDateTime.now())
+            return PostChatsResult(
+                chatId = it.id,
+                isOnline = false,
+                lastActive = ZonedDateTime.now()
+            )
         }
     }
 

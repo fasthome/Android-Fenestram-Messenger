@@ -10,11 +10,16 @@ import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.Message
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
+import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -27,14 +32,16 @@ class ProfileViewModel(
     private val pickFileInterface: PickFileInterface,
     private val profileInteractor: ProfileInteractor,
     private val profileImageUtil: ProfileImageUtil,
-    ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
+) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
+    private var avatarUrl: String? = null
 
     init {
         viewModelScope.launch {
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
+                    avatarUrl = personalData.avatar
                     state.copy(
                         fieldsData = listOf(
                             ProfileState.Field(
@@ -58,7 +65,8 @@ class ProfileViewModel(
                                 visibility = !personalData.email.isNullOrEmpty()
                             )
                         ),
-                        avatarUrl = personalData.avatar
+                        avatarUrl = personalData.avatar.toString(),
+                        avatarBitmap = null
                     )
                 }
             }
@@ -70,7 +78,11 @@ class ProfileViewModel(
                     is PickFileInterface.ResultEvent.Picked -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
                         updateState { state ->
-                            state.copy(avatarBitmap = bitmap, originalProfileImageFile = it.tempFile)
+                            state.copy(
+                                avatarUrl = null,
+                                avatarBitmap = bitmap,
+                                originalProfileImageFile = it.tempFile
+                            )
                         }
                     }
                 }
@@ -78,8 +90,74 @@ class ProfileViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun checkPersonalData(name: String, nickname: String, birthday: String, mail: String) {
+        updateState { state ->
+            state.copy(isLoad = true)
+        }
+        viewModelScope.launch {
+            val avatarFile = currentViewState.originalProfileImageFile
+            val avatar = when {
+                avatarFile != null -> {
+                    profileInteractor.uploadProfileImage(avatarFile.readBytes())
+                        .getOrNull()?.profileImagePath
+                }
+                avatarUrl != null -> {
+                    avatarUrl!!.substring(20, avatarUrl!!.length)
+                }
+                else -> {
+                    null
+                }
+            }
+
+            val personalData = PersonalData(
+                username = name,
+                nickname = nickname,
+                birth = birthday,
+                email = mail,
+                avatar = avatar,
+                playerId = ""
+            )
+
+            profileInteractor.sendPersonalData(
+                personalData.copy(avatar = avatar)
+            ).withErrorHandled(
+                showErrorType = ShowErrorType.Dialog
+            ) {
+                showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_successs_changed)))
+                updateState { state ->
+                    state.copy(
+                        fieldsData = listOf(
+                            ProfileState.Field(
+                                key = ProfileState.EditTextKey.BirthdateKey,
+                                text = PrintableText.Raw(birthday),
+                                visibility = !personalData.birth.isNullOrEmpty()
+                            ),
+                            ProfileState.Field(
+                                key = ProfileState.EditTextKey.NicknameKey,
+                                text = PrintableText.Raw(nickname),
+                                visibility = !personalData.nickname.isNullOrEmpty()
+                            ),
+                            ProfileState.Field(
+                                key = ProfileState.EditTextKey.UsernameKey,
+                                text = PrintableText.Raw(name),
+                                visibility = !personalData.username.isNullOrEmpty()
+                            ),
+                            ProfileState.Field(
+                                key = ProfileState.EditTextKey.MailKey,
+                                text = PrintableText.Raw(mail),
+                                visibility = !personalData.email.isNullOrEmpty()
+                            )
+                        ),
+                        isEdit = false,
+                        isLoad = false
+                    )
+                }
+            }
+        }
+    }
+
     override fun createInitialState(): ProfileState {
-        return ProfileState(fieldsData = listOf(), null, null, null, false)
+        return ProfileState(fieldsData = listOf(), null, null, null, isEdit = false, isLoad = false)
     }
 
     fun onAvatarClicked() {

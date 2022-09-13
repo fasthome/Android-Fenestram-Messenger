@@ -19,5 +19,6 @@
     <string name="common_close">Закрыть</string>
     <string name="common_notification_channel_title_push">PUSH-уведомления</string>
     <string name="common_notification_channel_description_push">Получение PUSH-уведомлений</string>
+    <string name="common_more_button">Далее</string>
     <string name="common_delete_chat_dialog">Вы уверены, что хотите удалить чат?</string>
 </resources>

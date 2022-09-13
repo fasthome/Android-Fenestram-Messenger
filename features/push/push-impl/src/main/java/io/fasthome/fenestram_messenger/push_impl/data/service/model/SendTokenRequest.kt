@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 data class SendTokenRequest(
 
     @SerialName("firebase_token")
-    val firebaseToken : String
+    val firebaseToken: String
 
 )

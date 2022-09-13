@@ -44,8 +44,9 @@ class MessengerRepoImpl(
         messengerService.deleteChat(id)
     }
 
-    override fun getClientSocket(token: AccessToken, callback: MessengerRepo.SocketMessageCallback) {
-        socket.setClientSocket(token) {
+    override fun getClientSocket(
+        chatId : String?, token: AccessToken, callback: MessengerRepo.SocketMessageCallback) {
+        socket.setClientSocket(chatId = chatId, token = token) {
             callback.onNewMessage(this)
         }
     }

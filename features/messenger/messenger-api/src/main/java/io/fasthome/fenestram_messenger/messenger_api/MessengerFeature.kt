@@ -20,6 +20,7 @@ interface MessengerFeature {
         val chatId: String? = null,
         val userIds: List<Long>,
         val chatName: String,
+        val avatar : String,
         val isGroup: Boolean
     ) : Parcelable
 

@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
 private val dateFormat = DateTimeFormatter.ofPattern("d MMMM yyyy", LocaleUtil.getRuLocale())
 
 fun getFuzzyDateString(zonedDateTime: ZonedDateTime?): PrintableText {
-    if(zonedDateTime == null) return PrintableText.EMPTY
+    if (zonedDateTime == null) return PrintableText.EMPTY
     val now = ZonedDateTime.now()
 
     val dayOfYear = zonedDateTime.dayOfYear

@@ -8,11 +8,11 @@ import io.fasthome.fenestram_messenger.push_impl.domain.entity.PushClickData
 
 class PushClickHandler(
     private val remoteMessagesMapper: RemoteMessagesMapper,
-    private val messengerFeature : MessengerFeature
+    private val messengerFeature: MessengerFeature
 ) {
 
     fun handle(intent: Intent): DeepLinkResult? {
-        return when(val pushData = remoteMessagesMapper.getPushClickData(intent)){
+        return when (val pushData = remoteMessagesMapper.getPushClickData(intent)) {
             is PushClickData.Unknown -> {
                 null
             }
@@ -22,8 +22,9 @@ class PushClickHandler(
                         MessengerFeature.Params(
                             chatId = pushData.chatId,
                             userIds = listOf(),
-                            chatName = pushData.chatName ?: "",
-                            isGroup = pushData.isGroup ?: false
+                            chatName = pushData.chatName ?: return null,
+                            isGroup = pushData.isGroup ?: return null,
+                            avatar = pushData.userAvatar ?: ""
                         )
                     ),
                 )

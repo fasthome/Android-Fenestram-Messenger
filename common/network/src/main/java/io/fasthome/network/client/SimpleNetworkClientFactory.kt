@@ -2,6 +2,7 @@ package io.fasthome.network.client
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
+import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
 import io.ktor.client.*
 import io.ktor.client.engine.*
@@ -10,9 +11,9 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.http.*
-import kotlinx.serialization.SerializationException
 import java.io.IOException
 import java.time.Duration
+import kotlinx.serialization.SerializationException
 
 internal class SimpleNetworkClientFactory(
     private val httpClientEngine: HttpClientEngine,
@@ -63,11 +64,17 @@ internal class SimpleNetworkClientFactory(
                         if (cause.response.status.value == HttpStatusCode.Unauthorized.value ||
                             cause.response.status.value == HttpStatusCode.Forbidden.value
                         ) {
-                            forceLogoutManager.value.forceLogout()
+                            if (cause.message.contains("refresh token invalid")) {
+                                forceLogoutManager.value.forceLogout()
+                            } else throw UnauthorizedException()
                         }
                     }
-                    is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(cause)
-                    is ResponseException, is SerializationException -> throw WrongServerResponseException(cause)
+                    is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(
+                        cause
+                    )
+                    is ResponseException, is SerializationException -> throw WrongServerResponseException(
+                        cause
+                    )
                 }
             }
         }

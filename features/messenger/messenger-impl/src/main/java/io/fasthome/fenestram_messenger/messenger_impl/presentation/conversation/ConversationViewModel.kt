@@ -4,11 +4,8 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -19,6 +16,8 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,10 +32,11 @@ class ConversationViewModel(
 
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
+    private var selfUserId: Long? = null
 
     fun fetchMessages() {
         viewModelScope.launch {
-            val selfUserId = features.authFeature.getUserId().getOrNull()
+            selfUserId = features.authFeature.getUserId().getOrNull()
             if (selfUserId == null) {
                 features.authFeature.logout()
                 return@launch
@@ -51,7 +51,7 @@ class ConversationViewModel(
                     chatId = it.chatId
                 }
             }
-            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId)
+            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId ?: return@launch)
         }
     }
 
@@ -112,6 +112,7 @@ class ConversationViewModel(
 
     private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
         messengerInteractor.getMessagesFromChat(chatId)
+            .flowOn(Dispatchers.Main)
             .onEach { messages ->
                 updateState { state ->
                     state.copy(

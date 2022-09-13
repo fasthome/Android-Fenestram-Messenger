@@ -10,9 +10,9 @@ import io.fasthome.fenestram_messenger.util.CallResult
 
 interface PushFeature {
 
-    suspend fun sendTestPush() : CallResult<Unit>
+    suspend fun sendTestPush(): CallResult<Unit>
 
-    suspend fun updateToken() : CallResult<List<String>>
+    suspend fun updateToken(): CallResult<List<String>>
 
     fun handlePushClick(intent: Intent): IDeepLinkResult?
 }

@@ -3,12 +3,12 @@ package io.fasthome.fenestram_messenger.presentation.base.navigation
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContract
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.UnitResult
 import io.fasthome.fenestram_messenger.presentation.base.ui.ActivityResultFragment
-import android.provider.Settings
 
 object AppSettingsNavigationContract :
     NavigationContract<NoParams, UnitResult>(AppSettingsFragment::class)

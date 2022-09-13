@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.util
 
-import java.util.*
+import java.util.Locale
 
 object LocaleUtil {
     fun getRuLocale(): Locale {

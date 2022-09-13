@@ -18,14 +18,14 @@ import io.fasthome.fenestram_messenger.mvi.provideSavedState
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
-import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-import java.util.*
-import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.onSuccess
+import java.util.*
+import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
 class MainViewModel(
     router: ContractRouter,
@@ -131,7 +131,7 @@ class MainViewModel(
 
     private suspend fun updateFbToken() {
         features.pushFeature.updateToken().onSuccess {
-            if(it.isEmpty()){
+            if (it.isEmpty()) {
                 updateFbToken()
             }
         }

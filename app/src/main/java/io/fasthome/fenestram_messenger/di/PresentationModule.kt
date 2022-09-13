@@ -2,12 +2,12 @@ package io.fasthome.fenestram_messenger.di
 
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.Router
+import io.fasthome.fenestram_messenger.AppFeatureImpl
 import io.fasthome.fenestram_messenger.MainActivityViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.ContractRouterImpl
 import io.fasthome.fenestram_messenger.navigation.CustomCicerone
 import io.fasthome.fenestram_messenger.presentation.base.AppFeature
-import io.fasthome.fenestram_messenger.AppFeatureImpl
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

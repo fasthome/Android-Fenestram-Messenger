@@ -96,6 +96,7 @@ object Deps {
     const val gms = "com.google.android.gms:play-services-location:19.0.1"
     const val playCore = "com.google.android.play:core:1.10.3"
     const val onesignal = "com.onesignal:OneSignal:4.6.3"
+    const val dotsindicator = "com.tbuonomo:dotsindicator:4.2"
 
     const val map = "org.osmdroid:osmdroid-android:6.1.6"
 
@@ -125,6 +126,7 @@ object Deps {
     const val cicerone = "com.github.terrakok:cicerone:${Versions.cicerone}"
 
     const val maskara = "com.github.santalu:maskara:1.0.0"
+    const val libphonenumber = "io.michaelrocks:libphonenumber-android:8.12.52"
     const val workRuntime = "androidx.work:work-runtime-ktx:2.7.1"
 
     const val kotlinXSerialization =

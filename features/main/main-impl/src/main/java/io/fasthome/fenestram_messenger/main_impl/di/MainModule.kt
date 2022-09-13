@@ -7,12 +7,12 @@ import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
+import io.fasthome.fenestram_messenger.main_api.DeepLinkNavigatorImpl
 import io.fasthome.fenestram_messenger.main_api.MainFeature
-import io.fasthome.fenestram_messenger.main_impl.presentation.main.MainViewModel
 import io.fasthome.fenestram_messenger.main_impl.MainFeatureImpl
 import io.fasthome.fenestram_messenger.main_impl.domain.logic.OuterTabNavigator
+import io.fasthome.fenestram_messenger.main_impl.presentation.main.MainViewModel
 import io.fasthome.fenestram_messenger.navigation.model.DeepLinkNavigator
-import io.fasthome.fenestram_messenger.main_api.DeepLinkNavigatorImpl
 import org.koin.dsl.factory
 import org.koin.dsl.module
 

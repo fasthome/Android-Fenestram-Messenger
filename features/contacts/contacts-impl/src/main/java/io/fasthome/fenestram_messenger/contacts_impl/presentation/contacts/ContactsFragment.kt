@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -29,7 +30,8 @@ import io.fasthome.fenestram_messenger.util.isLoading
 import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 
-class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts), FabConsumer {
+class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts),
+    FabConsumer {
 
     private val permissionInterface by registerFragment(PermissionComponentContract)
 
@@ -46,6 +48,9 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+
 
         with(binding) {
             contactsList.adapter = contactsAdapter
@@ -72,7 +77,8 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         }
     }
 
-    override fun renderState(state: ContactsState) = with(binding){
+
+    override fun renderState(state: ContactsState) = with(binding) {
         noPermissionContainer.isVisible = false
         errorContainer.isVisible = false
         when (state.permissionGranted) {
@@ -80,7 +86,9 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
                 noPermissionContainer.isVisible = false
                 renderLoadingState(
                     loadingState = state.loadingState,
-                    progressContainer = progressContainer, errorContainer = errorContainer, contentContainer = null,
+                    progressContainer = progressContainer,
+                    errorContainer = errorContainer,
+                    contentContainer = null,
                     renderData = {
                         contactsAdapter.items = it
                     }
@@ -102,8 +110,12 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     }
 
     override fun handleEvent(event: ContactsEvent) {
-        when(event) {
-            ContactsEvent.ContactAddCancelled -> Toast.makeText(context, "Не удалось сохранить контакт", Toast.LENGTH_SHORT)
+        when (event) {
+            ContactsEvent.ContactAddCancelled -> Toast.makeText(
+                context,
+                "Не удалось сохранить контакт",
+                Toast.LENGTH_SHORT
+            )
         }
     }
 

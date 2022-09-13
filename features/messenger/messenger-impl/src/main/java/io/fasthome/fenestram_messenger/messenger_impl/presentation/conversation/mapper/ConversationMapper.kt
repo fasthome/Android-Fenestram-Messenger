@@ -46,7 +46,8 @@ fun List<Message>.toConversationItems(
     systemMessageIndexes.forEach {
         conversationItems.add(
             it.first,
-            Message.onlyDate(it.second ?: return@forEach).toConversationViewItem(isSystemItem = true)
+            Message.onlyDate(it.second ?: return@forEach)
+                .toConversationViewItem(isSystemItem = true)
         )
     }
     return conversationItems

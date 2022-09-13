@@ -1,12 +1,11 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.util.PrintableText
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 sealed interface ConversationViewItem {
 
-    val id : Long
+    val id: Long
     val content: PrintableText
     val time: PrintableText
     val date: ZonedDateTime?
