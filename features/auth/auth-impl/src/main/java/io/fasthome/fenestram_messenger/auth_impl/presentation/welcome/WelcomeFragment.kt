@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import io.fasthome.fenestram_messenger.auth_impl.R
@@ -77,12 +76,11 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
     override fun handleEvent(event: WelcomeEvent): Unit = noEventsExpected()
 
     private fun Button.loading(isLoad: Boolean) {
-        val originalText = this.text
         binding.progress.isVisible = isLoad
         if (isLoad) {
             this.text = ""
         } else {
-            this.text = originalText
+            this.setPrintableText(PrintableText.StringResource(R.string.common_send_code_button))
         }
     }
 }

@@ -24,14 +24,14 @@ class WelcomeViewModel(
     }
 
     fun checkPhoneNumber(phoneNumber: String, isValid: Boolean) {
-        updateState { state->
+        updateState { state ->
             state.copy(isLoad = true)
         }
         if (isValid) {
             viewModelScope.launch {
                 when (authInteractor.sendCode("+$phoneNumber").successOrSendError()) {
                     is CodeResult.Success -> {
-                        updateState { state->
+                        updateState { state ->
                             state.copy(isLoad = false)
                         }
                         checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
@@ -39,19 +39,19 @@ class WelcomeViewModel(
                 }
             }
         } else
-            updateState { state->
+            updateState { state ->
                 state.copy(country = "", error = true, isLoad = false)
             }
     }
 
     fun updateCountry(countryName: String) {
-        updateState { state->
+        updateState { state ->
             state.copy(country = countryName, error = false)
         }
     }
 
     fun overWritePhoneNumber() {
-        updateState { state->
+        updateState { state ->
             state.copy(country = currentViewState.country, error = false)
         }
     }
