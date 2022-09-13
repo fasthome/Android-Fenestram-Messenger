@@ -1,13 +1,12 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import androidx.core.widget.addTextChangedListener
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.santalu.maskara.widget.MaskEditText
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.auth_impl.R
@@ -17,6 +16,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.custom_view.HooliDatePicker
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
@@ -57,15 +57,13 @@ class PersonalityFragment :
             labelWelcomeStart.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_welcome_message_label_start))
             labelWelcomeEnd.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_welcome_message_label_end))
 
-            birthdateInput.inputType = InputType.TYPE_CLASS_DATETIME
-
             labelName.includeTextView.hint
 
             buttonReady.setOnClickListener {
                 vm.checkPersonalData(
                     name = nameInput.includeEditText.text.toString(),
                     nickname = userNameInput.includeEditText.text.toString(),
-                    birthday = birthdateInput.masked,
+                    birthday = birthdateInput.text.toString(),
                     mail = mailInput.includeEditText.text.toString(),
                 )
             }
@@ -81,12 +79,6 @@ class PersonalityFragment :
             }
 
             userNameInput.includeEditText.setOnEditorActionListener { v, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE)
-                    v.clearFocus()
-                return@setOnEditorActionListener false
-            }
-
-            birthdateInput.setOnEditorActionListener { v, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE)
                     v.clearFocus()
                 return@setOnEditorActionListener false
@@ -114,14 +106,6 @@ class PersonalityFragment :
                 )
             }
 
-            birthdateInput.setOnFocusChangeListener { v, hasFocus ->
-                vm.fillData(
-                    (v as MaskEditText).masked,
-                    hasFocus,
-                    EditTextKey.BirthdateKey
-                )
-            }
-
             mailInput.includeEditText.setOnFocusChangeListener { v, hasFocus ->
                 vm.fillData(
                     (v as EditText).text.toString(),
@@ -134,8 +118,14 @@ class PersonalityFragment :
                 vm.onSelectPhotoClicked()
             }
 
-            userPhotoAdd.setOnClickListener{
+            userPhotoAdd.setOnClickListener {
                 vm.onSelectPhotoClicked()
+            }
+
+            HooliDatePicker(birthdateInput).registerDatePicker(childFragmentManager)
+
+            birthdateInput.addTextChangedListener {
+                vm.fillData(it.toString(), key = EditTextKey.BirthdateKey)
             }
         }
 

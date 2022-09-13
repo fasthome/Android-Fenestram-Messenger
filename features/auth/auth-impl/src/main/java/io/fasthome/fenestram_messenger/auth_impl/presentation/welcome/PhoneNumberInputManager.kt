@@ -49,7 +49,9 @@ class PhoneNumberInputManager(
 
     fun validateNumber(number: String): Boolean {
         val phoneNumber = parseNumber(number) ?: return false
-        return phoneNumberUtil.isValidNumber(phoneNumber)
+        return phoneNumberUtil.isPossibleNumberForType(
+            phoneNumber, PhoneNumberUtil.PhoneNumberType.MOBILE
+        )
     }
 
     private fun parseNumber(number: String) = try {

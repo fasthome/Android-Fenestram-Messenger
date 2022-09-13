@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_successs_changed">Данные профиля успешно изменены</string>
+    <string name="profile_error_photo">Невозможно загрузить данный файл</string>
 </resources>

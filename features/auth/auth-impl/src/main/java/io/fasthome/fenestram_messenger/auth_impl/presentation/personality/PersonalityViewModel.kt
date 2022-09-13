@@ -2,10 +2,12 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
@@ -15,8 +17,6 @@ import io.fasthome.fenestram_messenger.util.getOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import com.google.firebase.messaging.FirebaseMessaging
-import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import kotlin.coroutines.suspendCoroutine
 
 
@@ -122,12 +122,18 @@ class PersonalityViewModel(
         exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
     }
 
-    fun fillData(data: String, hasFocus: Boolean, key: PersonalityFragment.EditTextKey) {
+    fun fillData(
+        data: String = "",
+        hasFocus: Boolean = false,
+        key: PersonalityFragment.EditTextKey
+    ) {
         val visibleCondition = when (key) {
             PersonalityFragment.EditTextKey.NameKey -> !hasFocus && data.isNotEmpty()
             PersonalityFragment.EditTextKey.UserNameKey -> !hasFocus && data.isNotEmpty()
-            PersonalityFragment.EditTextKey.BirthdateKey -> !hasFocus && data.length == 10
-            PersonalityFragment.EditTextKey.MailKey -> !hasFocus && Patterns.EMAIL_ADDRESS.matcher(data).matches()
+            PersonalityFragment.EditTextKey.BirthdateKey -> data.isNotEmpty()
+            PersonalityFragment.EditTextKey.MailKey -> !hasFocus && Patterns.EMAIL_ADDRESS.matcher(
+                data
+            ).matches()
         }
         updateState { state ->
             state.copy(

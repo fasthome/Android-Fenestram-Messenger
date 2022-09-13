@@ -4,8 +4,10 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -20,8 +22,11 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.databinding.FragmentProfileBinding
 import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileState.EditTextKey
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.uikit.custom_view.HooliDatePicker
+import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.model.Bytes
+import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragment_profile) {
 
@@ -76,17 +81,19 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             vm.checkPersonalData(
                 name = username.text.toString(),
                 nickname = nickContainer.includeEditText.text.toString(),
-                birthday = hbDayContainer.includeEditText.text.toString(),
+                birthday = hbDayContainer.text.toString(),
                 mail = emailContainer.includeEditText.text.toString(),
             )
         }
+
+        HooliDatePicker(hbDayContainer).registerDatePicker(childFragmentManager)
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
         state.fieldsData.forEach { field ->
             when (field.key) {
                 EditTextKey.NicknameKey -> nickContainer.includeEditText
-                EditTextKey.BirthdateKey -> hbDayContainer.includeEditText
+                EditTextKey.BirthdateKey -> hbDayContainer
                 EditTextKey.MailKey -> emailContainer.includeEditText
                 EditTextKey.UsernameKey -> username
             }.let { view ->
@@ -94,17 +101,26 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             }
         }
 
-        state.avatarUrl?.let { url ->
-            ivAvatar.load(url) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
+        if (state.avatarUrl == null && state.avatarBitmap == null) {
+            ivAvatar.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_account_circle_24
+                )
+            )
+        } else {
+            state.avatarUrl?.let { url ->
+                ivAvatar.load(url) {
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_baseline_account_circle_24)
+                }
             }
-        }
 
-        state.avatarBitmap?.let { bitmap ->
-            ivAvatar.load(bitmap) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
+            state.avatarBitmap?.let { bitmap ->
+                ivAvatar.load(bitmap) {
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_baseline_account_circle_24)
+                }
             }
         }
 
@@ -117,7 +133,7 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         bDone.isVisible = !state.isLoad
         nickContainer.includeEditText.isEnabled = state.isEdit
         emailContainer.includeEditText.isEnabled = state.isEdit
-        hbDayContainer.includeEditText.isEnabled = state.isEdit
+        hbDayContainer.isEnabled = state.isEdit
     }
 
     override fun handleEvent(event: ProfileEvent) = noEventsExpected()
