@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
 import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -115,7 +116,12 @@ class MainActivityViewModel(
                     }
                 }
             }
-            is CallResult.Error -> startAuth()
+            is CallResult.Error -> {
+                when (personalDataResult.error) {
+                    is InternetConnectionException -> openAuthedRootScreen()
+                    else -> startAuth()
+                }
+            }
         }
     }
 
