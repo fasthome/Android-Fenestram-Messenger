@@ -6,12 +6,12 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.mapper.mapToContactViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onSuccess
@@ -29,7 +29,7 @@ class CreateGroupChatViewModel(
     init {
         viewModelScope.launch {
             contactsFeature.getContacts().onSuccess {
-                originalContacts = it.filter {  contact ->
+                originalContacts = it.filter { contact ->
                     contact.user != null
                 }
                 updateState { state ->
@@ -45,9 +45,9 @@ class CreateGroupChatViewModel(
 
     fun onContactClicked(contactViewItem: ContactViewItem) {
         updateState { state ->
-            val newList = if(contactViewItem.isSelected){
+            val newList = if (contactViewItem.isSelected) {
                 state.addedContacts.filter { it.userId != contactViewItem.userId }
-            } else{
+            } else {
                 state.addedContacts.plus(contactViewItem)
             }
             state.copy(addedContacts = newList, needScroll = true)
@@ -63,9 +63,13 @@ class CreateGroupChatViewModel(
         }
     }
 
-    fun onNextClicked(){
-        val contacts = currentViewState.addedContacts.mapNotNull { viewItem->
-            originalContacts.find { contact->
+    fun onNextClicked() {
+        if (currentViewState.addedContacts.isEmpty()) {
+            showPopup(PrintableText.StringResource(R.string.messenger_select_hint))
+            return
+        }
+        val contacts = currentViewState.addedContacts.mapNotNull { viewItem ->
+            originalContacts.find { contact ->
                 viewItem.userId == contact.userId
             }
         }
