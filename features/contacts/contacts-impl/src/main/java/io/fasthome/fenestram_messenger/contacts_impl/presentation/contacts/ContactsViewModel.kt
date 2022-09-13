@@ -43,7 +43,7 @@ class ContactsViewModel(
 
     private var originalContacts = mutableListOf<ContactsViewItem>()
 
-    private val conversationLauncher = registerScreen(messengerFeature.conversationNavigationContract)
+    private val conversationLauncher = registerScreen(messengerFeature.conversationNavigationContract) { }
 
     @SuppressLint("MissingPermission")
     fun requestPermissionAndLoadContacts() {

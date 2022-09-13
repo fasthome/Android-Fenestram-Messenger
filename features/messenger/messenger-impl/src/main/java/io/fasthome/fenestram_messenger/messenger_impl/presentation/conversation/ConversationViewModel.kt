@@ -1,8 +1,10 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
@@ -46,8 +48,8 @@ class ConversationViewModel(
                     users = params.chat.users,
                     isGroup = params.chat.isGroup
                 ).withErrorHandled {
-                        chatId = it.chatId
-                    }
+                    chatId = it.chatId
+                }
             }
             subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId)
         }
@@ -59,10 +61,14 @@ class ConversationViewModel(
     )
 
     private val profileGuestLauncher =
-        registerScreen(features.profileGuestFeature.profileGuestNavigationContract)
+        registerScreen(features.profileGuestFeature.profileGuestNavigationContract) { result ->
+            when (result) {
+                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted ->
+                    exitWithResult(ConversationNavigationContract.createResult(ConversationNavigationContract.Result.ChatDeleted))
+            }
+        }
 
     fun exitToMessenger() = exitWithoutResult()
-
 
     override fun createInitialState(): ConversationState {
         return ConversationState(

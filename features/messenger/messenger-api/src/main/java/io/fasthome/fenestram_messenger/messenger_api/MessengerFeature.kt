@@ -13,7 +13,7 @@ interface MessengerFeature {
 
     val messengerNavigationContract: NavigationContractApi<NoParams, NoResult>
 
-    val conversationNavigationContract: NavigationContractApi<Params, NoResult>
+    val conversationNavigationContract: NavigationContractApi<Params, MessengerResult>
 
     @Parcelize
     data class Params(
@@ -22,5 +22,14 @@ interface MessengerFeature {
         val chatName: String,
         val isGroup: Boolean
     ) : Parcelable
+
+    sealed class MessengerResult : Parcelable {
+
+        @Parcelize
+        object ChatDeleted : MessengerResult()
+
+        @Parcelize
+        object Canceled : MessengerResult()
+    }
 
 }

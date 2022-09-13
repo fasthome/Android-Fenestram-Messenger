@@ -3,8 +3,10 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -33,12 +35,19 @@ class MessengerViewModel(
     profileGuestFeature: ProfileGuestFeature
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
-    private val conversationlauncher = registerScreen(ConversationNavigationContract) {
-        exitWithoutResult()
+    private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
+        when(result){
+            is ConversationNavigationContract.Result.ChatDeleted -> { fetchChats() }
+        }
     }
 
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
-    private val profileGuestLauncher = registerScreen(profileGuestFeature.profileGuestNavigationContract)
+    private val profileGuestLauncher = registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
+        when(result){
+            is ProfileGuestFeature.ProfileGuestResult.ChatDeleted -> fetchChats()
+            else -> {}
+        }
+    }
 
     fun fetchNewMessages() {
         viewModelScope.launch {

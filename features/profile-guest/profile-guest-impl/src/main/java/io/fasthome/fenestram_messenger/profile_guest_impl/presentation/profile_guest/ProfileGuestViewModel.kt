@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
@@ -23,25 +24,19 @@ class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ProfileGuestNavigationContract.Params,
-    private val features: Features,
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val deleteChatUseCase: DeleteChatUseCase
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     private val filesProfileGuestLauncher =
         registerScreen(ProfileGuestFilesNavigationContract) { result ->
-            exitWithResult(ProfileGuestNavigationContract.createResult(result))
+            exitWithResult(ProfileGuestNavigationContract.createResult(ProfileGuestNavigationContract.Result.Canceled))
         }
 
     private val imagesProfileGuestLauncher =
         registerScreen(ProfileGuestImagesNavigationContract) { result ->
-            exitWithResult(ProfileGuestNavigationContract.createResult(result))
+            exitWithResult(ProfileGuestNavigationContract.createResult(ProfileGuestNavigationContract.Result.Canceled))
         }
-
-    class Features(val messengerFeature: MessengerFeature)
-
-    private val messengerLauncher =
-        registerScreen(features.messengerFeature.messengerNavigationContract)
 
     override fun createInitialState() =
         ProfileGuestState(
@@ -89,8 +84,7 @@ class ProfileGuestViewModel(
                 when (val deleteChatResult =
                     deleteChatUseCase.deleteChat(params.id).successOrSendError()) {
                     is DeleteChatResult.Success -> {
-                        //exitWithoutResult()
-                        //messengerLauncher.launch(NoParams)
+                        exitWithResult(ProfileGuestNavigationContract.createResult(ProfileGuestNavigationContract.Result.ChatDeleted))
                     }
                 }
         }

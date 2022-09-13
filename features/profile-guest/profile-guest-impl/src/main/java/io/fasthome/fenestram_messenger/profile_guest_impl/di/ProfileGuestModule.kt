@@ -45,6 +45,5 @@ object ProfileGuestModule {
         viewModel(::ProfileGuestViewModel)
         viewModel(::ProfileGuestFilesViewModel)
         viewModel(::ProfileGuestImagesViewModel)
-        factory(ProfileGuestViewModel::Features)
     }
 }
