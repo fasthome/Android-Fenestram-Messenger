@@ -6,9 +6,11 @@ import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.DeleteChatResult
@@ -79,12 +81,16 @@ class ProfileGuestViewModel(
     }
 
     fun onDeleteChatClicked() {
+        sendEvent(ProfileGuestEvent.DeleteChatEvent)
+    }
+
+    fun deleteChat() {
         viewModelScope.launch {
             if (params.id != null)
                 when (val deleteChatResult =
                     deleteChatUseCase.deleteChat(params.id).successOrSendError()) {
                     is DeleteChatResult.Success -> {
-                        exitWithResult(ProfileGuestNavigationContract.createResult(ProfileGuestNavigationContract.Result.ChatDeleted))
+                        router.backTo(null)
                     }
                 }
         }

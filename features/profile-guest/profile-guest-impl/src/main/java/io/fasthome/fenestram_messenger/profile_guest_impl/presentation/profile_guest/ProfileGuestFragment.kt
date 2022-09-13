@@ -5,14 +5,13 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
+import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
-import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
-import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.presentation.base.util.*
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestBinding
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
@@ -125,6 +124,15 @@ class ProfileGuestFragment :
         }
     }
 
-    override fun handleEvent(event: ProfileGuestEvent) = noEventsExpected()
+    override fun handleEvent(event: ProfileGuestEvent) {
+        when (event) {
+            is ProfileGuestEvent.DeleteChatEvent -> DeleteChatDialog.create(
+                this,
+                PrintableText.StringResource(R.string.common_delete_chat_dialog),
+                vm::deleteChat
+            )
+                .show()
+        }
+    }
 
 }
