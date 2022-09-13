@@ -101,9 +101,9 @@ class MainActivityViewModel(
         when (val personalDataResult = features.profileFeature.getPersonalData()) {
             is CallResult.Success -> {
                 with(personalDataResult.data) {
-                    if (username != null && nickname != null && birth != null && email != null) {
-                        openAuthedRootScreen()
-                    } else {
+                    if (username.isNullOrEmpty() || nickname.isNullOrEmpty() ||
+                        birth.isNullOrEmpty() || email.isNullOrEmpty()
+                    ) {
                         openPersonalityScreen(
                             AuthFeature.PersonalDataParams(
                                 username = username,
@@ -113,6 +113,8 @@ class MainActivityViewModel(
                                 avatar = avatar,
                             )
                         )
+                    } else {
+                        openAuthedRootScreen()
                     }
                 }
             }
