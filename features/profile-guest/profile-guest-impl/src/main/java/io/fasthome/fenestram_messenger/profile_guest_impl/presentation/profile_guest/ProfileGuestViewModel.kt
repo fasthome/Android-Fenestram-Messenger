@@ -32,12 +32,20 @@ class ProfileGuestViewModel(
 
     private val filesProfileGuestLauncher =
         registerScreen(ProfileGuestFilesNavigationContract) { result ->
-            exitWithResult(ProfileGuestNavigationContract.createResult(ProfileGuestNavigationContract.Result.Canceled))
+            exitWithResult(
+                ProfileGuestNavigationContract.createResult(
+                    ProfileGuestNavigationContract.Result.Canceled
+                )
+            )
         }
 
     private val imagesProfileGuestLauncher =
         registerScreen(ProfileGuestImagesNavigationContract) { result ->
-            exitWithResult(ProfileGuestNavigationContract.createResult(ProfileGuestNavigationContract.Result.Canceled))
+            exitWithResult(
+                ProfileGuestNavigationContract.createResult(
+                    ProfileGuestNavigationContract.Result.Canceled
+                )
+            )
         }
 
     override fun createInitialState() =
@@ -81,18 +89,19 @@ class ProfileGuestViewModel(
     }
 
     fun onDeleteChatClicked() {
-        sendEvent(ProfileGuestEvent.DeleteChatEvent)
+        if (params.id != null)
+            sendEvent(ProfileGuestEvent.DeleteChatEvent(params.id))
     }
 
-    fun deleteChat() {
+    fun deleteChat(id: Long) {
         viewModelScope.launch {
-            if (params.id != null)
-                when (val deleteChatResult =
-                    deleteChatUseCase.deleteChat(params.id).successOrSendError()) {
-                    is DeleteChatResult.Success -> {
-                        router.backTo(null)
-                    }
+            when (val deleteChatResult =
+                deleteChatUseCase.deleteChat(id).successOrSendError()) {
+                is DeleteChatResult.Success -> {
+                    router.backTo(null)
                 }
+
+            }
         }
     }
 }

@@ -72,4 +72,6 @@ class MessengerInteractor(
         })
         return newMessagesFlow
     }
+
+    suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id).onSuccess { }
 }

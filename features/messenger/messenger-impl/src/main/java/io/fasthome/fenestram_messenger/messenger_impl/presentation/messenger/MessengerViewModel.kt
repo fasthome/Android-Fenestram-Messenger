@@ -6,7 +6,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.DeleteChatResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -36,18 +36,21 @@ class MessengerViewModel(
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
     private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
-        when(result){
-            is ConversationNavigationContract.Result.ChatDeleted -> { fetchChats() }
+        when (result) {
+            is ConversationNavigationContract.Result.ChatDeleted -> {
+                fetchChats()
+            }
         }
     }
 
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
-    private val profileGuestLauncher = registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
-        when(result){
-            is ProfileGuestFeature.ProfileGuestResult.ChatDeleted -> fetchChats()
-            else -> {}
+    private val profileGuestLauncher =
+        registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
+            when (result) {
+                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted -> fetchChats()
+                else -> {}
+            }
         }
-    }
 
     fun fetchNewMessages() {
         viewModelScope.launch {
@@ -124,4 +127,19 @@ class MessengerViewModel(
         messengerInteractor.closeSocket()
     }
 
+    fun onChatDelete(id: Long) {
+        sendEvent(MessengerEvent.DeleteChatEvent(id))
+    }
+
+    fun deleteChat(id: Long) {
+        viewModelScope.launch {
+            when (val deleteChatResult =
+                messengerInteractor.deleteChat(id).successOrSendError()) {
+                is DeleteChatResult.Success -> {
+                    fetchChats()
+                }
+            }
+
+        }
+    }
 }

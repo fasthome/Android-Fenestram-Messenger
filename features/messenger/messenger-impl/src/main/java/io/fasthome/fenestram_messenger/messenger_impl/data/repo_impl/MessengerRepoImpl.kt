@@ -40,6 +40,10 @@ class MessengerRepoImpl(
         messengerService.getMessagesByChat(id)
     }
 
+    override suspend fun deleteChat(id: Long) = callForResult {
+        messengerService.deleteChat(id)
+    }
+
     override fun getClientSocket(token: AccessToken, callback: MessengerRepo.SocketMessageCallback) {
         socket.setClientSocket(token) {
             callback.onNewMessage(this)

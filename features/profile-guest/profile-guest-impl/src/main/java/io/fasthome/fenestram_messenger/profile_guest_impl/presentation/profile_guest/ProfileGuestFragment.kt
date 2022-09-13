@@ -129,7 +129,8 @@ class ProfileGuestFragment :
             is ProfileGuestEvent.DeleteChatEvent -> DeleteChatDialog.create(
                 this,
                 PrintableText.StringResource(R.string.common_delete_chat_dialog),
-                vm::deleteChat
+                vm::deleteChat,
+                id = event.id
             )
                 .show()
         }

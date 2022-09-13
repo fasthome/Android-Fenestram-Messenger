@@ -12,7 +12,8 @@ object DeleteChatDialog {
     fun create(
         fragment: Fragment,
         titleText: PrintableText?,
-        callback: () -> Unit
+        accept: (id: Long) -> Unit,
+        id : Long
     ): Dialog {
         val binding = DialogDeleteChatBinding.inflate(fragment.layoutInflater)
 
@@ -27,7 +28,8 @@ object DeleteChatDialog {
             }
 
             delete.onClick {
-                callback()
+                accept(id)
+                dialog.dismiss()
             }
 
             cancel.onClick {
