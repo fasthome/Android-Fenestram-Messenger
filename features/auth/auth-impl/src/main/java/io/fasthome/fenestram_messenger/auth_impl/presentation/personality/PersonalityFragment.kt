@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -179,18 +180,25 @@ class PersonalityFragment :
                 }
             }
         }
-
-
-        state.profileImageUrl?.let { url ->
-            userPhoto.load(url) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
+        if (state.profileImageUrl == null && state.avatarBitmap == null) {
+            userPhoto.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_baseline_account_circle_24
+                )
+            )
+        } else {
+            state.profileImageUrl?.let { url ->
+                userPhoto.load(url) {
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_baseline_account_circle_24)
+                }
             }
-        }
-        state.avatarBitmap?.let { bitmap ->
-            userPhoto.load(bitmap) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
+            state.avatarBitmap?.let { bitmap ->
+                userPhoto.load(bitmap) {
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.ic_baseline_account_circle_24)
+                }
             }
         }
     }
