@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
@@ -7,6 +8,7 @@ import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.R
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -29,7 +31,10 @@ class PersonalityViewModel(
     private val pickFileInterface: PickFileInterface,
     private val params: PersonalityNavigationContract.Params,
     private val profileImageUtil: ProfileImageUtil,
+    private val environment: Environment
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
+
+    private var avatarUrl: String? = null
 
     init {
         pickFileInterface.resultEvents()
@@ -50,7 +55,7 @@ class PersonalityViewModel(
                             showMessage(Message.PopUp(PrintableText.StringResource(R.string.auth_error_photo)))
                             updateState { state ->
                                 state.copy(
-                                    profileImageUrl = null,
+                                    profileImageUrl = avatarUrl,
                                     avatarBitmap = null,
                                     originalProfileImageFile = null
                                 )
@@ -64,6 +69,12 @@ class PersonalityViewModel(
 
     override fun createInitialState(): PersonalityState {
         val detail = params.userDetail
+
+        avatarUrl = if (!detail.profileImageUrl.isNullOrEmpty())
+            environment.endpoints.apiBaseUrl.dropLast(1) + detail.profileImageUrl
+        else
+            null
+
         return PersonalityState(
             listOf(
                 PersonalityState.Field(
@@ -89,21 +100,24 @@ class PersonalityViewModel(
             ),
             avatarBitmap = null,
             originalProfileImageFile = null,
-            profileImageUrl = detail.profileImageUrl
+            profileImageUrl = avatarUrl
         )
     }
 
     fun checkPersonalData(name: String, nickname: String, birthday: String, mail: String) {
         viewModelScope.launch {
             val avatarFile = currentViewState.originalProfileImageFile
-            val avatarUrl = params.userDetail.profileImageUrl
+
             val avatar = when {
                 avatarFile != null -> {
                     profileFeature.uploadProfileImage(avatarFile.readBytes())
-                        .getOrNull()?.profileImagePath
+                        .getOrNull()?.profileImagePath.let {
+                            avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + it
+                            it
+                        }
                 }
-                !(avatarUrl.isNullOrEmpty()) -> {
-                    avatarUrl.substring(20, avatarUrl.length)
+                !avatarUrl.isNullOrEmpty() -> {
+                    avatarUrl!!.substring(20, avatarUrl!!.length)
                 }
                 else -> {
                     null
