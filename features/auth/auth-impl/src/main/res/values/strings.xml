@@ -16,4 +16,5 @@
     <string name="auth_incorrect_code_label">Неверный код</string>
     <string name="auth_resend_code_button">Отправить заново?</string>
     <string name="auth_resend_code_timer">Отправить заново через</string>
+    <string name="auth_error_photo">Невозможно загрузить данный файл</string>
 </resources>

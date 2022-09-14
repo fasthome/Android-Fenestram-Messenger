@@ -6,7 +6,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -36,12 +38,23 @@ class PersonalityViewModel(
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
                     is PickFileInterface.ResultEvent.Picked -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
-                        updateState { state ->
-                            state.copy(
-                                avatarBitmap = bitmap,
-                                originalProfileImageFile = it.tempFile,
-                                profileImageUrl = null
-                            )
+                        if (bitmap != null)
+                            updateState { state ->
+                                state.copy(
+                                    avatarBitmap = bitmap,
+                                    originalProfileImageFile = it.tempFile,
+                                    profileImageUrl = null
+                                )
+                            }
+                        else {
+                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.auth_error_photo)))
+                            updateState { state ->
+                                state.copy(
+                                    profileImageUrl = null,
+                                    avatarBitmap = null,
+                                    originalProfileImageFile = null
+                                )
+                            }
                         }
                     }
                 }
@@ -89,7 +102,7 @@ class PersonalityViewModel(
                     profileFeature.uploadProfileImage(avatarFile.readBytes())
                         .getOrNull()?.profileImagePath
                 }
-                avatarUrl != null -> {
+                !(avatarUrl.isNullOrEmpty()) -> {
                     avatarUrl.substring(20, avatarUrl.length)
                 }
                 else -> {
