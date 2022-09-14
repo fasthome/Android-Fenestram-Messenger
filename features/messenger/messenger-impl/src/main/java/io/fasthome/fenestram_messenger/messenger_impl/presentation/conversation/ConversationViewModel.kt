@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.DeleteChatResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
@@ -147,4 +148,25 @@ class ConversationViewModel(
             )
         )
     }
+
+    fun onOpenMenu() {
+        sendEvent(ConversationEvent.OpenMenuEvent)
+    }
+
+    fun showDialog() {
+        chatId?.let { sendEvent(ConversationEvent.ShowDialog(it)) }
+    }
+
+    fun deleteChat(id : Long) {
+        viewModelScope.launch {
+            when (val deleteChatResult =
+                messengerInteractor.deleteChat(id).successOrSendError()) {
+                is DeleteChatResult.Success -> {
+                    exitWithResult(ConversationNavigationContract.createResult(ConversationNavigationContract.Result.ChatDeleted))
+                }
+            }
+
+        }
+    }
+
 }
