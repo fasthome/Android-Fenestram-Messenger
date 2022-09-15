@@ -16,7 +16,12 @@ class MessengerSocket(private val baseUrl: String) {
 
     private var socket: Socket? = null
 
-    fun setClientSocket(chatId: String?, token: AccessToken, callback: MessageResponseWithChatId.() -> Unit) {
+    fun setClientSocket(
+        chatId: String?,
+        token: AccessToken,
+        selfUserId: Long?,
+        callback: MessageResponseWithChatId.() -> Unit,
+    ) {
         try {
             val opts = IO.Options()
             opts.extraHeaders =
@@ -28,7 +33,9 @@ class MessengerSocket(private val baseUrl: String) {
                 Log.d(this.javaClass.simpleName, "receiveMessage: " + it[0].toString())
                 val message = Json.decodeFromString<SocketMessage>(it[0].toString())
                 if (chatId == null || chatId == message.message?.chatId) {
-                    callback(messageToMessageResponse(message.message))
+                    if (selfUserId != message.message?.initiatorId) {
+                        callback(messageToMessageResponse(message.message))
+                    }
                 }
             }
         } catch (e: Exception) {

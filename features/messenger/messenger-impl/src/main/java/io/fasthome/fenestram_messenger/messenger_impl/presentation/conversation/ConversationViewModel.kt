@@ -3,23 +3,27 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createMessage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
-import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getOrNull
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
-import io.fasthome.fenestram_messenger.util.onSuccess
+import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
+import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
+import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.*
 
 class ConversationViewModel(
     router: ContractRouter,
@@ -32,6 +36,32 @@ class ConversationViewModel(
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
     private var selfUserId: Long? = null
+    private var loadItemsJob by switchJob()
+    private var lastPage: MessagesPage? = null
+
+    fun loadItems() {
+        loadItemsJob = viewModelScope.launch {
+            lastPage?.let {
+                if (it.total <= PAGE_SIZE) {
+                    return@launch
+                }
+            }
+
+            messengerInteractor.getChatPageItems(chatId ?: return@launch).onSuccess {
+                lastPage = it
+                updateState { state ->
+                    state.copy(
+                        messages = state.messages.plus(
+                            it.messages.toConversationItems(
+                                selfUserId = selfUserId!!,
+                                isGroup = params.chat.isGroup,
+                            )
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     fun fetchMessages() {
         viewModelScope.launch {
@@ -67,7 +97,7 @@ class ConversationViewModel(
 
     override fun createInitialState(): ConversationState {
         return ConversationState(
-            messages = listOf(),
+            messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
             userOnline = false,
             isChatEmpty = false,
@@ -75,16 +105,41 @@ class ConversationViewModel(
         )
     }
 
-
     fun addMessageToConversation(mess: String) {
         viewModelScope.launch {
-            messengerInteractor.sendMessage(
+            val tempMessage = createMessage(mess)
+            val messages = currentViewState.messages
+
+            updateState { state ->
+                state.copy(
+                    messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
+                )
+            }
+
+            when (messengerInteractor.sendMessage(
                 id = chatId ?: return@launch,
                 text = mess,
-                type = "text"
-            ).withErrorHandled(
-                showErrorType = ShowErrorType.Dialog,
-                onSuccess = {})
+                type = "text",
+                localId = tempMessage.localId
+            )) {
+                is CallResult.Error -> {
+                    updateStatus(tempMessage, SentStatus.Error)
+                }
+                is CallResult.Success -> {
+                    updateStatus(tempMessage, SentStatus.Sent)
+                }
+            }
+        }
+        sendEvent(ConversationEvent.MessageSent)
+    }
+
+    private fun updateStatus(tempMessage : ConversationViewItem.Self, status: SentStatus){
+        updateState { state ->
+            val newMessages = state.messages.toMutableMap()
+            newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+            state.copy(
+                messages = newMessages
+            )
         }
     }
 
@@ -105,23 +160,21 @@ class ConversationViewModel(
     }
 
     private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
-        messengerInteractor.getMessagesFromChat(chatId)
+        loadItems()
+        messengerInteractor.getMessagesFromChat(chatId, selfUserId)
             .flowOn(Dispatchers.Main)
-            .onEach { messages ->
+            .onEach { message ->
                 updateState { state ->
                     state.copy(
-                        messages = state.messages
-                            .plus(
-                                messages.toConversationItems(
-                                    selfUserId,
-                                    params.chat.isGroup,
-                                    lastMessage = state.messages.lastOrNull(),
-                                    messagesEmpty = state.messages.isEmpty()
-                                )
-                            ),
-                        isChatEmpty = messages.isEmpty()
+                        messages = mapOf(
+                            UUID.randomUUID().toString() to message.toConversationViewItem(
+                                selfUserId = selfUserId,
+                                isGroup = params.chat.isGroup,
+                            )
+                        ).plus(state.messages)
                     )
                 }
+                sendEvent(ConversationEvent.MessageSent)
             }
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {

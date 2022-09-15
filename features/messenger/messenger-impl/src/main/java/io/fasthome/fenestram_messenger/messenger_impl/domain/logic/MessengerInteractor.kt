@@ -1,10 +1,16 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
 import android.util.Log
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
+import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
+import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.onSuccess
 import io.fasthome.network.tokens.TokensRepo
@@ -16,27 +22,22 @@ import kotlinx.coroutines.flow.receiveAsFlow
 class MessengerInteractor(
     private val messageRepo: MessengerRepo,
     private val tokensRepo: TokensRepo,
-    private val chatsMapper: ChatsMapper
+    private val chatsMapper: ChatsMapper,
 ) {
     private val _messagesChannel =
-        Channel<List<Message>>(
+        Channel<Message>(
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
-            onUndeliveredElement = { list ->
-                list.forEach {
-                    Log.d("MessengerInteractor", "onUndeliveredElement " + it)
-                }
+            onUndeliveredElement = { message ->
+                Log.d("MessengerInteractor", "onUndeliveredElement " + message)
             })
     private val _newMessagesChannel =
         Channel<Message>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    private val messagesFlow: Flow<List<Message>> = _messagesChannel.receiveAsFlow()
+    private val messagesFlow: Flow<Message> = _messagesChannel.receiveAsFlow()
     private val newMessagesFlow: Flow<Message> = _newMessagesChannel.receiveAsFlow()
 
-    suspend fun sendMessage(id: Long, text: String, type: String) =
-        messageRepo.sendMessage(id, text, type).onSuccess { }
-
-    suspend fun getChats(selfUserId: Long, limit: Int, page: Int) =
-        messageRepo.getChats(selfUserId, limit, page)
+    suspend fun sendMessage(id: Long, text: String, type: String, localId: String) =
+        messageRepo.sendMessage(id, text, type, localId)
 
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
@@ -47,25 +48,19 @@ class MessengerInteractor(
         messageRepo.closeSocket()
     }
 
-    suspend fun getMessagesFromChat(id: Long): Flow<List<Message>> {
-        messageRepo.getMessagesFromChat(id).onSuccess { result ->
-            result.reversed().let {
-                _messagesChannel.trySend(it)
-            }
-        }
+    suspend fun getMessagesFromChat(id: Long, selfUserId: Long): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
+            selfUserId = selfUserId,
             token = tokensRepo.getAccessToken(),
             callback = object : MessengerRepo.SocketMessageCallback {
                 override fun onNewMessage(message: MessageResponseWithChatId) {
-                    _messagesChannel.trySend(listOf(chatsMapper.toMessage(message)))
+                    _messagesChannel.trySend(chatsMapper.toMessage(message))
                 }
             })
 
         return messagesFlow
     }
-
-    suspend fun getMessages(id: Long): CallResult<List<Message>> = messageRepo.getMessagesFromChat(id)
 
     suspend fun getNewMessages(): Flow<Message> {
         messageRepo.getClientSocket(
@@ -73,10 +68,21 @@ class MessengerInteractor(
             token = tokensRepo.getAccessToken(),
             callback = object : MessengerRepo.SocketMessageCallback {
                 override fun onNewMessage(message: MessageResponseWithChatId) {
-                    this
-                    _messagesChannel.trySend(listOf(chatsMapper.toMessage(message)))
+                    _newMessagesChannel.trySend(chatsMapper.toMessage(message))
                 }
-            })
+            },
+            selfUserId = null
+        )
         return newMessagesFlow
+    }
+
+    fun getMessengerPageItems(): TotalPagingSource<Int, Chat> =
+        messageRepo.getPageChats()
+
+    private var page = 0
+
+    suspend fun getChatPageItems(id: Long): CallResult<MessagesPage> {
+        page++
+        return messageRepo.getMessagesFromChat(id, page)
     }
 }
