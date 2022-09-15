@@ -1,21 +1,20 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.*
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.MenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.PopupMenu
 
 
 class ConversationFragment :
@@ -87,26 +86,20 @@ class ConversationFragment :
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
             is ConversationEvent.OpenMenuEvent -> {
-                val inflater = context?.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                val viewMenu = inflater.inflate(R.layout.menu, null)
+                val menuBinding = MenuBinding.inflate(requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+                val popupMenu = PopupMenu.create(menuBinding.conversationMenu)
+                popupMenu.showAsDropDown(binding.dropdownMenu)
 
-                val popupmenu = PopupWindow(
-                    viewMenu,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    true
-                )
-                popupmenu.showAsDropDown(binding.dropdownMenu)
-
-                viewMenu.findViewById<TextView>(R.id.delete).setOnClickListener {
+                menuBinding.delete.onClick {
                     vm.showDialog()
-                    popupmenu.dismiss()
+                    popupMenu.dismiss()
                 }
 
-                viewMenu.findViewById<TextView>(R.id.edit).setOnClickListener {
+                menuBinding.edit.onClick {
                     //TODO Редактирование
-                    popupmenu.dismiss()
+                    popupMenu.dismiss()
                 }
+
             }
             is ConversationEvent.ShowDialog -> DeleteChatDialog.create(
                 this,

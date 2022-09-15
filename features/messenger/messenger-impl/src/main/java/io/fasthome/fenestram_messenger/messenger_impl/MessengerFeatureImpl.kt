@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.messenger_impl
 
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerNavigationContract
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
@@ -12,7 +13,9 @@ import io.fasthome.fenestram_messenger.navigation.contract.map
 import io.fasthome.fenestram_messenger.navigation.contract.mapParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
-class MessengerFeatureImpl : MessengerFeature {
+class MessengerFeatureImpl(
+    private val messengerInteractor: MessengerInteractor
+) : MessengerFeature {
 
     override val messengerNavigationContract = MessengerNavigationContract
 
@@ -37,5 +40,7 @@ class MessengerFeatureImpl : MessengerFeature {
                 }
 
             })
+
+    override suspend fun deleteChat(id : Long) = messengerInteractor.deleteChat(id)
 
 }

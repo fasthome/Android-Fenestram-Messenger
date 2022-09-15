@@ -140,7 +140,7 @@
             android:layout_height="80dp"
             android:layout_marginTop="10dp"
             android:background="@color/dark2"
-            android:backgroundTint="@color/dark2"
+            android:drawableTint="@color/red"
             android:drawableLeft="@drawable/ic_delete"
             android:drawablePadding="10dp"
             android:paddingStart="40dp"

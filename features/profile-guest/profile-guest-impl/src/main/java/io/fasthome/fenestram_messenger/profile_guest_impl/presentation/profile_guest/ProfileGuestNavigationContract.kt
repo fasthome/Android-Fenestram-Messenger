@@ -24,7 +24,7 @@ object ProfileGuestNavigationContract :
     sealed class Result : Parcelable {
 
         @Parcelize
-        object ChatDeleted : Result()
+        class ChatDeleted(val id: Long) : Result()
 
         @Parcelize
         object Canceled : Result()

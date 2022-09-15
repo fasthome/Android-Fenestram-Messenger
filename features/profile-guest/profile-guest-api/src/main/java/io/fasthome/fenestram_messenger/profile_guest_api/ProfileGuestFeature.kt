@@ -26,7 +26,7 @@ interface ProfileGuestFeature {
     sealed class ProfileGuestResult : Parcelable {
 
         @Parcelize
-        object ChatDeleted : ProfileGuestResult()
+        class ChatDeleted(val id: Long) : ProfileGuestResult()
 
         @Parcelize
         object Canceled : ProfileGuestResult()

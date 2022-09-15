@@ -3,10 +3,8 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.DeleteChatResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -36,7 +34,14 @@ class MessengerViewModel(
     private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
         when (result) {
             is ConversationNavigationContract.Result.ChatDeleted -> {
-                fetchChats()
+                updateState {
+                    val chats = mutableListOf<MessengerViewItem>()
+                    currentViewState.messengerViewItems.forEach { item ->
+                        if (item.id != result.id)
+                            chats.add(item)
+                    }
+                    it.copy(messengerViewItems = chats)
+                }
             }
         }
     }
@@ -131,13 +136,15 @@ class MessengerViewModel(
 
     fun deleteChat(id: Long) {
         viewModelScope.launch {
-            when (val deleteChatResult =
-                messengerInteractor.deleteChat(id).successOrSendError()) {
-                is DeleteChatResult.Success -> {
-                    fetchChats()
+            if (messengerInteractor.deleteChat(id).successOrSendError() != null)
+                updateState {
+                    val chats = mutableListOf<MessengerViewItem>()
+                    currentViewState.messengerViewItems.forEach { item ->
+                        if (item.id != id)
+                            chats.add(item)
+                    }
+                    it.copy(messengerViewItems = chats)
                 }
-            }
-
         }
     }
 }

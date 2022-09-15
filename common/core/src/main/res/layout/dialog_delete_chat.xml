@@ -2,7 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="40dp">
 
     <TextView
         android:id="@+id/title"
@@ -18,16 +19,13 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cancel"
-        android:layout_width="150dp"
+        style="@style/Button.Dialog.Cancel"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/background_button"
         android:text="@string/common_cancel"
-        android:textAppearance="@style/Text"
-        android:textColor="@color/gray1"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/delete"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,15 +34,13 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/delete"
-        android:layout_width="150dp"
+        style="@style/Button.Dialog.Accept"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/background_button"
         android:text="@string/common_delete_chat"
-        android:textAppearance="@style/Text.Red"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cancel"

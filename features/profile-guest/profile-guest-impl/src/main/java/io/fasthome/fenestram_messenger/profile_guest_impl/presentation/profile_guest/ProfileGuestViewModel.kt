@@ -1,20 +1,13 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
-import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
-import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
-import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
-import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.DeleteChatResult
-import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.DeleteChatUseCase
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
@@ -27,7 +20,7 @@ class ProfileGuestViewModel(
     requestParams: RequestParams,
     private val params: ProfileGuestNavigationContract.Params,
     private val groupParticipantsInterface: GroupParticipantsInterface,
-    private val deleteChatUseCase: DeleteChatUseCase
+    private val messengerFeature: MessengerFeature
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     private val filesProfileGuestLauncher =
@@ -95,13 +88,8 @@ class ProfileGuestViewModel(
 
     fun deleteChat(id: Long) {
         viewModelScope.launch {
-            when (val deleteChatResult =
-                deleteChatUseCase.deleteChat(id).successOrSendError()) {
-                is DeleteChatResult.Success -> {
-                    router.backTo(null)
-                }
-
-            }
+            if (messengerFeature.deleteChat(id).successOrSendError() != null)
+                router.backTo(null)
         }
     }
 }

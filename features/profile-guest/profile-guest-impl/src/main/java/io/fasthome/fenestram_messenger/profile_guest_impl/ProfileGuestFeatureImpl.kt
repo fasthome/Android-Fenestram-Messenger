@@ -26,7 +26,7 @@ class ProfileGuestFeatureImpl : ProfileGuestFeature {
             },
             resultMapper = {
                 when (it) {
-                    is ProfileGuestNavigationContract.Result.ChatDeleted -> ProfileGuestFeature.ProfileGuestResult.ChatDeleted
+                    is ProfileGuestNavigationContract.Result.ChatDeleted -> ProfileGuestFeature.ProfileGuestResult.ChatDeleted(it.id)
                     is ProfileGuestNavigationContract.Result.Canceled -> ProfileGuestFeature.ProfileGuestResult.Canceled
                 }
             }

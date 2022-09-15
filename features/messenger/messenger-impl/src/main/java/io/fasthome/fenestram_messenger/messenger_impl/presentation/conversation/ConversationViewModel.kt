@@ -1,10 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.DeleteChatResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
@@ -52,7 +50,10 @@ class ConversationViewModel(
                     chatId = it.chatId
                 }
             }
-            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId ?: return@launch)
+            subscribeMessages(
+                chatId ?: params.chat.id ?: return@launch,
+                selfUserId ?: return@launch
+            )
         }
     }
 
@@ -65,7 +66,11 @@ class ConversationViewModel(
         registerScreen(features.profileGuestFeature.profileGuestNavigationContract) { result ->
             when (result) {
                 is ProfileGuestFeature.ProfileGuestResult.ChatDeleted ->
-                    exitWithResult(ConversationNavigationContract.createResult(ConversationNavigationContract.Result.ChatDeleted))
+                    exitWithResult(
+                        ConversationNavigationContract.createResult(
+                            ConversationNavigationContract.Result.ChatDeleted(result.id)
+                        )
+                    )
             }
         }
 
@@ -157,15 +162,14 @@ class ConversationViewModel(
         chatId?.let { sendEvent(ConversationEvent.ShowDialog(it)) }
     }
 
-    fun deleteChat(id : Long) {
+    fun deleteChat(id: Long) {
         viewModelScope.launch {
-            when (val deleteChatResult =
-                messengerInteractor.deleteChat(id).successOrSendError()) {
-                is DeleteChatResult.Success -> {
-                    exitWithResult(ConversationNavigationContract.createResult(ConversationNavigationContract.Result.ChatDeleted))
-                }
-            }
-
+            if (messengerInteractor.deleteChat(id).successOrSendError() != null)
+                exitWithResult(
+                    ConversationNavigationContract.createResult(
+                        ConversationNavigationContract.Result.ChatDeleted(id)
+                    )
+                )
         }
     }
 

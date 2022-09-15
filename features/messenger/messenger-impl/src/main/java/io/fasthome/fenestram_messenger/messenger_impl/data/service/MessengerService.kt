@@ -61,14 +61,12 @@ class MessengerService(
         return response.requireData().let(getChatsMapper::responseToGetMessagesByChat)
     }
 
-    suspend fun deleteChat(id: Long): DeleteChatResult {
+    suspend fun deleteChat(id: Long) {
         val response: BaseResponse<DeleteChatResponse> =
             client.runDelete<DeleteChatRequest?, BaseResponse<DeleteChatResponse>>(
                 path = "api/v1/chats/$id",
                 body = null
             )
-
-        return DeleteMapper.responseToDeleteChatResult(response)
     }
 
 }
