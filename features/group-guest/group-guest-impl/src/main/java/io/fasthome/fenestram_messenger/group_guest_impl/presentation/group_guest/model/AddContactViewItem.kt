@@ -1,15 +1,12 @@
 /**
  * Created by Dmitry Popov on 15.08.2022.
  */
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model
+package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.model
 
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.util.PrintableText
 
-data class ContactViewItem(
+data class AddContactViewItem(
     val userId : Long?,
     val userName : PrintableText
 ) {

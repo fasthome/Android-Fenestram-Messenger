@@ -15,6 +15,10 @@
         <item name="android:textColor">@color/gray2</item>
     </style>
 
+    <style name="Text.Gray">
+        <item name="android:textColor">@color/gray1</item>
+    </style>
+
     <style name="Text.Light.12sp">
         <item name="android:textSize">12sp</item>
     </style>
@@ -53,6 +57,11 @@
 
     <style name="Text.Red.Medium.18sp">
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Text.Blue">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>

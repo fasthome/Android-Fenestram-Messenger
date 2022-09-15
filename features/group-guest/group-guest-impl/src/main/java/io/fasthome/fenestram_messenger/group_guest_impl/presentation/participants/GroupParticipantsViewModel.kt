@@ -26,7 +26,7 @@ class GroupParticipantsViewModel(
     }
 
     fun onAddUserToChat() {
-        addUserToChatLauncher.launch()
+        addUserToChatLauncher.launch(GroupGuestContract.Params(params))
     }
 
 }

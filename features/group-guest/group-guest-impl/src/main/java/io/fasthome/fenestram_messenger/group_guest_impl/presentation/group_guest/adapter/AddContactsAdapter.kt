@@ -5,31 +5,31 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_gues
 
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.group_guest_impl.databinding.ContactItemBinding
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
+import io.fasthome.fenestram_messenger.group_guest_impl.databinding.AddContactItemBinding
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.model.AddContactViewItem
 import io.fasthome.fenestram_messenger.util.*
 
 
-class ContactsAdapter(onItemClicked: (ContactViewItem) -> Unit, selectActive: Boolean = true) :
-    AsyncListDifferDelegationAdapter<ContactViewItem>(
+class ContactsAdapter(onItemClicked: (AddContactViewItem) -> Unit, selectActive: Boolean = true) :
+    AsyncListDifferDelegationAdapter<AddContactViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(),
         AdapterUtil.adapterDelegatesManager(
             createContactsAdapterDelegate(onItemClicked, selectActive)
         )
     ) {}
 
-fun createContactsAdapterDelegate(onItemClicked: (ContactViewItem) -> Unit, selectActive: Boolean) =
-    adapterDelegateViewBinding<ContactViewItem, ContactItemBinding>(
-        ContactItemBinding::inflate,
+fun createContactsAdapterDelegate(onItemClicked: (AddContactViewItem) -> Unit, selectActive: Boolean) =
+    adapterDelegateViewBinding<AddContactViewItem, AddContactItemBinding>(
+        AddContactItemBinding::inflate,
     ) {
         binding.root.onClick {
             onItemClicked(item)
         }
         bindWithBinding {
-            name.setPrintableText(item.userName)
+            contactName.setPrintableText(item.userName)
             if (selectActive) {
                 root.setBackgroundResource(item.backgroundRes)
-                check.isVisible = item.isSelected
+                checking.isVisible = item.isSelected
             }
         }
     }
