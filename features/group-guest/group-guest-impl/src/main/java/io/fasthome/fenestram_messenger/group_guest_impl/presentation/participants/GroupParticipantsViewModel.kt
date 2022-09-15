@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participan
 
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestContract
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.userToParticipantsItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -14,10 +15,18 @@ class GroupParticipantsViewModel(
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
+    private val addUserToChatLauncher = registerScreen(GroupGuestContract) { result ->
+        exitWithResult(GroupGuestContract.createResult(result))
+    }
+
     override fun createInitialState(): GroupParticipantsState {
         return GroupParticipantsState(
             participants = params.participants.map(::userToParticipantsItem)
         )
+    }
+
+    fun onAddUserToChat() {
+        addUserToChatLauncher.launch()
     }
 
 }

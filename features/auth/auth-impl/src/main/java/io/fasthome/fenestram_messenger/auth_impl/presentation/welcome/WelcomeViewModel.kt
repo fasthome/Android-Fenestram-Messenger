@@ -29,18 +29,18 @@ class WelcomeViewModel(
         }
         if (isValid) {
             viewModelScope.launch {
-                when (authInteractor.sendCode("+$phoneNumber").successOrSendError()) {
-                    is CodeResult.Success -> {
-                        updateState { state ->
-                            state.copy(isLoad = false)
-                        }
+                //when (authInteractor.sendCode("+$phoneNumber").successOrSendError()) {
+                   // is CodeResult.Success -> {
+                     //   updateState { state ->
+                      //      state.copy(isLoad = false)
+                     //   }
                         checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
-                    }
+                  //  }
                 }
-            }
-        } else
-            updateState { state ->
-                state.copy(country = "", error = true, isLoad = false)
+          //  }
+       // } else
+          //  updateState { state ->
+           //     state.copy(country = "", error = true, isLoad = false)
             }
     }
 

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_guest_participants">Участники чата</string>
+    <string name="profile_guest_add_user">Добавление участников</string>
 </resources>
