@@ -75,5 +75,6 @@ class TokensRepoImpl(
     override suspend fun clearTokens() {
         inMemoryTokensStorage.clear()
         refreshTokenStorage.clearRefreshToken()
+        accessTokenStorage.clearAccessToken()
     }
 }
