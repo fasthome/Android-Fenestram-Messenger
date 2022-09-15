@@ -43,10 +43,10 @@ class ProfileViewModel(
         viewModelScope.launch {
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
-                    avatarUrl = if (personalData.avatar != null )
+                    avatarUrl = if (!personalData.avatar.isNullOrEmpty() )
                         environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar
                     else
-                        personalData.avatar
+                        null
 
                     state.copy(
                         fieldsData = listOf(
@@ -71,7 +71,7 @@ class ProfileViewModel(
                                 visibility = !personalData.email.isNullOrEmpty()
                             )
                         ),
-                        avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar,
+                        avatarUrl = avatarUrl,
                         avatarBitmap = null
                     )
                 }
@@ -121,7 +121,7 @@ class ProfileViewModel(
                             it
                         }
                 }
-                avatarUrl != null -> {
+                !avatarUrl.isNullOrEmpty() -> {
                     avatarUrl!!.substring(20, avatarUrl!!.length)
                 }
                 else -> {
