@@ -2,13 +2,18 @@ package io.fasthome.fenestram_messenger.uikit.custom_view
 
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
 
 class HooliDatePicker(val textView: TextView) {
 
-    private val datePicker = MaterialDatePicker.Builder.datePicker().build()
+    private val constraintsBuilder =
+        CalendarConstraints.Builder().setValidator(DateValidatorPointBackward.now()).build()
+    private val datePicker =
+        MaterialDatePicker.Builder.datePicker().setCalendarConstraints(constraintsBuilder).build()
 
     init {
         datePicker.addOnPositiveButtonClickListener {
