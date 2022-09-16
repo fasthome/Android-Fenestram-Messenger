@@ -29,6 +29,7 @@
 
         <EditText
             android:id="@+id/chat_name"
+            style="@style/Text.Light.16sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -38,8 +39,8 @@
             android:ellipsize="end"
             android:hint="@string/messenger_input_chat_name"
             android:inputType="text"
+            android:maxLength="22"
             android:maxLines="1"
-            style="@style/Text.Light.16sp"
             android:textColorHint="@color/gray2" />
 
     </LinearLayout>
