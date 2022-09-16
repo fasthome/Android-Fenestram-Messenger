@@ -19,7 +19,7 @@ class GroupParticipantsViewModel(
         when (result) {
             is GroupGuestContract.Result.UsersAdded -> {
                 updateState { state ->
-                    state.copy(participants = result.users.map(::userToParticipantsItem))
+                    state.copy(participants = result.users)
                 }
             }
             is GroupGuestContract.Result.Canceled -> {}
@@ -34,7 +34,7 @@ class GroupParticipantsViewModel(
     }
 
     fun onAddUserToChat() {
-        addUserToChatLauncher.launch(GroupGuestContract.Params(params))
+        addUserToChatLauncher.launch(GroupGuestContract.Params(currentViewState.participants, params.chatId!!))
     }
 
 }

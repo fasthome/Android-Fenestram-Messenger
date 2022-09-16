@@ -31,8 +31,8 @@ class GroupGuestViewModel(
                 originalContacts = it.filter { contact ->
                     contact.user != null
                 }.filter { contact ->
-                    params.participantsParams.participants.find { user ->
-                        user.id == contact.user!!.id
+                    params.participantsParams.find { user ->
+                        user.userId == contact.user!!.id
                     } == null
                 }
                 updateState { state ->
@@ -74,17 +74,16 @@ class GroupGuestViewModel(
             currentViewState.addedContacts.mapNotNull { if (it is AddContactViewItem.AddContact) it.userId else null }
         viewModelScope.launch {
             val usersAdded = addUsersUseCase.addUsersToChat(
-                params.participantsParams.chatId,
+                params.chatId,
                 usersId
             ).successOrSendError()
-            if (usersAdded != null) {
-                params.participantsParams.participants = usersAdded
+            if (usersAdded != null)
                 exitWithResult(
                     GroupGuestContract.createResult(
                         GroupGuestContract.Result.UsersAdded(users = usersAdded)
                     )
                 )
-            } else
+            else
                 exitWithResult(GroupGuestContract.createResult(GroupGuestContract.Result.Canceled))
         }
     }
