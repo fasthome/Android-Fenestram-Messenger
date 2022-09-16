@@ -7,12 +7,16 @@ android {
 }
 
 dependencies {
+    implementation(project(Modules.Common.util))
+
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)
     implementation(Deps.AndroidX.core)
     implementation(Deps.Android.material)
+    implementation(Deps.AndroidX.paging)
 
-    implementation(project(Modules.Common.util))
+    api(Deps.AndroidX.swipeRefreshLayout)
+    api(Deps.adapterDelegates)
     api(Deps.Koin.core)
     api(Deps.Koin.android)
     api(Deps.Koin.test)

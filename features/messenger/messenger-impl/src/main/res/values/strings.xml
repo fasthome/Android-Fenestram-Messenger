@@ -5,7 +5,7 @@
     <string name="SendButtonPresentText">Кнопка отправки сообщения</string>
     <string name="AttachButtonPresentText">Кнопка прикрепления файлов</string>
     <string name="SendMessegeTextViewPresentText">Поле ввода сообщения</string>
-    <string name="AppName">FENESTRAM</string>
+    <string name="AppName">HOOLI CHAT</string>
     <string name="MessageContentCheck">Blade Runner 2049 is a 2017 American neo-noir science fiction film directed by Denis Villeneuve</string>
     <string name="timeviewcheck">22:22</string>
     <string name="name">Username</string>
@@ -15,4 +15,6 @@
     <string name="messenger_input_chat_name">Введите имя чата</string>
     <string name="messenger_select_hint">Выберите участников чата</string>
     <string name="messenger_chat_empty">Здесь будет отображаться история ваших сообщениий</string>
+    <string name="conversation_delete">Удалить и выйти</string>
+    <string name="conversation_edit">Редактировать</string>
 </resources>

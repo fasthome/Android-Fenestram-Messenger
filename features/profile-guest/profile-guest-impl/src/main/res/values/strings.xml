@@ -12,5 +12,6 @@
     <string name="zero_mb">0 МБ</string>
     <string name="default_date">01.01.1990</string>
     <string name="more_images">0+</string>
+    <string name="profile_guest_delete_button">Выйти из чата</string>
 
 </resources>

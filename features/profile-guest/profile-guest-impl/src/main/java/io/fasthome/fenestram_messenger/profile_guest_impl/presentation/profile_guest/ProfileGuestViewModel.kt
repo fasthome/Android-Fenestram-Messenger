@@ -1,7 +1,8 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
-import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
+import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
@@ -12,21 +13,33 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
+import kotlinx.coroutines.launch
 
 class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ProfileGuestNavigationContract.Params,
-    private val groupParticipantsInterface : GroupParticipantsInterface
+    private val groupParticipantsInterface: GroupParticipantsInterface,
+    private val messengerFeature: MessengerFeature
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
-    private val filesProfileGuestLauncher = registerScreen(ProfileGuestFilesNavigationContract) { result ->
-        exitWithResult(ProfileGuestNavigationContract.createResult(result))
-    }
+    private val filesProfileGuestLauncher =
+        registerScreen(ProfileGuestFilesNavigationContract) { result ->
+            exitWithResult(
+                ProfileGuestNavigationContract.createResult(
+                    ProfileGuestNavigationContract.Result.Canceled
+                )
+            )
+        }
 
-    private val imagesProfileGuestLauncher = registerScreen(ProfileGuestImagesNavigationContract) { result ->
-        exitWithResult(ProfileGuestNavigationContract.createResult(result))
-    }
+    private val imagesProfileGuestLauncher =
+        registerScreen(ProfileGuestImagesNavigationContract) { result ->
+            exitWithResult(
+                ProfileGuestNavigationContract.createResult(
+                    ProfileGuestNavigationContract.Result.Canceled
+                )
+            )
+        }
 
     override fun createInitialState() =
         ProfileGuestState(
@@ -66,5 +79,17 @@ class ProfileGuestViewModel(
 
     fun onShowPhotosClicked() {
         imagesProfileGuestLauncher.launch(NoParams)
+    }
+
+    fun onDeleteChatClicked() {
+        if (params.id != null)
+            sendEvent(ProfileGuestEvent.DeleteChatEvent(params.id))
+    }
+
+    fun deleteChat(id: Long) {
+        viewModelScope.launch {
+            if (messengerFeature.deleteChat(id).successOrSendError() != null)
+                router.backTo(null)
+        }
     }
 }

@@ -2,32 +2,41 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatByIdResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.PostChatsResult
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
+import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
+import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
+import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.network.tokens.AccessToken
+import java.time.ZonedDateTime
 
 class MessengerRepoImpl(
     private val messengerService: MessengerService,
     private val socket: MessengerSocket
 ) : MessengerRepo {
+
     override suspend fun sendMessage(
         id: Long,
         text: String,
-        type: String
+        type: String,
+        localId: String
     ): CallResult<SendMessageResult> = callForResult {
-        messengerService.sendMessage(id, text, type)
+        messengerService.sendMessage(id, text, type, localId)
     }
-
-    override suspend fun getChats(selfUserId : Long, limit: Int, page: Int): CallResult<GetChatsResult> =
-        callForResult {
-            messengerService.getChats(selfUserId, limit, page)
+    override fun getPageChats(): TotalPagingSource<Int, Chat> = totalPagingSource(
+        maxPageSize = PAGE_SIZE,
+        loadPageService = { pageNumber, pageSize ->
+            messengerService.getChats(
+                page = pageNumber,
+                limit = pageSize
+            )
         }
+    )
 
     override suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean): CallResult<PostChatsResult> =
         callForResult {
@@ -38,13 +47,18 @@ class MessengerRepoImpl(
         messengerService.getChatById(id)
     }
 
-    override suspend fun getMessagesFromChat(id: Long): CallResult<List<Message>> = callForResult {
-        messengerService.getMessagesByChat(id)
+    override suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage> = callForResult {
+        messengerService.getMessagesByChat(id = id, limit = PAGE_SIZE, page = page)
+    }
+
+    override suspend fun deleteChat(id: Long) = callForResult {
+        messengerService.deleteChat(id)
     }
 
     override fun getClientSocket(
-        chatId : String?, token: AccessToken, callback: MessengerRepo.SocketMessageCallback) {
-        socket.setClientSocket(chatId = chatId, token = token) {
+        chatId: String?, token: AccessToken, callback: MessengerRepo.SocketMessageCallback, selfUserId: Long?
+    ) {
+        socket.setClientSocket(chatId = chatId, token = token, selfUserId = selfUserId) {
             callback.onNewMessage(this)
         }
     }
