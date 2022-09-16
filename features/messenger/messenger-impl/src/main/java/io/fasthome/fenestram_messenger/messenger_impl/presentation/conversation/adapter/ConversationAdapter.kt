@@ -2,10 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemGroupBinding
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemReceiveBinding
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSelfBinding
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.ConversationItemSystemBinding
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
@@ -22,19 +20,38 @@ class ConversationAdapter(onGroupProfileItemClicked: (ConversationViewItem.Group
             ConversationViewItem::sentStatus
         ),
         AdapterUtil.adapterDelegatesManager(
-            createConversationSelfAdapterDelegate(),
+            createConversationSelfTextAdapterDelegate(),
+            createConversationSelfImageAdapterDelegate(),
             createConversationReceiveAdapterDelegate(),
             createConversationGroupAdapterDelegate(onGroupProfileItemClicked),
             createConversationSystemAdapterDelegate()
         )
     )
 
-fun createConversationSelfAdapterDelegate() =
-    adapterDelegateViewBinding<ConversationViewItem.Self, ConversationItemSelfBinding>(
+fun createConversationSelfTextAdapterDelegate() =
+    adapterDelegateViewBinding<ConversationViewItem.Self.Text, ConversationItemSelfBinding>(
         ConversationItemSelfBinding::inflate
     ) {
         bindWithBinding {
             messageContent.setPrintableText(item.content)
+            sendTimeView.setPrintableText(item.time)
+            status.setImageResource(item.statusIcon)
+        }
+    }
+
+fun createConversationSelfImageAdapterDelegate() =
+    adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemImageBinding>(
+        ConversationItemImageBinding::inflate
+    ) {
+        bindWithBinding {
+            when {
+                item.bitmap != null -> {
+                    messageContent.loadRounded(item.bitmap)
+                }
+                else -> {
+                    messageContent.loadRounded(item.content)
+                }
+            }
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
         }

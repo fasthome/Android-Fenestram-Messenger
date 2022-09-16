@@ -4,5 +4,6 @@ sealed interface ConversationEvent {
 
     object MessageSent : ConversationEvent
     object InvalidateList : ConversationEvent
+    object ShowSelectFromDialog : ConversationEvent
 
 }

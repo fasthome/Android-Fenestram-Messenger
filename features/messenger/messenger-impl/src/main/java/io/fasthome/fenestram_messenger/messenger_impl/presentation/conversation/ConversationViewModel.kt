@@ -1,20 +1,24 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.pick_file.PickFileInterface
+import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createMessage
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createImageMessage
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createTextMessage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
-import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
@@ -31,6 +35,9 @@ class ConversationViewModel(
     private val params: ConversationNavigationContract.Params,
     private val features: Features,
     private val messengerInteractor: MessengerInteractor,
+    private val pickFileInterface: PickFileInterface,
+    private val profileImageUtil: ProfileImageUtil,
+    private val profileImageUrlConverter: ProfileImageUrlConverter
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private var chatId = params.chat.id
@@ -38,6 +45,26 @@ class ConversationViewModel(
     private var selfUserId: Long? = null
     private var loadItemsJob by switchJob()
     private var lastPage: MessagesPage? = null
+
+    init {
+        pickFileInterface.resultEvents()
+            .onEach {
+                when (it) {
+                    PickFileInterface.ResultEvent.PickCancelled -> Unit
+                    is PickFileInterface.ResultEvent.Picked -> {
+                        val bitmap = profileImageUtil.getPhoto(it.tempFile)
+                        if (bitmap != null) {
+                            updateState { state ->
+                                state.copy(
+                                    attachedFiles = state.attachedFiles.plus(AttachedFile.Image(bitmap = bitmap, file = it.tempFile))
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun loadItems() {
         loadItemsJob = viewModelScope.launch {
@@ -101,13 +128,66 @@ class ConversationViewModel(
             userName = PrintableText.Raw(params.chat.name),
             userOnline = false,
             isChatEmpty = false,
-            avatar = params.chat.avatar ?: ""
+            avatar = params.chat.avatar ?: "",
+            attachedFiles = listOf()
         )
     }
 
     fun addMessageToConversation(mess: String) {
+        val attachedFiles = currentViewState.attachedFiles
+
+        if(attachedFiles.isNotEmpty()){
+            sendImages(attachedFiles)
+        }
+
+        if (mess.isNotEmpty()) {
+            sendMessage(mess)
+        }
+    }
+
+    private fun sendImages(attachedFiles: List<AttachedFile.Image>) {
+        val messages = currentViewState.messages
+
+        val tempMessages = attachedFiles.map {
+            createImageMessage(null, it.bitmap, it.file)
+        }
+
+        tempMessages.forEach { tempMessage->
+            viewModelScope.launch {
+                updateState { state ->
+                    state.copy(
+                        messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
+                    )
+                }
+
+                var imageUrl: String?
+                messengerInteractor.uploadProfileImage(tempMessage.file?.readBytes() ?: return@launch)
+                    .getOrNull()?.imagePath.let {
+                        imageUrl = profileImageUrlConverter.convert(it)
+                        it
+                    }
+                when (messengerInteractor.sendMessage(
+                    id = chatId ?: return@launch,
+                    text = imageUrl ?: return@launch,
+                    type = "image",
+                    localId = tempMessage.localId
+                )) {
+                    is CallResult.Error -> {
+                        updateStatus(tempMessage, SentStatus.Error)
+                    }
+                    is CallResult.Success -> {
+                        updateStatus(tempMessage, SentStatus.Sent)
+                    }
+                }
+            }
+        }
+        sendEvent(ConversationEvent.MessageSent)
+
+    }
+
+    private fun sendMessage(mess : String){
         viewModelScope.launch {
-            val tempMessage = createMessage(mess)
+            val tempMessage = createTextMessage(mess)
             val messages = currentViewState.messages
 
             updateState { state ->
@@ -133,10 +213,17 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.MessageSent)
     }
 
-    private fun updateStatus(tempMessage : ConversationViewItem.Self, status: SentStatus){
+    private fun updateStatus(tempMessage: ConversationViewItem.Self, status: SentStatus) {
         updateState { state ->
             val newMessages = state.messages.toMutableMap()
-            newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+            when(tempMessage){
+                is ConversationViewItem.Self.Text -> {
+                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+                }
+                is ConversationViewItem.Self.Image -> {
+                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+                }
+            }
             state.copy(
                 messages = newMessages
             )
@@ -192,5 +279,17 @@ class ConversationViewModel(
                 isGroup = false
             )
         )
+    }
+
+    fun onAttachClicked() {
+        sendEvent(ConversationEvent.ShowSelectFromDialog)
+    }
+
+    fun selectFromCamera() {
+
+    }
+
+    fun selectFromGallery() {
+        pickFileInterface.pickFile()
     }
 }

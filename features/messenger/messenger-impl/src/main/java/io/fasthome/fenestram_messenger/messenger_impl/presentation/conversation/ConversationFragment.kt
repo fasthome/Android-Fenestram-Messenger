@@ -6,27 +6,52 @@ import android.view.WindowManager
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.fasthome.component.pick_file.PickFileComponentContract
+import io.fasthome.component.pick_file.PickFileComponentParams
+import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
-import kotlinx.coroutines.flow.distinctUntilChanged
+import io.fasthome.fenestram_messenger.util.model.Bytes
 
 
 class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
 
-    override val vm: ConversationViewModel by viewModel(getParamsInterface = ConversationNavigationContract.getParams)
-
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
+
+    private val pickImageFragment by registerFragment(
+        componentFragmentContractInterface = PickFileComponentContract,
+        paramsProvider = {
+            PickFileComponentParams(
+                mimeType = PickFileComponentParams.MimeType.Image(
+                    compressToSize = Bytes(
+                        Bytes.BYTES_PER_MB
+                    )
+                )
+            )
+        }
+    )
+
+    override val vm: ConversationViewModel by viewModel(
+        getParamsInterface = ConversationNavigationContract.getParams,
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::pickImageFragment)
+    )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
         vm.onGroupProfileClicked(it)
     })
+
+    private val attachedAdapter = AttachedAdapter()
 
     private var lastScrollPosition = 0
 
@@ -43,18 +68,17 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
-                if(lastScrollPosition == conversationAdapter.itemCount - 1){
+                if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems()
                 }
             }
         })
         messagesList.itemAnimator = null
 
+        attachedList.adapter = attachedAdapter
+
         sendButton.setOnClickListener() {
-            when {
-                !inputMessage.text.toString()
-                    .isNullOrBlank() -> vm.addMessageToConversation(inputMessage.text.toString())
-            }
+            vm.addMessageToConversation(inputMessage.text.toString())
             inputMessage.text?.clear()
             messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
@@ -65,7 +89,9 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
         profileToolBar.onClick {
             vm.onUserClicked()
         }
-        attachButton.onClick {}
+        attachButton.onClick {
+            vm.onAttachClicked()
+        }
         backButton.increaseHitArea(16.dp)
 
         vm.fetchMessages()
@@ -88,6 +114,8 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
         }
         conversationAdapter.items = state.messages.toList().map { it.second }.addHeaders()
         username.setPrintableText(state.userName)
+        attachedList.isVisible = state.attachedFiles.isNotEmpty()
+        attachedAdapter.items = state.attachedFiles
     }
 
     override fun handleEvent(event: ConversationEvent) {
@@ -96,6 +124,17 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
                 binding.messagesList.scrollToPosition(0)
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
+            ConversationEvent.ShowSelectFromDialog ->
+                SelectFromDialog
+                    .create(
+                        fragment = this,
+                        fromCameraClicked = {
+                            vm.selectFromCamera()
+                        },
+                        fromGalleryClicked = {
+                            vm.selectFromGallery()
+                        })
+                    .show()
         }
     }
 
