@@ -17,7 +17,7 @@ import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import kotlinx.serialization.descriptors.PrimitiveKind
+import io.fasthome.fenestram_messenger.util.onClick
 
 
 class GroupGuestFragment :
@@ -49,6 +49,10 @@ class GroupGuestFragment :
 
         linkField.setOnClickListener {
             vm.onLinkFieldClick(linkField.text.toString())
+        }
+
+        binding.addButton.onClick {
+            vm.onAddClick()
         }
 
         listContacts.adapter = contactsAdapter

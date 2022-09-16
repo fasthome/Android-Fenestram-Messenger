@@ -20,7 +20,7 @@ class ProfileGuestFeatureImpl : ProfileGuestFeature {
                     userNickname = it.userNickname,
                     userName = it.userName,
                     userAvatar = it.userAvatar,
-                    groupParticipantsParams = ParticipantsParams(it.chatParticipants),
+                    groupParticipantsParams = ParticipantsParams(it.chatParticipants, it.id),
                     isGroup = it.isGroup
                 )
             },

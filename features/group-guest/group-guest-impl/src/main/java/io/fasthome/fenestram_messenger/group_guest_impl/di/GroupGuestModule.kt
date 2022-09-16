@@ -12,6 +12,11 @@ import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
+import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.AddUsersUseCase
+import io.fasthome.fenestram_messenger.group_guest_impl.domain.repo.GroupGuestRepo
+import io.fasthome.fenestram_messenger.group_guest_impl.data.repo_impl.GroupGuestRepoImpl
+import io.fasthome.fenestram_messenger.group_guest_impl.data.service.GroupGuestService
+import io.fasthome.network.di.singleAuthorizedService
 
 object GroupGuestModule {
     operator fun invoke() = listOf(
@@ -26,9 +31,12 @@ object GroupGuestModule {
     }
 
     private fun createDataModule() = module {
+        single(::GroupGuestRepoImpl) bindSafe GroupGuestRepo::class
+        singleAuthorizedService(::GroupGuestService)
     }
 
     private fun createDomainModule() = module {
+        factory(::AddUsersUseCase)
     }
 
     private fun createPresentationModule() = module {
