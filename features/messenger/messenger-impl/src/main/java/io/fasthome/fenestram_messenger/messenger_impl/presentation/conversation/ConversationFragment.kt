@@ -1,8 +1,14 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -51,7 +57,11 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
         vm.onGroupProfileClicked(it)
     })
 
-    private val attachedAdapter = AttachedAdapter()
+    private val attachedAdapter = AttachedAdapter(
+        onRemoveClicked = {
+            vm.onAttachedRemoveClicked(it)
+        }
+    )
 
     private var lastScrollPosition = 0
 

@@ -12,5 +12,7 @@ interface PickFileInterface {
 
     fun pickFile()
 
+    fun launchCamera()
+
     fun resultEvents(): Flow<ResultEvent>
 }

@@ -104,7 +104,8 @@
         android:id="@+id/messages_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="40dp"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/input_message"
@@ -114,7 +115,7 @@
         app:layout_constraintTop_toBottomOf="@id/profileToolBar"
         app:reverseLayout="false"
         app:stackFromEnd="true"
-        tools:listitem="@layout/conversation_item_self">
+        tools:listitem="@layout/conversation_item_self_text">
 
     </androidx.recyclerview.widget.RecyclerView>
 

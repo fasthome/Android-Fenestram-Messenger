@@ -18,6 +18,12 @@ interface PickImageOperations {
         tempFile: File,
         compressToSize: Bytes?,
     )
+
+    suspend fun compressBitmap(
+        bitmap: Bitmap,
+        compressToSize: Bytes?,
+        tempFile: File
+    )
 }
 
 class PickImageOperationsImpl(
@@ -54,12 +60,35 @@ class PickImageOperationsImpl(
 
                 bitmap.recycle()
                 scaledBitmap.recycle()
-            }
-            else {
+            } else {
                 tempFile.delete()
                 tempFile.createNewFile()
             }
         }
 
+    }
+    @Suppress("BlockingMethodInNonBlockingContext")
+    override suspend fun compressBitmap(
+        bitmap: Bitmap,
+        compressToSize: Bytes?,
+        tempFile: File
+    ) {
+        withContext(DispatchersProvider.IO) {
+            val scaledBitmap = if (compressToSize != null) {
+                JpgUtil.downscale(
+                    originalBitmap = bitmap,
+                    downscaleParams = JpgUtil.DownscaleParams(maxSize = compressToSize),
+                )
+            } else {
+                bitmap
+            }
+
+            FileOutputStream(tempFile).use { output ->
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+            }
+
+            bitmap.recycle()
+            scaledBitmap.recycle()
+        }
     }
 }

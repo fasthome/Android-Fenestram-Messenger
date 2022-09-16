@@ -15,7 +15,9 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
@@ -23,6 +25,7 @@ import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Co
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,7 +59,12 @@ class ConversationViewModel(
                         if (bitmap != null) {
                             updateState { state ->
                                 state.copy(
-                                    attachedFiles = state.attachedFiles.plus(AttachedFile.Image(bitmap = bitmap, file = it.tempFile))
+                                    attachedFiles = state.attachedFiles.plus(
+                                        AttachedFile.Image(
+                                            bitmap = bitmap,
+                                            file = it.tempFile
+                                        )
+                                    )
                                 )
                             }
                         }
@@ -136,7 +144,7 @@ class ConversationViewModel(
     fun addMessageToConversation(mess: String) {
         val attachedFiles = currentViewState.attachedFiles
 
-        if(attachedFiles.isNotEmpty()){
+        if (attachedFiles.isNotEmpty()) {
             sendImages(attachedFiles)
         }
 
@@ -152,14 +160,20 @@ class ConversationViewModel(
             createImageMessage(null, it.bitmap, it.file)
         }
 
-        tempMessages.forEach { tempMessage->
-            viewModelScope.launch {
-                updateState { state ->
-                    state.copy(
-                        messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
-                    )
-                }
-
+        updateState { state ->
+            state.copy(attachedFiles = listOf())
+        }
+        viewModelScope.launch {
+            updateState { state ->
+                state.copy(
+                    messages = tempMessages.associateBy({
+                        it.localId
+                    }, {
+                        it
+                    }).plus(messages)
+                )
+            }
+            tempMessages.forEach { tempMessage ->
                 var imageUrl: String?
                 messengerInteractor.uploadProfileImage(tempMessage.file?.readBytes() ?: return@launch)
                     .getOrNull()?.imagePath.let {
@@ -173,19 +187,20 @@ class ConversationViewModel(
                     localId = tempMessage.localId
                 )) {
                     is CallResult.Error -> {
-                        updateStatus(tempMessage, SentStatus.Error)
+                        updateStatus(tempMessage, SentStatus.Error, imageUrl)
                     }
                     is CallResult.Success -> {
-                        updateStatus(tempMessage, SentStatus.Sent)
+                        updateStatus(tempMessage, SentStatus.Sent, imageUrl)
                     }
                 }
             }
+
         }
         sendEvent(ConversationEvent.MessageSent)
 
     }
 
-    private fun sendMessage(mess : String){
+    private fun sendMessage(mess: String) {
         viewModelScope.launch {
             val tempMessage = createTextMessage(mess)
             val messages = currentViewState.messages
@@ -213,15 +228,15 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.MessageSent)
     }
 
-    private fun updateStatus(tempMessage: ConversationViewItem.Self, status: SentStatus) {
+    private fun updateStatus(tempMessage: ConversationViewItem.Self, status: SentStatus, imageUrl: String? = null) {
         updateState { state ->
             val newMessages = state.messages.toMutableMap()
-            when(tempMessage){
+            when (tempMessage) {
                 is ConversationViewItem.Self.Text -> {
                     newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
                 }
                 is ConversationViewItem.Self.Image -> {
-                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                 }
             }
             state.copy(
@@ -282,14 +297,28 @@ class ConversationViewModel(
     }
 
     fun onAttachClicked() {
+        if(currentViewState.attachedFiles.size == 10){
+            showMessage(Message.PopUp(PrintableText.StringResource(R.string.messenger_max_attach)))
+            return
+        }
         sendEvent(ConversationEvent.ShowSelectFromDialog)
     }
 
     fun selectFromCamera() {
-
+        pickFileInterface.launchCamera()
     }
 
     fun selectFromGallery() {
         pickFileInterface.pickFile()
+    }
+
+    fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
+        updateState { state->
+            state.copy(
+                attachedFiles = state.attachedFiles.filter {
+                    it != attachedFile
+                }
+            )
+        }
     }
 }

@@ -45,23 +45,48 @@ sealed interface ConversationViewItem {
         ) : Self()
     }
 
-    data class Receive(
-        override val id: Long,
-        override val content: PrintableText,
-        override val time: PrintableText,
-        override val date: ZonedDateTime?,
-        override val sentStatus: SentStatus,
-    ) : ConversationViewItem
+    sealed class Receive : ConversationViewItem {
+        data class Text(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+        ) : Receive()
 
-    data class Group(
-        override val id: Long,
-        override val content: PrintableText,
-        override val time: PrintableText,
-        override val date: ZonedDateTime?,
-        override val sentStatus: SentStatus,
-        val userName: PrintableText,
-        val avatar: String
-    ) : ConversationViewItem
+        data class Image(
+            override val id: Long,
+            override val content: String,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+        ) : Receive()
+    }
+
+    sealed class Group(
+        open val userName: PrintableText,
+        open val avatar: String
+    ) : ConversationViewItem {
+        data class Text(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+            override val userName: PrintableText,
+            override val avatar: String
+        ) : Group(userName, avatar)
+
+        data class Image(
+            override val id: Long,
+            override val content: String,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+            override val userName: PrintableText,
+            override val avatar: String
+        ) : Group(userName, avatar)
+    }
 
     data class System(
         override val id: Long,

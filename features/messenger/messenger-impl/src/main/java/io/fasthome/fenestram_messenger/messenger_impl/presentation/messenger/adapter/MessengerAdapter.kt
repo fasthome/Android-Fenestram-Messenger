@@ -1,10 +1,14 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter
 
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MessangerChatItemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
 import io.fasthome.fenestram_messenger.uikit.paging.PagerDelegateAdapter
 import io.fasthome.fenestram_messenger.uikit.paging.createAdapterDelegate
 import io.fasthome.fenestram_messenger.util.*
@@ -31,7 +35,17 @@ fun createMessengerAdapter(chatClicked: (MessengerViewItem) -> Unit, onProfileCl
                     onProfileClicked(item)
                 }
                 nameView.setPrintableText(item.name)
-                lastMessage.setPrintableText(item.lastMessage)
+                when(item.lastMessage){
+                    is LastMessage.Image -> {
+                        lastMessage.setText(R.string.messenger_image)
+                        image.loadRounded(item.lastMessage.imageUrl)
+                        image.isVisible = true
+                    }
+                    is LastMessage.Text -> {
+                        lastMessage.setPrintableText(item.lastMessage.text)
+                        image.isVisible = false
+                    }
+                }
                 timeView.setPrintableText(item.time)
                 profilePicture.loadCircle(
                     url = item.profileImageUrl,

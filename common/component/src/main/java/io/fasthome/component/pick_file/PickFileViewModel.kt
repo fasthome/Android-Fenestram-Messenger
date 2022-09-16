@@ -1,13 +1,19 @@
 package io.fasthome.component.pick_file
 
 import android.Manifest
+import android.net.Uri
+import android.os.Build
+import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.CameraNavigationContract
 import io.fasthome.fenestram_messenger.presentation.base.navigation.PickFileNavigationContract
+import io.fasthome.fenestram_messenger.util.createFile
+import io.fasthome.fenestram_messenger.util.model.Bytes
 import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -18,13 +24,14 @@ class PickFileViewModel(
     requestParams: RequestParams,
     router: ContractRouter,
     private val params: PickFileComponentParams,
-    private val permissionInterface : PermissionInterface,
+    private val permissionInterface: PermissionInterface,
     private val fileSystemInterface: FileSystemInterface,
     private val pickImageOperations: PickImageOperations,
     private val pickFileOperations: PickFileOperations,
 ) : BaseViewModel<Unit, Nothing>(router, requestParams), PickFileInterface {
 
     private val tempFile by lazy { File(fileSystemInterface.cacheDir, "temp_file") }
+    private val cameraTempFile by lazy { createFile(fileSystemInterface.cacheDir, "picture") }
 
     private val pickFileLauncher = registerScreen(PickFileNavigationContract) {
         val uri = it.uri
@@ -52,6 +59,23 @@ class PickFileViewModel(
         }
     }
 
+    private val cameraLauncher = registerScreen(CameraNavigationContract) {
+        if (it.bitmap == null) {
+            resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickCancelled)
+        } else {
+            viewModelScope.launch {
+                pickImageOperations.compressBitmap(
+                    bitmap = it.bitmap!!,
+                    tempFile = cameraTempFile,
+                    compressToSize = Bytes(
+                        Bytes.BYTES_PER_MB
+                    ),
+                )
+                resultEventsChannel.trySend(PickFileInterface.ResultEvent.Picked(cameraTempFile))
+            }
+        }
+    }
+
     private val resultEventsChannel = Channel<PickFileInterface.ResultEvent>(Channel.UNLIMITED)
 
     override fun createInitialState() = Unit
@@ -68,6 +92,19 @@ class PickFileViewModel(
                 )
             if (permissionGranted) {
                 pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
+            }
+        }
+    }
+
+    override fun launchCamera() {
+        viewModelScope.launch {
+            val permissionGranted =
+                permissionInterface.request(
+                    Manifest.permission.CAMERA,
+                    canOpenSettings = true
+                )
+            if (permissionGranted) {
+                cameraLauncher.launch()
             }
         }
     }
