@@ -4,5 +4,5 @@ import io.fasthome.fenestram_messenger.presentation.base.AppFeature
 
 
 class AppFeatureImpl : AppFeature {
-    override val startActivityClazz = MainActivity::class
+    override val startActivityClazz = SplashActivity::class
 }
