@@ -15,7 +15,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.MessangerChatI
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.util.*
 
-
 class MessengerAdapter(
     onChatClicked: (Long) -> Unit,
     onProfileClicked: (MessengerViewItem) -> Unit
@@ -24,10 +23,10 @@ class MessengerAdapter(
         AdapterUtil.diffUtilItemCallbackEquals(
             keyExtractor = MessengerViewItem::lastMessage
         ),
-        AdapterUtil.adapterDelegatesManager(
+        delegates = listOf(
             createMessengerAdapter(onChatClicked, onProfileClicked)
         )
-    ) {}
+    )
 
 fun createMessengerAdapter(
     chatClicked: (Long) -> Unit,

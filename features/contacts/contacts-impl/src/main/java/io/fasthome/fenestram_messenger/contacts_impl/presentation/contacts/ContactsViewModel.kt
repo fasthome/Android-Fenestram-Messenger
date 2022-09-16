@@ -54,16 +54,18 @@ class ContactsViewModel(
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
 
             if (permissionGranted) {
-                contactsInteractor.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts->
-                    updateState { state ->
-                        originalContacts = ContactsMapper.contactsListToViewList(contacts).toMutableList()
-                        if (originalContacts.isEmpty()) {
-                            state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
-                        } else {
-                            state.copy(loadingState = LoadingState.Success(data = originalContacts))
+                contactsInteractor.getContactsAndUploadContacts()
+                    .withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts ->
+                        updateState { state ->
+                            originalContacts =
+                                ContactsMapper.contactsListToViewList(contacts).toMutableList()
+                            if (originalContacts.isEmpty()) {
+                                state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
+                            } else {
+                                state.copy(loadingState = LoadingState.Success(data = originalContacts))
+                            }
                         }
                     }
-                }
             } else {
                 updateState {
                     ContactsState(
@@ -87,13 +89,13 @@ class ContactsViewModel(
         val filteredContacts = if (text.isEmpty()) {
             originalContacts
         } else {
-            currentViewState.loadingState.dataOrNull?.filter {
+            originalContacts.filter {
                 if (it !is ContactsViewItem.Header) {
                     getPrintableRawText(it.name).contains(text.trim(), true)
                 } else {
                     false
                 }
-            } ?: listOf()
+            }
         }
         updateState { state ->
             state.copy(

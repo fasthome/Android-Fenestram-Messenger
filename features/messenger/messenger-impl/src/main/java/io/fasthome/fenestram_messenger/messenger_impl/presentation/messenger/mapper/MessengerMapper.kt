@@ -7,9 +7,9 @@ import java.time.format.DateTimeFormatter
 
 private val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-fun toMessengerViewItem(chat : Chat): MessengerViewItem? {
+fun toMessengerViewItem(chat : Chat): MessengerViewItem {
     return MessengerViewItem(
-        id = chat.id ?: return null,
+        id = chat.id ?: 0,
         avatar = 0,
         name = PrintableText.Raw(chat.name),
         newMessages = 0,
@@ -17,6 +17,7 @@ fun toMessengerViewItem(chat : Chat): MessengerViewItem? {
             PrintableText.Raw(message.text)
         } ?: PrintableText.EMPTY,
         time = PrintableText.Raw(dateFormatter.format(chat.time)),
-        profileImageUrl = chat.avatar
+        profileImageUrl = chat.avatar,
+        originalChat = chat
     )
 }

@@ -5,16 +5,20 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.PopupMenu
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 
 class ConversationFragment :
@@ -28,25 +32,41 @@ class ConversationFragment :
         vm.onGroupProfileClicked(it)
     })
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    private var lastScrollPosition = 0
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
-        binding.messagesList.adapter = conversationAdapter
+        messagesList.adapter = conversationAdapter
+        val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        messagesList.layoutManager = linearLayoutManager
 
-        binding.sendButton.setOnClickListener() {
-            when {
-                !binding.inputMessage.text.toString()
-                    .isNullOrBlank() -> vm.addMessageToConversation(binding.inputMessage.text.toString())
+        messagesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
+                if(lastScrollPosition == conversationAdapter.itemCount - 1){
+                    vm.loadItems()
+                }
             }
-            binding.inputMessage.text?.clear()
-            binding.messagesList.scrollToPosition(conversationAdapter.itemCount)
+        })
+        messagesList.itemAnimator = null
+
+        sendButton.setOnClickListener() {
+            when {
+                !inputMessage.text.toString()
+                    .isNullOrBlank() -> vm.addMessageToConversation(inputMessage.text.toString())
+            }
+            inputMessage.text?.clear()
+            messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
-        binding.backButton.setOnClickListener() {
+
+        backButton.setOnClickListener() {
             vm.exitToMessenger()
         }
-        binding.profileToolBar.onClick {
+        profileToolBar.onClick {
             vm.onUserClicked()
         }
         binding.backButton.increaseHitArea(16.dp)
@@ -61,11 +81,17 @@ class ConversationFragment :
 
     override fun onResume() {
         super.onResume()
+        attachButton.onClick {}
+        backButton.increaseHitArea(16.dp)
+
         vm.fetchMessages()
+
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(state.avatar)
+        if (state.avatar.isNotEmpty()) {
+            avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.common_avatar)
+        }
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
@@ -76,10 +102,7 @@ class ConversationFragment :
             emptyContainer.isVisible = false
             emptyContainer.alpha = 0f
         }
-        conversationAdapter.items = state.messages
-        if (state.messages.isNotEmpty()) {
-            messagesList.smoothScrollToPosition(state.messages.size - 1)
-        }
+        conversationAdapter.items = state.messages.toList().map { it.second }.addHeaders()
         username.setPrintableText(state.userName)
     }
 
@@ -109,6 +132,10 @@ class ConversationFragment :
             )
                 .show()
 
+            ConversationEvent.MessageSent -> binding.messagesList.post {
+                binding.messagesList.scrollToPosition(0)
+            }
+            ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
         }
     }
 

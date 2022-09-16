@@ -31,6 +31,7 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
                 lastActive = ZonedDateTime.now()
             )
         },
-        chatId = messageResponse.chatId
+        chatId = messageResponse.chatId,
+        isSystem = false
     )
 }

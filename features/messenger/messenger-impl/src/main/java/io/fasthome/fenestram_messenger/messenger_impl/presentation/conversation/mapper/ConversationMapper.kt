@@ -1,69 +1,40 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
+import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getFuzzyDateString
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 fun List<Message>.toConversationItems(
-    selfUserId: Long,
+    selfUserId: Long?,
     isGroup: Boolean,
-    lastMessage: ConversationViewItem? = null,
-    messagesEmpty: Boolean = false
-): List<ConversationViewItem> {
-    val systemMessageIndexes = mutableListOf<Pair<Int, ZonedDateTime?>>()
-
-    val conversationItems = this.mapIndexedNotNull { index, message ->
-        if (this.size > 1) {
-            if (index == 0) {
-                systemMessageIndexes.add(index to this[index].date)
-                null
-            } else {
-                if (message.date?.dayOfMonth != (this[index - 1].date)?.dayOfMonth) {
-                    systemMessageIndexes.add(index to message.date)
-                }
-                message.toConversationViewItem(selfUserId, isGroup)
-            }
-        } else {
-            if (messagesEmpty) {
-                systemMessageIndexes.add(index to message.date)
-            } else {
-                lastMessage?.let {
-                    if (message.date?.dayOfMonth != lastMessage.date?.dayOfMonth) {
-                        systemMessageIndexes.add(index to message.date)
-                    }
-                }
-            }
-            message.toConversationViewItem(selfUserId, isGroup)
-        }
-    }.toMutableList()
-
-    systemMessageIndexes.forEach {
-        conversationItems.add(
-            it.first,
-            Message.onlyDate(it.second ?: return@forEach)
-                .toConversationViewItem(isSystemItem = true)
-        )
-    }
-    return conversationItems
-}
+): Map<String, ConversationViewItem> = this.associateBy({
+    UUID.randomUUID().toString()
+}, {
+    it.toConversationViewItem(selfUserId, isGroup)
+})
 
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
-    isSystemItem: Boolean = false
 ): ConversationViewItem {
-    if (isSystemItem) {
+    if (isSystem) {
         return ConversationViewItem.System(
             content = getFuzzyDateString(date),
             time = PrintableText.EMPTY,
             date = date,
-            id = id
+            id = id,
+            sentStatus = SentStatus.None
         )
     }
     return when (selfUserId) {
@@ -71,9 +42,10 @@ fun Message.toConversationViewItem(
             ConversationViewItem.Self(
                 content = PrintableText.Raw(text),
                 time = PrintableText.Raw(timeFormatter.format(date)),
-                sendStatus = false,
+                sentStatus = SentStatus.Sent,
                 date = date,
-                id = id
+                id = id,
+                localId = UUID.randomUUID().toString()
             )
         }
         else -> {
@@ -81,7 +53,7 @@ fun Message.toConversationViewItem(
                 ConversationViewItem.Group(
                     content = PrintableText.Raw(text),
                     time = PrintableText.Raw(timeFormatter.format(date)),
-                    sendStatus = false,
+                    sentStatus = SentStatus.None,
                     userName = PrintableText.Raw(initiator?.name ?: ""),
                     avatar = initiator?.avatar ?: "",
                     date = date,
@@ -91,7 +63,7 @@ fun Message.toConversationViewItem(
                 ConversationViewItem.Receive(
                     content = PrintableText.Raw(text),
                     time = PrintableText.Raw(timeFormatter.format(date)),
-                    sendStatus = false,
+                    sentStatus = SentStatus.None,
                     date = date,
                     id = id
                 )
@@ -99,3 +71,61 @@ fun Message.toConversationViewItem(
         }
     }
 }
+
+/**
+ * Алгоритм для расставления хедеров с датами.
+ * Можно предложить другое решение, если таковое есть
+ *
+ * Работает только для перевернутого [LinearLayoutManager]
+ */
+fun List<ConversationViewItem>.addHeaders(): List<ConversationViewItem> {
+    val messages = this.toMutableList()
+
+    val messagesWithHeaders = mutableListOf<ConversationViewItem>()
+    for (position in messages.indices) {
+        val item = messages[position]
+        if (position == 0) {
+            messagesWithHeaders.add(item)
+            if(messages.size == 1){
+                messagesWithHeaders.add(createSystem(item.date ?: continue))
+                continue
+            }
+            if (item.date?.dayOfMonth != messages[position + 1].date?.dayOfMonth) {
+                messagesWithHeaders.add(createSystem(item.date ?: continue))
+                continue
+            }
+            continue
+        }
+        if (position == messages.lastIndex) {
+            messagesWithHeaders.add(item)
+            messagesWithHeaders.add(createSystem(item.date ?: continue))
+            continue
+        }
+
+        messagesWithHeaders.add(item)
+
+        if (item.date?.dayOfMonth != messages[position + 1].date?.dayOfMonth) {
+            messagesWithHeaders.add(createSystem(item.date ?: continue))
+            continue
+        }
+    }
+
+    return messagesWithHeaders
+}
+
+fun createMessage(text: String) = ConversationViewItem.Self(
+    content = PrintableText.Raw(text),
+    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+    sentStatus = SentStatus.Loading,
+    date = ZonedDateTime.now(),
+    id = 0,
+    localId = UUID.randomUUID().toString()
+)
+
+fun createSystem(date : ZonedDateTime) = ConversationViewItem.System(
+    content = getFuzzyDateString(date),
+    time = PrintableText.EMPTY,
+    date = date,
+    id = 0,
+    sentStatus = SentStatus.None
+)

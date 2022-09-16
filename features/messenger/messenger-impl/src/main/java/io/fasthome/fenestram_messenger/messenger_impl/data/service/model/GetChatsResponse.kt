@@ -15,7 +15,7 @@ class GetChatsResponse(
     val limit: Int?,
 
     @SerialName("total")
-    val total: Int?
+    val total: Int
 ) {
     @Serializable
     class Chats(
