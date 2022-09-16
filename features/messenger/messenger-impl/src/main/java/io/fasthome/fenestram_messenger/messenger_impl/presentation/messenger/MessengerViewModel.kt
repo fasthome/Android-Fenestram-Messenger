@@ -43,6 +43,7 @@ class MessengerViewModel(
                     }
                     it.copy(messengerViewItems = chats)
                 }
+                loadDataHelper.invalidateSource()
             }
         }
     }
@@ -58,6 +59,7 @@ class MessengerViewModel(
                         }
                         it.copy(messengerViewItems = chats)
                     }
+                    loadDataHelper.invalidateSource()
                 }
                 else -> {}
             }
@@ -77,6 +79,7 @@ class MessengerViewModel(
 
 
     fun fetchNewMessages() {
+        loadDataHelper.invalidateSource()
         viewModelScope.launch {
             subscribeMessages()
         }
@@ -139,6 +142,7 @@ class MessengerViewModel(
                     }
                     it.copy(messengerViewItems = chats)
                 }
+            loadDataHelper.invalidateSource()
         }
     }
 }
