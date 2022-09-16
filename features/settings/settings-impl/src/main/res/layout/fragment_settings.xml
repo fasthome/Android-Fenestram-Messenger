@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
 
@@ -68,6 +68,19 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_changes_color" />
 
     <TextView
+        android:id="@+id/tv_delete_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="48dp"
+        android:drawableLeft="@drawable/ic_delete_account"
+        android:drawablePadding="20dp"
+        android:text="@string/settings_delete_account"
+        style="@style/Text.Red.16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_aboutApp" />
+
+    <TextView
         android:id="@+id/tv_exit_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,6 +92,6 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_aboutApp" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_delete_account" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
