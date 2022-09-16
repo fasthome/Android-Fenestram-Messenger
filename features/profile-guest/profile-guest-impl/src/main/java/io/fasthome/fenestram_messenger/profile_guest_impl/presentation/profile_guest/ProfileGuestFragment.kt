@@ -101,7 +101,9 @@ class ProfileGuestFragment :
             participantsContainer.isVisible = state.isGroup
             profileGuestName.setPrintableText(state.userName)
             profileGuestNickname.setPrintableText(state.userNickname)
-            profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)
+            if (state.userAvatar.isNotEmpty()) {
+                profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)
+            }
             recentFilesHeader.recentFileCount.setPrintableText(
                 PrintableText.PluralResource(
                     R.plurals.file_quantity,

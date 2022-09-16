@@ -11,7 +11,10 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.ada
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
+import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class MessengerFragment :
     BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
@@ -32,7 +35,12 @@ class MessengerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.chatList.adapter = messageAdapter
-        vm.fetchChats()
+
+        vm.items
+            .distinctUntilChanged()
+            .collectLatestWhenStarted(this) {
+                messageAdapter.submitData(it)
+            }
     }
 
     override fun onResume() {
@@ -40,12 +48,7 @@ class MessengerFragment :
         vm.fetchNewMessages()
     }
 
-    override fun renderState(state: MessengerState) {
-        messageAdapter.items = state.messengerViewItems
-        if (state.messengerViewItems.isNotEmpty()) {
-            binding.chatList.smoothScrollToPosition(0)
-        }
-    }
+    override fun renderState(state: MessengerState) = nothingToRender()
 
     override fun handleEvent(event: MessengerEvent) = noEventsExpected()
 
