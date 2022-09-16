@@ -75,17 +75,10 @@ class ConversationFragment :
             vm.onOpenMenu()
         }
 
-
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        attachButton.onClick {}
-        backButton.increaseHitArea(16.dp)
+        binding.attachButton.onClick {}
+        binding.backButton.increaseHitArea(16.dp)
 
         vm.fetchMessages()
-
     }
 
     override fun renderState(state: ConversationState) = with(binding) {

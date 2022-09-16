@@ -51,7 +51,14 @@ class MessengerViewModel(
     private val profileGuestLauncher =
         registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
             when (result) {
-                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted -> fetchChats()
+                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted -> {
+                    updateState {
+                        val chats = currentViewState.messengerViewItems.filter { item ->
+                            item.id != result.id
+                        }
+                        it.copy(messengerViewItems = chats)
+                    }
+                }
                 else -> {}
             }
         }

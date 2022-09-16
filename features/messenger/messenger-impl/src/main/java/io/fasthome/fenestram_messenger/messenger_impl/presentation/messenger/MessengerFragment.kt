@@ -49,7 +49,6 @@ class MessengerFragment :
             )
         ).attachToRecyclerView(binding.chatList)
 
-        vm.fetchChats()
 
         vm.items
             .distinctUntilChanged()
