@@ -18,7 +18,7 @@ class CreateInfoViewModel(
     private val params: CreateInfoContract.Params
 ) : BaseViewModel<CreateInfoState, CreateInfoEvent>(router, requestParams) {
 
-    private val conversationLauncher = registerScreen(ConversationNavigationContract)
+    private val conversationLauncher = registerScreen(ConversationNavigationContract) { }
 
     override fun createInitialState(): CreateInfoState {
         return CreateInfoState(params.contacts.map(::mapToContactViewItem))

@@ -1,24 +1,28 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.content.Context
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import androidx.core.view.isVisible
+import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.MenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.PopupMenu
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 
-class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
+class ConversationFragment :
+    BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
 
     override val vm: ConversationViewModel by viewModel(getParamsInterface = ConversationNavigationContract.getParams)
 
@@ -65,11 +69,16 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
         profileToolBar.onClick {
             vm.onUserClicked()
         }
-        attachButton.onClick {}
-        backButton.increaseHitArea(16.dp)
+        binding.backButton.increaseHitArea(16.dp)
+
+        binding.dropdownMenu.setOnClickListener {
+            vm.onOpenMenu()
+        }
+
+        binding.attachButton.onClick {}
+        binding.backButton.increaseHitArea(16.dp)
 
         vm.fetchMessages()
-
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
@@ -92,6 +101,30 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
+            is ConversationEvent.OpenMenuEvent -> {
+                val menuBinding = MenuBinding.inflate(requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+                val popupMenu = PopupMenu.create(menuBinding.conversationMenu)
+                popupMenu.showAsDropDown(binding.dropdownMenu)
+
+                menuBinding.delete.onClick {
+                    vm.showDialog()
+                    popupMenu.dismiss()
+                }
+
+                menuBinding.edit.onClick {
+                    //TODO Редактирование
+                    popupMenu.dismiss()
+                }
+
+            }
+            is ConversationEvent.ShowDialog -> DeleteChatDialog.create(
+                this,
+                PrintableText.StringResource(R.string.common_delete_chat_dialog),
+                vm::deleteChat,
+                event.id
+            )
+                .show()
+
             ConversationEvent.MessageSent -> binding.messagesList.post {
                 binding.messagesList.scrollToPosition(0)
             }

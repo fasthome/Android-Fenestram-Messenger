@@ -76,6 +76,9 @@ class MessengerInteractor(
         return newMessagesFlow
     }
 
+    suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
+
+
     fun getMessengerPageItems(): TotalPagingSource<Int, Chat> =
         messageRepo.getPageChats()
 

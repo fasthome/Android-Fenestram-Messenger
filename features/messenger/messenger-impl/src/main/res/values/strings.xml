@@ -15,4 +15,6 @@
     <string name="messenger_input_chat_name">Введите имя чата</string>
     <string name="messenger_select_hint">Выберите участников чата</string>
     <string name="messenger_chat_empty">Здесь будет отображаться история ваших сообщениий</string>
+    <string name="conversation_delete">Удалить и выйти</string>
+    <string name="conversation_edit">Редактировать</string>
 </resources>

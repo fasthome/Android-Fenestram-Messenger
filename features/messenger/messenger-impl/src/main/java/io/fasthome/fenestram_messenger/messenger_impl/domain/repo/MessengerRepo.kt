@@ -17,8 +17,8 @@ interface MessengerRepo {
     ): CallResult<PostChatsResult>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
-
-    suspend fun getMessagesFromChat(id: Long, page : Int): CallResult<MessagesPage>
+    suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage>
+    suspend fun deleteChat(id: Long): CallResult<Unit>
 
     fun closeSocket()
     fun getClientSocket(chatId: String?, token: AccessToken, callback: SocketMessageCallback, selfUserId: Long?)

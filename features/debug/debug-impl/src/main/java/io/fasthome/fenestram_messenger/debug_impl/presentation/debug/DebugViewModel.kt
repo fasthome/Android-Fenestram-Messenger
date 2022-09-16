@@ -73,6 +73,7 @@ class DebugViewModel(
     fun onProfileGuestClicked() {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                null,
                 userName = "Example username",
                 userNickname = "examplenickname",
                 userAvatar = "",
