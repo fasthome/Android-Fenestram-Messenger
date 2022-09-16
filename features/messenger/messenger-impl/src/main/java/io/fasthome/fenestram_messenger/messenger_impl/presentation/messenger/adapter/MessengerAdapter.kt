@@ -1,26 +1,24 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter
 
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MessangerChatItemBinding
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
-import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.uikit.paging.PagerDelegateAdapter
 import io.fasthome.fenestram_messenger.uikit.paging.createAdapterDelegate
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.AdapterUtil
+import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class MessengerAdapter(onChatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) :
     PagerDelegateAdapter<MessengerViewItem>(
