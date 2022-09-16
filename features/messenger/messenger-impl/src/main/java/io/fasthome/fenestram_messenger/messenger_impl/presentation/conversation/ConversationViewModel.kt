@@ -115,7 +115,10 @@ class ConversationViewModel(
                     chatId = it.chatId
                 }
             }
-            subscribeMessages(chatId ?: params.chat.id ?: return@launch, selfUserId ?: return@launch)
+            subscribeMessages(
+                chatId ?: params.chat.id ?: return@launch,
+                selfUserId ?: return@launch
+            )
         }
     }
 
@@ -125,10 +128,18 @@ class ConversationViewModel(
     )
 
     private val profileGuestLauncher =
-        registerScreen(features.profileGuestFeature.profileGuestNavigationContract)
+        registerScreen(features.profileGuestFeature.profileGuestNavigationContract) { result ->
+            when (result) {
+                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted ->
+                    exitWithResult(
+                        ConversationNavigationContract.createResult(
+                            ConversationNavigationContract.Result.ChatDeleted(result.id)
+                        )
+                    )
+            }
+        }
 
     fun exitToMessenger() = exitWithoutResult()
-
 
     override fun createInitialState(): ConversationState {
         return ConversationState(
@@ -248,6 +259,7 @@ class ConversationViewModel(
     fun onUserClicked() {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                id = chatId,
                 userName = params.chat.name,
                 userNickname = "",
                 userAvatar = params.chat.avatar ?: "",
@@ -287,6 +299,7 @@ class ConversationViewModel(
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                id = item.id,
                 userName = getPrintableRawText(item.userName),
                 userNickname = "",
                 userAvatar = item.avatar,
@@ -321,4 +334,24 @@ class ConversationViewModel(
             )
         }
     }
+
+    fun onOpenMenu() {
+        sendEvent(ConversationEvent.OpenMenuEvent)
+    }
+
+    fun showDialog() {
+        chatId?.let { sendEvent(ConversationEvent.ShowDialog(it)) }
+    }
+
+    fun deleteChat(id: Long) {
+        viewModelScope.launch {
+            if (messengerInteractor.deleteChat(id).successOrSendError() != null)
+                exitWithResult(
+                    ConversationNavigationContract.createResult(
+                        ConversationNavigationContract.Result.ChatDeleted(id)
+                    )
+                )
+        }
+    }
+
 }

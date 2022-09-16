@@ -32,12 +32,38 @@ class MessengerViewModel(
     private val loadDataHelper: PagingDataViewModelHelper,
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
-    private val conversationlauncher = registerScreen(ConversationNavigationContract) {
-        exitWithoutResult()
+    private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
+        when (result) {
+            is ConversationNavigationContract.Result.ChatDeleted -> {
+                updateState {
+                    val chats = mutableListOf<MessengerViewItem>()
+                    currentViewState.messengerViewItems.forEach { item ->
+                        if (item.id != result.id)
+                            chats.add(item)
+                    }
+                    it.copy(messengerViewItems = chats)
+                }
+                loadDataHelper.invalidateSource()
+            }
+        }
     }
 
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
-    private val profileGuestLauncher = registerScreen(profileGuestFeature.profileGuestNavigationContract)
+    private val profileGuestLauncher =
+        registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
+            when (result) {
+                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted -> {
+                    updateState {
+                        val chats = currentViewState.messengerViewItems.filter { item ->
+                            item.id != result.id
+                        }
+                        it.copy(messengerViewItems = chats)
+                    }
+                    loadDataHelper.invalidateSource()
+                }
+                else -> {}
+            }
+        }
 
     val items = loadDataHelper.getDataFlow(
         getItems = {
@@ -53,6 +79,7 @@ class MessengerViewModel(
 
 
     fun fetchNewMessages() {
+        loadDataHelper.invalidateSource()
         viewModelScope.launch {
             subscribeMessages()
         }
@@ -77,6 +104,7 @@ class MessengerViewModel(
     fun onProfileClicked(messengerViewItem: MessengerViewItem) {
         profileGuestLauncher.launch(
             ProfileGuestFeature.ProfileGuestParams(
+                id = messengerViewItem.id,
                 userName = getPrintableRawText(messengerViewItem.name),
                 userNickname = "",
                 userAvatar = messengerViewItem.profileImageUrl ?: "",
@@ -99,4 +127,22 @@ class MessengerViewModel(
         messengerInteractor.closeSocket()
     }
 
+    fun onChatDelete(id: Long) {
+        sendEvent(MessengerEvent.DeleteChatEvent(id))
+    }
+
+    fun deleteChat(id: Long) {
+        viewModelScope.launch {
+            if (messengerInteractor.deleteChat(id).successOrSendError() != null)
+                updateState {
+                    val chats = mutableListOf<MessengerViewItem>()
+                    currentViewState.messengerViewItems.forEach { item ->
+                        if (item.id != id)
+                            chats.add(item)
+                    }
+                    it.copy(messengerViewItems = chats)
+                }
+            loadDataHelper.invalidateSource()
+        }
+    }
 }

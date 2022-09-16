@@ -4,9 +4,11 @@ package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.settings_impl.domain.repo.SettingsRepo
 import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.infoapp.InfoappNavigationContact
 import kotlinx.coroutines.launch
 
@@ -14,7 +16,8 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val features : Features
+    private val features: Features,
+    private val settingsRepo: SettingsRepo
 ) : BaseViewModel<SettingsState, SettingsEvent>(router, requestParams) {
 
     class Features(
@@ -52,5 +55,17 @@ class SettingsViewModel(
     override fun onBackPressed(): Boolean {
         exitWithoutResult()
         return true
+    }
+
+    fun onDeleteAccountClicked() {
+        sendEvent(SettingsEvent.DeleteAccount)
+    }
+
+    fun deleteAccount(){
+        viewModelScope.launch {
+            settingsRepo.deleteAccount().withErrorHandled(ShowErrorType.Dialog) {
+                onLogoutClicked()
+            }
+        }
     }
 }

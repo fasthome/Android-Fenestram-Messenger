@@ -93,6 +93,16 @@ class NetworkClient(
         }
     }
 
+    suspend inline fun <reified Response> runDelete(
+        path: String,
+        useBaseUrl: Boolean = true,
+        params: Map<String, Any?> = emptyMap()
+    ): Response = httpClient.delete {
+        url(buildUrl(path, useBaseUrl))
+        contentType(ContentType.Application.Json)
+        params.forEach { (t, u) -> parameter(t, u) }
+    }
+
     suspend inline fun <reified Request, reified Response> runDelete(
         path: String,
         useBaseUrl: Boolean = true,

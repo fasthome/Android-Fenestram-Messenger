@@ -7,11 +7,9 @@ import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.AuthFeatureImpl
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
-import io.fasthome.component.pick_file.ProfileImageUtilImpl
-import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.AuthRepoImpl
 import io.fasthome.fenestram_messenger.auth_impl.data.service.UsersService
-import io.fasthome.component.storage.UserStorage
+import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeViewModel
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeViewModel

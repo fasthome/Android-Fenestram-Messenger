@@ -3,13 +3,16 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import android.view.*
 import androidx.core.view.isVisible
+import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.pick_file.PickFileComponentContract
@@ -19,6 +22,7 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.MenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -27,10 +31,12 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.PopupMenu
 import io.fasthome.fenestram_messenger.util.model.Bytes
 
 
-class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
+class ConversationFragment :
+    BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
 
@@ -99,13 +105,18 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
         profileToolBar.onClick {
             vm.onUserClicked()
         }
+        binding.backButton.increaseHitArea(16.dp)
+
+        binding.dropdownMenu.setOnClickListener {
+            vm.onOpenMenu()
+        }
+
         attachButton.onClick {
             vm.onAttachClicked()
         }
         backButton.increaseHitArea(16.dp)
 
         vm.fetchMessages()
-
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
@@ -130,6 +141,30 @@ class ConversationFragment : BaseFragment<ConversationState, ConversationEvent>(
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
+            is ConversationEvent.OpenMenuEvent -> {
+                val menuBinding = MenuBinding.inflate(requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+                val popupMenu = PopupMenu.create(menuBinding.conversationMenu)
+                popupMenu.showAsDropDown(binding.dropdownMenu)
+
+                menuBinding.delete.onClick {
+                    vm.showDialog()
+                    popupMenu.dismiss()
+                }
+
+                menuBinding.edit.onClick {
+                    //TODO Редактирование
+                    popupMenu.dismiss()
+                }
+
+            }
+            is ConversationEvent.ShowDialog -> DeleteChatDialog.create(
+                this,
+                PrintableText.StringResource(R.string.common_delete_chat_dialog),
+                vm::deleteChat,
+                event.id
+            )
+                .show()
+
             ConversationEvent.MessageSent -> binding.messagesList.post {
                 binding.messagesList.scrollToPosition(0)
             }

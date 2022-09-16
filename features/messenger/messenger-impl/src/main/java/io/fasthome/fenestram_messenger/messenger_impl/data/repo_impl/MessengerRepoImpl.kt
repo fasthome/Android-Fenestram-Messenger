@@ -2,6 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
@@ -45,6 +47,10 @@ class MessengerRepoImpl(
 
     override suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage> = callForResult {
         messengerService.getMessagesByChat(id = id, limit = PAGE_SIZE, page = page)
+    }
+
+    override suspend fun deleteChat(id: Long) = callForResult {
+        messengerService.deleteChat(id)
     }
 
     override fun getClientSocket(

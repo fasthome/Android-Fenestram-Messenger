@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.core.ui.extensions
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -39,12 +40,15 @@ fun ImageView.loadRounded(bitmap: Bitmap?, placeholderRes: Int? = null, radius :
 }
 
 fun ImageView.loadCircle(url: String?, placeholderRes: Int? = null) {
-    this.load(url) {
-        placeholderRes?.let {
-            placeholder(placeholderRes)
+    if (url.isNullOrEmpty())
+        placeholderRes?.let { this.load(placeholderRes) }
+    else
+        this.load(url) {
+            placeholderRes?.let {
+                placeholder(placeholderRes)
+            }
+            transformations(CircleCropTransformation())
         }
-        transformations(CircleCropTransformation())
-    }
 }
 
 fun ImageView.loadCircle(@DrawableRes imageRes: Int?, placeholderRes: Int? = null) {

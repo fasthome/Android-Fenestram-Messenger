@@ -1,9 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service
 
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.PostChatsMapper
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.SendMessageMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.profile_api.entity.ProfileImageResult
@@ -87,6 +84,14 @@ class MessengerService(
                 )
             }
         }
+    }
+
+    suspend fun deleteChat(id: Long) {
+        val response: BaseResponse<DeleteChatResponse> =
+            client.runDelete<DeleteChatRequest?, BaseResponse<DeleteChatResponse>>(
+                path = "api/v1/chats/$id",
+                body = null
+            )
     }
 
 }
