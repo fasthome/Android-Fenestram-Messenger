@@ -64,8 +64,8 @@ class MessengerItemTouchHelper(
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         when (direction) {
             ItemTouchHelper.LEFT -> {
-                deleteChat(adapter.items[viewHolder.adapterPosition].id)
-                adapter.notifyItemChanged(viewHolder.adapterPosition)
+                deleteChat(adapter.snapshot().items[viewHolder.bindingAdapterPosition].id)
+                adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
             }
         }
     }
