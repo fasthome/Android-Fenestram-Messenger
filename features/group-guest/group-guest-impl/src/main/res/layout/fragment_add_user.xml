@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/background">
 
     <io.fasthome.fenestram_messenger.uikit.custom_view.HooliToolbar
         android:id="@+id/toolbar"
@@ -34,34 +35,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hint"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/add_contact_item" />
-
-    <TextView
-        android:id="@+id/invite_link_title"
-        style="@style/Text.Gray"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="30dp"
-        android:text="@string/profile_guest_link_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_contacts" />
-
-    <TextView
-        android:id="@+id/link_field"
-        style="@style/Text.Blue"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/bg_link"
-        android:drawableEnd="@drawable/ic_copy_button"
-        android:padding="15dp"
-        android:text="link/rkmfkgkg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/invite_link_title" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_button"
@@ -72,5 +47,6 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

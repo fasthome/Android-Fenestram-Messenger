@@ -6,16 +6,23 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_gues
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.util.PrintableText
 
-data class AddContactViewItem(
-    val userId : Long?,
-    val userName : PrintableText
-) {
-    var isSelected : Boolean = true
+sealed class AddContactViewItem {
 
-    val backgroundRes : Int
-        get() = if(isSelected){
-            R.color.dark2
-        }else{
-            android.R.color.transparent
-        }
+    data class AddContact(
+        val userId: Long?,
+        val userName: PrintableText
+    ) : AddContactViewItem() {
+        var isSelected: Boolean = true
+
+        val backgroundRes: Int
+            get() = if (isSelected) {
+                R.color.dark2
+            } else {
+                android.R.color.transparent
+            }
+    }
+
+    class Footer(
+        val link: String
+    ) : AddContactViewItem()
 }

@@ -3,7 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
@@ -37,7 +36,11 @@ class GroupGuestViewModel(
                     } == null
                 }
                 updateState { state ->
-                    state.copy(contacts = originalContacts.map(::mapToContactViewItem))
+                    state.copy(
+                        contacts = originalContacts.map(::mapToContactViewItem) + AddContactViewItem.Footer(
+                            link = "test/link"
+                        )
+                    )
                 }
             }
         }
@@ -51,10 +54,10 @@ class GroupGuestViewModel(
         exitWithoutResult()
     }
 
-    fun onContactClicked(addContactViewItem: AddContactViewItem) {
+    fun onContactClicked(addContactViewItem: AddContactViewItem.AddContact) {
         updateState { state ->
             val newList = if (addContactViewItem.isSelected) {
-                state.addedContacts.filter { it.userId != addContactViewItem.userId }
+                state.addedContacts.filter { if (it is AddContactViewItem.AddContact) it.userId != addContactViewItem.userId else true }
             } else {
                 state.addedContacts.plus(addContactViewItem)
             }
@@ -67,19 +70,21 @@ class GroupGuestViewModel(
     }
 
     fun onAddClick() {
-        val usersId = currentViewState.addedContacts.mapNotNull { it.userId }
+        val usersId =
+            currentViewState.addedContacts.mapNotNull { if (it is AddContactViewItem.AddContact) it.userId else null }
         viewModelScope.launch {
             val usersAdded = addUsersUseCase.addUsersToChat(
                 params.participantsParams.chatId,
                 usersId
             ).successOrSendError()
-            if (usersAdded != null)
+            if (usersAdded != null) {
+                params.participantsParams.participants = usersAdded
                 exitWithResult(
                     GroupGuestContract.createResult(
                         GroupGuestContract.Result.UsersAdded(users = usersAdded)
                     )
                 )
-            else
+            } else
                 exitWithResult(GroupGuestContract.createResult(GroupGuestContract.Result.Canceled))
         }
     }

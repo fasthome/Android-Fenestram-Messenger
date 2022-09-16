@@ -8,7 +8,7 @@ import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 fun mapToContactViewItem(contact: Contact) =
-    AddContactViewItem(
+    AddContactViewItem.AddContact(
         userId = contact.userId,
         userName = PrintableText.Raw(contact.userName ?: contact.phone)
-    )
+    ) as AddContactViewItem

@@ -7,18 +7,17 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.FragmentAddUserBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.adapter.ContactsAdapter
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.model.AddContactViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
-
+import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
 
 class GroupGuestFragment :
     BaseFragment<GroupGuestState, GroupGuestEvent>(R.layout.fragment_add_user) {
@@ -31,12 +30,22 @@ class GroupGuestFragment :
 
     private val contactsAdapter = ContactsAdapter(onItemClicked = {
         vm.onContactClicked(it)
-    })
+    }, onFooterClicked = { vm.onLinkFieldClick(it) })
 
     override fun renderState(state: GroupGuestState) {
         contactsAdapter.items = state.contacts.map { item ->
-            item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
-            item
+            when (item) {
+                is AddContactViewItem.AddContact -> {
+                    item.isSelected = state.addedContacts.find {
+                        if (it is AddContactViewItem.AddContact)
+                            it.userId == item.userId
+                        else
+                            false
+                    } != null
+                    item
+                }
+                else -> item
+            }
         }
         contactsAdapter.notifyDataSetChanged()
     }
@@ -47,15 +56,12 @@ class GroupGuestFragment :
             vm.onBackClick()
         }
 
-        linkField.setOnClickListener {
-            vm.onLinkFieldClick(linkField.text.toString())
-        }
-
-        binding.addButton.onClick {
+        addButton.onClick {
             vm.onAddClick()
         }
-
+        listContacts.supportBottomSheetScroll()
         listContacts.adapter = contactsAdapter
+
     }
 
     override fun handleEvent(event: GroupGuestEvent) {
@@ -64,7 +70,7 @@ class GroupGuestFragment :
                 (requireContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
                     ClipData.newPlainText("copy", event.link.replace("\\s".toRegex(), ""))
                 )
-                Toast.makeText(requireContext(),"Ссылка скопирована",Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Ссылка скопирована", Toast.LENGTH_SHORT).show()
             }
         }
     }

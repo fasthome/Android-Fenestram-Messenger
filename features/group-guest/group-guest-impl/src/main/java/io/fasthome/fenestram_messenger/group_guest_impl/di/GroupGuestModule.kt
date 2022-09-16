@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.AddUsersUse
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.repo.GroupGuestRepo
 import io.fasthome.fenestram_messenger.group_guest_impl.data.repo_impl.GroupGuestRepoImpl
 import io.fasthome.fenestram_messenger.group_guest_impl.data.service.GroupGuestService
+import io.fasthome.fenestram_messenger.group_guest_impl.data.service.mapper.AddUsersToChatMapper
 import io.fasthome.network.di.singleAuthorizedService
 
 object GroupGuestModule {
@@ -33,6 +34,7 @@ object GroupGuestModule {
     private fun createDataModule() = module {
         single(::GroupGuestRepoImpl) bindSafe GroupGuestRepo::class
         singleAuthorizedService(::GroupGuestService)
+        factory(::AddUsersToChatMapper)
     }
 
     private fun createDomainModule() = module {
