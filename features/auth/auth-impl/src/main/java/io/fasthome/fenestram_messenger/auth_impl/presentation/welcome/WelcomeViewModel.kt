@@ -30,27 +30,28 @@ class WelcomeViewModel(
             state.copy(isLoad = true)
         }
         if (isValid) {
-            viewModelScope.launch {
-                when (val result = authInteractor.sendCode("+$phoneNumber")) {
-                    is CallResult.Error -> {
-                        onError(ShowErrorType.Popup, result.error)
-                        updateState { state ->
-                            state.copy(isLoad = false)
-                        }
-                    }
-                    is CallResult.Success -> {
-                        when(result.data){
-                            is CodeResult.Success -> {
-                                updateState { state ->
-                                    state.copy(isLoad = false)
-                                }
-                                checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
-                            }
-                            CodeResult.ConnectionError -> {}
-                        }
-                    }
-                }
-            }
+//            viewModelScope.launch {
+//                when (val result = authInteractor.sendCode("+$phoneNumber")) {
+//                    is CallResult.Error -> {
+//                        onError(ShowErrorType.Popup, result.error)
+//                        updateState { state ->
+//                            state.copy(isLoad = false)
+//                        }
+//                    }
+//                    is CallResult.Success -> {
+//                        when(result.data){
+//                            is CodeResult.Success -> {
+//                                updateState { state ->
+//                                    state.copy(isLoad = false)
+//                                }
+//                                checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
+//                            }
+//                            CodeResult.ConnectionError -> {}
+//                        }
+//                    }
+//                }
+//            }
+            checkCodeLauncher.launch(CodeNavigationContract.Params("+$phoneNumber"))
         } else
             updateState { state ->
                 state.copy(country = "", error = true, isLoad = false)

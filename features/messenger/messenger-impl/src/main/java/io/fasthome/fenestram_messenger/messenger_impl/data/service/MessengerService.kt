@@ -25,10 +25,10 @@ class MessengerService(
         return SendMessageMapper.responseToSendMessageResult(response, localId)
     }
 
-    suspend fun getChats(limit: Int, page: Int): ListWithTotal<Chat> {
+    suspend fun getChats(like: String, limit: Int, page: Int): ListWithTotal<Chat> {
         val response: GetChatsResponse = client.runGet(
             path = "api/v1/chats",
-            params = mapOf("limit" to limit, "page" to page)
+            params = mapOf("like" to like, "limit" to limit, "page" to page)
         )
 
         return ListWithTotal(

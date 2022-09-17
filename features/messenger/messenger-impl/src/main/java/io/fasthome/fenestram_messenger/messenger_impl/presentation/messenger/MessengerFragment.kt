@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.ItemTouchHelper
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -49,6 +50,18 @@ class MessengerFragment :
             )
         ).attachToRecyclerView(binding.chatList)
 
+        binding.chatsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    vm.filterChats(it)
+                }
+                return true
+            }
+        })
 
         vm.items
             .distinctUntilChanged()
