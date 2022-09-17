@@ -14,9 +14,9 @@ import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.MenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
@@ -139,9 +139,9 @@ class ConversationFragment :
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
             is ConversationEvent.OpenMenuEvent -> {
-                val menuBinding = MenuBinding.inflate(layoutInflater)
+                val menuBinding = DeleteChatMenuBinding.inflate(layoutInflater)
                 val popupMenu = PopupMenu.create(menuBinding.conversationMenu)
-                popupMenu.showAsDropDown(binding.dropdownMenu)
+                popupMenu.showAsDropDown(binding.dropdownMenu, 0, (-45).dp)
 
                 menuBinding.delete.onClick {
                     vm.showDialog()

@@ -21,7 +21,7 @@ object DeleteChatDialog {
 
             val dialog = DialogBuilder(fragment)
                 .addCustomView(root)
-                .setCancelable(false)
+                .setCancelable(true)
 
             titleText?.let {
                 title.setPrintableText(it)
