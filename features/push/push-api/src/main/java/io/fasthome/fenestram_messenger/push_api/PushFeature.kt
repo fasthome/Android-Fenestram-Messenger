@@ -14,5 +14,7 @@ interface PushFeature {
 
     suspend fun updateToken(): CallResult<List<String>>
 
+    suspend fun getPushToken(): String
+
     fun handlePushClick(intent: Intent): IDeepLinkResult?
 }
