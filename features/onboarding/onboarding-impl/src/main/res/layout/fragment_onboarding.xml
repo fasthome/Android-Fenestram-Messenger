@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="@string/onboarding_skip_button"
-        android:textColor="@color/onboarding_skip_button"
+        android:textColor="@color/gray1"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="@+id/buttonOnb"
         app:layout_constraintStart_toStartOf="@+id/buttonOnb"
