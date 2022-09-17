@@ -3,4 +3,4 @@
  */
 package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
-class DebugState
+data class DebugState(val token: String)

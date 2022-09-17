@@ -3,8 +3,12 @@
  */
 package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import io.fasthome.fenestram_messenger.debug_impl.R
 import io.fasthome.fenestram_messenger.debug_impl.databinding.FragmentDebugBinding
 import io.fasthome.fenestram_messenger.mvi.Message
@@ -69,19 +73,32 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onOnboardingClicked()
         }
 
+        linkField.onClick {
+            vm.onLinkFieldClicked(linkField.text.toString())
+        }
+
     }
 
-    override fun renderState(state: DebugState) = nothingToRender()
+    override fun renderState(state: DebugState) {
+        with(binding){
+            linkField.text = state.token
+        }
+    }
     override fun handleEvent(event: DebugEvent) {
         when (event) {
-            DebugEvent.ContactsDeleted -> {
+            is DebugEvent.ContactsDeleted -> {
                 showMessage(
                     Message.PopUp(
                         messageText = PrintableText.Raw("Контакты успешно удалены")
                     )
                 )
             }
+            is DebugEvent.CopyTokenEvent -> {
+                (requireContext().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+                    ClipData.newPlainText("copy", event.token.replace("\\s".toRegex(), ""))
+                )
+                Toast.makeText(requireContext(), "Токен скопирован", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-
 }

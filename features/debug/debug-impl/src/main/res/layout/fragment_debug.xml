@@ -99,5 +99,17 @@
             android:text="Onboarding"
             tools:ignore="HardcodedText" />
 
+        <TextView
+            android:id="@+id/link_field"
+            android:textColor="@color/blue"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/dark1"
+            android:layout_margin="16dp"
+            android:padding="15dp" />
+
+
     </LinearLayout>
 </ScrollView>
