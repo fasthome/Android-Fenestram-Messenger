@@ -5,12 +5,14 @@ import android.view.View
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.FragmentGroupParticipantsBinding
+import io.fasthome.fenestram_messenger.group_guest_impl.databinding.UserDropdownBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.adapter.ParticipantsAdapter
 import io.fasthome.fenestram_messenger.navigation.contract.InterfaceFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.PopupMenu
+import io.fasthome.fenestram_messenger.util.dp
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
 
@@ -22,7 +24,9 @@ class GroupParticipantsFragment :
         getParamsInterface = GroupParticipantsComponentContract.getParams
     )
 
-    private val adapter = ParticipantsAdapter()
+    private val adapter = ParticipantsAdapter(onMenuClicked = { id, view ->
+        vm.onMenuClicked(id, view)
+    })
 
     private val binding by fragmentViewBinding(FragmentGroupParticipantsBinding::bind)
 
@@ -40,7 +44,20 @@ class GroupParticipantsFragment :
         adapter.items = state.participants
     }
 
-    override fun handleEvent(event: GroupParticipantsEvent) = noEventsExpected()
+    override fun handleEvent(event: GroupParticipantsEvent) {
+        when (event) {
+            is GroupParticipantsEvent.MenuOpenEvent -> {
+                val menuBinding = UserDropdownBinding.inflate(layoutInflater)
+                val popupMenu = PopupMenu.create(menuBinding.userMenu)
+                popupMenu.showAsDropDown(event.view, (-100).dp, (-45).dp)
+
+                menuBinding.delete.onClick {
+                    vm.onDeleteUserClicked(event.id)
+                    popupMenu.dismiss()
+                }
+            }
+        }
+    }
 
     override fun getInterface(): GroupParticipantsInterface = vm
 

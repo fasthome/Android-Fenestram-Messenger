@@ -12,7 +12,7 @@ import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
-import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.AddUsersUseCase
+import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.repo.GroupGuestRepo
 import io.fasthome.fenestram_messenger.group_guest_impl.data.repo_impl.GroupGuestRepoImpl
 import io.fasthome.fenestram_messenger.group_guest_impl.data.service.GroupGuestService
@@ -38,7 +38,7 @@ object GroupGuestModule {
     }
 
     private fun createDomainModule() = module {
-        factory(::AddUsersUseCase)
+        factory(::GroupGuestInteractor)
     }
 
     private fun createPresentationModule() = module {

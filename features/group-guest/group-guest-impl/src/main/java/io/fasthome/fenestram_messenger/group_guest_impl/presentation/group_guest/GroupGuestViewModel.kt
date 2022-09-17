@@ -6,7 +6,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_gues
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
-import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.AddUsersUseCase
+import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.mapper.mapToContactViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.model.AddContactViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -20,7 +20,7 @@ class GroupGuestViewModel(
     router: ContractRouter,
     private val params: GroupGuestContract.Params,
     private val contactsFeature: ContactsFeature,
-    private val addUsersUseCase: AddUsersUseCase
+    private val groupGuestInteractor: GroupGuestInteractor
 ) : BaseViewModel<GroupGuestState, GroupGuestEvent>(router, requestParams) {
 
     private var originalContacts = listOf<Contact>()
@@ -73,7 +73,7 @@ class GroupGuestViewModel(
         val usersId =
             currentViewState.addedContacts.mapNotNull { if (it is AddContactViewItem.AddContact) it.userId else null }
         viewModelScope.launch {
-            val usersAdded = addUsersUseCase.addUsersToChat(
+            val usersAdded = groupGuestInteractor.addUsersToChat(
                 params.chatId,
                 usersId
             ).successOrSendError()

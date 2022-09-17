@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/userMenu"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_menu_rounded"
+    android:elevation="10dp"
+    android:orientation="vertical"
+    android:paddingVertical="3dp"
+    android:translationZ="12dp">
+
+    <TextView
+        android:id="@+id/delete"
+        style="@style/Text.Red.16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="10dp"
+        android:text="@string/profile_guest_delete_user"
+        android:textStyle="bold" />
+</LinearLayout>

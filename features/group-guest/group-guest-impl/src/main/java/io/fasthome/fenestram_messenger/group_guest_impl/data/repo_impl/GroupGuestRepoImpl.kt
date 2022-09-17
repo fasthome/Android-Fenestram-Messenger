@@ -15,4 +15,11 @@ class GroupGuestRepoImpl(private val groupGuestService: GroupGuestService) : Gro
         callForResult {
             groupGuestService.addUsersToChat(chatId, usersId)
         }
+
+    override suspend fun deleteUserFromChat(
+        idChat: Long,
+        idUser: Long
+    ): CallResult<List<ParticipantsViewItem>> = callForResult {
+        groupGuestService.deleteUserFromChat(idChat, idUser)
+    }
 }
