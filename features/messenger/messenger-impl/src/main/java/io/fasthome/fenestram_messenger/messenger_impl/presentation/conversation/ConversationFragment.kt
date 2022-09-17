@@ -1,15 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
-import android.net.Uri
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import android.view.*
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
@@ -24,6 +18,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConver
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -61,6 +56,8 @@ class ConversationFragment :
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
         vm.onGroupProfileClicked(it)
+    }, onSelfMessageClicked = {
+        vm.onSelfMessageClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -142,7 +139,7 @@ class ConversationFragment :
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
             is ConversationEvent.OpenMenuEvent -> {
-                val menuBinding = MenuBinding.inflate(requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+                val menuBinding = MenuBinding.inflate(layoutInflater)
                 val popupMenu = PopupMenu.create(menuBinding.conversationMenu)
                 popupMenu.showAsDropDown(binding.dropdownMenu)
 
@@ -157,13 +154,12 @@ class ConversationFragment :
                 }
 
             }
-            is ConversationEvent.ShowDialog -> DeleteChatDialog.create(
-                this,
-                PrintableText.StringResource(R.string.common_delete_chat_dialog),
-                vm::deleteChat,
-                event.id
-            )
-                .show()
+            is ConversationEvent.ShowDeleteChatDialog -> DeleteChatDialog.create(
+                fragment = this,
+                titleText = PrintableText.StringResource(R.string.common_delete_chat_dialog),
+                accept = vm::deleteChat,
+                id = event.id
+            ).show()
 
             ConversationEvent.MessageSent -> binding.messagesList.post {
                 binding.messagesList.scrollToPosition(0)
@@ -180,6 +176,17 @@ class ConversationFragment :
                             vm.selectFromGallery()
                         })
                     .show()
+            is ConversationEvent.ShowErrorSentDialog -> {
+                ErrorSentDialog.create(
+                    fragment = this,
+                    onRetryClicked = {
+                        vm.onRetrySentClicked(event.conversationViewItem)
+                    },
+                    onCancelClicked = {
+                        vm.onCancelSentClicked(event.conversationViewItem)
+                    }
+                ).show()
+            }
         }
     }
 

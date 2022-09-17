@@ -25,7 +25,6 @@ import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Co
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -310,7 +309,7 @@ class ConversationViewModel(
     }
 
     fun onAttachClicked() {
-        if(currentViewState.attachedFiles.size == 10){
+        if (currentViewState.attachedFiles.size == 10) {
             showMessage(Message.PopUp(PrintableText.StringResource(R.string.messenger_max_attach)))
             return
         }
@@ -326,7 +325,7 @@ class ConversationViewModel(
     }
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
-        updateState { state->
+        updateState { state ->
             state.copy(
                 attachedFiles = state.attachedFiles.filter {
                     it != attachedFile
@@ -340,7 +339,7 @@ class ConversationViewModel(
     }
 
     fun showDialog() {
-        chatId?.let { sendEvent(ConversationEvent.ShowDialog(it)) }
+        chatId?.let { sendEvent(ConversationEvent.ShowDeleteChatDialog(it)) }
     }
 
     fun deleteChat(id: Long) {
@@ -351,6 +350,42 @@ class ConversationViewModel(
                         ConversationNavigationContract.Result.ChatDeleted(id)
                     )
                 )
+        }
+    }
+
+    fun onSelfMessageClicked(selfViewItem: ConversationViewItem.Self) {
+        when (selfViewItem.sentStatus) {
+            SentStatus.Sent -> Unit
+            SentStatus.Error -> {
+                sendEvent(ConversationEvent.ShowErrorSentDialog(selfViewItem))
+            }
+            SentStatus.Read -> Unit
+            SentStatus.Loading -> Unit
+            SentStatus.None -> Unit
+        }
+    }
+
+    fun onRetrySentClicked(selfViewItem: ConversationViewItem.Self) {
+        updateState { state ->
+            state.copy(
+                messages = state.messages.filter { it.key != selfViewItem.localId }
+            )
+        }
+        when (selfViewItem) {
+            is ConversationViewItem.Self.Text -> {
+                sendMessage(getPrintableRawText(selfViewItem.content))
+            }
+            is ConversationViewItem.Self.Image -> {
+                sendImages(listOf(AttachedFile.Image(selfViewItem.bitmap ?: return, selfViewItem.file ?: return)))
+            }
+        }
+    }
+
+    fun onCancelSentClicked(selfViewItem: ConversationViewItem.Self) {
+        updateState { state ->
+            state.copy(
+                messages = state.messages.filter { it.key != selfViewItem.localId }
+            )
         }
     }
 

@@ -7,15 +7,18 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
 
-class ConversationAdapter(onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit) :
+class ConversationAdapter(
+    onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit
+) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
             ConversationViewItem::id,
             ConversationViewItem::sentStatus
         ),
         AdapterUtil.adapterDelegatesManager(
-            createConversationSelfTextAdapterDelegate(),
-            createConversationSelfImageAdapterDelegate(),
+            createConversationSelfTextAdapterDelegate(onSelfMessageClicked),
+            createConversationSelfImageAdapterDelegate(onSelfMessageClicked),
             createConversationReceiveTextAdapterDelegate(),
             createConversationReceiveImageAdapterDelegate(),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked),
@@ -24,10 +27,13 @@ class ConversationAdapter(onGroupProfileItemClicked: (ConversationViewItem.Group
         )
     )
 
-fun createConversationSelfTextAdapterDelegate() =
+fun createConversationSelfTextAdapterDelegate(onSelfMessageClicked: (ConversationViewItem.Self) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Text, ConversationItemSelfTextBinding>(
         ConversationItemSelfTextBinding::inflate
     ) {
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
         bindWithBinding {
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -35,10 +41,13 @@ fun createConversationSelfTextAdapterDelegate() =
         }
     }
 
-fun createConversationSelfImageAdapterDelegate() =
+fun createConversationSelfImageAdapterDelegate(onSelfMessageClicked: (ConversationViewItem.Self) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemImageBinding>(
         ConversationItemImageBinding::inflate
     ) {
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
         bindWithBinding {
             when {
                 item.bitmap != null -> {
