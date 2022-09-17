@@ -6,23 +6,16 @@
     <color name="button_standart">#888686</color>
     <color name="button_standart_stroke">#C5C4C4</color>
     <color name="button_standart_text">#1B1A1A</color>
-    <color name="purple">#32283B</color>
-    <color name="purple_back">#251B2D</color>
-    <color name="purple_transparent">#8E86A5</color>
 
+    <color name="background_0">#1A202C</color>
     <color name="background">#131821</color>
     <color name="dark1">#232b38</color>
     <color name="dark2">#2a313c</color>
-    <color name="dark3">#332E42</color>
-    <color name="dark4">#1B1728</color>
     <color name="gray1">#718096</color>
     <color name="gray2">#A0AEC0</color>
-    <color name="gray3">#8E86A5</color>
     <color name="gray4">#C9C9C9</color>
     <color name="gray5">#2A313C</color>
     <color name="blue">#076ed1</color>
-    <color name="status_bar">#272333</color>
-    <color name="onb_skip_button">#4F415A</color>
     <color name="red">#FF4B4B</color>
 
 </resources>

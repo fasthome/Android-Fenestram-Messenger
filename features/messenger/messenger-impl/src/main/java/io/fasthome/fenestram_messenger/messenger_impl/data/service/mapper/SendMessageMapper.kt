@@ -5,9 +5,9 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageR
 
 object SendMessageMapper {
 
-    fun responseToSendMessageResult(response: SendMessageResponse): SendMessageResult {
+    fun responseToSendMessageResult(response: SendMessageResponse, localId: String): SendMessageResult {
         response.message?.let {
-            return SendMessageResult.Success
+            return SendMessageResult(localId)
         }
         throw Exception()
     }

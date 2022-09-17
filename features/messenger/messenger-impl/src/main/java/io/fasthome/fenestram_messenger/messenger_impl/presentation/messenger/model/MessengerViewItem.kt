@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model
 
 import androidx.annotation.DrawableRes
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class MessengerViewItem(
@@ -9,6 +10,14 @@ data class MessengerViewItem(
     val name: PrintableText,
     val newMessages: Int,
     val time : PrintableText,
-    val lastMessage: PrintableText,
-    val profileImageUrl : String?
+    val lastMessage: LastMessage,
+    val profileImageUrl : String?,
+    val originalChat : Chat
 )
+
+sealed class LastMessage {
+
+    data class Text(val text : PrintableText) : LastMessage()
+    data class Image(val imageUrl : String) : LastMessage()
+
+}

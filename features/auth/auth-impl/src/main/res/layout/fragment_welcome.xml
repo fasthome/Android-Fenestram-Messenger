@@ -23,7 +23,7 @@
         android:layout_marginBottom="5dp"
         android:fontFamily="@font/geometria"
         android:text="@string/common_phone_number_label"
-        android:textColor="@color/auth_labels"
+        android:textColor="@color/gray1"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/phone_input"
         app:layout_constraintStart_toStartOf="parent" />
@@ -40,7 +40,7 @@
         android:inputType="phone"
         android:padding="10dp"
         android:text="@string/common_country_code_text"
-        android:textColor="@color/auth_labels"
+        android:textColor="@color/gray1"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/geometria"
-        android:textColor="@color/auth_labels"
+        android:textColor="@color/gray1"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@id/phone_input"
         app:layout_constraintTop_toBottomOf="@id/phone_input" />

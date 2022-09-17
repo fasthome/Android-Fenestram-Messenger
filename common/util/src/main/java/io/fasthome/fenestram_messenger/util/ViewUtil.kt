@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.util
 import android.content.res.Resources
 import android.graphics.Rect
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -37,3 +38,5 @@ val Int.dp: Int
 suspend fun View.awaitPost() = suspendCancellableCoroutine<Unit> { continuation ->
     post { continuation.resume(Unit, null) }
 }
+
+val View.layoutInflater: LayoutInflater get() = LayoutInflater.from(context)

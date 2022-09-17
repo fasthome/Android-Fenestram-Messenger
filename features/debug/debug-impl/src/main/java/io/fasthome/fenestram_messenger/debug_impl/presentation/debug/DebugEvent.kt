@@ -6,5 +6,6 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 sealed interface DebugEvent {
 
     object ContactsDeleted : DebugEvent
+    class CopyTokenEvent(val token: String) : DebugEvent
 
 }

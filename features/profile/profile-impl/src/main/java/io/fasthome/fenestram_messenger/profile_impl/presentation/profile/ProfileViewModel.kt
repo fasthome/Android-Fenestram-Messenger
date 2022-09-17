@@ -7,6 +7,9 @@ import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.component.permission.PermissionInterface
+import io.fasthome.component.personality_data.FillState
+import io.fasthome.component.personality_data.PersonalityInterface
+import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.core.environment.Environment
@@ -21,7 +24,9 @@ import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -34,49 +39,13 @@ class ProfileViewModel(
     private val pickFileInterface: PickFileInterface,
     private val profileInteractor: ProfileInteractor,
     private val profileImageUtil: ProfileImageUtil,
+    private val personalityInterface: PersonalityInterface,
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
     private var avatarUrl: String? = null
 
     init {
-        viewModelScope.launch {
-            profileInteractor.getPersonalData().onSuccess { personalData ->
-                updateState { state ->
-                    avatarUrl = if (personalData.avatar != null )
-                        environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar
-                    else
-                        personalData.avatar
-
-                    state.copy(
-                        fieldsData = listOf(
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.BirthdateKey,
-                                text = PrintableText.Raw(personalData.birth ?: ""),
-                                visibility = !personalData.birth.isNullOrEmpty()
-                            ),
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.NicknameKey,
-                                text = PrintableText.Raw(personalData.nickname ?: ""),
-                                visibility = !personalData.nickname.isNullOrEmpty()
-                            ),
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.UsernameKey,
-                                text = PrintableText.Raw(personalData.username ?: ""),
-                                visibility = !personalData.username.isNullOrEmpty()
-                            ),
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.MailKey,
-                                text = PrintableText.Raw(personalData.email ?: ""),
-                                visibility = !personalData.email.isNullOrEmpty()
-                            )
-                        ),
-                        avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar,
-                        avatarBitmap = null
-                    )
-                }
-            }
-        }
         pickFileInterface.resultEvents()
             .onEach {
                 when (it) {
@@ -105,9 +74,41 @@ class ProfileViewModel(
                 }
             }
             .launchIn(viewModelScope)
+
+        personalityInterface.fieldStateChanges
+            .onEach {}
+            .launchIn(viewModelScope)
     }
 
-    fun checkPersonalData(name: String, nickname: String, birthday: String, mail: String) {
+    fun fetchProfile(){
+        viewModelScope.launch {
+            profileInteractor.getPersonalData().onSuccess { personalData ->
+                updateState { state ->
+                    avatarUrl = if (!personalData.avatar.isNullOrEmpty())
+                        environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar
+                    else
+                        null
+
+                    personalityInterface.setFields(
+                        UserDetail(
+                            name = personalData.username ?: "",
+                            mail = personalData.email ?: "",
+                            birthday = personalData.birth ?: "",
+                            nickname = personalData.nickname ?: ""
+                        )
+                    )
+                    state.copy(
+                        username = personalData.username ?: "",
+                        avatarUrl = avatarUrl,
+                        avatarBitmap = null
+                    )
+                }
+            }
+        }
+    }
+
+    fun checkPersonalData() {
+        val fields = personalityInterface.getFields()
         updateState { state ->
             state.copy(isLoad = true)
         }
@@ -121,7 +122,7 @@ class ProfileViewModel(
                             it
                         }
                 }
-                avatarUrl != null -> {
+                !avatarUrl.isNullOrEmpty() -> {
                     avatarUrl!!.substring(20, avatarUrl!!.length)
                 }
                 else -> {
@@ -130,10 +131,10 @@ class ProfileViewModel(
             }
 
             val personalData = PersonalData(
-                username = name,
-                nickname = nickname,
-                birth = birthday,
-                email = mail,
+                username = fields.name,
+                nickname = fields.nickname,
+                birth = fields.birthday,
+                email = fields.mail,
                 avatar = avatar,
                 playerId = ""
             )
@@ -144,30 +145,18 @@ class ProfileViewModel(
                 showErrorType = ShowErrorType.Dialog
             ) {
                 showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_successs_changed)))
+                personalityInterface.setFields(
+                    UserDetail(
+                        name = personalData.username ?: "",
+                        mail = personalData.email ?: "",
+                        birthday = personalData.birth ?: "",
+                        nickname = personalData.nickname ?: ""
+                    )
+                )
                 updateState { state ->
+                    personalityInterface.runEdit(false)
                     state.copy(
-                        fieldsData = listOf(
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.BirthdateKey,
-                                text = PrintableText.Raw(birthday),
-                                visibility = !personalData.birth.isNullOrEmpty()
-                            ),
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.NicknameKey,
-                                text = PrintableText.Raw(nickname),
-                                visibility = !personalData.nickname.isNullOrEmpty()
-                            ),
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.UsernameKey,
-                                text = PrintableText.Raw(name),
-                                visibility = !personalData.username.isNullOrEmpty()
-                            ),
-                            ProfileState.Field(
-                                key = ProfileState.EditTextKey.MailKey,
-                                text = PrintableText.Raw(mail),
-                                visibility = !personalData.email.isNullOrEmpty()
-                            )
-                        ),
+                        username = personalData.username ?: state.username,
                         isEdit = false,
                         isLoad = false
                     )
@@ -177,7 +166,9 @@ class ProfileViewModel(
     }
 
     override fun createInitialState(): ProfileState {
-        return ProfileState(fieldsData = listOf(), null, null, null, isEdit = false, isLoad = false)
+        return ProfileState("", null, null, null, isEdit = false, isLoad = false).also {
+            personalityInterface.runEdit(false)
+        }
     }
 
     fun onAvatarClicked() {
@@ -185,12 +176,14 @@ class ProfileViewModel(
     }
 
     fun editClicked() {
+        personalityInterface.runEdit(true)
         updateState { state ->
             state.copy(isEdit = true)
         }
     }
 
     fun cancelClicked() {
+        personalityInterface.runEdit(false)
         updateState { state ->
             state.copy(isEdit = false)
         }

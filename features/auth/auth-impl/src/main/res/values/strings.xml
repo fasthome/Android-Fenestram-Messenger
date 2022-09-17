@@ -7,8 +7,8 @@
     <string name="auth_user_name_label">Никнейм</string>
     <string name="auth_name_label">Имя</string>
     <string name="auth_welcome_message_label_start">Добро пожаловать</string>
-    <string name="auth_welcome_message_label_end">в FENESTRAM!</string>
-    <string name="auth_fenestram_label">FENESTRAM</string>
+    <string name="auth_welcome_message_label_end">в HOOLI CHAT!</string>
+    <string name="auth_fenestram_label">HOOLI CHAT</string>
     <string name="auth_phone_number_label">Номер телефона</string>
     <string name="auth_country_code_text">+7</string>
     <string name="auth_send_code_button">Отправить код</string>
@@ -16,4 +16,5 @@
     <string name="auth_incorrect_code_label">Неверный код</string>
     <string name="auth_resend_code_button">Отправить заново?</string>
     <string name="auth_resend_code_timer">Отправить заново через</string>
+    <string name="auth_error_photo">Невозможно загрузить данный файл</string>
 </resources>

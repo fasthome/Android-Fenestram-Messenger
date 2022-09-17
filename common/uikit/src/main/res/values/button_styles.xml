@@ -10,4 +10,18 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="Button.Dialog">
+        <item name="android:background">@drawable/background_dialog_button</item>
+    </style>
+
+    <style name="Button.Dialog.Cancel">
+        <item name="android:textAppearance">@style/Text.Gray.14sp</item>
+    </style>
+
+    <style name="Button.Dialog.Accept">
+        <item name="android:textAppearance">@style/Text.Red.14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

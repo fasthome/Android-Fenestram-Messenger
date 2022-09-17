@@ -6,7 +6,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.GetChat
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatsResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
@@ -14,34 +13,33 @@ import java.time.ZonedDateTime
 
 class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
 
-    fun responseToGetChatsResult(response: GetChatsResponse, selfUserId: Long): GetChatsResult {
+    fun responseToGetChatsResult(response: GetChatsResponse): List<Chat> {
         response.data?.let { list ->
-            return GetChatsResult.Success(
-                chats = list.map { chat ->
-                    val lastMessage = chat.message?.lastOrNull()
-                    Chat(
-                        id = chat.id,
-                        users = chat.users,
-                        name = chat.name ?: "",
-                        messages = listOfNotNull(lastMessage?.let {
-                            Message(
-                                id = lastMessage.id,
-                                text = lastMessage.text,
-                                userSenderId = lastMessage.initiatorId,
-                                messageType = lastMessage.type,
-                                date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
-                                initiator = null
-                            )
-                        }
-                        ),
-                        time = getZonedTime(lastMessage?.date) ?: chat.date.let(
-                            NetworkMapperUtil::parseZonedDateTime
-                        ).withZoneSameInstant(ZoneId.systemDefault()),
-                        avatar = profileImageUrlConverter.convert(chat.avatar),
-                        isGroup = chat.isGroup
-                    )
-                }
-            )
+            return list.map { chat ->
+                val lastMessage = chat.message?.lastOrNull()
+                Chat(
+                    id = chat.id,
+                    users = chat.users,
+                    name = chat.name ?: "",
+                    messages = listOfNotNull(lastMessage?.let {
+                        Message(
+                            id = lastMessage.id,
+                            text = lastMessage.text,
+                            userSenderId = lastMessage.initiatorId,
+                            messageType = lastMessage.type,
+                            date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
+                            initiator = null,
+                            isSystem = false
+                        )
+                    }
+                    ),
+                    time = getZonedTime(lastMessage?.date) ?: chat.date.let(
+                        NetworkMapperUtil::parseZonedDateTime
+                    ).withZoneSameInstant(ZoneId.systemDefault()),
+                    avatar = profileImageUrlConverter.convert(chat.avatar),
+                    isGroup = chat.isGroup
+                )
+            }
         }
         throw Exception()
     }
@@ -54,7 +52,7 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                 userSenderId = it.initiatorId,
                 messageType = it.type,
                 date = getZonedTime(it.date),
-                initiator = it.initiator?.let { user->
+                initiator = it.initiator?.let { user ->
                     User(
                         id = user.id,
                         phone = user.phone ?: "",
@@ -66,7 +64,8 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                         isOnline = user.isOnline,
                         lastActive = ZonedDateTime.now()
                     )
-                }
+                },
+                isSystem = false
             )
         }
     }

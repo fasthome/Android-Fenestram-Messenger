@@ -11,14 +11,24 @@ import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import kotlinx.parcelize.Parcelize
 
 interface ProfileGuestFeature {
-    val profileGuestNavigationContract: NavigationContractApi<ProfileGuestParams, NoResult>
+    val profileGuestNavigationContract: NavigationContractApi<ProfileGuestParams, ProfileGuestResult >
 
     @Parcelize
     class ProfileGuestParams(
+        val id : Long?,
         val userName : String,
         val userNickname : String,
         val userAvatar : String,
         val chatParticipants : List<User>,
         val isGroup : Boolean
     ) : Parcelable
+
+    sealed class ProfileGuestResult : Parcelable {
+
+        @Parcelize
+        class ChatDeleted(val id: Long) : ProfileGuestResult()
+
+        @Parcelize
+        object Canceled : ProfileGuestResult()
+    }
 }

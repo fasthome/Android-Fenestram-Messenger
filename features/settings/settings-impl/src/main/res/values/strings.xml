@@ -4,4 +4,8 @@
     <string name="changeColor">Изменить цвет</string>
     <string name="settings_about_app">О приложении</string>
     <string name="exitAccount">Выход из учетной записи</string>
+    <string name="settings_delete_account">Удаление аккаунта</string>
+    <string name="settings_delete">Удалить</string>
+    <string name="settings_delete_accept_title">Вы уверены, что хотите удалить аккаунт?</string>
+    <string name="settings_delete_accept_description">В случае удаления все ваши данные будут удалены навсегда!</string>
 </resources>
