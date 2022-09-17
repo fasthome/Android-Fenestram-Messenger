@@ -4,24 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
+    <TextView
         android:id="@+id/label_welcome_start"
-        layout="@layout/include_welcome_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="@string/common_welcome_message_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/label_welcome_end"
-        layout="@layout/include_welcome_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label_welcome_start" />
 
     <ImageView
         android:id="@+id/user_photo"
@@ -31,7 +27,7 @@
         android:background="@drawable/ic_baseline_account_circle_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label_welcome_end" />
+        app:layout_constraintTop_toBottomOf="@id/label_welcome_start" />
 
     <ImageButton
         android:id="@+id/user_photo_add"
@@ -149,9 +145,9 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@id/label_skip"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/label_skip" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/label_skip"

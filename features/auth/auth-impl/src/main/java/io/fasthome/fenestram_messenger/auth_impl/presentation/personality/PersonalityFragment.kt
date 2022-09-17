@@ -55,8 +55,6 @@ class PersonalityFragment :
             labelUserName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
             labelBirthday.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_birthday_label))
             labelMail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_email_label))
-            labelWelcomeStart.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_welcome_message_label_start))
-            labelWelcomeEnd.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_welcome_message_label_end))
 
             labelName.includeTextView.hint
 
