@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
+import android.graphics.Bitmap
 import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
@@ -8,12 +9,16 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getFuzzyDateString
+import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+const val MESSAGE_TYPE_TEXT = "text"
+const val MESSAGE_TYPE_IMAGE = "image"
 
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
@@ -39,34 +44,80 @@ fun Message.toConversationViewItem(
     }
     return when (selfUserId) {
         userSenderId -> {
-            ConversationViewItem.Self(
-                content = PrintableText.Raw(text),
-                time = PrintableText.Raw(timeFormatter.format(date)),
-                sentStatus = SentStatus.Sent,
-                date = date,
-                id = id,
-                localId = UUID.randomUUID().toString()
-            )
+            when (messageType) {
+                MESSAGE_TYPE_TEXT -> {
+                    ConversationViewItem.Self.Text(
+                        content = PrintableText.Raw(text),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        localId = UUID.randomUUID().toString()
+                    )
+                }
+                MESSAGE_TYPE_IMAGE -> {
+                    ConversationViewItem.Self.Image(
+                        content = text,
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        localId = UUID.randomUUID().toString()
+                    )
+                }
+                else -> error("Unknown Message Type!")
+            }
         }
         else -> {
             if (isGroup == true) {
-                ConversationViewItem.Group(
-                    content = PrintableText.Raw(text),
-                    time = PrintableText.Raw(timeFormatter.format(date)),
-                    sentStatus = SentStatus.None,
-                    userName = PrintableText.Raw(initiator?.name ?: ""),
-                    avatar = initiator?.avatar ?: "",
-                    date = date,
-                    id = id
-                )
+                when (messageType) {
+                    MESSAGE_TYPE_TEXT -> {
+                        ConversationViewItem.Group.Text(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            userName = PrintableText.Raw(initiator?.name ?: ""),
+                            avatar = initiator?.avatar ?: "",
+                            date = date,
+                            id = id
+                        )
+                    }
+                    MESSAGE_TYPE_IMAGE -> {
+                        ConversationViewItem.Group.Image(
+                            content = text,
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            userName = PrintableText.Raw(initiator?.name ?: ""),
+                            avatar = initiator?.avatar ?: "",
+                            date = date,
+                            id = id
+                        )
+                    }
+                    else -> error("Unknown Message Type!")
+                }
             } else {
-                ConversationViewItem.Receive(
-                    content = PrintableText.Raw(text),
-                    time = PrintableText.Raw(timeFormatter.format(date)),
-                    sentStatus = SentStatus.None,
-                    date = date,
-                    id = id
-                )
+
+                when (messageType) {
+                    MESSAGE_TYPE_TEXT -> {
+                        ConversationViewItem.Receive.Text(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            date = date,
+                            id = id
+                        )
+                    }
+                    MESSAGE_TYPE_IMAGE -> {
+                        ConversationViewItem.Receive.Image(
+                            content = text,
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            date = date,
+                            id = id
+                        )
+                    }
+                    else -> error("Unknown Message Type!")
+                }
             }
         }
     }
@@ -86,7 +137,7 @@ fun List<ConversationViewItem>.addHeaders(): List<ConversationViewItem> {
         val item = messages[position]
         if (position == 0) {
             messagesWithHeaders.add(item)
-            if(messages.size == 1){
+            if (messages.size == 1) {
                 messagesWithHeaders.add(createSystem(item.date ?: continue))
                 continue
             }
@@ -113,7 +164,7 @@ fun List<ConversationViewItem>.addHeaders(): List<ConversationViewItem> {
     return messagesWithHeaders
 }
 
-fun createMessage(text: String) = ConversationViewItem.Self(
+fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     content = PrintableText.Raw(text),
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
@@ -122,7 +173,18 @@ fun createMessage(text: String) = ConversationViewItem.Self(
     localId = UUID.randomUUID().toString()
 )
 
-fun createSystem(date : ZonedDateTime) = ConversationViewItem.System(
+fun createImageMessage(image: String?, bitmap: Bitmap, file: File) = ConversationViewItem.Self.Image(
+    content = image ?: "",
+    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+    sentStatus = SentStatus.Loading,
+    date = ZonedDateTime.now(),
+    id = 0,
+    localId = UUID.randomUUID().toString(),
+    bitmap = bitmap,
+    file = file
+)
+
+fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     content = getFuzzyDateString(date),
     time = PrintableText.EMPTY,
     date = date,

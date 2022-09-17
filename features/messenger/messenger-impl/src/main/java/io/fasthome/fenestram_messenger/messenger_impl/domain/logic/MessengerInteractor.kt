@@ -1,15 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
 import android.util.Log
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
-import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
-import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.onSuccess
@@ -18,6 +15,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import java.util.*
 
 class MessengerInteractor(
     private val messageRepo: MessengerRepo,
@@ -88,4 +86,7 @@ class MessengerInteractor(
         page++
         return messageRepo.getMessagesFromChat(id, page)
     }
+
+    suspend fun uploadProfileImage(photoBytes: ByteArray) =
+        messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 }
