@@ -40,6 +40,9 @@ class MessengerInteractor(
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
 
+    suspend fun postChatAvatar(id: Long, avatar: String) =
+        messageRepo.postChatAvatar(id, avatar)
+
     suspend fun getChatById(id: Long) = messageRepo.getChatById(id).onSuccess { }
 
     fun closeSocket() {

@@ -72,14 +72,14 @@ class CreateInfoViewModel(
             return
         }
         viewModelScope.launch {
-            var imageUrl: String?
-//            messengerInteractor.uploadProfileImage(
-//                currentViewState.avatarImage?.file?.readBytes() ?: return@launch
-//            )
-//                .getOrNull()?.imagePath.let {
-//                    imageUrl = profileImageUrlConverter.convert(it)
-//                    it
-//                }
+            var imageUrl: String
+            messengerInteractor.uploadProfileImage(
+                currentViewState.avatarImage?.file?.readBytes() ?: return@launch
+            )
+                .getOrNull()?.imagePath.let {
+                    imageUrl = profileImageUrlConverter.convert(it)
+                    it
+                }
             router.backTo(null)
             conversationLauncher.launch(
                 ConversationNavigationContract.Params(
@@ -89,7 +89,7 @@ class CreateInfoViewModel(
                         users = params.contacts.map { it.userId ?: 0 },
                         messages = listOf(),
                         time = null,
-                        avatar = null,
+                        avatar = imageUrl.substring(20, imageUrl.length),
                         isGroup = true
                     )
                 )
