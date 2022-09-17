@@ -38,6 +38,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:textAllCaps="false"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="@+id/indicator"
         app:layout_constraintStart_toStartOf="@+id/indicator"
         app:layout_constraintTop_toTopOf="@+id/indicator" />
