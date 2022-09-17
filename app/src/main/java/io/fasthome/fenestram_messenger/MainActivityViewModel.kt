@@ -85,12 +85,19 @@ class MainActivityViewModel(
         return MainActivityState(false)
     }
 
-    fun onAppStarted() {
+    fun onAppStarted(fromPush: Boolean, deepLinkResult: IDeepLinkResult?) {
         viewModelScope.launch {
             when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
                 is CallResult.Success -> when {
                     !isAuthedResult.data -> startAuth()
-                    else -> checkPersonalData()
+                    else -> {
+                        if (!fromPush)
+                            checkPersonalData()
+                        else {
+                            openAuthedRootScreen()
+                            this@MainActivityViewModel.deepLinkResult = deepLinkResult
+                        }
+                    }
                 }
                 is CallResult.Error -> startAuth()
             }
