@@ -2,5 +2,7 @@
 <resources>
     <string name="common_cancel">Отменить</string>
     <string name="common_ok">Ок</string>
+    <string name="common_gallery">Галерея</string>
+    <string name="common_camera">Камера</string>
     <string name="common_delete_chat">Удалить</string>
 </resources>

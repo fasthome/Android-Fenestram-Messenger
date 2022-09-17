@@ -9,7 +9,8 @@ data class PersonalityState(
     val fieldsData: List<Field>,
     val avatarBitmap : Bitmap?,
     val originalProfileImageFile : File?,
-    val profileImageUrl : String?
+    val profileImageUrl : String?,
+    val readyEnabled : Boolean
 ){
 
     data class Field(

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_guest_participants">Участники чата</string>
+    <string name="profile_guest_add_user">Добавление участников</string>
+    <string name="profile_guest_title">Выберите участников чата</string>
+    <string name="profile_guest_link_title">Пригласить в чат по ссылке</string>
 </resources>

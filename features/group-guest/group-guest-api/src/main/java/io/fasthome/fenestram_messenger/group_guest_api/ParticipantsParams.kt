@@ -6,5 +6,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ParticipantsParams(
-    val participants : List<User>
+    var participants : List<User>,
+    val chatId: Long?
 ) : Parcelable

@@ -3,5 +3,9 @@
  */
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest
 
-class GroupGuestState {
-}
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.model.AddContactViewItem
+
+data class GroupGuestState(
+    val contacts: List<AddContactViewItem>,
+    val addedContacts: List<AddContactViewItem>
+)

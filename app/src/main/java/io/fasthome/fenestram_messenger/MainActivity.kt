@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.doOnStartStop
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ViewModelOwner
@@ -44,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         if (savedInstanceState == null) {
-            vm.onAppStarted()
             handleIntent(intent)
         }
 
@@ -80,8 +80,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: Intent) {
         val pushClickResult = pushFeature.handlePushClick(intent)
-        if (pushClickResult != null) {
-            vm.handleDeepLinkResult(pushClickResult)
-        }
+        if (pushClickResult != null)
+            vm.onAppStarted(true, pushClickResult)
+        else
+            vm.onAppStarted(false, null)
     }
 }

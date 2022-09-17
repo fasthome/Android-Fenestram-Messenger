@@ -11,6 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import coil.load
 import coil.transform.CircleCropTransformation
+import io.fasthome.component.personality_data.PersonalityComponentContract
+import io.fasthome.component.personality_data.PersonalityParams
+import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -43,10 +46,20 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         }
     )
 
+    private val personalityDataFragment by registerFragment(
+        componentFragmentContractInterface = PersonalityComponentContract,
+        paramsProvider = {
+            PersonalityParams(null, false, false)
+        },
+        containerViewId = R.id.personality_data_container
+    )
+
+
     override val vm: ProfileViewModel by viewModel(
         getParamsInterface = ProfileNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::pickImageFragment)
+            .register(::personalityDataFragment)
     )
 
     private val binding by fragmentViewBinding(FragmentProfileBinding::bind)
@@ -74,33 +87,15 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             vm.startSettings()
         }
 
-        labelNicknameU.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
-        labelHBDay.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_birthday_label))
-        labelEmail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_email_label))
         bDone.onClick {
-            vm.checkPersonalData(
-                name = username.text.toString(),
-                nickname = nickContainer.includeEditText.text.toString(),
-                birthday = hbDayContainer.text.toString(),
-                mail = emailContainer.includeEditText.text.toString(),
-            )
+            vm.checkPersonalData()
         }
 
-        HooliDatePicker(hbDayContainer).registerDatePicker(childFragmentManager)
+        vm.fetchProfile()
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
-        state.fieldsData.forEach { field ->
-            when (field.key) {
-                EditTextKey.NicknameKey -> nickContainer.includeEditText
-                EditTextKey.BirthdateKey -> hbDayContainer
-                EditTextKey.MailKey -> emailContainer.includeEditText
-                EditTextKey.UsernameKey -> username
-            }.let { view ->
-                view.setPrintableText(field.text)
-            }
-        }
-
+        username.text = state.username
         if (state.avatarUrl == null && state.avatarBitmap == null) {
             ivAvatar.setImageDrawable(
                 ContextCompat.getDrawable(
@@ -125,15 +120,11 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         }
 
         llButtons.isVisible = state.isEdit
-
         ivAvatar.isEnabled = state.isEdit
         ibAdd.isVisible = state.isEdit
         progress.isVisible = state.isLoad
         bCancel.isVisible = !state.isLoad
         bDone.isVisible = !state.isLoad
-        nickContainer.includeEditText.isEnabled = state.isEdit
-        emailContainer.includeEditText.isEnabled = state.isEdit
-        hbDayContainer.isEnabled = state.isEdit
     }
 
     override fun handleEvent(event: ProfileEvent) = noEventsExpected()
