@@ -16,11 +16,11 @@
     </style>
 
     <style name="Button.Dialog.Cancel">
-        <item name="android:textAppearance">@style/Text.Gray</item>
+        <item name="android:textAppearance">@style/Text.Gray.14sp</item>
     </style>
 
     <style name="Button.Dialog.Accept">
-        <item name="android:textAppearance">@style/Text.Red</item>
+        <item name="android:textAppearance">@style/Text.Red.14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -70,4 +70,8 @@
     <style name="Text.Gray">
         <item name="android:textColor">@color/gray1</item>
     </style>
+
+    <style name="Text.Gray.14sp">
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
