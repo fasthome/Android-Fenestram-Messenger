@@ -19,6 +19,8 @@ class PushFeatureImpl(
 
     override suspend fun updateToken(): CallResult<List<String>> = pushRepo.sendPushToken()
 
+    override suspend fun getPushToken(): String = pushRepo.getPushToken()
+
     override fun handlePushClick(intent: Intent): IDeepLinkResult? = pushClickHandler.handle(intent)
 
 }

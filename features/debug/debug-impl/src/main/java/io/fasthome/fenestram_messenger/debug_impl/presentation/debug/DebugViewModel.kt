@@ -44,6 +44,10 @@ class DebugViewModel(
             features.profileFeature.getPersonalData().onSuccess {
                 personalData = it
             }
+            val token = features.pushFeature.getPushToken()
+            updateState {
+               DebugState(token)
+            }
         }
     }
 
@@ -54,7 +58,7 @@ class DebugViewModel(
     private val socketLauncher = registerScreen(SocketNavigationContract)
 //    private val groupGuestLauncher = registerScreen(features.groupGuestFeature.groupGuestComponentContract)
 
-    override fun createInitialState() = DebugState()
+    override fun createInitialState() = DebugState("")
 
     fun onAuthClicked() {
         authLauncher.launch(NoParams)
@@ -120,12 +124,22 @@ class DebugViewModel(
 
     fun updatePushToken() {
         viewModelScope.launch {
-            features.pushFeature.updateToken()
+            val resutl = features.pushFeature.updateToken().successOrSendError()
+            if (resutl != null) {
+                val token = features.pushFeature.getPushToken()
+                updateState {
+                    DebugState(token)
+                }
+            }
         }
     }
 
     fun onOnboardingClicked(){
         onboardingLauncher.launch(NoParams)
+    }
+
+    fun onLinkFieldClicked(token: String) {
+        sendEvent(DebugEvent.CopyTokenEvent(token))
     }
 
 }

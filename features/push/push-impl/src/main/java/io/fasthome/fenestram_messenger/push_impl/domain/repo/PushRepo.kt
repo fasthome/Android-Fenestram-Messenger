@@ -13,4 +13,6 @@ interface PushRepo {
 
     suspend fun clearPushToken(): CallResult<Unit>
 
+    suspend fun getPushToken(): String
+
 }

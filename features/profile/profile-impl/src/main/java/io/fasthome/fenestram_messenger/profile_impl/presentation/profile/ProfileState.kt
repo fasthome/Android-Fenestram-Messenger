@@ -8,12 +8,12 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import java.io.File
 
 data class ProfileState(
-    val fieldsData: List<Field>,
+    val username : String,
     val avatarUrl: String?,
     val avatarBitmap: Bitmap?,
     val originalProfileImageFile: File?,
     val isEdit: Boolean,
-    val isLoad: Boolean
+    val isLoad: Boolean,
 ) {
 
     data class Field(
