@@ -8,4 +8,13 @@
         <item name="backgroundTint">@color/blue</item>
     </style>
 
+    <style name="FloatingActionAddButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="srcCompat">@drawable/ic_add_button</item>
+        <item name="tint">@color/white</item>
+        <item name="fabSize">normal</item>
+        <item name="backgroundTint">@color/blue</item>
+    </style>
+
+
+
 </resources>
