@@ -43,29 +43,27 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
                             clearFocus()
                             setBackgroundResource(R.drawable.rounded_border)
                         }
-                        resendCode.setTextColor(resources.getColor(R.color.auth_button, null))
+                        resendCode.setTextColor(resources.getColor(R.color.blue, null))
                         error.isVisible = false
                     }
 
                     state.filled -> {
                         buttonSendCode.apply {
                             isEnabled = true
-                            setBackgroundResource(R.drawable.rounded_blue_button)
                         }
                     }
                     state.error -> {
                         codeInput.setBackgroundResource(R.drawable.error_rounded_border)
-                        resendCode.setTextColor(resources.getColor(R.color.auth_error, null))
+                        resendCode.setTextColor(resources.getColor(R.color.red, null))
                         error.isVisible = true
                         buttonSendCode.isEnabled = false
                     }
                     else -> {
                         codeInput.setBackgroundResource(R.drawable.rounded_border)
-                        resendCode.setTextColor(resources.getColor(R.color.auth_button, null))
+                        resendCode.setTextColor(resources.getColor(R.color.blue, null))
                         error.isVisible = false
                         buttonSendCode.apply {
                             isEnabled = false
-                            setBackgroundResource(R.drawable.rounded_gray_button)
                         }
                     }
                 }

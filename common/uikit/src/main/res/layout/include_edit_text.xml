@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatEditText xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/include_edit_text"
+    style="@style/Text.Gray.16sp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_border"
+    android:imeOptions="actionDone"
+    android:fontFamily="@font/geometria"
+    android:padding="10dp"
+    android:singleLine="true"
+    tools:text= "Example Text"/>

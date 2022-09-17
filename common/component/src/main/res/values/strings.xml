@@ -3,4 +3,8 @@
     <string name="permission_settings_dialog_title">Требуется разрешение</string>
     <string name="permission_settings_dialog_message">Вы можете дать разрешение в настройках приложения.</string>
     <string name="permission_settings_dialog_open_settings">Открыть настройки</string>
+    <string name="personality_incorrect_name">Некорректное имя</string>
+    <string name="personality_incorrect_birthday">Укажите дату рождения</string>
+    <string name="personality_incorrect_mail">Некорректная эл. почта</string>
+    <string name="personality_incorrect_nickname">Некорректный никнейм</string>
 </resources>
