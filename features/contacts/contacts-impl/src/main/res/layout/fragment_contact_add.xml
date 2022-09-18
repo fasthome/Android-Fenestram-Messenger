@@ -84,6 +84,7 @@
         android:layout_marginTop="@dimen/contact_add_input_margin_top"
         android:layout_marginEnd="@dimen/contacts_input_margin_start_end"
         android:hint="@string/number_placeholder"
+        android:inputType="number"
         android:paddingStart="@dimen/contact_add_include_edittext_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
