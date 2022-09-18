@@ -33,8 +33,7 @@ class CreateInfoViewModel(
     private val params: CreateInfoContract.Params,
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUtil: ProfileImageUtil,
-    private val profileImageUrlConverter: ProfileImageUrlConverter
+    private val profileImageUtil: ProfileImageUtil
 ) : BaseViewModel<CreateInfoState, CreateInfoEvent>(router, requestParams) {
 
     private val conversationLauncher = registerScreen(ConversationNavigationContract) { }
@@ -71,15 +70,14 @@ class CreateInfoViewModel(
             showPopup(PrintableText.StringResource(R.string.messenger_input_chat_name))
             return
         }
+
         viewModelScope.launch {
-            var imageUrl: String
-            messengerInteractor.uploadProfileImage(
-                currentViewState.avatarImage?.file?.readBytes() ?: return@launch
-            )
-                .getOrNull()?.imagePath.let {
-                    imageUrl = profileImageUrlConverter.convert(it)
-                    it
-                }
+            val imageUrl: String? = currentViewState.avatarImage?.let { avatarImage ->
+                messengerInteractor.uploadProfileImage(
+                    avatarImage.file.readBytes()
+                ).getOrNull()?.imagePath
+            }?.apply { substring(20, length) }
+
             router.backTo(null)
             conversationLauncher.launch(
                 ConversationNavigationContract.Params(
@@ -89,12 +87,11 @@ class CreateInfoViewModel(
                         users = params.contacts.map { it.userId ?: 0 },
                         messages = listOf(),
                         time = null,
-                        avatar = imageUrl.substring(20, imageUrl.length),
+                        avatar = imageUrl,
                         isGroup = true
                     )
                 )
             )
-
         }
     }
 
