@@ -91,12 +91,11 @@ class MainActivityViewModel(
                 is CallResult.Success -> when {
                     !isAuthedResult.data -> startAuth()
                     else -> {
+                        openAuthedRootScreen()
                         if (!fromPush)
                             checkPersonalData()
-                        else {
-                            openAuthedRootScreen()
+                        else
                             this@MainActivityViewModel.deepLinkResult = deepLinkResult
-                        }
                     }
                 }
                 is CallResult.Error -> startAuth()
@@ -110,7 +109,7 @@ class MainActivityViewModel(
                 with(personalDataResult.data) {
                     if (username.isNullOrEmpty() || nickname.isNullOrEmpty() ||
                         birth.isNullOrEmpty() || email.isNullOrEmpty()
-                    ) {
+                    )
                         openPersonalityScreen(
                             AuthFeature.PersonalDataParams(
                                 username = username,
@@ -120,9 +119,6 @@ class MainActivityViewModel(
                                 avatar = avatar,
                             )
                         )
-                    } else {
-                        openAuthedRootScreen()
-                    }
                 }
             }
             is CallResult.Error -> {
