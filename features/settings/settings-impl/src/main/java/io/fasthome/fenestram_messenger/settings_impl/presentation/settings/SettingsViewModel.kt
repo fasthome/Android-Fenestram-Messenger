@@ -31,6 +31,10 @@ class SettingsViewModel(
     private val infoappLauncher = registerScreen(InfoappNavigationContact)
 
     fun onLogoutClicked() {
+        sendEvent(SettingsEvent.Logout)
+    }
+
+    fun logout() {
         viewModelScope.launch {
             features.authFeature.logout().withErrorHandled {}
         }
