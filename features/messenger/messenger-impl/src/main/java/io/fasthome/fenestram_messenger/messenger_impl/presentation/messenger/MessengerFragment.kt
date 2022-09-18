@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.ItemTouchHelper
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
@@ -43,6 +44,8 @@ class MessengerFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.chatList.adapter = messageAdapter
 
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+
         ItemTouchHelper(
             MessengerItemTouchHelper(
                 adapter = messageAdapter,
@@ -58,6 +61,7 @@ class MessengerFragment :
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let {
                     vm.filterChats(it)
+                    messageAdapter.refresh()
                 }
                 return true
             }

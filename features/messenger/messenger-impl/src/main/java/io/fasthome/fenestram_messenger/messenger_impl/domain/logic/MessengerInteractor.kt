@@ -77,8 +77,8 @@ class MessengerInteractor(
     suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
 
 
-    fun getMessengerPageItems(like: String): TotalPagingSource<Int, Chat> =
-        messageRepo.getPageChats(like)
+    fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =
+        messageRepo.getPageChats(query)
 
     private var page = 0
 

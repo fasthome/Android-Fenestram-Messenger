@@ -26,11 +26,11 @@ class MessengerRepoImpl(
     ): CallResult<SendMessageResult> = callForResult {
         messengerService.sendMessage(id, text, type, localId)
     }
-    override fun getPageChats(like: String): TotalPagingSource<Int, Chat> = totalPagingSource(
+    override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(
         maxPageSize = PAGE_SIZE,
         loadPageService = { pageNumber, pageSize ->
             messengerService.getChats(
-                like = like,
+                query = query,
                 page = pageNumber,
                 limit = pageSize
             )

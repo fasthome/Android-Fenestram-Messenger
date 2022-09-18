@@ -63,9 +63,11 @@ class MessengerViewModel(
             }
         }
 
+
+    private var _query = ""
     val items = loadDataHelper.getDataFlow(
         getItems = {
-            messengerInteractor.getMessengerPageItems("")
+            messengerInteractor.getMessengerPageItems(_query)
         },
         getCachedSelectedId = { null },
         mapDataItem = {
@@ -76,7 +78,7 @@ class MessengerViewModel(
     ).cachedIn(viewModelScope)
 
     fun filterChats(query: String) {
-//        items.u
+        _query = query.trim()
     }
 
     fun fetchNewMessages() {
