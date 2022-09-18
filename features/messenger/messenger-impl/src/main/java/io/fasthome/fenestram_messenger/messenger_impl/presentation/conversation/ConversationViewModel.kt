@@ -256,16 +256,22 @@ class ConversationViewModel(
     }
 
     fun onUserClicked() {
-        profileGuestLauncher.launch(
-            ProfileGuestFeature.ProfileGuestParams(
-                id = chatId,
-                userName = params.chat.name,
-                userNickname = "",
-                userAvatar = params.chat.avatar ?: "",
-                chatParticipants = chatUsers,
-                isGroup = params.chat.isGroup
-            )
-        )
+        viewModelScope.launch {
+            if (chatId != null)
+                messengerInteractor.getChatById(chatId!!).onSuccess {
+                    chatUsers = it.chatUsers
+                    profileGuestLauncher.launch(
+                        ProfileGuestFeature.ProfileGuestParams(
+                            id = chatId,
+                            userName = params.chat.name,
+                            userNickname = "",
+                            userAvatar = params.chat.avatar ?: "",
+                            chatParticipants = chatUsers,
+                            isGroup = params.chat.isGroup
+                        )
+                    )
+            }
+        }
     }
 
     fun closeSocket() {
