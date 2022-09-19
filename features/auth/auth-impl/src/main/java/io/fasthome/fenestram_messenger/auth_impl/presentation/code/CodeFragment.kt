@@ -90,7 +90,7 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_fenestram_label))
+            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_hoolichat_label))
 
             buttonSendCode.setOnClickListener {
                 vm.checkCode(binding.codeInput.text.toString())
