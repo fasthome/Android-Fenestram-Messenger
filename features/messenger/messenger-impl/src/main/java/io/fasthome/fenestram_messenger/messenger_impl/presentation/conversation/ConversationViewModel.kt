@@ -90,6 +90,7 @@ class ConversationViewModel(
                             it.messages.toConversationItems(
                                 selfUserId = selfUserId!!,
                                 isGroup = params.chat.isGroup,
+                                profileImageUrlConverter = profileImageUrlConverter
                             )
                         )
                     )
@@ -197,7 +198,7 @@ class ConversationViewModel(
                     tempMessage.file?.readBytes() ?: return@launch
                 )
                     .getOrNull()?.imagePath.let {
-                        imageUrl = profileImageUrlConverter.convert(it)
+                        imageUrl = it
                         it
                     }
                 when (messengerInteractor.sendMessage(
@@ -304,6 +305,7 @@ class ConversationViewModel(
                             UUID.randomUUID().toString() to message.toConversationViewItem(
                                 selfUserId = selfUserId,
                                 isGroup = params.chat.isGroup,
+                                profileImageUrlConverter
                             )
                         ).plus(state.messages)
                     )
