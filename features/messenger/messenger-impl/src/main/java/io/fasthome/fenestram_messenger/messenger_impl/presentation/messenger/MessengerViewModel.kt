@@ -3,6 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -18,10 +19,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class MessengerViewModel(
@@ -65,9 +63,11 @@ class MessengerViewModel(
             }
         }
 
+
+    private var _query = ""
     val items = loadDataHelper.getDataFlow(
         getItems = {
-            messengerInteractor.getMessengerPageItems()
+            messengerInteractor.getMessengerPageItems(_query)
         },
         getCachedSelectedId = { null },
         mapDataItem = {
@@ -77,6 +77,9 @@ class MessengerViewModel(
         getItem = { null }
     ).cachedIn(viewModelScope)
 
+    fun filterChats(query: String) {
+        _query = query.trim()
+    }
 
     fun fetchNewMessages() {
         loadDataHelper.invalidateSource()

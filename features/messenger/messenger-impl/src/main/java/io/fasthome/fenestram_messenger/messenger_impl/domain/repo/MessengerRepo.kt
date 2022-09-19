@@ -10,7 +10,7 @@ interface MessengerRepo {
 
     suspend fun sendMessage(id: Long, text: String, type: String, localId: String): CallResult<SendMessageResult>
 
-    fun getPageChats(): TotalPagingSource<Int, Chat>
+    fun getPageChats(query: String): TotalPagingSource<Int, Chat>
 
     suspend fun postChats(
         name: String,
