@@ -13,4 +13,6 @@ interface GroupGuestRepo {
         idChat: Long,
         idUser: Long
     ): CallResult<List<ParticipantsViewItem>>
+
+    suspend fun getUserId(): CallResult<Long?>
 }

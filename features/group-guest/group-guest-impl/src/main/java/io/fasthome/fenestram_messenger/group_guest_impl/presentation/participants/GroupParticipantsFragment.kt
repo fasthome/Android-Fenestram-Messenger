@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participan
 
 import android.os.Bundle
 import android.view.View
+import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.FragmentGroupParticipantsBinding
@@ -47,14 +48,11 @@ class GroupParticipantsFragment :
     override fun handleEvent(event: GroupParticipantsEvent) {
         when (event) {
             is GroupParticipantsEvent.MenuOpenEvent -> {
-                val menuBinding = UserDropdownBinding.inflate(layoutInflater)
-                val popupMenu = PopupMenu.create(menuBinding.userMenu)
-                popupMenu.showAsDropDown(event.view, (-100).dp, (-45).dp)
-
-                menuBinding.delete.onClick {
-                    vm.onDeleteUserClicked(event.id)
-                    popupMenu.dismiss()
-                }
+                UserMenuDialog.create(
+                    fragment = this,
+                    delete = vm::onDeleteUserClicked,
+                    id = event.id
+                ).show()
             }
         }
     }

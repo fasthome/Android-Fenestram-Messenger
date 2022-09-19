@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
+import android.graphics.Typeface
 import android.view.View
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
@@ -16,9 +17,17 @@ class GroupParticipantsViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ParticipantsParams,
-    private val groupGuestInteractor: GroupGuestInteractor
+    private val groupGuestInteractor: GroupGuestInteractor,
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
+
+    private var userId: Long? = null
+
+    init {
+        viewModelScope.launch {
+            userId = groupGuestInteractor.getUserId().successOrSendError()
+        }
+    }
 
     private val addUserToChatLauncher = registerScreen(GroupGuestContract) { result ->
         when (result) {
@@ -53,10 +62,12 @@ class GroupParticipantsViewModel(
 
     fun onDeleteUserClicked(id: Long) {
         viewModelScope.launch {
-            val result =
-                groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()
-            if (result != null)
-                updateState { state -> state.copy(participants = result) }
+            groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()?.let {
+                if (userId == id)
+                    router.backTo(null)
+                else
+                    updateState { state -> state.copy(participants = it) }
+            }
         }
     }
 
