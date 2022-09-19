@@ -31,6 +31,14 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="Text.White.Bold">
+        <item name="fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="Text.White.Semibold">
+        <item name="fontFamily">@font/poppins_semibold</item>
+    </style>
+
     <style name="Text.White.14sp">
         <item name="android:textSize">14sp</item>
     </style>
@@ -41,6 +49,18 @@
 
     <style name="Text.White.24sp">
         <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="Text.White.Semibold.20sp">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Text.White.Semibold.28sp">
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <style name="Text.White.Bold.32sp">
+        <item name="android:textSize">32sp</item>
     </style>
 
     <style name="Text.Red">

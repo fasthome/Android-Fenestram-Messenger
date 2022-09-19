@@ -32,7 +32,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
         with(binding) {
 
-            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_fenestram_label))
+            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_hoolichat_label))
 
             val phoneNumberInputManager =
                 PhoneNumberInputManager(phoneNumberUtil, binding.phoneInput) {
