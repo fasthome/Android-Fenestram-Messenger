@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
+import android.graphics.Typeface
 import android.view.View
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
@@ -16,7 +17,7 @@ class GroupParticipantsViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ParticipantsParams,
-    private val groupGuestInteractor: GroupGuestInteractor
+    private val groupGuestInteractor: GroupGuestInteractor,
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
