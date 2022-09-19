@@ -88,7 +88,7 @@ fun Message.toConversationViewItem(
                     }
                     MESSAGE_TYPE_IMAGE -> {
                         ConversationViewItem.Group.Image(
-                            content = text,
+                            content = profileImageUrlConverter.convert(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
                             userName = PrintableText.Raw(initiator?.name ?: ""),
