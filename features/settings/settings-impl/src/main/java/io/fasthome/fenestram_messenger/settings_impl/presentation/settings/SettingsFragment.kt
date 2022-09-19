@@ -3,15 +3,11 @@ package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.*
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentSettingsBinding
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.dp
-import io.fasthome.fenestram_messenger.util.increaseHitArea
 import io.fasthome.fenestram_messenger.util.onClick
 
 
@@ -62,6 +58,13 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
                     titleText = PrintableText.StringResource(R.string.settings_delete_accept_title),
                     messageText = PrintableText.StringResource(R.string.settings_delete_accept_description),
                     onAcceptClicked = vm::deleteAccount
+                ).show()
+            }
+            is SettingsEvent.Logout -> {
+                LogoutDialog.create(
+                    fragment = this,
+                    titleText = PrintableText.StringResource(R.string.settings_logout_title),
+                    onAcceptClicked = vm::logout
                 ).show()
             }
         }
