@@ -78,6 +78,7 @@ class CodeViewModel(
     private fun onSuccess(result: LoginResult) {
         personalityLauncher.launch(
             PersonalityNavigationContract.Params(
+                auth = false,
                 userDetail = result.userDetail
             )
         )
