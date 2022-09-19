@@ -41,6 +41,11 @@ class MessengerRepoImpl(
             messengerService.postChats(name, users, isGroup)
         }
 
+    override suspend fun postChatAvatar(id: Long, avatar: String): CallResult<Unit> =
+        callForResult {
+            messengerService.postChatAvatar(id, avatar)
+        }
+
     override suspend fun getChatById(id: Long): CallResult<GetChatByIdResult> = callForResult {
         messengerService.getChatById(id)
     }
