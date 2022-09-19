@@ -4,4 +4,5 @@
     <string name="profile_guest_add_user">Добавление участников</string>
     <string name="profile_guest_title">Выберите участников чата</string>
     <string name="profile_guest_link_title">Пригласить в чат по ссылке</string>
+    <string name="profile_guest_delete_user">Исключить</string>
 </resources>
