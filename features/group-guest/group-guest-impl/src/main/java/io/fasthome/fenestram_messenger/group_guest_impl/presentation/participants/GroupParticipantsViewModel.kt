@@ -20,6 +20,14 @@ class GroupParticipantsViewModel(
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
+    private var userId: Long? = null
+
+    init {
+        viewModelScope.launch {
+            userId = groupGuestInteractor.getUserId().successOrSendError()
+        }
+    }
+
     private val addUserToChatLauncher = registerScreen(GroupGuestContract) { result ->
         when (result) {
             is GroupGuestContract.Result.UsersAdded -> {
@@ -53,10 +61,12 @@ class GroupParticipantsViewModel(
 
     fun onDeleteUserClicked(id: Long) {
         viewModelScope.launch {
-            val result =
-                groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()
-            if (result != null)
-                updateState { state -> state.copy(participants = result) }
+            groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()?.let {
+                if (userId == id)
+                    router.backTo(null)
+                else
+                    updateState { state -> state.copy(participants = it) }
+            }
         }
     }
 

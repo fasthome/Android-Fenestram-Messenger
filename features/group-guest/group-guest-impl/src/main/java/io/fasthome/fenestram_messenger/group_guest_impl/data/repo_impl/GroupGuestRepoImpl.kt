@@ -22,4 +22,8 @@ class GroupGuestRepoImpl(private val groupGuestService: GroupGuestService) : Gro
     ): CallResult<List<ParticipantsViewItem>> = callForResult {
         groupGuestService.deleteUserFromChat(idChat, idUser)
     }
+
+    override suspend fun getUserId() = callForResult {
+        groupGuestService.getUserId()
+    }
 }
