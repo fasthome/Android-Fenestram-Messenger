@@ -41,6 +41,7 @@ class PersonalityViewModel(
 
     private var avatarUrl: String? = null
     private var updateContinueButtonJob by switchJob()
+    private var secondTimeClicked = false
 
     init {
         pickFileInterface.resultEvents()
@@ -186,6 +187,19 @@ class PersonalityViewModel(
             }.addOnFailureListener {
                 continuation.resumeWith(Result.failure(it))
             }
+    }
+
+    override fun onBackPressed(): Boolean {
+        if (params.auth)
+            return !params.auth
+
+        if (!secondTimeClicked){
+            secondTimeClicked = !secondTimeClicked
+            return secondTimeClicked
+        }
+
+        router.finishChain()
+        return secondTimeClicked
     }
 
 }

@@ -5,6 +5,7 @@ import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
@@ -39,7 +40,7 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
     private val profileImageUtil: ProfileImageUtil,
-    private val profileImageUrlConverter: ProfileImageUrlConverter
+    private val profileImageUrlConverter: ProfileImageUrlConverter,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private var chatId = params.chat.id
@@ -89,6 +90,7 @@ class ConversationViewModel(
                             it.messages.toConversationItems(
                                 selfUserId = selfUserId!!,
                                 isGroup = params.chat.isGroup,
+                                profileImageUrlConverter = profileImageUrlConverter
                             )
                         )
                     )
@@ -112,6 +114,13 @@ class ConversationViewModel(
                     isGroup = params.chat.isGroup
                 ).withErrorHandled {
                     chatId = it.chatId
+                    if (params.chat.avatar != null && params.chat.isGroup)
+                        if (messengerInteractor.postChatAvatar(it.chatId, params.chat.avatar)
+                                .successOrSendError() != null
+                        )
+                            updateState { state ->
+                                state.copy(avatar = profileImageUrlConverter.convert(params.chat.avatar))
+                            }
                 }
             }
             subscribeMessages(
@@ -185,9 +194,11 @@ class ConversationViewModel(
             }
             tempMessages.forEach { tempMessage ->
                 var imageUrl: String?
-                messengerInteractor.uploadProfileImage(tempMessage.file?.readBytes() ?: return@launch)
+                messengerInteractor.uploadProfileImage(
+                    tempMessage.file?.readBytes() ?: return@launch
+                )
                     .getOrNull()?.imagePath.let {
-                        imageUrl = profileImageUrlConverter.convert(it)
+                        imageUrl = it
                         it
                     }
                 when (messengerInteractor.sendMessage(
@@ -238,7 +249,11 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.MessageSent)
     }
 
-    private fun updateStatus(tempMessage: ConversationViewItem.Self, status: SentStatus, imageUrl: String? = null) {
+    private fun updateStatus(
+        tempMessage: ConversationViewItem.Self,
+        status: SentStatus,
+        imageUrl: String? = null
+    ) {
         updateState { state ->
             val newMessages = state.messages.toMutableMap()
             when (tempMessage) {
@@ -246,7 +261,8 @@ class ConversationViewModel(
                     newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
                 }
                 is ConversationViewItem.Self.Image -> {
-                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
+                    newMessages[tempMessage.localId] =
+                        tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                 }
             }
             state.copy(
@@ -256,16 +272,22 @@ class ConversationViewModel(
     }
 
     fun onUserClicked() {
-        profileGuestLauncher.launch(
-            ProfileGuestFeature.ProfileGuestParams(
-                id = chatId,
-                userName = params.chat.name,
-                userNickname = "",
-                userAvatar = params.chat.avatar ?: "",
-                chatParticipants = chatUsers,
-                isGroup = params.chat.isGroup
-            )
-        )
+        viewModelScope.launch {
+            if (chatId != null)
+                messengerInteractor.getChatById(chatId!!).onSuccess {
+                    chatUsers = it.chatUsers
+                    profileGuestLauncher.launch(
+                        ProfileGuestFeature.ProfileGuestParams(
+                            id = chatId,
+                            userName = params.chat.name,
+                            userNickname = "",
+                            userAvatar = params.chat.avatar ?: "",
+                            chatParticipants = chatUsers,
+                            isGroup = params.chat.isGroup
+                        )
+                    )
+            }
+        }
     }
 
     fun closeSocket() {
@@ -283,6 +305,7 @@ class ConversationViewModel(
                             UUID.randomUUID().toString() to message.toConversationViewItem(
                                 selfUserId = selfUserId,
                                 isGroup = params.chat.isGroup,
+                                profileImageUrlConverter
                             )
                         ).plus(state.messages)
                     )
@@ -376,7 +399,14 @@ class ConversationViewModel(
                 sendMessage(getPrintableRawText(selfViewItem.content))
             }
             is ConversationViewItem.Self.Image -> {
-                sendImages(listOf(AttachedFile.Image(selfViewItem.bitmap ?: return, selfViewItem.file ?: return)))
+                sendImages(
+                    listOf(
+                        AttachedFile.Image(
+                            selfViewItem.bitmap ?: return,
+                            selfViewItem.file ?: return
+                        )
+                    )
+                )
             }
         }
     }

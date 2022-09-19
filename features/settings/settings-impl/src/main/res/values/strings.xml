@@ -8,4 +8,6 @@
     <string name="settings_delete">Удалить</string>
     <string name="settings_delete_accept_title">Вы уверены, что хотите удалить аккаунт?</string>
     <string name="settings_delete_accept_description">В случае удаления все ваши данные будут удалены навсегда!</string>
+    <string name="settings_logout_title">Вы уверены, что хотите выйти из учетной записи?</string>
+    <string name="settings_logout">Выйти</string>
 </resources>

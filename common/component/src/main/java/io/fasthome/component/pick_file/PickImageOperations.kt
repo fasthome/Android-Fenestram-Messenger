@@ -48,6 +48,8 @@ class PickImageOperationsImpl(
 
             if (bitmap != null) {
 
+                tempFile.createNewFile()
+
                 val scaledBitmap = if (compressToSize != null) {
                     JpgUtil.downscale(
                         originalBitmap = bitmap,

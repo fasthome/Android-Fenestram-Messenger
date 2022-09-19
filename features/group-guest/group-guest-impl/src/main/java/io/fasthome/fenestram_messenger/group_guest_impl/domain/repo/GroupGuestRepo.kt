@@ -8,4 +8,11 @@ interface GroupGuestRepo {
         chatId: Long?,
         usersId: List<Long>?
     ): CallResult<List<ParticipantsViewItem>>
+
+    suspend fun deleteUserFromChat(
+        idChat: Long,
+        idUser: Long
+    ): CallResult<List<ParticipantsViewItem>>
+
+    suspend fun getUserId(): CallResult<Long?>
 }

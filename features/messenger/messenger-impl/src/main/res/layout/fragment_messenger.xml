@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:clipToPadding="false"
@@ -23,7 +23,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_name_header"
+        app:layout_constraintTop_toBottomOf="@+id/chats_sv"
         app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/messanger_chat_item" />
 
@@ -49,5 +49,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_settings" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/chats_sv"
+        style="@style/SearchView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/shape_input_search"
+        app:iconifiedByDefault="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_name_header"
+        app:queryHint="@string/search"
+        app:searchIcon="@drawable/ic_magnifier" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

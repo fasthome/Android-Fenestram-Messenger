@@ -3,6 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info
 
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.model.AvatarImage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
 
-data class CreateInfoState(val contacts: List<ContactViewItem>)
+data class CreateInfoState(val contacts: List<ContactViewItem>, val avatarImage: AvatarImage?)

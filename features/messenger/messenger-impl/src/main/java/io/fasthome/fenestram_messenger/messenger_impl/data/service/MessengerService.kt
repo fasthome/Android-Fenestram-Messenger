@@ -3,8 +3,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
-import io.fasthome.fenestram_messenger.profile_api.entity.ProfileImageResult
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
+import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
@@ -25,10 +25,10 @@ class MessengerService(
         return SendMessageMapper.responseToSendMessageResult(response, localId)
     }
 
-    suspend fun getChats(limit: Int, page: Int): ListWithTotal<Chat> {
+    suspend fun getChats(query: String, limit: Int, page: Int): ListWithTotal<Chat> {
         val response: GetChatsResponse = client.runGet(
             path = "api/v1/chats",
-            params = mapOf("limit" to limit, "page" to page)
+            params = mapOf("like" to query, "limit" to limit, "page" to page)
         )
 
         return ListWithTotal(
@@ -47,6 +47,13 @@ class MessengerService(
             .let {
                 PostChatsMapper.responseToPostChatsResult(it)
             }
+    }
+
+    suspend fun postChatAvatar(id: Long, avatar: String) {
+        client.runPatch<PostChatAvatarRequest, BaseResponse<PostChatAvatarRequest>>(
+                path = "api/v1/chats/$id/avatar",
+                body = PostChatAvatarRequest(avatar)
+            )
     }
 
     suspend fun getChatById(id: Long): GetChatByIdResult {

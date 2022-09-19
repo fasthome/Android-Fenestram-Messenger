@@ -17,8 +17,9 @@
     <string name="messenger_chat_empty">Здесь будет отображаться история ваших сообщениий</string>
     <string name="messenger_image">Изображение</string>
     <string name="messenger_max_attach">Максимальное количество прикреляемых файлов - 10</string>
-    <string name="conversation_delete">Удалить и выйти</string>
+    <string name="conversation_delete">Очистить чат</string>
     <string name="conversation_edit">Редактировать</string>
     <string name="messenger_retry_sent">Отправить снова</string>
     <string name="messenger_cancel_sent">Отменить отправку</string>
+    <string name="search">Поиск</string>
 </resources>

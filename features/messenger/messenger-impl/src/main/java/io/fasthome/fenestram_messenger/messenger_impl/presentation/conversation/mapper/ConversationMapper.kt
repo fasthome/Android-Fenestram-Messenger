@@ -2,6 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import android.util.Log
+import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
@@ -23,15 +25,17 @@ const val MESSAGE_TYPE_IMAGE = "image"
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
     isGroup: Boolean,
+    profileImageUrlConverter: ProfileImageUrlConverter
 ): Map<String, ConversationViewItem> = this.associateBy({
     UUID.randomUUID().toString()
 }, {
-    it.toConversationViewItem(selfUserId, isGroup)
+    it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter)
 })
 
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
+    profileImageUrlConverter: ProfileImageUrlConverter
 ): ConversationViewItem {
     if (isSystem) {
         return ConversationViewItem.System(
@@ -57,7 +61,7 @@ fun Message.toConversationViewItem(
                 }
                 MESSAGE_TYPE_IMAGE -> {
                     ConversationViewItem.Self.Image(
-                        content = text,
+                        content = profileImageUrlConverter.convert(text),
                         time = PrintableText.Raw(timeFormatter.format(date)),
                         sentStatus = SentStatus.Sent,
                         date = date,
@@ -84,7 +88,7 @@ fun Message.toConversationViewItem(
                     }
                     MESSAGE_TYPE_IMAGE -> {
                         ConversationViewItem.Group.Image(
-                            content = text,
+                            content = profileImageUrlConverter.convert(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
                             userName = PrintableText.Raw(initiator?.name ?: ""),
@@ -109,7 +113,7 @@ fun Message.toConversationViewItem(
                     }
                     MESSAGE_TYPE_IMAGE -> {
                         ConversationViewItem.Receive.Image(
-                            content = text,
+                            content = profileImageUrlConverter.convert(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
                             date = date,

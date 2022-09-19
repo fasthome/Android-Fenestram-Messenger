@@ -21,4 +21,5 @@ class ContactsFeatureImpl(private val contactsInteractor: ContactsInteractor) : 
     override suspend fun deleteContacts(contactIds: List<Long>): CallResult<Unit> = contactsInteractor.deleteContacts(contactIds)
 
     override suspend fun deleteAllContacts(): CallResult<Unit> = contactsInteractor.deleteAllContacts()
+
 }

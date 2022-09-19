@@ -40,6 +40,9 @@ class MessengerInteractor(
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
 
+    suspend fun postChatAvatar(id: Long, avatar: String) =
+        messageRepo.postChatAvatar(id, avatar)
+
     suspend fun getChatById(id: Long) = messageRepo.getChatById(id).onSuccess { }
 
     fun closeSocket() {
@@ -77,8 +80,8 @@ class MessengerInteractor(
     suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
 
 
-    fun getMessengerPageItems(): TotalPagingSource<Int, Chat> =
-        messageRepo.getPageChats()
+    fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =
+        messageRepo.getPageChats(query)
 
     private var page = 0
 
