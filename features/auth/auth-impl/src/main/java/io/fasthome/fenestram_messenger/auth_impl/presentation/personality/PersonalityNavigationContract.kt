@@ -12,6 +12,7 @@ object PersonalityNavigationContract : NavigationContract<PersonalityNavigationC
 
     @Parcelize
     class Params(
+        val auth : Boolean = true,
         val userDetail: UserDetail
     ) : Parcelable
 
