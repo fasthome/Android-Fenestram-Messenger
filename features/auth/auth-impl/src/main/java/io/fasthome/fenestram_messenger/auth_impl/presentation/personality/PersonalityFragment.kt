@@ -73,8 +73,6 @@ class PersonalityFragment :
 
 
         with(binding) {
-            labelWelcomeStart.includeWelcomeText.setText(R.string.common_welcome_message_label_start)
-            labelWelcomeEnd.includeWelcomeText.setText(R.string.common_welcome_message_label_end)
             buttonReady.setOnClickListener {
                 vm.checkPersonalData()
             }
