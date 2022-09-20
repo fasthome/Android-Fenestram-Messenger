@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.core.widget.doOnTextChanged
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
@@ -66,6 +67,9 @@ class CreateInfoFragment :
             } else {
                 false
             }
+        }
+        chatName.doOnTextChanged { _, _, _, count ->
+            if(count == 0) binding.next.hide() else binding.next.show()
         }
         chatAvatar.onClick {
             vm.onAvatarClicked()
