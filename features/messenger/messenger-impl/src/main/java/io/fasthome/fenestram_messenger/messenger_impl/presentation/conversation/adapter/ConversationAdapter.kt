@@ -86,7 +86,7 @@ fun createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked: (Conve
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
     ) {
-        binding.root.onClick {
+        binding.avatar.onClick {
             onGroupProfileItemClicked(item)
         }
         bindWithBinding {
@@ -101,7 +101,7 @@ fun createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked: (Conv
     adapterDelegateViewBinding<ConversationViewItem.Group.Image, ConversationItemGroupImageBinding>(
         ConversationItemGroupImageBinding::inflate
     ) {
-        binding.root.onClick {
+        binding.avatar.onClick {
             onGroupProfileItemClicked(item)
         }
         bindWithBinding {
