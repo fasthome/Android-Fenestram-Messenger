@@ -5,23 +5,20 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.children
+import android.view.inputmethod.EditorInfo
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateInfoChatBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.ContactsAdapter
-import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
-import io.fasthome.fenestram_messenger.mvi.ViewModelInterface
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.RoundedCornersOutlineProvider
-import io.fasthome.fenestram_messenger.util.dp
+import io.fasthome.fenestram_messenger.util.hideKeyboard
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.onClick
 
@@ -61,6 +58,14 @@ class CreateInfoFragment :
         }
         next.onClick {
             vm.onReadyClicked(chatName.text.toString())
+        }
+        chatName.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                requireActivity().hideKeyboard(true)
+                true
+            } else {
+                false
+            }
         }
         chatAvatar.onClick {
             vm.onAvatarClicked()

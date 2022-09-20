@@ -52,6 +52,7 @@ class CreateGroupChatFragment :
             item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
             item
         }
+        if(state.addedContacts.isEmpty()) binding.next.hide() else binding.next.show()
 
         contactsAdapter.notifyDataSetChanged()
 

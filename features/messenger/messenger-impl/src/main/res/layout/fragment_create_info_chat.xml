@@ -33,6 +33,7 @@
             android:id="@+id/chat_name"
             style="@style/Text.Light.16sp"
             android:layout_width="match_parent"
+            android:imeOptions="actionDone"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="14dp"
