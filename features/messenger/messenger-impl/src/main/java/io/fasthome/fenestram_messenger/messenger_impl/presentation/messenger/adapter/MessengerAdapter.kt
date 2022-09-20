@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -20,17 +21,17 @@ import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
-class MessengerAdapter(onChatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) :
+class MessengerAdapter(environment: Environment, onChatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) :
     PagerDelegateAdapter<MessengerViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
             keyExtractor = MessengerViewItem::lastMessage
         ),
         delegates = listOf(
-            createMessengerAdapter(onChatClicked, onProfileClicked)
+            createMessengerAdapter(environment,onChatClicked, onProfileClicked)
         )
     )
 
-fun createMessengerAdapter(chatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) =
+fun createMessengerAdapter(environment: Environment,chatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) =
     createAdapterDelegate<MessengerViewItem, MessangerChatItemBinding>(
         inflate = MessangerChatItemBinding::inflate,
         bind = { item, binding ->
@@ -45,7 +46,7 @@ fun createMessengerAdapter(chatClicked: (MessengerViewItem) -> Unit, onProfileCl
                 when(item.lastMessage){
                     is LastMessage.Image -> {
                         lastMessage.setText(R.string.messenger_image)
-                        image.loadRounded(item.lastMessage.imageUrl)
+                        image.loadRounded(environment.endpoints.apiBaseUrl.dropLast(1) + item.lastMessage.imageUrl)
                         image.isVisible = true
                     }
                     is LastMessage.Text -> {

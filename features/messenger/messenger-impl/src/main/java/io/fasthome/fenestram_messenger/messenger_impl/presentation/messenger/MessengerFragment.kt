@@ -8,6 +8,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.ItemTouchHelper
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
@@ -23,6 +24,7 @@ import io.fasthome.fenestram_messenger.util.getPrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.koin.android.ext.android.inject
 
 class MessengerFragment :
     BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
@@ -30,8 +32,10 @@ class MessengerFragment :
     override val vm: MessengerViewModel by viewModel()
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
+    
+    private val environment by inject<Environment>()
 
-    private var messageAdapter = MessengerAdapter(
+    private var messageAdapter = MessengerAdapter(environment = environment,
         onChatClicked = {
             vm.launchConversation(it)
         },
