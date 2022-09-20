@@ -5,8 +5,29 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ParticipantsViewItem(
-    val userId : Long,
-    val name : PrintableText,
-    val avatar : String
+open class ParticipantsViewItem(
+    open val userId: Long,
+    open val name: PrintableText,
+    open val avatar: String
 ) : Parcelable
+
+@Parcelize
+class AnotherUserViewItem(
+    override val userId: Long,
+    override val name: PrintableText,
+    override val avatar: String
+) : ParticipantsViewItem(
+    userId, name,
+    avatar
+), Parcelable
+
+@Parcelize
+class CurrentUserViewItem(
+    override val userId: Long,
+    override val name: PrintableText,
+    override val avatar: String
+) : ParticipantsViewItem(
+    userId, name,
+    avatar
+), Parcelable
+

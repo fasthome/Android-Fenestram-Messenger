@@ -34,13 +34,12 @@
         app:layout_constraintTop_toBottomOf="@id/profile_guest_delete_user" />
 
     <TextView
+        android:background="?attr/selectableItemBackground"
         android:id="@+id/profile_guest_cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/Text.Gray.14sp"
         android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_guest_add_to_contacts"
         android:text="@string/profile_guest_cancel"
         android:gravity="center"
