@@ -27,7 +27,7 @@ class PersonalityComponentFragment :
     private val binding by fragmentViewBinding(FragmentPersonalityComponentBinding::bind)
 
     companion object {
-        const val MAX_SYMBOLS = 30
+        const val MAX_SYMBOLS = 25
     }
 
     override val vm: PersonalityComponentViewModel by viewModel(
