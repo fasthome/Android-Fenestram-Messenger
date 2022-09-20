@@ -27,7 +27,7 @@ class PersonalityComponentFragment :
     private val binding by fragmentViewBinding(FragmentPersonalityComponentBinding::bind)
 
     companion object {
-        const val MAX_SYMBOLS = 25
+        const val MAX_SYMBOLS = 30
     }
 
     override val vm: PersonalityComponentViewModel by viewModel(
@@ -58,24 +58,18 @@ class PersonalityComponentFragment :
         )
 
         nameInput.doAfterTextChanged {
-            if (!it.isNullOrEmpty()) {
-                vm.onFieldChanged(EditTextKey.UsernameKey, it.toString())
-            }
+            vm.onFieldChanged(EditTextKey.UsernameKey, it?.toString() ?: "")
         }
         mailInput.doAfterTextChanged {
-            if (!it.isNullOrEmpty()) {
-                vm.onFieldChanged(EditTextKey.MailKey, it.toString())
-            }
+            vm.onFieldChanged(EditTextKey.MailKey, it?.toString() ?: "")
+
         }
         userNameInput.doAfterTextChanged {
-            if (!it.isNullOrEmpty()) {
-                vm.onFieldChanged(EditTextKey.NicknameKey, it.toString())
-            }
+            vm.onFieldChanged(EditTextKey.NicknameKey, it?.toString() ?: "")
+
         }
         birthdateInput.doAfterTextChanged {
-            if (!it.isNullOrEmpty()) {
-                vm.onFieldChanged(EditTextKey.BirthdateKey, it.toString())
-            }
+            vm.onFieldChanged(EditTextKey.BirthdateKey, it?.toString() ?: "")
         }
         HooliDatePicker(birthdateInput).registerDatePicker(childFragmentManager)
     }
