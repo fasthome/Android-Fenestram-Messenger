@@ -73,6 +73,7 @@ class PersonalityViewModel(
             }
             .launchIn(viewModelScope)
 
+        personalityInterface.runEdit(true)
         personalityInterface.fieldStateChanges
             .onEach {
                 updateFillState()

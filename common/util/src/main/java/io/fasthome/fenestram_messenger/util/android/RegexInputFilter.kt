@@ -21,7 +21,8 @@ class RegexInputFilter(
         val stringBuilder = StringBuilder(end - start)
 
         source.forEach { c ->
-            if (isCharAllowed(c)) {
+            if (isCharAllowed(c) && !source.startsWith(' ')
+            ) {
                 stringBuilder.append(c)
             } else {
                 keepOriginal = false
@@ -31,7 +32,14 @@ class RegexInputFilter(
             keepOriginal -> null
             source is Spanned -> {
                 val spannableString = SpannableString(stringBuilder)
-                TextUtils.copySpansFrom(source, start, stringBuilder.length, null, spannableString, 0)
+                TextUtils.copySpansFrom(
+                    source,
+                    start,
+                    stringBuilder.length,
+                    null,
+                    spannableString,
+                    0
+                )
                 spannableString
             }
             else -> stringBuilder

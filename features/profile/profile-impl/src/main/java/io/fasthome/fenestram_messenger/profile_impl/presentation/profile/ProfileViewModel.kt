@@ -182,6 +182,13 @@ class ProfileViewModel(
         }
     }
 
+    fun onResumed() {
+        personalityInterface.runEdit(false)
+        updateState { state ->
+            state.copy(isEdit = false)
+        }
+    }
+
     fun cancelClicked() {
         personalityInterface.runEdit(false)
         updateState { state ->
