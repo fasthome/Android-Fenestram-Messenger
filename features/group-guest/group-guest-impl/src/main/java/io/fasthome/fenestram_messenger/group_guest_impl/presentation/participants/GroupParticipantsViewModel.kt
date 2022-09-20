@@ -1,12 +1,12 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
-import android.graphics.Typeface
 import android.view.View
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestContract
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.participantsViewItemToDifferentUsers
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.userToParticipantsItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -26,6 +26,11 @@ class GroupParticipantsViewModel(
     init {
         viewModelScope.launch {
             userId = groupGuestInteractor.getUserId().successOrSendError()
+            updateState { state ->
+                state.copy(participants = params.participants.map {
+                    userToParticipantsItem(it, userId)
+                })
+            }
         }
     }
 
@@ -33,7 +38,9 @@ class GroupParticipantsViewModel(
         when (result) {
             is GroupGuestContract.Result.UsersAdded -> {
                 updateState { state ->
-                    state.copy(participants = result.users)
+                    state.copy(participants = result.users.map {
+                        participantsViewItemToDifferentUsers(it, userId)
+                    })
                 }
             }
             is GroupGuestContract.Result.Canceled -> {}
@@ -42,9 +49,7 @@ class GroupParticipantsViewModel(
     }
 
     override fun createInitialState(): GroupParticipantsState {
-        return GroupParticipantsState(
-            participants = params.participants.map(::userToParticipantsItem)
-        )
+        return GroupParticipantsState(listOf())
     }
 
     fun onAddUserToChat() {
@@ -66,7 +71,11 @@ class GroupParticipantsViewModel(
                 if (userId == id)
                     router.backTo(null)
                 else
-                    updateState { state -> state.copy(participants = it) }
+                    updateState { state ->
+                        state.copy(participants = it.map { item ->
+                            participantsViewItemToDifferentUsers(item, userId)
+                        })
+                    }
             }
         }
     }
