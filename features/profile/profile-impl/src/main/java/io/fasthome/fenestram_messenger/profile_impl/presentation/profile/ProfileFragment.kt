@@ -94,6 +94,11 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         vm.fetchProfile()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResumed()
+    }
+
     override fun renderState(state: ProfileState): Unit = with(binding) {
         username.text = state.username
         if (state.avatarUrl == null && state.avatarBitmap == null) {

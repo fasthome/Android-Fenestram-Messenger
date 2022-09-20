@@ -27,7 +27,7 @@ class PersonalityComponentFragment :
     private val binding by fragmentViewBinding(FragmentPersonalityComponentBinding::bind)
 
     companion object {
-        const val MAX_SYMBOLS = 25
+        const val MAX_SYMBOLS = 30
     }
 
     override val vm: PersonalityComponentViewModel by viewModel(
@@ -44,7 +44,7 @@ class PersonalityComponentFragment :
 
 
         nameInput.filters += listOf(
-            RegexInputFilter(REGEX_LETTERS_AND_SPACE_AND_DASH),
+            RegexInputFilter(REGEX_LETTERS_AND_SPACE_AND_DASH, true),
             InputFilter.LengthFilter(MAX_SYMBOLS)
         )
 
@@ -53,7 +53,7 @@ class PersonalityComponentFragment :
         )
 
         userNameInput.filters += listOf(
-            RegexInputFilter(REGEX_LETTERS_AND_SPACE_AND_DASH),
+            RegexInputFilter(REGEX_LETTERS_AND_SPACE_AND_DASH, true),
             InputFilter.LengthFilter(MAX_SYMBOLS)
         )
 
