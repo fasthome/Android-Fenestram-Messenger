@@ -21,6 +21,9 @@ class UserResponse(
     @SerialName("nickname")
     val nickname: String?,
 
+    @SerialName("contactName")
+    val contactName: String?,
+
     @SerialName("email")
     val email: String?,
 

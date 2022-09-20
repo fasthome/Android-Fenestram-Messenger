@@ -17,6 +17,9 @@ class Initiator(
     @SerialName("nickname")
     val nickname: String?,
 
+    @SerialName("contactName")
+    val contactName: String?,
+
     @SerialName("avatar")
     val avatar: String?,
 

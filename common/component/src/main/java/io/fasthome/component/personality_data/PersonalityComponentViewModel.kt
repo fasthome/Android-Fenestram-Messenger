@@ -34,8 +34,8 @@ class PersonalityComponentViewModel(
                     field.value.error != null
                 } -> FillState.Error
                 it.fields.all { field ->
-                    field.value.error == null && getPrintableRawText(field.value.validateText).isNotEmpty()
-                } -> FillState.Filled
+                    field.value.error == null
+                } && getPrintableRawText(it.fields[EditTextKey.UsernameKey]?.validateText).isNotEmpty() -> FillState.Filled
                 else -> FillState.Empty
             }
         }
@@ -43,10 +43,14 @@ class PersonalityComponentViewModel(
     override fun getFields(): UserDetail {
         val fields = currentViewState.fields
         return UserDetail(
-            name = fields[EditTextKey.UsernameKey]!!.validateText?.let { getPrintableRawText(it) } ?: "",
-            mail = fields[EditTextKey.MailKey]!!.validateText?.let { getPrintableRawText(it) } ?: "",
-            birthday = fields[EditTextKey.BirthdateKey]!!.validateText?.let { getPrintableRawText(it) } ?: "",
-            nickname = fields[EditTextKey.NicknameKey]!!.validateText?.let { getPrintableRawText(it) } ?: "",
+            name = fields[EditTextKey.UsernameKey]!!.validateText?.let { getPrintableRawText(it) }
+                ?: "",
+            mail = fields[EditTextKey.MailKey]!!.validateText?.let { getPrintableRawText(it) }
+                ?: "",
+            birthday = fields[EditTextKey.BirthdateKey]!!.validateText?.let { getPrintableRawText(it) }
+                ?: "",
+            nickname = fields[EditTextKey.NicknameKey]!!.validateText?.let { getPrintableRawText(it) }
+                ?: "",
         )
     }
 
@@ -138,17 +142,36 @@ class PersonalityComponentViewModel(
         val errorPrintableText: PrintableText
         when (editTextKey) {
             EditTextKey.UsernameKey -> {
-                isValid = inputText.length in 2..15
-                errorPrintableText = PrintableText.StringResource(
-                    R.string.personality_incorrect_name
-                )
+                when {
+                    inputText.length in 2..20 -> {
+                        isValid = true
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_name
+                        )
+                    }
+                    else -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_length_name
+                        )
+                    }
+                }
             }
             EditTextKey.NicknameKey -> {
-                isValid = inputText.length in 2..15
-                errorPrintableText = PrintableText.StringResource(
-                    R.string.personality_incorrect_nickname
-                )
-
+                when {
+                    inputText.length in 2..20 -> {
+                        isValid = true
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_nickname
+                        )
+                    }
+                    else -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_length_nickname
+                        )
+                    }
+                }
             }
             EditTextKey.BirthdateKey -> {
                 isValid = inputText.isNotEmpty()
