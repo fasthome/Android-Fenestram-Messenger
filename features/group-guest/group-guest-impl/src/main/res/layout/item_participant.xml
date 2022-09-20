@@ -27,11 +27,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/dropdown_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:background="@color/dark1"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
