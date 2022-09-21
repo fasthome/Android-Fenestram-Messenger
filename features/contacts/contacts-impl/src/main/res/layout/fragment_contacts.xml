@@ -81,7 +81,7 @@
 
         <TextView
             android:id="@+id/contacts_empty_text"
-            style="@style/ContactsEmpty"
+            style="@style/EmptyViewText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/contacts_empty"
@@ -149,7 +149,7 @@
 
         <TextView
             android:id="@+id/contacts_error_text"
-            style="@style/ContactsEmpty"
+            style="@style/EmptyViewText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/contacts_error_text_margin_top"
