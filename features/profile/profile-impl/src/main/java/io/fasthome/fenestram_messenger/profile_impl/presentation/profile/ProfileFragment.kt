@@ -69,7 +69,7 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
         vm.onViewCreated()
 
-        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 
         ivAvatar.onClick {
             vm.onAvatarClicked()
@@ -98,6 +98,8 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
         bDone.isEnabled = state.readyEnabled
+        username.text = state.username
+        username.isVisible = !state.isEdit
         if (state.avatarUrl == null && state.avatarBitmap == null) {
             ivAvatar.setImageDrawable(
                 ContextCompat.getDrawable(
