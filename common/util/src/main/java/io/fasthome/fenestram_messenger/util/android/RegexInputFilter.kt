@@ -21,8 +21,7 @@ class RegexInputFilter(
         val stringBuilder = StringBuilder(end - start)
 
         source.forEach { c ->
-            if (isCharAllowed(c) && !source.startsWith(' ')
-            ) {
+            if (isCharAllowed(c)) {
                 stringBuilder.append(c)
             } else {
                 keepOriginal = false

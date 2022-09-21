@@ -91,6 +91,7 @@ class MessengerViewModel(
     fun launchConversation(messangerViewItem: MessengerViewItem) {
         conversationlauncher.launch(
             ConversationNavigationContract.Params(
+                fromContacts = false,
                 chat = messangerViewItem.originalChat
             )
         )

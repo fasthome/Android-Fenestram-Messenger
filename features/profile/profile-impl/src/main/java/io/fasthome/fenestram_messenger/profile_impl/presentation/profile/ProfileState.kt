@@ -14,6 +14,7 @@ data class ProfileState(
     val originalProfileImageFile: File?,
     val isEdit: Boolean,
     val isLoad: Boolean,
+    val readyEnabled: Boolean
 ) {
 
     data class Field(

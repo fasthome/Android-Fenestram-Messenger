@@ -14,7 +14,7 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
-    <style name="ContactsEmpty" parent="TextAppearance.AppCompat">
+    <style name="EmptyViewText" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@color/manatee</item>
         <item name="android:textSize">@dimen/contact_name_empty_text_size</item>
         <item name="android:fontFamily">@font/geometria</item>

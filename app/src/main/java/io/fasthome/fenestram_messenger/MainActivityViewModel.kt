@@ -91,11 +91,12 @@ class MainActivityViewModel(
                 is CallResult.Success -> when {
                     !isAuthedResult.data -> startAuth()
                     else -> {
-                        openAuthedRootScreen()
                         if (!fromPush)
                             checkPersonalData()
-                        else
+                        else {
+                            openAuthedRootScreen()
                             this@MainActivityViewModel.deepLinkResult = deepLinkResult
+                        }
                     }
                 }
                 is CallResult.Error -> startAuth()
@@ -119,6 +120,8 @@ class MainActivityViewModel(
                                 avatar = avatar,
                             )
                         )
+                    else
+                        openAuthedRootScreen()
                 }
             }
             is CallResult.Error -> {

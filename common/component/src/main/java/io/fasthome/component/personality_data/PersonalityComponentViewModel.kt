@@ -6,10 +6,12 @@ package io.fasthome.component.personality_data
 import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.R
+import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.kotlin.ifOrNull
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
@@ -20,12 +22,21 @@ import kotlinx.coroutines.flow.map
 class PersonalityComponentViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val params: PersonalityParams
+    private val params: PersonalityParams,
+    private val authFeature: AuthFeature
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams), PersonalityInterface {
 
     private var validateJob by switchJob()
 
     private var userDetail = params.userDetail
+
+    private var users: List<AuthFeature.User>? = null
+
+    init {
+        viewModelScope.launch {
+            users = authFeature.getUsers().successOrSendError()
+        }
+    }
 
     override val fieldStateChanges: Flow<FillState> = viewState
         .map {
@@ -143,7 +154,13 @@ class PersonalityComponentViewModel(
         when (editTextKey) {
             EditTextKey.UsernameKey -> {
                 when {
-                    inputText.length in 2..20 -> {
+                    inputText.startsWith(" ") || inputText.endsWith(" ") -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_name
+                        )
+                    }
+                    inputText.length in 2..15 -> {
                         isValid = true
                         errorPrintableText = PrintableText.StringResource(
                             R.string.personality_incorrect_name
@@ -159,6 +176,21 @@ class PersonalityComponentViewModel(
             }
             EditTextKey.NicknameKey -> {
                 when {
+                    users?.any { user -> user.nickname?.let { it == inputText } ?: false }
+                        ?: false -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_same_nickname
+                        )
+                    }
+                    !inputText.matches(
+                        REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT
+                    ) -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_nickname
+                        )
+                    }
                     inputText.length in 2..20 -> {
                         isValid = true
                         errorPrintableText = PrintableText.StringResource(

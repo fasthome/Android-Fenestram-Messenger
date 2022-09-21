@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
@@ -16,12 +17,9 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.ada
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerItemTouchHelper
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getPrintableText
-import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.android.ext.android.inject
@@ -71,12 +69,15 @@ class MessengerFragment :
             }
         })
 
+        messageAdapter.addOnPagesUpdatedListener {
+            binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
+        }
+
         vm.items
             .distinctUntilChanged()
             .collectLatestWhenStarted(this) {
                 messageAdapter.submitData(it)
             }
-
     }
 
     override fun onResume() {
