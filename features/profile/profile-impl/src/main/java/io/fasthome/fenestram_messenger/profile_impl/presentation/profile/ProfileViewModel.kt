@@ -43,6 +43,7 @@ class ProfileViewModel(
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
+    private var updateContinueButtonJob by switchJob()
     private var avatarUrl: String? = null
 
     init {
@@ -57,7 +58,8 @@ class ProfileViewModel(
                                 state.copy(
                                     avatarUrl = null,
                                     avatarBitmap = bitmap,
-                                    originalProfileImageFile = it.tempFile
+                                    originalProfileImageFile = it.tempFile,
+                                    isEdit = true
                                 )
                             }
                         } else {
@@ -76,7 +78,9 @@ class ProfileViewModel(
             .launchIn(viewModelScope)
 
         personalityInterface.fieldStateChanges
-            .onEach {}
+            .onEach {
+                updateFillState()
+            }
             .launchIn(viewModelScope)
     }
 
@@ -166,7 +170,7 @@ class ProfileViewModel(
     }
 
     override fun createInitialState(): ProfileState {
-        return ProfileState("", null, null, null, isEdit = false, isLoad = false).also {
+        return ProfileState("", null, null, null, isEdit = false, isLoad = false, readyEnabled = false).also {
             personalityInterface.runEdit(false)
         }
     }
@@ -182,6 +186,17 @@ class ProfileViewModel(
         }
     }
 
+    private fun updateFillState() {
+        updateContinueButtonJob = viewModelScope.launch {
+            val readyEnabled = personalityInterface.fieldStateChanges.first() == FillState.Filled
+            updateState { state ->
+                state.copy(
+                    readyEnabled = readyEnabled
+                )
+            }
+        }
+    }
+
     fun onResumed() {
         personalityInterface.runEdit(false)
         updateState { state ->
@@ -194,6 +209,7 @@ class ProfileViewModel(
         updateState { state ->
             state.copy(isEdit = false)
         }
+        fetchProfile()
     }
 
     fun startSettings() {
