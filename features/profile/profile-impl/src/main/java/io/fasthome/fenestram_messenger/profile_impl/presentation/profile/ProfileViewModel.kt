@@ -3,11 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
-import android.Manifest
 import androidx.lifecycle.viewModelScope
-import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
-import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileInterface
@@ -22,11 +18,10 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
+import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
-import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -80,7 +75,7 @@ class ProfileViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun fetchProfile(){
+    fun fetchProfile() {
         viewModelScope.launch {
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
@@ -182,7 +177,7 @@ class ProfileViewModel(
         }
     }
 
-    fun onResumed() {
+    fun onViewCreated() {
         personalityInterface.runEdit(false)
         updateState { state ->
             state.copy(isEdit = false)
