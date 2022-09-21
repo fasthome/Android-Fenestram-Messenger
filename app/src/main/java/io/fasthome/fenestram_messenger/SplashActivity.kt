@@ -12,7 +12,7 @@ import kotlinx.coroutines.delay
 class SplashActivity : AppCompatActivity(R.layout.activity_splash) {
 
     private companion object {
-        const val SPLASH_DELAY = 2000L
+        const val SPLASH_DELAY = 1000L
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

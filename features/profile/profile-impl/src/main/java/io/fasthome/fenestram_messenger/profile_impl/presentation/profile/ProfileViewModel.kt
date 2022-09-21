@@ -3,7 +3,9 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
+import android.Manifest
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileInterface
@@ -21,7 +23,9 @@ import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteract
 import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -38,6 +42,7 @@ class ProfileViewModel(
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
+    private var updateContinueButtonJob by switchJob()
     private var avatarUrl: String? = null
 
     init {
@@ -71,7 +76,9 @@ class ProfileViewModel(
             .launchIn(viewModelScope)
 
         personalityInterface.fieldStateChanges
-            .onEach {}
+            .onEach {
+                updateFillState()
+            }
             .launchIn(viewModelScope)
     }
 
@@ -161,7 +168,7 @@ class ProfileViewModel(
     }
 
     override fun createInitialState(): ProfileState {
-        return ProfileState("", null, null, null, isEdit = false, isLoad = false).also {
+        return ProfileState("", null, null, null, isEdit = false, isLoad = false, readyEnabled = false).also {
             personalityInterface.runEdit(false)
         }
     }
@@ -177,6 +184,17 @@ class ProfileViewModel(
         }
     }
 
+    private fun updateFillState() {
+        updateContinueButtonJob = viewModelScope.launch {
+            val readyEnabled = personalityInterface.fieldStateChanges.first() == FillState.Filled
+            updateState { state ->
+                state.copy(
+                    readyEnabled = readyEnabled
+                )
+            }
+        }
+    }
+
     fun onViewCreated() {
         personalityInterface.runEdit(false)
         updateState { state ->
@@ -189,6 +207,7 @@ class ProfileViewModel(
         updateState { state ->
             state.copy(isEdit = false)
         }
+        fetchProfile()
     }
 
     fun startSettings() {
