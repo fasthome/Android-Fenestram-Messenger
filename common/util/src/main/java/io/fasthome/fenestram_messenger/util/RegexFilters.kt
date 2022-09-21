@@ -14,6 +14,7 @@ val REGEX_LETTERS_NUMBERS_SPACE_DASH = "[a-zA-ZЁёА-Яа-я 0-9-]".toRegex()
 
 val REGEX_RU_LETTERS_AND_SPACE = "[ЁёА-Яа-я ]".toRegex()
 val REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE = "[a-zA-Z0-9 ._-]".toRegex()
+val REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT = "^[a-zA-Z0-9]+([ ._-]?[a-zA-Z0-9]+)*\$".toRegex()
 
 val CYRILLIC_LETTERS_AND_SPECIAL_SYMBOLS = "^[ЁёА-Яа-я .,\\-/]*\$".toRegex()
 
