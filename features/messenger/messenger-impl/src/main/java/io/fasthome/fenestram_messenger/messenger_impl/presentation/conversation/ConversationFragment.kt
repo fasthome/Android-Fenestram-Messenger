@@ -1,10 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.view.*
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +18,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
-import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -154,7 +151,7 @@ class ConversationFragment :
                     popupMenu.dismiss()
                 }
 
-                if (vm.getTextInDropdownMenu())
+                if (vm.previousScreen())
                     menuBinding.delete.setPrintableText(
                         PrintableText.StringResource(
                             R.string.conversation_delete_from_contacts

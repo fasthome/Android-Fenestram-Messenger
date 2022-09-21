@@ -74,7 +74,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun getTextInDropdownMenu(): Boolean{
+    fun previousScreen(): Boolean{
         return params.fromContacts
     }
 
