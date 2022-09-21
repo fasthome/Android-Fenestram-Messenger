@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.io.FileOutputStream
 import java.util.*
 
 class ConversationViewModel(
@@ -189,7 +191,7 @@ class ConversationViewModel(
         viewModelScope.launch {
             updateState { state ->
                 state.copy(
-                    messages = tempMessages.associateBy({
+                    messages = tempMessages.reversed().associateBy({
                         it.localId
                     }, {
                         it
@@ -198,6 +200,11 @@ class ConversationViewModel(
             }
             tempMessages.forEach { tempMessage ->
                 var imageUrl: String?
+
+                FileOutputStream(tempMessage.file).use { output ->
+                    tempMessage.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                }
+
                 messengerInteractor.uploadProfileImage(
                     tempMessage.file?.readBytes() ?: return@launch
                 )
