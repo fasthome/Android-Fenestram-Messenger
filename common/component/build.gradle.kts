@@ -16,4 +16,6 @@ dependencies {
 
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
+
+    implementation(project(Modules.Feature.auth.api))
 }

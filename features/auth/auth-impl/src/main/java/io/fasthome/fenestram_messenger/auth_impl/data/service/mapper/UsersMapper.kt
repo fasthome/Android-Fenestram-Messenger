@@ -15,6 +15,7 @@ object UsersMapper {
                     User(
                         id = it.id,
                         name = it.name ?: it.phone,
+                        nickname = it.nickname,
                         phone = it.phone
                     )
                 }

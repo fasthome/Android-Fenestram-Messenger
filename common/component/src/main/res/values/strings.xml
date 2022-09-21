@@ -10,4 +10,5 @@
     <string name="personality_incorrect_mail">Некорректная эл. почта</string>
     <string name="personality_incorrect_nickname">Некорректный никнейм</string>
     <string name="personality_incorrect_length_nickname">Некорректная длина никнейма</string>
+    <string name="personality_same_nickname">Никнейм занят</string>
 </resources>

@@ -13,6 +13,8 @@ class HooliDatePicker(val textView: TextView) {
 
     private val now = ZonedDateTime.now().toInstant().toEpochMilli()
 
+    private val startDate = ZonedDateTime.parse(START_DATE).toInstant().toEpochMilli()
+
     private val year = 60L * 60L * 24L * 365L * 1000L
 
     private val minus100years = now - year * 100L
@@ -21,7 +23,7 @@ class HooliDatePicker(val textView: TextView) {
 
     private val constraintsBuilder =
         CalendarConstraints.Builder()
-            .setStart(minus100years)
+            .setStart(startDate)
             .setEnd(now)
             .setValidator(DateValidatorPointBackward.now())
             .setOpenAt(minus30years)
@@ -50,6 +52,7 @@ class HooliDatePicker(val textView: TextView) {
     }
 
     private companion object {
+        private const val START_DATE = "1900-01-01T00:00:00Z"
         private const val DATE_PICKER_TAG = "DATE_PICKER"
         private const val DATE_PATTERN = "dd.MM.YYYY"
     }
