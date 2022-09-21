@@ -65,13 +65,14 @@ class MessengerFragment :
             }
         })
 
+        messageAdapter.addOnPagesUpdatedListener {
+            binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
+        }
+
         vm.items
             .distinctUntilChanged()
             .collectLatestWhenStarted(this) {
                 messageAdapter.submitData(it)
-                messageAdapter.addOnPagesUpdatedListener {
-                    binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
-                }
             }
     }
 

@@ -53,15 +53,12 @@
         app:layout_constraintVertical_bias="0.25">
 
         <ImageView
-            android:id="@+id/iv_empty_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
             android:background="@drawable/image_general_chat_empty"
-            android:contentDescription="@string/messenger_empty_view"
-            android:foregroundGravity="center" />
+            android:contentDescription="@string/messenger_empty_view" />
 
         <TextView
-            android:id="@+id/contacts_empty_text"
             style="@style/EmptyViewText"
             android:gravity="center"
             android:layout_width="wrap_content"
