@@ -100,7 +100,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
-        username.text = state.username
         if (state.avatarUrl == null && state.avatarBitmap == null) {
             ivAvatar.setImageDrawable(
                 ContextCompat.getDrawable(
