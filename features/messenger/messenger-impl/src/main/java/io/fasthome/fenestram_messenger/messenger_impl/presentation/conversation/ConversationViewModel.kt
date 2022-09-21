@@ -74,6 +74,10 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun previousScreen(): Boolean{
+        return params.fromContacts
+    }
+
     fun loadItems() {
         loadItemsJob = viewModelScope.launch {
             lastPage?.let {
