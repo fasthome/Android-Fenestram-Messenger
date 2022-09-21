@@ -38,6 +38,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <LinearLayout
+        android:id="@+id/ll_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chat_list"
+        app:layout_constraintVertical_bias="0.25">
+
+        <ImageView
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:background="@drawable/image_general_chat_empty"
+            android:contentDescription="@string/messenger_empty_view" />
+
+        <TextView
+            style="@style/EmptyViewText"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="22dp"
+            android:text="@string/messenger_empty_view" />
+
+    </LinearLayout>
+
+
     <ImageButton
         android:id="@+id/ib_settings"
         android:layout_width="24dp"

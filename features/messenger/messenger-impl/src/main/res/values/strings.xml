@@ -16,6 +16,7 @@
     <string name="messenger_select_hint">Выберите участников чата</string>
     <string name="messenger_chat_empty">Здесь будет отображаться история ваших сообщениий</string>
     <string name="messenger_image">Изображение</string>
+    <string name="messenger_empty_view">Здесь будет отображаться список ваших чатов</string>
     <string name="messenger_max_attach">Максимальное количество прикреляемых файлов - 10</string>
     <string name="conversation_delete">Очистить чат</string>
     <string name="conversation_edit">Редактировать</string>
