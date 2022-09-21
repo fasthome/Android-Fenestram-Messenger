@@ -96,11 +96,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         vm.fetchProfile()
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.onResumed()
-    }
-
     override fun renderState(state: ProfileState): Unit = with(binding) {
         username.text = state.username
         bDone.isEnabled = state.readyEnabled

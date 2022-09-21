@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.Manifest
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileInterface
@@ -22,7 +23,9 @@ import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteract
 import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -54,8 +57,7 @@ class ProfileViewModel(
                                 state.copy(
                                     avatarUrl = null,
                                     avatarBitmap = bitmap,
-                                    originalProfileImageFile = it.tempFile,
-                                    isEdit = true
+                                    originalProfileImageFile = it.tempFile
                                 )
                             }
                         } else {
