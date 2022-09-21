@@ -81,7 +81,7 @@ class CreateInfoViewModel(
             router.backTo(null)
             conversationLauncher.launch(
                 ConversationNavigationContract.Params(
-                    Chat(
+                    chat = Chat(
                         null,
                         name = chatName,
                         users = params.contacts.map { it.userId ?: 0 },

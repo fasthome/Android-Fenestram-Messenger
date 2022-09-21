@@ -12,6 +12,7 @@ object ConversationNavigationContract :
     NavigationContract<ConversationNavigationContract.Params, ConversationNavigationContract.Result>(ConversationFragment::class) {
     @Parcelize
     data class Params(
+        val fromContacts: Boolean = true,
         val chat: Chat
     ) : Parcelable
 

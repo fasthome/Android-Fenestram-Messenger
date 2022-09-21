@@ -74,6 +74,10 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
     }
 
+    fun getTextInDropdownMenu(): Boolean{
+        return params.fromContacts
+    }
+
     fun loadItems() {
         loadItemsJob = viewModelScope.launch {
             lastPage?.let {

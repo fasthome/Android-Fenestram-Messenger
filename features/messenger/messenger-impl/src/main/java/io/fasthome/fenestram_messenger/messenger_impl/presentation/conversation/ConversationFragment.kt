@@ -20,6 +20,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
+import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -153,6 +154,18 @@ class ConversationFragment :
                     popupMenu.dismiss()
                 }
 
+                if (vm.getTextInDropdownMenu())
+                    menuBinding.delete.setPrintableText(
+                        PrintableText.StringResource(
+                            R.string.conversation_delete_from_contacts
+                        )
+                    )
+                else
+                    menuBinding.delete.setPrintableText(
+                        PrintableText.StringResource(
+                            R.string.conversation_delete_from_chat
+                        )
+                    )
             }
             is ConversationEvent.ShowDeleteChatDialog -> DeleteChatDialog.create(
                 fragment = this,
