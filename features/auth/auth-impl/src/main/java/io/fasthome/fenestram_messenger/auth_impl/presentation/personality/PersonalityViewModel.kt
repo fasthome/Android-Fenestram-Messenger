@@ -191,8 +191,10 @@ class PersonalityViewModel(
     }
 
     override fun onBackPressed(): Boolean {
-        if (params.auth)
-            return !params.auth
+        if (params.auth) {
+            exitWithResult(PersonalityNavigationContract.createResult(AuthFeature.AuthResult.Success))
+            return params.auth
+        }
 
         if (!secondTimeClicked){
             secondTimeClicked = !secondTimeClicked
