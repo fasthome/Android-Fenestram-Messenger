@@ -28,6 +28,7 @@ class PersonalityComponentFragment :
 
     companion object {
         const val MAX_SYMBOLS = 15
+        const val MAX_SYMBOLS_NICKNAME = 22
         const val MAX_SYMBOLS_EMAIL = 30
     }
 
@@ -45,8 +46,8 @@ class PersonalityComponentFragment :
 
 
         nameInput.filters += listOf(
-            RegexInputFilter(REGEX_RU_LETTERS_AND_SPACE, true),
-            InputFilter.LengthFilter(MAX_SYMBOLS)
+            InputFilter.LengthFilter(MAX_SYMBOLS),
+            SpaceInputFilter(REGEX_RU_LETTERS_AND_SPACE)
         )
 
         mailInput.filters += listOf(
@@ -55,8 +56,8 @@ class PersonalityComponentFragment :
         )
 
         userNameInput.filters += listOf(
-            RegexInputFilter(REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE, true),
-            InputFilter.LengthFilter(MAX_SYMBOLS)
+            SpaceInputFilter(REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE),
+            InputFilter.LengthFilter(MAX_SYMBOLS_NICKNAME)
         )
 
         nameInput.doAfterTextChanged {
