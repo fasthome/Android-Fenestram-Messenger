@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerFragment
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
@@ -11,7 +12,8 @@ object ImageViewerContract : NavigationContract<ImageViewerContract.Params, NoRe
 
     @Parcelize
     data class Params(
-        val imageUrl : String
+        val imageUrl : String?,
+        val imageBitmap : Bitmap?
     ) : Parcelable
 
 }

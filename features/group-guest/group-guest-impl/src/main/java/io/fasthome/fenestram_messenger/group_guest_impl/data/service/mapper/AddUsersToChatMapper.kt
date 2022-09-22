@@ -14,7 +14,7 @@ class AddUsersToChatMapper(private val environment: Environment) {
             return list.chatUsers!!.map { user ->
                 ParticipantsViewItem(
                     userId = user.id,
-                    name = PrintableText.Raw(user.name ?: ""),
+                    name = PrintableText.Raw(user.name ?: user.phone ?: ""),
                     avatar = environment.endpoints.apiBaseUrl.dropLast(1) + user.avatar
                 )
             }

@@ -11,7 +11,7 @@ class ImageViewerViewModel(
 ) : BaseViewModel<ImageViewerState, ImageViewerEvent>(
     router, requestParams
 ) {
-    override fun createInitialState(): ImageViewerState = ImageViewerState(params.imageUrl)
+    override fun createInitialState(): ImageViewerState = ImageViewerState(params.imageUrl, params.imageBitmap)
 
     override fun onBackPressed(): Boolean {
         exitWithoutResult()

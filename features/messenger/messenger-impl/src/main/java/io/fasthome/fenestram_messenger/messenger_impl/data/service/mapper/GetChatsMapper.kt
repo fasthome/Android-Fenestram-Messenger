@@ -58,7 +58,7 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                         phone = user.phone ?: "",
                         name = user.name ?: "",
                         nickname = user.nickname ?: "",
-                        contactName = user.contactName ?: "",
+                        contactName = user.contactName,
                         email = user.email ?: "",
                         birth = user.birth ?: "",
                         avatar = profileImageUrlConverter.convert(user.avatar),

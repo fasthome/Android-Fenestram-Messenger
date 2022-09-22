@@ -222,10 +222,10 @@ class ConversationViewModel(
                     localId = tempMessage.localId
                 )) {
                     is CallResult.Error -> {
-                        updateStatus(tempMessage, SentStatus.Error, imageUrl)
+                        updateStatus(tempMessage, SentStatus.Error, profileImageUrlConverter.convert(imageUrl))
                     }
                     is CallResult.Success -> {
-                        updateStatus(tempMessage, SentStatus.Sent, imageUrl)
+                        updateStatus(tempMessage, SentStatus.Sent, profileImageUrlConverter.convert(imageUrl))
                     }
                 }
             }
@@ -433,8 +433,8 @@ class ConversationViewModel(
         }
     }
 
-    fun onImageClicked(url: String) {
-        imageViewerLauncher.launch(ImageViewerContract.Params(url))
+    fun onImageClicked(url: String? = null, bitmap : Bitmap? = null) {
+        imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
 }

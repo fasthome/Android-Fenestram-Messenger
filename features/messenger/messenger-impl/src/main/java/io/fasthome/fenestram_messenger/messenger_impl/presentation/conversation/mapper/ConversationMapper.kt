@@ -2,15 +2,15 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import android.util.Log
+import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getFuzzyDateString
+import io.fasthome.fenestram_messenger.util.*
 import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -80,7 +80,7 @@ fun Message.toConversationViewItem(
                             content = PrintableText.Raw(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
-                            userName = PrintableText.Raw(initiator?.name ?: ""),
+                            userName = PrintableText.Raw(getName(initiator)),
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id
@@ -91,7 +91,7 @@ fun Message.toConversationViewItem(
                             content = profileImageUrlConverter.convert(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
-                            userName = PrintableText.Raw(initiator?.name ?: ""),
+                            userName = PrintableText.Raw(getName(initiator)),
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id
@@ -195,3 +195,12 @@ fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     id = 0,
     sentStatus = SentStatus.None
 )
+
+private fun getName(user: User?) : String{
+    if(user == null) return "Неизвестный пользователь"
+    return when{
+        user.contactName?.isNotEmpty() == true -> user.contactName!!
+        user.name.isNotEmpty() -> user.name
+        else -> user.phone.setMaskByCountry(Country.RUSSIA)
+    }
+}

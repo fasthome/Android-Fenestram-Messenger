@@ -29,7 +29,14 @@ class ImageViewerFragment : BaseFragment<ImageViewerState, ImageViewerEvent>(R.l
     }
 
     override fun renderState(state: ImageViewerState) {
-        binding.image.loadRounded(state.imageUrl)
+        binding.image.apply {
+            state.imageBitmap?.let {
+                loadRounded(state.imageBitmap)
+            }
+            state.imageUrl?.let {
+                loadRounded(state.imageUrl)
+            }
+        }
     }
 
     override fun handleEvent(event: ImageViewerEvent) = noEventsExpected()

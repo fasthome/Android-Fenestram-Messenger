@@ -40,9 +40,7 @@ class ConversationFragment :
         paramsProvider = {
             PickFileComponentParams(
                 mimeType = PickFileComponentParams.MimeType.Image(
-                    compressToSize = Bytes(
-                        Bytes.BYTES_PER_MB
-                    )
+                    compressToSize = null
                 )
             )
         }

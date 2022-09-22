@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import coil.load
+import coil.request.CachePolicy
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
 import coil.transform.RoundedCornersTransformation
@@ -24,6 +25,7 @@ fun ImageView.loadRounded(url: String?, placeholderRes: Int? = null, radius : Fl
         placeholder(plcRes)
         transformations(RoundedCornersTransformation(radius))
         scale(Scale.FILL)
+        diskCachePolicy(CachePolicy.DISABLED)
     }
 }
 
