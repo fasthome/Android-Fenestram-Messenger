@@ -48,6 +48,11 @@ fun ImageView.loadCircle(url: String?, placeholderRes: Int? = null) {
                 placeholder(placeholderRes)
             }
             transformations(CircleCropTransformation())
+            listener(
+                onError = { request, throwable->
+                    placeholderRes?.let { this@loadCircle.load(placeholderRes) }
+                }
+            )
         }
 }
 

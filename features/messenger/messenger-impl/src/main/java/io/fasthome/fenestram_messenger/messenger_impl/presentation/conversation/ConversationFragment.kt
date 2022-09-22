@@ -76,7 +76,8 @@ class ConversationFragment :
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         messagesList.adapter = conversationAdapter
-        val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        val linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         messagesList.layoutManager = linearLayoutManager
 
         messagesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -119,9 +120,7 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        if (state.avatar.isNotEmpty()) {
-            avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.common_avatar)
-        }
+        avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.common_avatar)
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
