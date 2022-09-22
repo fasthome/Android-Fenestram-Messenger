@@ -32,11 +32,11 @@ object ContactsMapper{
             }
             contact.user != null -> {
                 val user = contact.user!!
-                if (user.name.isNotEmpty())
+                if (contact.userName?.isNullOrEmpty() == false)
                     ContactsViewItem.Api(
                         userId = user.id,
                         avatar = user.avatar,
-                        name = PrintableText.Raw(user.name)
+                        name = PrintableText.Raw(contact.userName ?: user.name)
                     )
                 else
                     ContactsViewItem.Api(

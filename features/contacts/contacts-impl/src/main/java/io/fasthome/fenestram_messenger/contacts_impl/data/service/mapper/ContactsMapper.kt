@@ -58,6 +58,7 @@ class ContactsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                         nickname = user.nickname ?: "",
                         email = user.email ?: "",
                         birth = user.birth ?: "",
+                        contactName = null,
                         avatar = profileImageUrlConverter.convert(user.avatar),
                         isOnline = user.isOnline,
                         lastActive = ZonedDateTime.now()

@@ -24,4 +24,5 @@
     <string name="messenger_retry_sent">Отправить снова</string>
     <string name="messenger_cancel_sent">Отменить отправку</string>
     <string name="search">Поиск</string>
+    <string name="messenger_image_viewer_toolbar">Просмотр изображения</string>
 </resources>

@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
+import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -18,6 +19,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -45,6 +47,7 @@ class ConversationViewModel(
     private val profileImageUrlConverter: ProfileImageUrlConverter,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
+    private val imageViewerLauncher = registerScreen(ImageViewerContract)
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
     private var selfUserId: Long? = null
@@ -428,6 +431,10 @@ class ConversationViewModel(
                 messages = state.messages.filter { it.key != selfViewItem.localId }
             )
         }
+    }
+
+    fun onImageClicked(url: String) {
+        imageViewerLauncher.launch(ImageViewerContract.Params(url))
     }
 
 }
