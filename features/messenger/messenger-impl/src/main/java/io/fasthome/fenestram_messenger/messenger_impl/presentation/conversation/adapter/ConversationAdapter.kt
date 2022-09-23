@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.core.R
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
@@ -103,7 +104,7 @@ fun createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked: (Conve
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
-            avatar.loadCircle(url = item.avatar)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }
 
@@ -124,7 +125,7 @@ fun createConversationGroupImageAdapterDelegate(
             username.setPrintableText(item.userName)
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
-            avatar.loadCircle(url = item.avatar)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }
 

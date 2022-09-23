@@ -114,6 +114,10 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
         vm.fetchMessages()
     }
 
