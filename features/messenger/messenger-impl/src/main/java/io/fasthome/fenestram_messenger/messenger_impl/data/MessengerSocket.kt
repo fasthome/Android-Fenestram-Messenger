@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.data
 import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessage
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -32,6 +33,10 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.on("receiveMessage") {
                 Log.d(this.javaClass.simpleName, "receiveMessage: " + it[0].toString())
                 val message = Json.decodeFromString<SocketMessage>(it[0].toString())
+                if(message.message?.type == MESSAGE_TYPE_SYSTEM) {
+                    callback(messageToMessageResponse(message.message))
+                    return@on
+                }
                 if (chatId == null || chatId == message.message?.chatId) {
                     if (selfUserId != message.message?.initiatorId) {
                         callback(messageToMessageResponse(message.message))

@@ -21,7 +21,8 @@ class ProfileGuestFeatureImpl : ProfileGuestFeature {
                     userName = it.userName,
                     userAvatar = it.userAvatar,
                     groupParticipantsParams = ParticipantsParams(it.chatParticipants, it.id),
-                    isGroup = it.isGroup
+                    isGroup = it.isGroup,
+                    userPhone = it.userPhone
                 )
             },
             resultMapper = {

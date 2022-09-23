@@ -24,7 +24,7 @@ class LoginMapper(
                     email = it.email ?: "",
                     nickname = it.nickname ?: "",
                     birth = it.birth ?: "",
-                    profileImageUrl = environment.endpoints.apiBaseUrl.dropLast(1) + it.avatar
+                    profileImageUrl = it.avatar
                 )
             )
         }

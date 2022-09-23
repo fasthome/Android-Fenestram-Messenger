@@ -11,14 +11,11 @@ import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createImageMessage
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createTextMessage
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
@@ -297,7 +294,8 @@ class ConversationViewModel(
                             userNickname = "",
                             userAvatar = params.chat.avatar ?: "",
                             chatParticipants = chatUsers,
-                            isGroup = params.chat.isGroup
+                            isGroup = params.chat.isGroup,
+                            userPhone = ""
                         )
                     )
             }
@@ -324,6 +322,18 @@ class ConversationViewModel(
                         ).plus(state.messages)
                     )
                 }
+                if(message.messageType == MESSAGE_TYPE_SYSTEM){
+                    messengerInteractor.getChatById(chatId).onSuccess {
+                        chatUsers = it.chatUsers
+                        updateState { state->
+                            state.copy(
+                                avatar = it.avatar,
+                                userName = PrintableText.Raw(it.chatName),
+                            )
+                        }
+                    }
+                }
+
                 sendEvent(ConversationEvent.MessageSent)
             }
             .launchIn(viewModelScope)
@@ -340,7 +350,8 @@ class ConversationViewModel(
                 userNickname = "",
                 userAvatar = item.avatar,
                 chatParticipants = listOf(),
-                isGroup = false
+                isGroup = false,
+                userPhone = item.phone
             )
         )
     }

@@ -31,10 +31,10 @@ class ImageViewerFragment : BaseFragment<ImageViewerState, ImageViewerEvent>(R.l
     override fun renderState(state: ImageViewerState) {
         binding.image.apply {
             state.imageBitmap?.let {
-                loadRounded(state.imageBitmap)
+                loadRounded(state.imageBitmap, radius = 0f)
             }
             state.imageUrl?.let {
-                loadRounded(state.imageUrl)
+                loadRounded(state.imageUrl, radius = 0f)
             }
         }
     }

@@ -47,7 +47,7 @@ class PersonalityComponentFragment :
 
         nameInput.filters += listOf(
             InputFilter.LengthFilter(MAX_SYMBOLS),
-            SpaceInputFilter(REGEX_RU_LETTERS_AND_SPACE)
+            SpaceInputFilter(REGEX_LETTERS_NICKNAME)
         )
 
         mailInput.filters += listOf(
@@ -56,7 +56,7 @@ class PersonalityComponentFragment :
         )
 
         userNameInput.filters += listOf(
-            SpaceInputFilter(REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE),
+            SpaceInputFilter(REGEX_LETTERS_NICKNAME),
             InputFilter.LengthFilter(MAX_SYMBOLS_NICKNAME)
         )
 

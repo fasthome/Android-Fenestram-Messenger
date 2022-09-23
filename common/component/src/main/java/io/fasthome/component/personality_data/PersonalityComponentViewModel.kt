@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE
 import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.kotlin.ifOrNull

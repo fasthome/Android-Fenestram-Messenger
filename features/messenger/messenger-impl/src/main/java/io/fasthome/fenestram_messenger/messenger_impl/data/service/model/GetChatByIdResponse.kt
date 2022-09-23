@@ -11,6 +11,9 @@ class GetChatByIdResponse(
     @SerialName("name")
     val name: String?,
 
+    @SerialName("avatar")
+    val avatar: String?,
+
     @SerialName("created_at")
     val date: String?,
 
