@@ -24,7 +24,6 @@ dependencies {
     implementation(project(Modules.Common.uikit))
 
     implementation(Deps.AndroidX.paging)
-    implementation(Deps.zoom)
     implementation(Deps.socketIO) {
         exclude(group = "org.json", module = "json")
     }
