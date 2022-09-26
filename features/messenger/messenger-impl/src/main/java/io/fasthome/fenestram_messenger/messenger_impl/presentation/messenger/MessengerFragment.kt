@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerItemTouchHelper
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.UnderlayButton
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
@@ -31,7 +32,7 @@ class MessengerFragment :
     override val vm: MessengerViewModel by viewModel()
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
-    
+
     private val environment by inject<Environment>()
 
     private var messageAdapter = MessengerAdapter(environment = environment,
@@ -49,15 +50,15 @@ class MessengerFragment :
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
-        ItemTouchHelper(object : MessengerItemTouchHelper(binding.chatList) {
-            override fun instantiateUnderlayButton(): UnderlayButton {
-                return UnderlayButton(
+        ItemTouchHelper(
+            MessengerItemTouchHelper(
+                binding.chatList, UnderlayButton(
                     messageAdapter,
                     requireContext(),
                     vm::onChatDelete
                 )
-            }
-        }).attachToRecyclerView(binding.chatList)
+            )
+        ).attachToRecyclerView(binding.chatList)
 
 
 
@@ -93,7 +94,7 @@ class MessengerFragment :
     }
 
     fun onClickRec() {
-        Log.d("here","here")
+        Log.d("here", "here")
     }
 
     override fun renderState(state: MessengerState) = nothingToRender()

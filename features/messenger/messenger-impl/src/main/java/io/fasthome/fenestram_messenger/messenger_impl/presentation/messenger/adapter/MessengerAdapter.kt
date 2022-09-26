@@ -74,18 +74,18 @@ fun createMessengerAdapter(
         }
     )
 
-abstract class MessengerItemTouchHelper(
-    private val recyclerView: RecyclerView,
+class MessengerItemTouchHelper(
+    recyclerView: RecyclerView,
+    private val underlayButton: UnderlayButton,
 ) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
     private var swipedPosition = -1
-    private val buttonsBuffer: MutableMap<Int, UnderlayButton> = mutableMapOf()
 
     @SuppressLint("ClickableViewAccessibility")
     private val touchListener = View.OnTouchListener { _, event ->
         if (swipedPosition < 0) return@OnTouchListener false
-        buttonsBuffer[swipedPosition]?.handle(event)
-        recyclerView.adapter?.notifyItemChanged(swipedPosition)
+        underlayButton.handle(event, swipedPosition)
+        underlayButton.adapter.notifyItemChanged(swipedPosition)
         swipedPosition = -1
         true
     }
@@ -106,7 +106,7 @@ abstract class MessengerItemTouchHelper(
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val position = viewHolder.bindingAdapterPosition
         if (swipedPosition != position)
-        recyclerView.adapter?.notifyItemChanged(swipedPosition)
+            underlayButton.adapter.notifyItemChanged(swipedPosition)
         swipedPosition = position
     }
 
@@ -119,21 +119,11 @@ abstract class MessengerItemTouchHelper(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        val position = viewHolder.bindingAdapterPosition
-        var maxDX = dX
         val itemView = viewHolder.itemView
-
+        val maxDX = (-underlayButton.intrinsicWidth).coerceAtLeast(dX)
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             if (dX < 0) {
-                if (!buttonsBuffer.containsKey(position)) {
-                    buttonsBuffer[position] = instantiateUnderlayButton()
-                }
-
-                val button = buttonsBuffer[position] ?: return
-                maxDX = (-button.intrinsicWidth).coerceAtLeast(dX)
-
-                button.position = viewHolder.bindingAdapterPosition
-                button.draw(
+                underlayButton.draw(
                     c,
                     RectF(
                         itemView.right - kotlin.math.abs(maxDX),
@@ -156,55 +146,51 @@ abstract class MessengerItemTouchHelper(
         )
     }
 
-    abstract fun instantiateUnderlayButton(): UnderlayButton
+}
 
-    class UnderlayButton(
-        private val adapter: MessengerAdapter,
-        private val context: Context,
-        private val onClickEvent: (id: Long) -> Unit
-    ) {
-        private var clickableRegion: RectF? = null
-        val intrinsicWidth: Float = 80.dp.toFloat()
-        var position: Int? = null
+class UnderlayButton(
+    val adapter: MessengerAdapter,
+    private val context: Context,
+    private val onClickEvent: (id: Long) -> Unit
+) {
+    private var clickableRegion: RectF? = null
+    val intrinsicWidth: Float = 80.dp.toFloat()
 
-        fun draw(canvas: Canvas, rect: RectF) {
-            val paint = Paint()
+    fun draw(canvas: Canvas, rect: RectF) {
+        val paint = Paint()
 
-            paint.color = ContextCompat.getColor(context, R.color.red)
-            canvas.drawRect(rect, paint)
+        paint.color = ContextCompat.getColor(context, R.color.red)
+        canvas.drawRect(rect, paint)
 
-            ContextCompat.getDrawable(context, R.drawable.ic_delete)
-                ?.let { deleteDrawable ->
-                    val itemHeight = rect.height()
-                    val intrinsicHeight = deleteDrawable.intrinsicHeight
-                    val intrinsicWidth = deleteDrawable.intrinsicWidth
+        ContextCompat.getDrawable(context, R.drawable.ic_delete)
+            ?.let { deleteDrawable ->
+                val itemHeight = rect.height()
+                val intrinsicHeight = deleteDrawable.intrinsicHeight
+                val intrinsicWidth = deleteDrawable.intrinsicWidth
 
-                    val deleteIconTop = rect.top + (itemHeight - intrinsicHeight) / 2
-                    val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
-                    val deleteIconLeft = rect.right - deleteIconMargin - intrinsicWidth
-                    val deleteIconRight = rect.right - deleteIconMargin
-                    val deleteIconBottom = deleteIconTop + intrinsicHeight
+                val deleteIconTop = rect.top + (itemHeight - intrinsicHeight) / 2
+                val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
+                val deleteIconLeft = rect.right - deleteIconMargin - intrinsicWidth
+                val deleteIconRight = rect.right - deleteIconMargin
+                val deleteIconBottom = deleteIconTop + intrinsicHeight
 
-                    deleteDrawable.setBounds(
-                        deleteIconLeft.toInt(),
-                        deleteIconTop.toInt(),
-                        deleteIconRight.toInt(),
-                        deleteIconBottom.toInt()
-                    )
+                deleteDrawable.setBounds(
+                    deleteIconLeft.toInt(),
+                    deleteIconTop.toInt(),
+                    deleteIconRight.toInt(),
+                    deleteIconBottom.toInt()
+                )
 
-                    deleteDrawable.draw(canvas)
-                }
+                deleteDrawable.draw(canvas)
+            }
 
-            clickableRegion = rect
-        }
+        clickableRegion = rect
+    }
 
-        fun handle(event: MotionEvent) {
-            clickableRegion?.let {
-                if (it.contains(event.x, event.y)) {
-                    position?.let { position ->
-                        onClickEvent.invoke(adapter.snapshot().items[position].id)
-                    }
-                }
+    fun handle(event: MotionEvent, position: Int) {
+        clickableRegion?.let {
+            if (it.contains(event.x, event.y)) {
+                onClickEvent.invoke(adapter.snapshot().items[position].id)
             }
         }
     }
