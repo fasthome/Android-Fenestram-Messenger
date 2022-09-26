@@ -50,7 +50,7 @@ class MessengerFragment :
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
         ItemTouchHelper(object : MessengerItemTouchHelper(binding.chatList) {
-            override fun instantiateUnderlayButton(position: Int): UnderlayButton {
+            override fun instantiateUnderlayButton(): UnderlayButton {
                 return UnderlayButton(
                     messageAdapter,
                     requireContext(),

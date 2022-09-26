@@ -22,7 +22,6 @@ import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.dp
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
-import java.util.*
 
 class MessengerAdapter(
     environment: Environment,
@@ -81,28 +80,14 @@ abstract class MessengerItemTouchHelper(
 
     private var swipedPosition = -1
     private val buttonsBuffer: MutableMap<Int, UnderlayButton> = mutableMapOf()
-    private val recoverQueue = object : LinkedList<Int>() {
-        override fun add(element: Int): Boolean {
-            if (contains(element)) return false
-            return super.add(element)
-        }
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     private val touchListener = View.OnTouchListener { _, event ->
         if (swipedPosition < 0) return@OnTouchListener false
         buttonsBuffer[swipedPosition]?.handle(event)
-        recoverQueue.add(swipedPosition)
+        recyclerView.adapter?.notifyItemChanged(swipedPosition)
         swipedPosition = -1
-        recoverSwipedItem()
         true
-    }
-
-    private fun recoverSwipedItem() {
-        while (!recoverQueue.isEmpty()) {
-            val position = recoverQueue.poll() ?: return
-            recyclerView.adapter?.notifyItemChanged(position)
-        }
     }
 
     init {
@@ -120,9 +105,9 @@ abstract class MessengerItemTouchHelper(
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val position = viewHolder.bindingAdapterPosition
-        if (swipedPosition != position) recoverQueue.add(swipedPosition)
+        if (swipedPosition != position)
+        recyclerView.adapter?.notifyItemChanged(swipedPosition)
         swipedPosition = position
-        recoverSwipedItem()
     }
 
     override fun onChildDraw(
@@ -141,14 +126,14 @@ abstract class MessengerItemTouchHelper(
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             if (dX < 0) {
                 if (!buttonsBuffer.containsKey(position)) {
-                    buttonsBuffer[position] = instantiateUnderlayButton(position)
+                    buttonsBuffer[position] = instantiateUnderlayButton()
                 }
 
-                val buttons = buttonsBuffer[position] ?: return
-                maxDX = (-buttons.intrinsicWidth).coerceAtLeast(dX)
+                val button = buttonsBuffer[position] ?: return
+                maxDX = (-button.intrinsicWidth).coerceAtLeast(dX)
 
-                buttons.position = viewHolder.bindingAdapterPosition
-                buttons.draw(
+                button.position = viewHolder.bindingAdapterPosition
+                button.draw(
                     c,
                     RectF(
                         itemView.right - kotlin.math.abs(maxDX),
@@ -171,7 +156,7 @@ abstract class MessengerItemTouchHelper(
         )
     }
 
-    abstract fun instantiateUnderlayButton(position: Int): UnderlayButton
+    abstract fun instantiateUnderlayButton(): UnderlayButton
 
     class UnderlayButton(
         private val adapter: MessengerAdapter,
@@ -216,7 +201,7 @@ abstract class MessengerItemTouchHelper(
         fun handle(event: MotionEvent) {
             clickableRegion?.let {
                 if (it.contains(event.x, event.y)) {
-                    position?.let{ position ->
+                    position?.let { position ->
                         onClickEvent.invoke(adapter.snapshot().items[position].id)
                     }
                 }
