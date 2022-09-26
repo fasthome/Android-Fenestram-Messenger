@@ -81,8 +81,9 @@ class DebugViewModel(
                 userName = "Example username",
                 userNickname = "examplenickname",
                 userAvatar = "",
-                listOf(),
-                false
+                userPhone = "1234567",
+                chatParticipants = listOf(),
+                isGroup = false
             )
         )
     }

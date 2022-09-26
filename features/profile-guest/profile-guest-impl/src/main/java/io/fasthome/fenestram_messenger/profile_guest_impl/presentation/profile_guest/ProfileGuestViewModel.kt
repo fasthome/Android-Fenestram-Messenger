@@ -49,6 +49,7 @@ class ProfileGuestViewModel(
             recentFiles = listOf(),
             recentImages = listOf(),
             isGroup = params.isGroup,
+            userPhone =  PrintableText.Raw(params.userPhone)
         )
 
     fun fetchFilesAndPhotos() {

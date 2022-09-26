@@ -21,5 +21,5 @@ class MessageResponse(
     val type: String,
 
     @SerialName("created_at")
-    val date: String
+    val createdDate: String,
 )

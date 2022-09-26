@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.ActivityResultFragment
 import kotlinx.parcelize.Parcelize
+import java.io.File
 
 object CameraNavigationContract :
     NavigationContract<NoParams, CameraNavigationContract.Result>(

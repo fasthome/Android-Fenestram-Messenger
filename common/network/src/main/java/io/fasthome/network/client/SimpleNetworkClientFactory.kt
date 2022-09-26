@@ -11,6 +11,7 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.http.*
+import io.ktor.utils.io.*
 import java.io.IOException
 import java.time.Duration
 import kotlinx.serialization.SerializationException
@@ -72,7 +73,7 @@ internal class SimpleNetworkClientFactory(
                     is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(
                         cause
                     )
-                    is ResponseException, is SerializationException -> throw WrongServerResponseException(
+                    is ResponseException, is SerializationException, is CancellationException -> throw WrongServerResponseException(
                         cause
                     )
                 }

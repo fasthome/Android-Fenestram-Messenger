@@ -19,13 +19,16 @@ class GetChatByIdMapper(private val profileImageUrlConverter : ProfileImageUrlCo
                         phone = user.phone,
                         name = user.name ?: "",
                         nickname = user.nickname ?: "",
+                        contactName = user.contactName,
                         email = user.email ?: "",
                         birth = user.birth ?: "",
                         avatar = profileImageUrlConverter.convert(user.avatar),
                         isOnline = true,
                         lastActive = ZonedDateTime.now()
                     )
-                }
+                },
+                avatar = profileImageUrlConverter.convert(it.avatar),
+                chatName = it.name ?: ""
             )
         }
         throw Exception()

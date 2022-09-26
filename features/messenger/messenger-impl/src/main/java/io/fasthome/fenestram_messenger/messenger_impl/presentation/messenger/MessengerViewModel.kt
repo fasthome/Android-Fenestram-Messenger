@@ -112,8 +112,9 @@ class MessengerViewModel(
                 userName = getPrintableRawText(messengerViewItem.name),
                 userNickname = "",
                 userAvatar = messengerViewItem.profileImageUrl ?: "",
-                listOf(),
-                false
+                userPhone = "",
+                chatParticipants = listOf(),
+                isGroup = false
             )
         )
     }

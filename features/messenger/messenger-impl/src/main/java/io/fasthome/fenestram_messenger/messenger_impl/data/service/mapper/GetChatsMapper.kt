@@ -4,7 +4,6 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.GetChatsResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.network.util.NetworkMapperUtil
@@ -29,13 +28,11 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                             messageType = lastMessage.type,
                             date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
                             initiator = null,
-                            isSystem = false
+                            isDate = false
                         )
                     }
                     ),
-                    time = getZonedTime(lastMessage?.date) ?: chat.date.let(
-                        NetworkMapperUtil::parseZonedDateTime
-                    ).withZoneSameInstant(ZoneId.systemDefault()),
+                    time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
                     avatar = profileImageUrlConverter.convert(chat.avatar),
                     isGroup = chat.isGroup
                 )
@@ -51,13 +48,14 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                 text = it.text,
                 userSenderId = it.initiatorId,
                 messageType = it.type,
-                date = getZonedTime(it.date),
+                date = getZonedTime(it.createdDate),
                 initiator = it.initiator?.let { user ->
                     User(
                         id = user.id,
                         phone = user.phone ?: "",
                         name = user.name ?: "",
                         nickname = user.nickname ?: "",
+                        contactName = user.contactName,
                         email = user.email ?: "",
                         birth = user.birth ?: "",
                         avatar = profileImageUrlConverter.convert(user.avatar),
@@ -65,7 +63,7 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                         lastActive = ZonedDateTime.now()
                     )
                 },
-                isSystem = false
+                isDate = false
             )
         }
     }

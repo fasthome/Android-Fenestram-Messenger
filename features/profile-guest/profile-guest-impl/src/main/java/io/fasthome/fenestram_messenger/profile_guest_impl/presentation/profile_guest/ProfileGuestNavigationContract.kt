@@ -17,6 +17,7 @@ object ProfileGuestNavigationContract :
         val userName: String,
         val userNickname: String,
         val userAvatar: String,
+        val userPhone: String,
         val isGroup: Boolean,
         val groupParticipantsParams: ParticipantsParams
     ) : Parcelable

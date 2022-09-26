@@ -102,7 +102,7 @@ class ProfileGuestFragment :
         with(binding) {
             participantsContainer.isVisible = state.isGroup
             profileGuestName.setPrintableText(state.userName)
-            profileGuestNickname.setPrintableText(state.userNickname)
+            profileGuestNickname.setPrintableText(state.userPhone)
             
             if (state.userAvatar.isNotEmpty()) {
                 profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)

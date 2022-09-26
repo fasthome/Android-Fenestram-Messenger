@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import coil.load
+import coil.request.CachePolicy
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
 import coil.transform.RoundedCornersTransformation
@@ -21,9 +22,10 @@ fun ImageView.loadRounded(url: String?, placeholderRes: Int? = null, radius : Fl
         plcRes = R.drawable.shape_placeholder_gray
     }
     this.load(url) {
+        crossfade(true)
         placeholder(plcRes)
         transformations(RoundedCornersTransformation(radius))
-        scale(Scale.FILL)
+        diskCachePolicy(CachePolicy.DISABLED)
     }
 }
 
@@ -48,6 +50,11 @@ fun ImageView.loadCircle(url: String?, placeholderRes: Int? = null) {
                 placeholder(placeholderRes)
             }
             transformations(CircleCropTransformation())
+            listener(
+                onError = { request, throwable->
+                    placeholderRes?.let { this@loadCircle.load(placeholderRes) }
+                }
+            )
         }
 }
 
@@ -58,5 +65,17 @@ fun ImageView.loadCircle(@DrawableRes imageRes: Int?, placeholderRes: Int? = nul
             placeholder(placeholderRes)
         }
         transformations(CircleCropTransformation())
+        diskCachePolicy(CachePolicy.ENABLED)
+    }
+}
+
+fun ImageView.loadCircle(bitmap: Bitmap??, placeholderRes: Int? = null) {
+    checkNotNull(bitmap)
+    this.load(bitmap) {
+        placeholderRes?.let {
+            placeholder(placeholderRes)
+        }
+        transformations(CircleCropTransformation())
+        diskCachePolicy(CachePolicy.ENABLED)
     }
 }

@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE
 import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.kotlin.ifOrNull
@@ -135,7 +136,7 @@ class PersonalityComponentViewModel(
                 fields = fields
             )
         }
-        if (!validateField(editTextKey, inputText, singleValidate, needValidate)) return
+        if (!validateField(editTextKey, inputText.trim(), singleValidate, needValidate)) return
 
     }
 
@@ -183,18 +184,10 @@ class PersonalityComponentViewModel(
                             R.string.personality_same_nickname
                         )
                     }
-                    !inputText.matches(
-                        REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT
-                    ) -> {
-                        isValid = false
-                        errorPrintableText = PrintableText.StringResource(
-                            R.string.personality_incorrect_nickname
-                        )
-                    }
-                    inputText.length in 2..20 -> {
+                    inputText.length in 2..PersonalityComponentFragment.MAX_SYMBOLS_NICKNAME -> {
                         isValid = true
                         errorPrintableText = PrintableText.StringResource(
-                            R.string.personality_incorrect_nickname
+                            R.string.personality_incorrect_length_nickname
                         )
                     }
                     else -> {

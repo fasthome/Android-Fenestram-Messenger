@@ -1,16 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
 import android.graphics.Bitmap
-import android.util.Log
-import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getFuzzyDateString
+import io.fasthome.fenestram_messenger.util.*
 import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -20,6 +16,7 @@ private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 const val MESSAGE_TYPE_TEXT = "text"
+const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
 
 fun List<Message>.toConversationItems(
@@ -37,7 +34,7 @@ fun Message.toConversationViewItem(
     isGroup: Boolean? = null,
     profileImageUrlConverter: ProfileImageUrlConverter
 ): ConversationViewItem {
-    if (isSystem) {
+    if (isDate) {
         return ConversationViewItem.System(
             content = getFuzzyDateString(date),
             time = PrintableText.EMPTY,
@@ -69,7 +66,16 @@ fun Message.toConversationViewItem(
                         localId = UUID.randomUUID().toString()
                     )
                 }
-                else -> error("Unknown Message Type!")
+                MESSAGE_TYPE_SYSTEM -> {
+                    ConversationViewItem.System(
+                        content = PrintableText.Raw(text),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id
+                    )
+                }
+                else -> error("Unknown Message Type! type $messageType")
             }
         }
         else -> {
@@ -80,10 +86,11 @@ fun Message.toConversationViewItem(
                             content = PrintableText.Raw(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
-                            userName = PrintableText.Raw(initiator?.name ?: ""),
+                            userName = PrintableText.Raw(getName(initiator)),
                             avatar = initiator?.avatar ?: "",
                             date = date,
-                            id = id
+                            id = id,
+                            phone = initiator?.phone ?: ""
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -91,13 +98,23 @@ fun Message.toConversationViewItem(
                             content = profileImageUrlConverter.convert(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
-                            userName = PrintableText.Raw(initiator?.name ?: ""),
+                            userName = PrintableText.Raw(getName(initiator)),
                             avatar = initiator?.avatar ?: "",
+                            date = date,
+                            id = id,
+                            phone = initiator?.phone ?: ""
+                        )
+                    }
+                    MESSAGE_TYPE_SYSTEM -> {
+                        ConversationViewItem.System(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
                             date = date,
                             id = id
                         )
                     }
-                    else -> error("Unknown Message Type!")
+                    else -> error("Unknown Message Type! type $messageType")
                 }
             } else {
 
@@ -120,7 +137,16 @@ fun Message.toConversationViewItem(
                             id = id
                         )
                     }
-                    else -> error("Unknown Message Type!")
+                    MESSAGE_TYPE_SYSTEM -> {
+                        ConversationViewItem.System(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
+                            date = date,
+                            id = id
+                        )
+                    }
+                    else -> error("Unknown Message Type! type $messageType")
                 }
             }
         }
@@ -195,3 +221,12 @@ fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     id = 0,
     sentStatus = SentStatus.None
 )
+
+private fun getName(user: User?) : String{
+    if(user == null) return "Неизвестный пользователь"
+    return when{
+        user.contactName?.isNotEmpty() == true -> user.contactName!!
+        user.name.isNotEmpty() -> user.name
+        else -> user.phone.setMaskByCountry(Country.RUSSIA)
+    }
+}

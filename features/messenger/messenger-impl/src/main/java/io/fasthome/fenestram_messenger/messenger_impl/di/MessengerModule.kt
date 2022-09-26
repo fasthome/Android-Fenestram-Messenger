@@ -19,6 +19,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerViewModel
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.network.di.singleAuthorizedService
 import org.koin.dsl.module
@@ -56,6 +57,7 @@ object MessengerModule {
         viewModel(::ConversationViewModel)
         viewModel(::CreateGroupChatViewModel)
         viewModel(::CreateInfoViewModel)
+        viewModel(::ImageViewerViewModel)
 
         factory(::PagingDataViewModelHelper)
 

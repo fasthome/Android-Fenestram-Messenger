@@ -18,6 +18,7 @@ interface ProfileGuestFeature {
         val id : Long?,
         val userName : String,
         val userNickname : String,
+        val userPhone : String,
         val userAvatar : String,
         val chatParticipants : List<User>,
         val isGroup : Boolean

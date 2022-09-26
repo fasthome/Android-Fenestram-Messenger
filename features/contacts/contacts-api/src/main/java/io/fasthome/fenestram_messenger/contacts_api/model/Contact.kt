@@ -23,10 +23,11 @@ data class User(
     val name : String,
     val nickname : String,
     val email : String,
+    val contactName : String?,
     val birth : String,
     val avatar : String,
     val isOnline : Boolean,
     val lastActive : ZonedDateTime
 ) : Parcelable {
-    constructor(id : Long) : this(id, "", "", "", "", "", "", true, ZonedDateTime.now())
+    constructor(id : Long) : this(id, "", "", "", "", null, "", "", true, ZonedDateTime.now())
 }

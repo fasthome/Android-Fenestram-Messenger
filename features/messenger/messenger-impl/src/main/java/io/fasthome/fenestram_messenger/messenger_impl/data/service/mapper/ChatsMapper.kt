@@ -2,7 +2,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.network.util.NetworkMapperUtil
@@ -24,6 +23,7 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
                 phone = user.phone ?: "",
                 name = user.name ?: "",
                 nickname = user.nickname ?: "",
+                contactName = user.contactName,
                 email = user.email ?: "",
                 birth = user.birth ?: "",
                 avatar = profileImageUrlConverter.convert(user.avatar),
@@ -32,6 +32,6 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
             )
         },
         chatId = messageResponse.chatId,
-        isSystem = false
+        isDate = false
     )
 }

@@ -14,6 +14,7 @@ import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.User
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -101,16 +102,10 @@ class PersonalityFragment :
             )
         } else {
             state.profileImageUrl?.let { url ->
-                userPhoto.load(url) {
-                    transformations(CircleCropTransformation())
-                    placeholder(R.drawable.ic_baseline_account_circle_24)
-                }
+                userPhoto.loadCircle(url, R.drawable.ic_baseline_account_circle_24)
             }
             state.avatarBitmap?.let { bitmap ->
-                userPhoto.load(bitmap) {
-                    transformations(CircleCropTransformation())
-                    placeholder(R.drawable.ic_baseline_account_circle_24)
-                }
+                userPhoto.loadCircle(bitmap, R.drawable.ic_baseline_account_circle_24)
             }
         }
     }

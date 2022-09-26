@@ -68,7 +68,7 @@ class SettingsViewModel(
     fun deleteAccount(){
         viewModelScope.launch {
             settingsRepo.deleteAccount().withErrorHandled(ShowErrorType.Dialog) {
-                onLogoutClicked()
+                logout()
             }
         }
     }

@@ -1,15 +1,17 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
+import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
@@ -18,13 +20,13 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.util.PopupMenu
 import io.fasthome.fenestram_messenger.util.model.Bytes
 
 
@@ -38,9 +40,7 @@ class ConversationFragment :
         paramsProvider = {
             PickFileComponentParams(
                 mimeType = PickFileComponentParams.MimeType.Image(
-                    compressToSize = Bytes(
-                        Bytes.BYTES_PER_MB
-                    )
+                    compressToSize = null
                 )
             )
         }
@@ -56,6 +56,8 @@ class ConversationFragment :
         vm.onGroupProfileClicked(it)
     }, onSelfMessageClicked = {
         vm.onSelfMessageClicked(it)
+    }, onImageClicked = {
+        vm.onImageClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -72,7 +74,8 @@ class ConversationFragment :
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         messagesList.adapter = conversationAdapter
-        val linearLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        val linearLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         messagesList.layoutManager = linearLayoutManager
 
         messagesList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -111,13 +114,15 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
         vm.fetchMessages()
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        if (state.avatar.isNotEmpty()) {
-            avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.common_avatar)
-        }
+        avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.common_avatar)
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer

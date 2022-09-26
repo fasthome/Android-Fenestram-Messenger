@@ -43,6 +43,7 @@ fun createMessengerAdapter(environment: Environment,chatClicked: (MessengerViewI
                     onProfileClicked(item)
                 }
                 nameView.setPrintableText(item.name)
+                groupPicture.isVisible = item.isGroup
                 when(item.lastMessage){
                     is LastMessage.Image -> {
                         lastMessage.setText(R.string.messenger_image)

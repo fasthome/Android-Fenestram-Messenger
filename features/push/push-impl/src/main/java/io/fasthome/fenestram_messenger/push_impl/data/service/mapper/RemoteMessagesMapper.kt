@@ -15,7 +15,7 @@ class RemoteMessagesMapper {
         val chatName = if (data["is_group"]?.toString().toBoolean()) {
             data["chat_name"]?.toString()
         } else {
-            data["user_name"]?.toString()
+            (data["user_contact_name"] ?: data["user_name"])?.toString()
         }
         return PushClickData.Chat(
             chatId = data["chat_id"]?.toString(),

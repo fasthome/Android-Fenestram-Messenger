@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
@@ -27,27 +28,29 @@ object ContactsMapper{
             contact.user == null -> {
                 ContactsViewItem.Local(
                     avatar = R.drawable.ic_baseline_account_circle_24,
-                    name = PrintableText.Raw(contact.userName ?: "")
+                    name = PrintableText.Raw(contact.userName ?: contact.phone)
                 )
             }
             contact.user != null -> {
                 val user = contact.user!!
-                if (user.name.isNotEmpty())
-                    ContactsViewItem.Api(
-                        userId = user.id,
-                        avatar = user.avatar,
-                        name = PrintableText.Raw(user.name)
-                    )
-                else
-                    ContactsViewItem.Api(
-                        userId = user.id,
-                        avatar = user.avatar,
-                        name = PrintableText.Raw(user.phone.setMaskByCountry(Country.RUSSIA))
-                    )
+                ContactsViewItem.Api(
+                    userId = user.id,
+                    avatar = user.avatar,
+                    name = PrintableText.Raw(getName(contact))
+                )
             }
             else -> {
                 error("Unknown type contact")
             }
+        }
+    }
+
+    private fun getName(contact: Contact) : String{
+        val user = contact.user!!
+        return when{
+            contact.userName?.isNotEmpty() == true -> contact.userName!!
+            user.name.isNotEmpty() -> user.name
+            else -> user.phone.setMaskByCountry(Country.RUSSIA)
         }
     }
 

@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
+import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -10,14 +11,12 @@ import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createImageMessage
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.createTextMessage
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationItems
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -45,6 +44,7 @@ class ConversationViewModel(
     private val profileImageUrlConverter: ProfileImageUrlConverter,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
+    private val imageViewerLauncher = registerScreen(ImageViewerContract)
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
     private var selfUserId: Long? = null
@@ -219,10 +219,10 @@ class ConversationViewModel(
                     localId = tempMessage.localId
                 )) {
                     is CallResult.Error -> {
-                        updateStatus(tempMessage, SentStatus.Error, imageUrl)
+                        updateStatus(tempMessage, SentStatus.Error, profileImageUrlConverter.convert(imageUrl))
                     }
                     is CallResult.Success -> {
-                        updateStatus(tempMessage, SentStatus.Sent, imageUrl)
+                        updateStatus(tempMessage, SentStatus.Sent, profileImageUrlConverter.convert(imageUrl))
                     }
                 }
             }
@@ -294,7 +294,8 @@ class ConversationViewModel(
                             userNickname = "",
                             userAvatar = params.chat.avatar ?: "",
                             chatParticipants = chatUsers,
-                            isGroup = params.chat.isGroup
+                            isGroup = params.chat.isGroup,
+                            userPhone = ""
                         )
                     )
             }
@@ -321,6 +322,18 @@ class ConversationViewModel(
                         ).plus(state.messages)
                     )
                 }
+                if(message.messageType == MESSAGE_TYPE_SYSTEM){
+                    messengerInteractor.getChatById(chatId).onSuccess {
+                        chatUsers = it.chatUsers
+                        updateState { state->
+                            state.copy(
+                                avatar = it.avatar,
+                                userName = PrintableText.Raw(it.chatName),
+                            )
+                        }
+                    }
+                }
+
                 sendEvent(ConversationEvent.MessageSent)
             }
             .launchIn(viewModelScope)
@@ -337,7 +350,8 @@ class ConversationViewModel(
                 userNickname = "",
                 userAvatar = item.avatar,
                 chatParticipants = listOf(),
-                isGroup = false
+                isGroup = false,
+                userPhone = item.phone
             )
         )
     }
@@ -428,6 +442,10 @@ class ConversationViewModel(
                 messages = state.messages.filter { it.key != selfViewItem.localId }
             )
         }
+    }
+
+    fun onImageClicked(url: String? = null, bitmap : Bitmap? = null) {
+        imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
 }
