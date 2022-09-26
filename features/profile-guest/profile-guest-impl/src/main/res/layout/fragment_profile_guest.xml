@@ -43,6 +43,18 @@
                 app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageButton
+                android:id="@+id/profile_guest_edit_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="18dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/profile_guest_nickname"
                 style="@style/ProfileGuestNickName"
@@ -140,9 +152,9 @@
             android:layout_height="80dp"
             android:layout_marginTop="10dp"
             android:background="@color/dark2"
-            android:drawableTint="@color/red"
             android:drawableLeft="@drawable/ic_delete"
             android:drawablePadding="10dp"
+            android:drawableTint="@color/red"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:text="@string/profile_guest_delete_button"

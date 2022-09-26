@@ -13,4 +13,11 @@
         <item quantity="many">%d изображений</item>
         <item quantity="other">%d изображений</item>
     </plurals>
+
+    <plurals name="chat_participants_count">
+        <item quantity="one">Чат - %d участник</item>
+        <item quantity="few">Чат - %d участника</item>
+        <item quantity="many">Чат - %d участников</item>
+        <item quantity="other">Чат - %d участников</item>
+    </plurals>
 </resources>

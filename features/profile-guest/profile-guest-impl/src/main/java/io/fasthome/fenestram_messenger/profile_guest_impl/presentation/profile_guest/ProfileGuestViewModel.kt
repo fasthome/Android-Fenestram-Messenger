@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_edit.ProfileGuestEditNavigationContract
 import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.coroutines.launch
 
@@ -41,6 +42,20 @@ class ProfileGuestViewModel(
             )
         }
 
+    private val editGroupChatLauncher =
+        registerScreen(ProfileGuestEditNavigationContract) { result ->
+            when (result) {
+                is ProfileGuestEditNavigationContract.Result.ChatEdited -> {
+                    updateState { state ->
+                        state.copy(
+                            userName = PrintableText.Raw(result.newName),
+                            userAvatar = result.newAvatar
+                        )
+                    }
+                }
+            }
+        }
+
     override fun createInitialState() =
         ProfileGuestState(
             userName = PrintableText.Raw(params.userName),
@@ -49,7 +64,7 @@ class ProfileGuestViewModel(
             recentFiles = listOf(),
             recentImages = listOf(),
             isGroup = params.isGroup,
-            userPhone =  PrintableText.Raw(params.userPhone)
+            userPhone = PrintableText.Raw(params.userPhone)
         )
 
     fun fetchFilesAndPhotos() {
@@ -85,6 +100,17 @@ class ProfileGuestViewModel(
     fun onDeleteChatClicked() {
         if (params.id != null)
             sendEvent(ProfileGuestEvent.DeleteChatEvent(params.id))
+    }
+
+    fun onEditGroupClicked() {
+        editGroupChatLauncher.launch(
+            ProfileGuestEditNavigationContract.Params(
+                id = params.id!!,
+                userName = params.userName,
+                userAvatar = params.userAvatar,
+                participantsCount = params.groupParticipantsParams.participants.size
+            )
+        )
     }
 
     fun deleteChat(id: Long) {

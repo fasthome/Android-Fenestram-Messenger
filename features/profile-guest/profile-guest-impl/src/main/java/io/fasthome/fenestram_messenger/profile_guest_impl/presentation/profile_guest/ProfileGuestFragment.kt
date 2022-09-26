@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
-import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.*
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestBinding
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
@@ -63,8 +64,12 @@ class ProfileGuestFragment :
             vm.onShowPhotosClicked()
         }
 
-        binding.buttonDeleteChat.setOnClickListener {
+        buttonDeleteChat.setOnClickListener {
             vm.onDeleteChatClicked()
+        }
+
+        profileGuestEditGroup.setOnClickListener {
+            vm.onEditGroupClicked()
         }
     }
 
@@ -100,12 +105,16 @@ class ProfileGuestFragment :
         }
 
         with(binding) {
+            profileGuestEditGroup.isVisible = state.isGroup
             participantsContainer.isVisible = state.isGroup
             profileGuestName.setPrintableText(state.userName)
             profileGuestNickname.setPrintableText(state.userPhone)
-            
+
             if (state.userAvatar.isNotEmpty()) {
-                profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)
+                profileGuestAvatar.loadCircle(
+                    url = state.userAvatar,
+                    placeholderRes = R.drawable.common_avatar
+                )
             }
 
             recentFilesHeader.recentFileCount.setPrintableText(

@@ -1,21 +1,19 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
@@ -76,7 +74,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun previousScreen(): Boolean{
+    fun previousScreen(): Boolean {
         return params.fromContacts
     }
 
@@ -121,7 +119,7 @@ class ConversationViewModel(
                 ).withErrorHandled {
                     chatId = it.chatId
                     if (params.chat.avatar != null && params.chat.isGroup)
-                        if (messengerInteractor.postChatAvatar(it.chatId, params.chat.avatar)
+                        if (messengerInteractor.patchChatAvatar(it.chatId, params.chat.avatar)
                                 .successOrSendError() != null
                         )
                             updateState { state ->
@@ -219,10 +217,18 @@ class ConversationViewModel(
                     localId = tempMessage.localId
                 )) {
                     is CallResult.Error -> {
-                        updateStatus(tempMessage, SentStatus.Error, profileImageUrlConverter.convert(imageUrl))
+                        updateStatus(
+                            tempMessage,
+                            SentStatus.Error,
+                            profileImageUrlConverter.convert(imageUrl)
+                        )
                     }
                     is CallResult.Success -> {
-                        updateStatus(tempMessage, SentStatus.Sent, profileImageUrlConverter.convert(imageUrl))
+                        updateStatus(
+                            tempMessage,
+                            SentStatus.Sent,
+                            profileImageUrlConverter.convert(imageUrl)
+                        )
                     }
                 }
             }
@@ -298,7 +304,7 @@ class ConversationViewModel(
                             userPhone = ""
                         )
                     )
-            }
+                }
         }
     }
 
@@ -322,10 +328,10 @@ class ConversationViewModel(
                         ).plus(state.messages)
                     )
                 }
-                if(message.messageType == MESSAGE_TYPE_SYSTEM){
+                if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
-                        updateState { state->
+                        updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
@@ -444,7 +450,7 @@ class ConversationViewModel(
         }
     }
 
-    fun onImageClicked(url: String? = null, bitmap : Bitmap? = null) {
+    fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
