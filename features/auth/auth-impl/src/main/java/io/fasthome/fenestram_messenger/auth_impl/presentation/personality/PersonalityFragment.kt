@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
-import coil.load
-import coil.transform.CircleCropTransformation
 import io.fasthome.component.personality_data.PersonalityParams
 import io.fasthome.component.personality_data.PersonalityComponentContract
 import io.fasthome.component.personality_data.UserDetail

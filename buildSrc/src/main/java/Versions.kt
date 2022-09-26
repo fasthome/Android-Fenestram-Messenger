@@ -35,5 +35,6 @@ object Versions {
     const val ktor = "1.6.3"
     const val kotlinXSerialization = "1.4.30"
     const val serializationJson = "1.1.0"
+    const val glide = "4.13.2"
 
 }

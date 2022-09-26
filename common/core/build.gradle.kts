@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlin-kapt`
 }
 
 android {
@@ -17,9 +18,7 @@ dependencies {
 
     implementation(Deps.Coroutines.core)
 
-//    implementation(Deps.Firebase.firestore)
+    implementation(Deps.Glide.core)
+    kapt(Deps.Glide.compiler)
 
-    implementation(Deps.Coil.coil)
-    implementation(Deps.Coil.base)
-    implementation(Deps.Coil.svg)
 }

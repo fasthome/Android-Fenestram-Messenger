@@ -9,13 +9,12 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import coil.load
-import coil.transform.CircleCropTransformation
 import io.fasthome.component.personality_data.PersonalityComponentContract
 import io.fasthome.component.personality_data.PersonalityParams
 import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -109,17 +108,11 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             )
         } else {
             state.avatarUrl?.let { url ->
-                ivAvatar.load(url) {
-                    transformations(CircleCropTransformation())
-                    placeholder(R.drawable.ic_baseline_account_circle_24)
-                }
+                ivAvatar.loadCircle(url, placeholderRes = R.drawable.common_avatar)
             }
 
             state.avatarBitmap?.let { bitmap ->
-                ivAvatar.load(bitmap) {
-                    transformations(CircleCropTransformation())
-                    placeholder(R.drawable.ic_baseline_account_circle_24)
-                }
+                ivAvatar.loadCircle(bitmap, placeholderRes = R.drawable.common_avatar)
             }
         }
 

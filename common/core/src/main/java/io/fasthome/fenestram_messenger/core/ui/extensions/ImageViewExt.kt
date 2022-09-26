@@ -4,78 +4,128 @@
 package io.fasthome.fenestram_messenger.core.ui.extensions
 
 import android.graphics.Bitmap
-import android.util.Log
+import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
-import coil.load
-import coil.request.CachePolicy
-import coil.size.Scale
-import coil.transform.CircleCropTransformation
-import coil.transform.RoundedCornersTransformation
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.util.dp
 
-fun ImageView.loadRounded(url: String?, placeholderRes: Int? = null, radius : Float = 5.dp.toFloat()) {
+fun ImageView.loadRounded(
+    url: String?,
+    placeholderRes: Int? = null,
+    radius: Int = 5.dp
+) {
     var plcRes = placeholderRes
-    if(plcRes == null) {
+    if (plcRes == null) {
         plcRes = R.drawable.shape_placeholder_gray
     }
-    this.load(url) {
-        crossfade(true)
-        placeholder(plcRes)
-        transformations(RoundedCornersTransformation(radius))
-        diskCachePolicy(CachePolicy.DISABLED)
-    }
+    Glide
+        .with(this)
+        .load(url)
+        .transform(CenterCrop(), RoundedCorners(radius))
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .placeholder(plcRes)
+        .into(this)
 }
 
-fun ImageView.loadRounded(bitmap: Bitmap?, placeholderRes: Int? = null, radius : Float = 5.dp.toFloat()) {
+fun ImageView.loadRounded(
+    bitmap: Bitmap?,
+    placeholderRes: Int? = null,
+    radius: Int = 5.dp
+) {
     var plcRes = placeholderRes
-    if(plcRes == null) {
+    if (plcRes == null) {
         plcRes = R.drawable.shape_placeholder_gray
     }
-    this.load(bitmap) {
-        placeholder(plcRes)
-        transformations(RoundedCornersTransformation(radius))
-        scale(Scale.FILL)
-    }
+    Glide
+        .with(this)
+        .load(bitmap)
+        .transform(CenterCrop(), RoundedCorners(radius))
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .placeholder(plcRes)
+        .into(this)
 }
 
-fun ImageView.loadCircle(url: String?, placeholderRes: Int? = null) {
-    if (url.isNullOrEmpty())
-        placeholderRes?.let { this.load(placeholderRes) }
-    else
-        this.load(url) {
-            placeholderRes?.let {
-                placeholder(placeholderRes)
-            }
-            transformations(CircleCropTransformation())
-            listener(
-                onError = { request, throwable->
-                    placeholderRes?.let { this@loadCircle.load(placeholderRes) }
+fun ImageView.loadCircle(
+    url: String?,
+    placeholderRes: Int? = null,
+    onLoadFailed: () -> Unit = {},
+    onResourceReady: () -> Unit = {},
+) {
+    if (url.isNullOrEmpty()) {
+        placeholderRes?.let {
+            Glide
+                .with(this)
+                .load(placeholderRes)
+                .into(this)
+        }
+    } else {
+        Glide
+            .with(this)
+            .load(url)
+            .transform(CircleCrop())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    onLoadFailed()
+                    placeholderRes?.let {
+                        Glide
+                            .with(this@loadCircle)
+                            .load(placeholderRes)
+                            .into(this@loadCircle)
+                    }
+                    return false
                 }
-            )
-        }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    onResourceReady()
+                    return false
+                }
+            })
+            .into(this)
+    }
+
 }
 
-fun ImageView.loadCircle(@DrawableRes imageRes: Int?, placeholderRes: Int? = null) {
+fun ImageView.loadCircle(
+    @DrawableRes imageRes: Int?,
+    placeholderRes: Int = R.drawable.shape_placeholder_gray
+) {
     checkNotNull(imageRes)
-    this.load(imageRes) {
-        placeholderRes?.let {
-            placeholder(placeholderRes)
-        }
-        transformations(CircleCropTransformation())
-        diskCachePolicy(CachePolicy.ENABLED)
-    }
+    Glide
+        .with(this)
+        .load(imageRes)
+        .transform(CircleCrop())
+        .placeholder(placeholderRes)
+        .into(this)
 }
 
-fun ImageView.loadCircle(bitmap: Bitmap??, placeholderRes: Int? = null) {
+fun ImageView.loadCircle(bitmap: Bitmap?, placeholderRes: Int = R.drawable.shape_placeholder_gray) {
     checkNotNull(bitmap)
-    this.load(bitmap) {
-        placeholderRes?.let {
-            placeholder(placeholderRes)
-        }
-        transformations(CircleCropTransformation())
-        diskCachePolicy(CachePolicy.ENABLED)
-    }
+    Glide
+        .with(this)
+        .load(bitmap)
+        .transform(CircleCrop())
+        .placeholder(placeholderRes)
+        .into(this)
 }

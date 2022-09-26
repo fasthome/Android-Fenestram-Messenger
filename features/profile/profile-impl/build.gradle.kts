@@ -18,8 +18,4 @@ dependencies {
     implementation(project(Modules.Common.component))
     implementation(project(Modules.Common.network))
     implementation(project(Modules.Common.uikit))
-
-    implementation(Deps.Coil.coil)
-    implementation(Deps.Coil.base)
-    implementation(Deps.Coil.svg)
 }
