@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
@@ -48,12 +49,18 @@ class MessengerFragment :
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
-        ItemTouchHelper(
-            MessengerItemTouchHelper(
-                adapter = messageAdapter,
-                deleteChat = vm::onChatDelete
-            )
-        ).attachToRecyclerView(binding.chatList)
+        ItemTouchHelper(object : MessengerItemTouchHelper(binding.chatList) {
+            override fun instantiateUnderlayButton(position: Int): UnderlayButton {
+                return UnderlayButton(
+                    messageAdapter,
+                    requireContext(),
+                    vm::onChatDelete
+                )
+            }
+        }).attachToRecyclerView(binding.chatList)
+
+
+
 
         binding.chatsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -83,6 +90,10 @@ class MessengerFragment :
     override fun onResume() {
         super.onResume()
         vm.fetchNewMessages()
+    }
+
+    fun onClickRec() {
+        Log.d("here","here")
     }
 
     override fun renderState(state: MessengerState) = nothingToRender()
