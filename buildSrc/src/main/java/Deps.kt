@@ -69,12 +69,6 @@ object Deps {
         const val mock = "io.ktor:ktor-client-mock:${Versions.ktor}"
     }
 
-    object Coil {
-        const val coil = "io.coil-kt:coil:1.3.0"
-        const val base = "io.coil-kt:coil-base:1.3.0"
-        const val svg = "io.coil-kt:coil-svg:1.3.0"
-    }
-
     object Room {
         const val runtime = "androidx.room:room-runtime:2.4.1"
         const val compiler = "androidx.room:room-compiler:2.4.1"
@@ -98,14 +92,7 @@ object Deps {
     const val onesignal = "com.onesignal:OneSignal:4.6.3"
     const val dotsindicator = "com.tbuonomo:dotsindicator:4.2"
 
-    const val map = "org.osmdroid:osmdroid-android:6.1.6"
-
     const val materialCalendar = "com.github.prolificinteractive:material-calendarview:2.0.0"
-
-    fun w3r2Sdk(project: Project): ConfigurableFileCollection =
-        project.files("libs/ute_sdk_v3.1.5.aar")
-
-    const val dfuForW3R2Sdk = "no.nordicsemi.android:dfu:1.12.1-beta01"
 
     object Tools {
         const val desugar = "com.android.tools:desugar_jdk_libs:${Versions.Tools.desugar}"
@@ -121,6 +108,11 @@ object Deps {
         const val test = "io.insert-koin:koin-test:${Versions.koin}"
         const val android = "io.insert-koin:koin-android:${Versions.koin}"
         const val workmanager = "io.insert-koin:koin-androidx-workmanager:${Versions.koin}"
+    }
+
+    object Glide {
+        const val core = "com.github.bumptech.glide:glide:${Versions.glide}"
+        const val compiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
     }
 
     const val cicerone = "com.github.terrakok:cicerone:${Versions.cicerone}"

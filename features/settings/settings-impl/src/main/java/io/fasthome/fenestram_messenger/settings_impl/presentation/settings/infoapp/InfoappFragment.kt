@@ -2,11 +2,11 @@ package io.fasthome.fenestram_messenger.settings_impl.presentation.settings.info
 
 import android.os.Bundle
 import android.view.View
-import coil.load
-import coil.transform.CircleCropTransformation
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
+import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentInfoappBinding
@@ -24,13 +24,11 @@ class InfoappFragment : BaseFragment<InfoappState, InfoappEvent>(R.layout.fragme
         hooliToolbar.setOnButtonClickListener {
             onBackPressed()
         }
+        hooliLogo.loadCircle(R.drawable.ic_logoholi)
     }
 
-    override fun renderState(state: InfoappState): Unit = with(binding) {
-        hooliLogo.load(R.drawable.ic_logoholi){
-            transformations(CircleCropTransformation())
-        }
+    override fun renderState(state: InfoappState) = nothingToRender()
 
-    }
     override fun handleEvent(event: InfoappEvent) = noEventsExpected()
+
 }

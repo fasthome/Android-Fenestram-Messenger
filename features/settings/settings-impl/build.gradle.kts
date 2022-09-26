@@ -18,6 +18,4 @@ dependencies {
     implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.network))
 
-    implementation(Deps.Coil.coil)
-
 }

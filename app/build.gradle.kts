@@ -121,10 +121,6 @@ dependencies {
     implementation(Deps.Firebase.crashlitycs)
     implementation(Deps.Firebase.analitycs)
 
-    implementation(Deps.Coil.coil)
-    implementation(Deps.Coil.base)
-    implementation(Deps.Coil.svg)
-
     implementation(Deps.lottie)
     implementation(Deps.gms)
     implementation(Deps.playCore)

@@ -20,9 +20,6 @@ dependencies {
     implementation(project(Modules.Common.network))
     implementation(project(Modules.Common.component))
 
-    implementation(Deps.Coil.coil)
-    implementation(Deps.Coil.base)
-    implementation(Deps.Coil.svg)
     implementation(Deps.Firebase.messaging)
 
     api(Deps.maskara)
