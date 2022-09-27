@@ -123,7 +123,6 @@ class MessengerItemTouchHelper(
         val itemView = viewHolder.itemView
         val maxDX = (-underlayButton.intrinsicWidth).coerceAtLeast(dX)
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            Log.d("here", dX.toString())
             if (dX < 0)
                 underlayButton.draw(
                     c,
