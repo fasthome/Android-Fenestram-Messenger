@@ -14,7 +14,6 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.ProfileGu
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.ProfileGuestInteractor
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.repo.ProfileGuestRepo
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.ProfileGuestViewModel
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_edit.ProfileGuestEditViewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesViewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesViewModel
 import io.fasthome.network.di.singleAuthorizedService
@@ -46,6 +45,5 @@ object ProfileGuestModule {
         viewModel(::ProfileGuestViewModel)
         viewModel(::ProfileGuestFilesViewModel)
         viewModel(::ProfileGuestImagesViewModel)
-        viewModel(::ProfileGuestEditViewModel)
     }
 }

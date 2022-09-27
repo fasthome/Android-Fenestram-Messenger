@@ -2,9 +2,12 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.fasthome.component.pick_file.PickFileComponentContract
+import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
@@ -19,6 +22,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
 
@@ -37,10 +41,20 @@ class ProfileGuestFragment :
         containerViewId = R.id.participants_container
     )
 
+    private val pickImageFragment by registerFragment(
+        componentFragmentContractInterface = PickFileComponentContract,
+        paramsProvider = {
+            PickFileComponentParams(
+                mimeType = PickFileComponentParams.MimeType.Image(compressToSize = Bytes(Bytes.BYTES_PER_MB))
+            )
+        }
+    )
+
     override val vm: ProfileGuestViewModel by viewModel(
         getParamsInterface = ProfileGuestNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::groupParticipantsInterface)
+            .register(::pickImageFragment)
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
@@ -69,7 +83,11 @@ class ProfileGuestFragment :
         }
 
         profileGuestEditGroup.setOnClickListener {
-            vm.onEditGroupClicked()
+            vm.onEditGroupClicked(profileGuestName.text.toString())
+        }
+
+        profileGuestAvatar.setOnClickListener {
+            vm.onAvatarClicked()
         }
     }
 
@@ -107,14 +125,67 @@ class ProfileGuestFragment :
         with(binding) {
             profileGuestEditGroup.isVisible = state.isGroup
             participantsContainer.isVisible = state.isGroup
+            profileGuestContainer.isVisible = !state.editMode
+            profileGuestVideoChat.isVisible = !state.editMode
+            profileGuestCall.isVisible = !state.editMode
+            pickPhotoIcon.isVisible = state.editMode
+            profileGuestName.isEnabled = state.editMode
             profileGuestName.setPrintableText(state.userName)
-            profileGuestNickname.setPrintableText(state.userPhone)
 
-            if (state.userAvatar.isNotEmpty()) {
-                profileGuestAvatar.loadCircle(
-                    url = state.userAvatar,
-                    placeholderRes = R.drawable.common_avatar
+            if (state.isGroup) {
+                profileGuestNickname.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.gray1
+                    )
                 )
+                profileGuestNickname.textSize = 14F
+                profileGuestNickname.setPrintableText(
+                    PrintableText.PluralResource(
+                        R.plurals.chat_participants_count,
+                        state.participantsQuantity,
+                        state.participantsQuantity
+                    )
+                )
+            } else {
+                profileGuestNickname.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.blue
+                    )
+                )
+                profileGuestNickname.textSize = 18F
+                profileGuestNickname.setPrintableText(state.userPhone)
+            }
+
+            if (state.editMode) {
+                profileGuestAvatar.brightness = 0.5F
+                profileGuestEditGroup.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_complete_edit
+                    )
+                )
+            } else {
+                profileGuestAvatar.brightness = 1F
+                profileGuestEditGroup.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_edit
+                    )
+                )
+            }
+
+            when {
+                state.avatarBitmap != null -> profileGuestAvatar.loadCircle(
+                    bitmap = state.avatarBitmap,
+                    placeholderRes = R.drawable.bg_account_circle
+                )
+                state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
+                    url = state.userAvatar,
+                    placeholderRes = R.drawable.bg_account_circle
+                )
+                else -> profileGuestAvatar.loadCircle(R.drawable.bg_account_circle)
             }
 
             recentFilesHeader.recentFileCount.setPrintableText(
