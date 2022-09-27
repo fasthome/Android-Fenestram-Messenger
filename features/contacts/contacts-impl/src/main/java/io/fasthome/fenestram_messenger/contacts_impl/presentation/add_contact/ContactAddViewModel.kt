@@ -16,7 +16,8 @@ class ContactAddViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
-    private val contactsLoader: ContactsLoader
+    private val contactsLoader: ContactsLoader,
+    private val params: ContactAddNavigationContract.Params
 ) : BaseViewModel<ContactAddState, ContactAddEvent>(router, requestParams) {
 
     init {
@@ -37,7 +38,7 @@ class ContactAddViewModel(
     }
 
     override fun createInitialState(): ContactAddState {
-        return ContactAddState(ContactAddFragment.EditTextStatus.NameIdle)
+        return ContactAddState.ContactAutoFillStatus(params.name, params.phone)
     }
 
     fun navigateBack() {
@@ -46,36 +47,36 @@ class ContactAddViewModel(
 
     fun onNameTextChanged(firstName: String, phoneNumber: String) {
         if (firstName.isNotEmpty() && phoneNumber.length == 10) {
-            updateState { ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
+            updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
         } else {
-            updateState { ContactAddState(ContactAddFragment.EditTextStatus.NameIdle) }
+            updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameIdle) }
         }
     }
 
     fun onNumberTextChanged(firstName: String, phoneNumber: String) {
         if (firstName.isNotEmpty() && phoneNumber.length == 10) {
-            updateState { ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
+            updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
         } else {
-            updateState { ContactAddState(ContactAddFragment.EditTextStatus.NumberIdle) }
+            updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NumberIdle) }
         }
     }
 
     fun checkAndWriteContact(firstName: String, secondName: String, phoneNumber: String) {
         when {
             firstName.isEmpty() && phoneNumber.isEmpty() -> updateState {
-                ContactAddState(ContactAddFragment.EditTextStatus.NameEmptyAndNumberEmpty)
+                ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberEmpty)
             }
             firstName.isEmpty() && phoneNumber.length != 10 -> updateState {
-                ContactAddState(ContactAddFragment.EditTextStatus.NameEmptyAndNumberIncorrect)
+                ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberIncorrect)
             }
             firstName.isEmpty() && phoneNumber.length == 10 -> updateState {
-                ContactAddState(ContactAddFragment.EditTextStatus.NameEmptyAndNumberCorrect)
+                ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberCorrect)
             }
             firstName.isNotEmpty() && phoneNumber.isEmpty() -> updateState {
-                ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberEmpty)
+                ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberEmpty)
             }
             firstName.isNotEmpty() && phoneNumber.length != 10 -> updateState {
-                ContactAddState(ContactAddFragment.EditTextStatus.NameFilledAndNumberIncorrect)
+                ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberIncorrect)
             }
             else -> {
                 contactsLoaderScope.launch {

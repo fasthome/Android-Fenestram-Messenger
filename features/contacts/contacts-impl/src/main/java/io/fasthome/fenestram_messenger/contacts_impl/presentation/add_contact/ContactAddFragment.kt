@@ -25,7 +25,7 @@ class ContactAddFragment :
     override val vm: ContactAddViewModel by viewModel(
         getParamsInterface = ContactAddNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::permissionInterface)
+            .register(::permissionInterface),
     )
 
     private val binding: FragmentContactAddBinding by fragmentViewBinding(FragmentContactAddBinding::bind)
@@ -53,8 +53,10 @@ class ContactAddFragment :
             contactAddInputSecondName.includeEditText.hint =
                 getPrintableText(PrintableText.StringResource(R.string.contact_add_second_name_hint))
 
-            contactAddInputFirstName.includeEditText.filters = arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
-            contactAddInputSecondName.includeEditText.filters = arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+            contactAddInputFirstName.includeEditText.filters =
+                arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+            contactAddInputSecondName.includeEditText.filters =
+                arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
 
             contactAddInvalidFirstName.includeTextInvalid.run {
                 setPrintableText(
@@ -89,47 +91,58 @@ class ContactAddFragment :
         }
     }
 
-    override fun renderState(state: ContactAddState) = with(binding) {
-        when (state.contactAddStatus) {
-            EditTextStatus.NameIdle -> {
-                renderNameIdle()
-                contactAddButtonReady.isEnabled = false
-            }
+    override fun renderState(state: ContactAddState) {
+        with(binding) {
+            when (state) {
+                is ContactAddState.ContactAddStatus -> {
+                    when (state.contactAddStatus) {
+                        EditTextStatus.NameIdle -> {
+                            renderNameIdle()
+                            contactAddButtonReady.isEnabled = false
+                        }
 
-            EditTextStatus.NumberIdle -> {
-                renderNumberIdle()
-                contactAddButtonReady.isEnabled = false
-            }
+                        EditTextStatus.NumberIdle -> {
+                            renderNumberIdle()
+                            contactAddButtonReady.isEnabled = false
+                        }
 
-            EditTextStatus.NameFilledAndNumberCorrect -> {
-                contactAddButtonReady.isEnabled = true
-                renderNameIdle()
-                renderNumberIdle()
-            }
+                        EditTextStatus.NameFilledAndNumberCorrect -> {
+                            contactAddButtonReady.isEnabled = true
+                            renderNameIdle()
+                            renderNumberIdle()
+                        }
 
-            EditTextStatus.NameEmptyAndNumberEmpty -> {
-                renderNameEmpty()
-                renderNumberEmpty()
-            }
+                        EditTextStatus.NameEmptyAndNumberEmpty -> {
+                            renderNameEmpty()
+                            renderNumberEmpty()
+                        }
 
-            EditTextStatus.NameEmptyAndNumberIncorrect -> {
-                renderNameEmpty()
-                renderNumberIncorrect()
-            }
+                        EditTextStatus.NameEmptyAndNumberIncorrect -> {
+                            renderNameEmpty()
+                            renderNumberIncorrect()
+                        }
 
-            EditTextStatus.NameEmptyAndNumberCorrect -> {
-                renderNameEmpty()
-            }
+                        EditTextStatus.NameEmptyAndNumberCorrect -> {
+                            renderNameEmpty()
+                        }
 
-            EditTextStatus.NameFilledAndNumberEmpty -> {
-                renderNumberEmpty()
-            }
+                        EditTextStatus.NameFilledAndNumberEmpty -> {
+                            renderNumberEmpty()
+                        }
 
-            EditTextStatus.NameFilledAndNumberIncorrect -> {
-                renderNumberIncorrect()
+                        EditTextStatus.NameFilledAndNumberIncorrect -> {
+                            renderNumberIncorrect()
+                        }
+                    }
+                }
+                is ContactAddState.ContactAutoFillStatus -> {
+                    state.name?.let { contactAddInputFirstName.includeEditText.setText(it) }
+                    state.phone?.let { contactAddInputNumber.includeEditText.setText(it) }
+                }
             }
         }
     }
+
 
     override fun handleEvent(event: ContactAddEvent) = noEventsExpected()
 

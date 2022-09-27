@@ -3,5 +3,5 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participan
 import android.view.View
 
 sealed interface GroupParticipantsEvent {
-    class MenuOpenEvent(val id: Long, val view: View) : GroupParticipantsEvent
+    class MenuOpenEvent(val id: Long, val name: String, val phone: String) : GroupParticipantsEvent
 }
