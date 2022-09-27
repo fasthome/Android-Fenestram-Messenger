@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.ad
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -122,7 +123,8 @@ class MessengerItemTouchHelper(
         val itemView = viewHolder.itemView
         val maxDX = (-underlayButton.intrinsicWidth).coerceAtLeast(dX)
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            if (dX < 0) {
+            Log.d("here", dX.toString())
+            if (dX < 0)
                 underlayButton.draw(
                     c,
                     RectF(
@@ -132,7 +134,6 @@ class MessengerItemTouchHelper(
                         itemView.bottom.toFloat()
                     )
                 )
-            }
         }
 
         super.onChildDraw(
@@ -170,8 +171,8 @@ class UnderlayButton(
 
                 val deleteIconTop = rect.top + (itemHeight - intrinsicHeight) / 2
                 val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
-                val deleteIconLeft = rect.right - deleteIconMargin - intrinsicWidth
-                val deleteIconRight = rect.right - deleteIconMargin
+                val deleteIconLeft = rect.left + deleteIconMargin
+                val deleteIconRight = rect.left + deleteIconMargin + intrinsicWidth
                 val deleteIconBottom = deleteIconTop + intrinsicHeight
 
                 deleteDrawable.setBounds(
@@ -183,7 +184,6 @@ class UnderlayButton(
 
                 deleteDrawable.draw(canvas)
             }
-
         clickableRegion = rect
     }
 
