@@ -82,12 +82,6 @@ fun ImageView.loadCircle(
                     isFirstResource: Boolean
                 ): Boolean {
                     onLoadFailed()
-                    placeholderRes?.let {
-                        Glide
-                            .with(this@loadCircle)
-                            .load(placeholderRes)
-                            .into(this@loadCircle)
-                    }
                     return false
                 }
 

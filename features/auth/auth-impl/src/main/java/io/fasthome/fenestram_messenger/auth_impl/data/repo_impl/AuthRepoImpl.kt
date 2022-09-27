@@ -43,4 +43,20 @@ class AuthRepoImpl(
     override suspend fun getUsers(): CallResult<UsersResult> = callForResult {
         usersService.getUsers()
     }
+
+    override suspend fun getUserCode(): CallResult<String?> = callForResult{
+        userStorage.getUserCode()
+    }
+
+    override suspend fun getUserPhone(): CallResult<String?> = callForResult{
+        userStorage.getUserPhone()
+    }
+
+    override suspend fun setUserCode(code : String) {
+        userStorage.setUserCode(code)
+    }
+
+    override suspend fun setUserPhone(phone : String) {
+        userStorage.setUserPhone(phone)
+    }
 }

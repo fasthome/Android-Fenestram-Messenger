@@ -18,13 +18,19 @@ interface AuthFeature {
 
     val personalDataNavigationContract: NavigationContractApi<PersonalDataParams, AuthResult>
 
-    suspend fun getUserId(): CallResult<Long?>
+    suspend fun getUserId(needLogout : Boolean): CallResult<Long?>
+
+    suspend fun getUserPhone(): CallResult<String?>
+
+    suspend fun getUserCode(): CallResult<String?>
 
     suspend fun getUsers(): CallResult<List<User>>
 
     suspend fun isUserAuthorized(): CallResult<Boolean>
 
     suspend fun logout(): CallResult<Unit>
+
+    suspend fun login(phone: String, code: String) : CallResult<Unit>
 
     /**
      * Поток событий, по которым должен происходить переход на экран авторизации.
