@@ -76,7 +76,7 @@
         android:drawableLeft="@drawable/ic_delete_account"
         android:drawablePadding="20dp"
         android:text="@string/settings_delete_account"
-        style="@style/Text.Red.16sp"
+        style="@style/Text.White.16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_aboutApp" />
 
