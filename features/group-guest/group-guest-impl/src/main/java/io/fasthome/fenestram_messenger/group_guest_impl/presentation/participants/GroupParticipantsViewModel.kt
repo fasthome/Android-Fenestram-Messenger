@@ -49,9 +49,17 @@ class GroupParticipantsViewModel(
         exitWithResult(GroupGuestContract.createResult(result))
     }
 
-    private val addUserToContactsLauncher = registerScreen(contactsFeature.contactAddNavigationContract) {
-        exitWithoutResult()
-    }
+    private val addUserToContactsLauncher =
+        registerScreen(contactsFeature.contactAddNavigationContract) { result ->
+            when (result) {
+                is ContactsFeature.ContactAddResult.Success -> {
+                    viewModelScope.launch {
+                        contactsFeature.getContactsAndUploadContacts()
+                    }
+                }
+                is ContactsFeature.ContactAddResult.Canceled -> {}
+            }
+        }
 
     override fun createInitialState(): GroupParticipantsState {
         return GroupParticipantsState(listOf())
@@ -70,7 +78,7 @@ class GroupParticipantsViewModel(
         params.participants.find { user ->
             user.id == id
         }?.let {
-            sendEvent(GroupParticipantsEvent.MenuOpenEvent(id, it.name, it.phone))
+            sendEvent(GroupParticipantsEvent.MenuOpenEvent(id, it.nickname, it.phone))
         }
     }
 

@@ -38,7 +38,10 @@ class ContactAddViewModel(
     }
 
     override fun createInitialState(): ContactAddState {
-        return ContactAddState.ContactAutoFillStatus(params.name, params.phone)
+        return if (params.name != null && params.phone != null)
+            ContactAddState.ContactAutoFillStatus(params.name, params.phone)
+        else
+            ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameIdle)
     }
 
     fun navigateBack() {

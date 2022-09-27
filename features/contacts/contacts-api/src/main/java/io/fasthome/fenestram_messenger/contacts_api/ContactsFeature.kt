@@ -23,6 +23,8 @@ interface ContactsFeature {
 
     suspend fun deleteAllContacts() : CallResult<Unit>
 
+    suspend fun getContactsAndUploadContacts(): CallResult<List<Contact>>
+
     @Parcelize
     data class Params(
         val name: String? = null,
