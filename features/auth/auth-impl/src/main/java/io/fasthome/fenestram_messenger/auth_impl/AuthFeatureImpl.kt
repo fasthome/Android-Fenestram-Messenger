@@ -43,11 +43,15 @@ class AuthFeatureImpl(
             resultMapper = { it }
         )
 
-    override suspend fun getUserId(): CallResult<Long?> = authInteractor.getUserId().onSuccess {
-        if (it == null) {
+    override suspend fun getUserId(needLogout : Boolean): CallResult<Long?> = authInteractor.getUserId().onSuccess {
+        if (it == null && needLogout) {
             logout()
         }
     }
+
+    override suspend fun getUserCode(): CallResult<String?> = authInteractor.getUserCode()
+
+    override suspend fun getUserPhone(): CallResult<String?> = authInteractor.getUserPhone()
 
     override suspend fun getUsers(): CallResult<List<AuthFeature.User>> = authInteractor.getUsers()
 
@@ -56,5 +60,12 @@ class AuthFeatureImpl(
     override suspend fun isUserAuthorized() = authInteractor.isUserAuthorized()
 
     override suspend fun logout(): CallResult<Unit> = logoutManager.logout()
+
+    override suspend fun login(phone: String, code: String): CallResult<Unit> {
+        return when(val result = authInteractor.login(phone, code)){
+            is CallResult.Error -> result
+            is CallResult.Success -> CallResult.Success(Unit)
+        }
+    }
 
 }

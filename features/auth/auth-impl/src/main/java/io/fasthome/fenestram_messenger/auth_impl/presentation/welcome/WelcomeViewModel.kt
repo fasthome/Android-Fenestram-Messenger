@@ -4,9 +4,11 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.CodeResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
+import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.launch
@@ -14,12 +16,14 @@ import kotlinx.coroutines.launch
 class WelcomeViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val authInteractor: AuthInteractor
+    private val authInteractor: AuthInteractor,
+    private val debugFeature : DebugFeature
 ) : BaseViewModel<WelcomeState, WelcomeEvent>(router, requestParams) {
 
     private val checkCodeLauncher = registerScreen(CodeNavigationContract) { result ->
         exitWithResult(WelcomeNavigationContract.createResult(result))
     }
+    private val debugLauncher = registerScreen(debugFeature.navigationContract)
 
     override fun createInitialState(): WelcomeState {
         return WelcomeState(country = "", error = false, isLoad = false)
@@ -67,6 +71,10 @@ class WelcomeViewModel(
         updateState { state ->
             state.copy(country = currentViewState.country, error = false)
         }
+    }
+
+    fun debugClicked() {
+        debugLauncher.launch()
     }
 
 }

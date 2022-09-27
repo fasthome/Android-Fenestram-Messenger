@@ -16,6 +16,7 @@ dependencies {
     implementation(project(Modules.Feature.contacts.api))
     implementation(project(Modules.Feature.groupGuest.api))
     implementation(project(Modules.Feature.push.api))
+    implementation(project(Modules.Feature.main.api))
 
     implementation(project(Modules.Common.uikit))
     implementation(project(Modules.Common.core))
