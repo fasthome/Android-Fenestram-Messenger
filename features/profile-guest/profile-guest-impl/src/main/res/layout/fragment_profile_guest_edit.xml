@@ -6,27 +6,58 @@
     android:background="@color/dark1"
     android:fitsSystemWindows="true">
 
-    <ImageView
-        android:id="@+id/avatar"
+    <RelativeLayout
+        android:id="@+id/avatar_layout"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="@dimen/profile_guest_avatar_margin_start_top"
         android:layout_marginTop="@dimen/profile_guest_avatar_margin_start_top"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_chat_add_avatar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bg_account_circle"
+            app:brightness="0.5" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="18dp"
+            android:layout_alignLeft="@id/avatar"
+            android:layout_alignTop="@id/avatar"
+            android:layout_alignRight="@id/avatar"
+            android:layout_alignBottom="@id/avatar"
+            android:scaleX="0.3"
+            android:scaleY="0.3"
+            android:src="@drawable/ic_pick_photo" />
+    </RelativeLayout>
+
+    <!--    <androidx.constraintlayout.utils.widget.ImageFilterView-->
+    <!--        android:id="@+id/avatar"-->
+    <!--        android:layout_width="80dp"-->
+    <!--        android:layout_height="80dp"-->
+    <!--        android:layout_marginStart="@dimen/profile_guest_avatar_margin_start_top"-->
+    <!--        android:layout_marginTop="@dimen/profile_guest_avatar_margin_start_top"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:src="@drawable/bg_account_circle"-->
+    <!--        app:brightness="0.5"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <EditText
         android:id="@+id/chat_name"
-        style="@style/Text.White.18sp"
+        style="@style/ProfileGuestName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="50dp"
+        android:background="@android:color/transparent"
         app:layout_constraintEnd_toStartOf="@id/edit_complete"
-        app:layout_constraintStart_toEndOf="@id/avatar"
+        app:layout_constraintStart_toEndOf="@id/avatar_layout"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
@@ -64,6 +95,6 @@
         android:text="@string/profile_guest_delete_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/avatar" />
+        app:layout_constraintTop_toBottomOf="@id/avatar_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

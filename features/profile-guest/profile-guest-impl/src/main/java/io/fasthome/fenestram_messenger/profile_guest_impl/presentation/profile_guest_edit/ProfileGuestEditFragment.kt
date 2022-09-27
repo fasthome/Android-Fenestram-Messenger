@@ -61,11 +61,11 @@ class ProfileGuestEditFragment :
         when {
             state.avatarBitmap != null -> avatar.loadCircle(
                 bitmap = state.avatarBitmap,
-                placeholderRes = R.drawable.ic_chat_add_avatar
+                placeholderRes = R.drawable.bg_account_circle
             )
             state.avatarUrl.isNotEmpty() -> avatar.loadCircle(
                 url = state.avatarUrl,
-                placeholderRes = R.drawable.ic_chat_add_avatar
+                placeholderRes = R.drawable.bg_account_circle
             )
         }
 
