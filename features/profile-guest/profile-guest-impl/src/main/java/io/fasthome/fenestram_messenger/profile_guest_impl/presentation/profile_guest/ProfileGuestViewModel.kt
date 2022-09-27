@@ -92,7 +92,7 @@ class ProfileGuestViewModel(
             recentImages = listOf(),
             isGroup = params.isGroup,
             userPhone = PrintableText.Raw(params.userPhone),
-            editMode = false,
+            editMode = params.editMode,
             avatarBitmap = null,
             chatImageFile = null,
             participantsQuantity = params.groupParticipantsParams.participants.size

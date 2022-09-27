@@ -13,8 +13,8 @@ import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
+import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
@@ -46,15 +46,18 @@ class DebugViewModel(
             }
             val token = features.pushFeature.getPushToken()
             updateState {
-               DebugState(token)
+                DebugState(token)
             }
         }
     }
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
-    private val personalDataLauncher = registerScreen(features.authFeature.personalDataNavigationContract) {}
-    private val profileGuestLauncher = registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
-    private val onboardingLauncher = registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
+    private val personalDataLauncher =
+        registerScreen(features.authFeature.personalDataNavigationContract) {}
+    private val profileGuestLauncher =
+        registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
+    private val onboardingLauncher =
+        registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
     private val socketLauncher = registerScreen(SocketNavigationContract)
 //    private val groupGuestLauncher = registerScreen(features.groupGuestFeature.groupGuestComponentContract)
 
@@ -83,7 +86,8 @@ class DebugViewModel(
                 userAvatar = "",
                 userPhone = "1234567",
                 chatParticipants = listOf(),
-                isGroup = false
+                isGroup = false,
+                editMode = false
             )
         )
     }
@@ -135,7 +139,7 @@ class DebugViewModel(
         }
     }
 
-    fun onOnboardingClicked(){
+    fun onOnboardingClicked() {
         onboardingLauncher.launch(NoParams)
     }
 

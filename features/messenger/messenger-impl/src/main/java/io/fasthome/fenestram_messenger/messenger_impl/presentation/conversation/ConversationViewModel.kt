@@ -288,7 +288,7 @@ class ConversationViewModel(
         }
     }
 
-    fun onUserClicked() {
+    fun onUserClicked(editMode: Boolean) {
         viewModelScope.launch {
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess {
@@ -301,7 +301,8 @@ class ConversationViewModel(
                             userAvatar = params.chat.avatar ?: "",
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = ""
+                            userPhone = "",
+                            editMode = editMode
                         )
                     )
                 }
@@ -357,7 +358,8 @@ class ConversationViewModel(
                 userAvatar = item.avatar,
                 chatParticipants = listOf(),
                 isGroup = false,
-                userPhone = item.phone
+                userPhone = item.phone,
+                editMode = false
             )
         )
     }
