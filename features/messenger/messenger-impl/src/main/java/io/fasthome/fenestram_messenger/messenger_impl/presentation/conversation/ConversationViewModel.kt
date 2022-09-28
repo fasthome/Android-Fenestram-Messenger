@@ -1,13 +1,11 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
@@ -69,21 +67,24 @@ class ConversationViewModel(
                                     )
                                 )
                             }
+                        } else updateState { state ->
+                            state.copy(
+                                attachedFiles = state.attachedFiles.plus(
+                                    AttachedFile.Document(
+                                        file = it.tempFile
+                                    )
+                                )
+                            )
                         }
-                        else {
-                            updateState { state ->
-                                state.copy(attachedFiles = state.attachedFiles.plus(
-                                    AttachedFile.Document(file = it.tempFile)
-                                ))
-                            }
-                        }
+
+
                     }
                 }
             }
             .launchIn(viewModelScope)
     }
 
-    fun previousScreen(): Boolean{
+    fun previousScreen(): Boolean {
         return params.fromContacts
     }
 
@@ -188,24 +189,39 @@ class ConversationViewModel(
     private fun sendImages(attachedFiles: List<AttachedFile>) {
         val messages = currentViewState.messages
 
-        val tempMessages = attachedFiles.filterIsInstance<AttachedFile.Image>().map {
+        val tempImageMessages = attachedFiles.filterIsInstance<AttachedFile.Image>().map {
             createImageMessage(null, it.bitmap, it.file)
+        }
+
+        val tempDocumentMessages = attachedFiles.filterIsInstance<AttachedFile.Document>().map {
+            createDocumentMessage(null, it.file)
         }
 
         updateState { state ->
             state.copy(attachedFiles = listOf())
         }
+
         viewModelScope.launch {
             updateState { state ->
                 state.copy(
-                    messages = tempMessages.reversed().associateBy({
+                    messages = tempImageMessages.reversed().associateBy({
                         it.localId
                     }, {
                         it
                     }).plus(messages)
                 )
             }
-            tempMessages.forEach { tempMessage ->
+            updateState { state ->
+                state.copy(
+                    messages = tempDocumentMessages.reversed().associateBy({
+                        it.localId
+                    }, {
+                        it
+                    }).plus(messages)
+                )
+            }
+
+            tempImageMessages.forEach { tempMessage ->
                 var imageUrl: String?
 
                 FileOutputStream(tempMessage.file).use { output ->
@@ -226,10 +242,18 @@ class ConversationViewModel(
                     localId = tempMessage.localId
                 )) {
                     is CallResult.Error -> {
-                        updateStatus(tempMessage, SentStatus.Error, profileImageUrlConverter.convert(imageUrl))
+                        updateStatus(
+                            tempMessage,
+                            SentStatus.Error,
+                            profileImageUrlConverter.convert(imageUrl)
+                        )
                     }
                     is CallResult.Success -> {
-                        updateStatus(tempMessage, SentStatus.Sent, profileImageUrlConverter.convert(imageUrl))
+                        updateStatus(
+                            tempMessage,
+                            SentStatus.Sent,
+                            profileImageUrlConverter.convert(imageUrl)
+                        )
                     }
                 }
             }
@@ -305,7 +329,7 @@ class ConversationViewModel(
                             userPhone = ""
                         )
                     )
-            }
+                }
         }
     }
 
@@ -329,10 +353,10 @@ class ConversationViewModel(
                         ).plus(state.messages)
                     )
                 }
-                if(message.messageType == MESSAGE_TYPE_SYSTEM){
+                if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
-                        updateState { state->
+                        updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
@@ -378,11 +402,11 @@ class ConversationViewModel(
     fun selectFromGallery() {
         pickFileInterface.pickFile()
     }
-    
+
     fun selectAttachFile() {
         pickFileInterface.pickFile()
     }
-    
+
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
@@ -456,8 +480,12 @@ class ConversationViewModel(
         }
     }
 
-    fun onImageClicked(url: String? = null, bitmap : Bitmap? = null) {
+    fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
+    }
+
+    fun onDocumentClicked() {
+
     }
 
 }

@@ -7,11 +7,13 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.core.R
+import kotlin.math.roundToInt
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked : (String) -> Unit
+    onImageClicked: (String) -> Unit,
+    onDocumentClicked: (String) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -21,6 +23,7 @@ class ConversationAdapter(
         AdapterUtil.adapterDelegatesManager(
             createConversationSelfTextAdapterDelegate(onSelfMessageClicked),
             createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked),
+            createConversationSelfDocumentAdapterDelegate(onSelfMessageClicked, onDocumentClicked),
             createConversationReceiveTextAdapterDelegate(),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked),
@@ -65,6 +68,31 @@ fun createConversationSelfImageAdapterDelegate(
                     messageContent.loadRounded(item.content)
                 }
             }
+            sendTimeView.setPrintableText(item.time)
+            status.setImageResource(item.statusIcon)
+        }
+    }
+
+fun createConversationSelfDocumentAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onDocumentClicked: (String) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
+        ConversationItemSelfDocumentBinding::inflate
+    ) {
+        binding.messageContent.onClick {
+            onDocumentClicked(item.content)
+        }
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
+        bindWithBinding {
+            fileName.text = item.file?.name
+            fileSize.text = "${
+                item.file?.let {
+                    (it.length().toFloat() / (1024 * 1024) * 1000).roundToInt() / 1000f
+                }
+            }МБ"
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
         }

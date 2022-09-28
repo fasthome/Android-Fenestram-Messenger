@@ -1,7 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -11,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromConversation
-import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -21,14 +18,12 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.util.model.Bytes
 
 
 class ConversationFragment :
@@ -57,7 +52,7 @@ class ConversationFragment :
     override val vm: ConversationViewModel by viewModel(
         getParamsInterface = ConversationNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::pickDocumentFragment ),
+            .register(::pickDocumentFragment)
     )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
@@ -66,6 +61,8 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
+    }, onDocumentClicked = {
+        vm.onDocumentClicked()
     })
 
     private val attachedAdapter = AttachedAdapter(

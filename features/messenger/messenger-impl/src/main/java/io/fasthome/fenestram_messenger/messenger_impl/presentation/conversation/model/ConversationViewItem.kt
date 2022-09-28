@@ -2,8 +2,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
-import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import java.io.File
 import java.time.ZonedDateTime
@@ -41,6 +39,16 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             val bitmap: Bitmap? = null,
+            val file: File? = null
+        ) : Self()
+
+        data class Document(
+            override val id: Long,
+            override val content: String,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override var sentStatus: SentStatus,
+            override val localId: String,
             val file: File? = null
         ) : Self()
     }

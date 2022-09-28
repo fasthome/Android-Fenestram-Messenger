@@ -214,6 +214,16 @@ fun createImageMessage(image: String?, bitmap: Bitmap, file: File) = Conversatio
     file = file
 )
 
+fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
+    content = document ?: "",
+    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+    sentStatus = SentStatus.Loading,
+    date = ZonedDateTime.now(),
+    id = 0,
+    localId = UUID.randomUUID().toString(),
+    file = file
+)
+
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     content = getFuzzyDateString(date),
     time = PrintableText.EMPTY,
