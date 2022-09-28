@@ -371,6 +371,11 @@ class ConversationViewModel(
     fun selectFromGallery() {
         pickFileInterface.pickFile()
     }
+    
+    fun selectAttachFile() {
+        pickFileInterface.pickFile()
+    }
+    
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->

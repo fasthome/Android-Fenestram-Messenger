@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
+import io.fasthome.component.select_from.SelectFromConversation
 import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -181,7 +182,7 @@ class ConversationFragment :
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
             ConversationEvent.ShowSelectFromDialog ->
-                SelectFromDialog
+                SelectFromConversation
                     .create(
                         fragment = this,
                         fromCameraClicked = {
@@ -189,6 +190,9 @@ class ConversationFragment :
                         },
                         fromGalleryClicked = {
                             vm.selectFromGallery()
+                        },
+                        attachFileClicked = {
+                            vm.selectAttachFile()
                         })
                     .show()
             is ConversationEvent.ShowErrorSentDialog -> {
