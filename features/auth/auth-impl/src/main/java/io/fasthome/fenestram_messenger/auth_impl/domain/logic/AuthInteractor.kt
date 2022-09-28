@@ -23,6 +23,8 @@ class AuthInteractor(
     suspend fun login(phoneNumber: String, code: String) =
         authRepo.login(phoneNumber, code).onSuccess {
             onLoginResultSuccess(tokensRepo = tokensRepo, authRepo = authRepo, loginResult = it)
+            setUserCode(code)
+            setUserPhone(phoneNumber)
         }
 
 
@@ -40,6 +42,13 @@ class AuthInteractor(
         }
     }
 
+    suspend fun getUserCode(): CallResult<String?> = authRepo.getUserCode()
+
+    suspend fun getUserPhone(): CallResult<String?> = authRepo.getUserPhone()
+
+    suspend fun setUserCode(code : String) = authRepo.setUserCode(code)
+
+    suspend fun setUserPhone(phone : String) = authRepo.setUserPhone(phone)
 
     companion object {
         suspend fun onLoginResultSuccess(

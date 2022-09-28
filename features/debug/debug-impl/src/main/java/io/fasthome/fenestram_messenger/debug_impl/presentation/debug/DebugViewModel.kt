@@ -6,18 +6,20 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
-import io.fasthome.fenestram_messenger.debug_impl.presentation.socket.SocketNavigationContract
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
+import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.util.getOrDefault
+import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
 
@@ -34,7 +36,8 @@ class DebugViewModel(
         val onboardingFeature: OnboardingFeature,
         val contactsFeature: ContactsFeature,
         val groupGuestFeature: GroupGuestFeature,
-        val pushFeature: PushFeature
+        val pushFeature: PushFeature,
+        val mainFeature: MainFeature
     )
 
     private var personalData: PersonalData? = null
@@ -45,8 +48,16 @@ class DebugViewModel(
                 personalData = it
             }
             val token = features.pushFeature.getPushToken()
-            updateState {
-                DebugState(token)
+            val userId = features.authFeature.getUserId(needLogout = false).getOrNull() ?: 0L
+            val userPhone = features.authFeature.getUserPhone().getOrNull() ?: "+7"
+            val userCode = features.authFeature.getUserCode().getOrNull() ?: ""
+            updateState { state ->
+                state.copy(
+                    token = token,
+                    userId = userId.toString(),
+                    userCode = userCode,
+                    userPhone = userPhone
+                )
             }
         }
     }
@@ -58,17 +69,20 @@ class DebugViewModel(
         registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
     private val onboardingLauncher =
         registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
-    private val socketLauncher = registerScreen(SocketNavigationContract)
-//    private val groupGuestLauncher = registerScreen(features.groupGuestFeature.groupGuestComponentContract)
 
-    override fun createInitialState() = DebugState("")
+    override fun createInitialState() = DebugState(
+        userId = "",
+        token = "",
+        featuresVisible = false,
+        componentsVisible = false,
+        requestsVisible = false,
+        loginVisible = false,
+        userCode = "",
+        userPhone = ""
+    )
 
     fun onAuthClicked() {
         authLauncher.launch(NoParams)
-    }
-
-    fun onSocketClicked() {
-        socketLauncher.launch(NoParams)
     }
 
     fun onLogoutClicked() {
@@ -132,8 +146,8 @@ class DebugViewModel(
             val resutl = features.pushFeature.updateToken().successOrSendError()
             if (resutl != null) {
                 val token = features.pushFeature.getPushToken()
-                updateState {
-                    DebugState(token)
+                updateState { state ->
+                    state.copy(token = token)
                 }
             }
         }
@@ -145,6 +159,39 @@ class DebugViewModel(
 
     fun onLinkFieldClicked(token: String) {
         sendEvent(DebugEvent.CopyTokenEvent(token))
+    }
+
+    fun onFeaturesClicked() {
+        updateState { state ->
+            state.copy(featuresVisible = !state.featuresVisible)
+        }
+    }
+
+    fun onComponentsClicked() {
+        updateState { state ->
+            state.copy(componentsVisible = !state.componentsVisible)
+        }
+    }
+
+    fun onRequestsClicked() {
+        updateState { state ->
+            state.copy(requestsVisible = !state.requestsVisible)
+        }
+    }
+
+    fun onLoginAcceptClicked(phone: String, code: String) {
+        viewModelScope.launch {
+            features.authFeature.login(phone, code).withErrorHandled {
+                router.backTo(null)
+                registerScreen(features.mainFeature.mainNavigationContract).launch()
+            }
+        }
+    }
+
+    fun onLoginClicked() {
+        updateState { state ->
+            state.copy(loginVisible = !state.loginVisible)
+        }
     }
 
 }

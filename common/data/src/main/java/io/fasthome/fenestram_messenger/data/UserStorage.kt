@@ -11,6 +11,8 @@ class UserStorage(
     private val preferencesStorage = persistentStorageFactory.create("user.prefs")
 
     private var userId: Long? by preferencesStorage.stored("KEY_USER_ID")
+    private var userPhone: String? by preferencesStorage.stored("KEY_USER_PHONE")
+    private var userCode: String? by preferencesStorage.stored("KEY_USER_CODE")
 
     suspend fun getUserId(): Long? =
         withContext(DispatchersProvider.IO) {
@@ -20,6 +22,26 @@ class UserStorage(
     suspend fun setUserId(userId : Long) =
         withContext(DispatchersProvider.IO) {
             this@UserStorage.userId = userId
+        }
+
+    suspend fun getUserPhone(): String? =
+        withContext(DispatchersProvider.IO) {
+            return@withContext userPhone
+        }
+
+    suspend fun setUserPhone(userPhone : String) =
+        withContext(DispatchersProvider.IO) {
+            this@UserStorage.userPhone = userPhone
+        }
+
+    suspend fun getUserCode(): String? =
+        withContext(DispatchersProvider.IO) {
+            return@withContext userCode
+        }
+
+    suspend fun setUserCode(userCode : String) =
+        withContext(DispatchersProvider.IO) {
+            this@UserStorage.userCode = userCode
         }
 
     suspend fun clearAccessToken() {
