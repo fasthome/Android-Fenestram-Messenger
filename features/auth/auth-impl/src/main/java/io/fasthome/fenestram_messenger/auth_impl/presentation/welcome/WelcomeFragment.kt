@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 
@@ -31,6 +32,10 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
         phoneNumberUtil = PhoneNumberUtil.createInstance(requireContext())
 
         with(binding) {
+
+            debug.onClick{
+                vm.debugClicked()
+            }
 
             appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_hoolichat_label))
 

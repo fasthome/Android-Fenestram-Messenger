@@ -10,37 +10,275 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/debug_auth"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Авторизация"
-            tools:ignore="HardcodedText" />
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Text.White.16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User Info"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Text.White"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="User Id:"
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/user_id_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_margin="16dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/dark1"
+                    android:padding="15dp"
+                    android:textColor="@color/blue" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Text.White"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="FB Push Token:"
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/link_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_margin="16dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/dark1"
+                    android:padding="15dp"
+                    android:textColor="@color/blue" />
+            </LinearLayout>
+        </LinearLayout>
 
         <Button
-            android:id="@+id/debug_personal_data"
+            android:id="@+id/debug_features"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Персолнальные данные"
+            android:text="Features"
             tools:ignore="HardcodedText" />
 
-        <Button
-            android:id="@+id/debug_profile_guest"
+        <LinearLayout
+            android:id="@+id/features_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Профиль из тулбара"
-            tools:ignore="HardcodedText" />
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_auth"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Авторизация"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_personal_data"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Персолнальные данные"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_profile_guest"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Профиль из тулбара"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_group_guest"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Group guest"
+                android:visibility="gone"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_onboarding"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Onboarding"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
 
         <Button
-            android:id="@+id/debug_socket"
+            android:id="@+id/debug_components"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Socket"
+            android:text="Components"
             tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:id="@+id/components_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_error_dialog"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Error dialog"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/debug_requests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Api Requests"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:id="@+id/requests_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_delete_contacts"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Delete contacts"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_send_push"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Send test push"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_update_push"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Update push token"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/debug_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Войти по коду"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:id="@+id/login_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
+            <EditText
+                android:id="@+id/phone_input"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_border"
+                android:fontFamily="@font/geometria"
+                android:importantForAutofill="no"
+                android:inputType="phone"
+                android:padding="10dp"
+                android:text="@string/common_country_code_text"
+                android:textColor="@color/gray1"
+                android:textSize="15sp"
+                tools:ignore="LabelFor" />
+
+            <EditText
+                android:id="@+id/code_input"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_border"
+                android:fontFamily="@font/geometria"
+                android:gravity="center"
+                android:inputType="number"
+                android:maxLength="4"
+                android:textColor="@color/gray1"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_login_accept"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="16dp"
+                android:text="Accept"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/debug_logout"
@@ -49,67 +287,6 @@
             android:layout_margin="16dp"
             android:text="Выход"
             tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_error_dialog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Error dialog"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_delete_contacts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Delete contacts"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_send_push"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Send test push"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_update_push"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Update push token"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_group_guest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Group guest"
-            android:visibility="gone"
-            tools:ignore="HardcodedText" />
-
-        <Button
-            android:id="@+id/debug_onboarding"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Onboarding"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/link_field"
-            android:textColor="@color/blue"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="20dp"
-            android:background="@color/dark1"
-            android:layout_margin="16dp"
-            android:padding="15dp" />
-
 
     </LinearLayout>
 </ScrollView>

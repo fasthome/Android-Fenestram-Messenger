@@ -107,7 +107,7 @@ class ConversationViewModel(
 
     fun fetchMessages() {
         viewModelScope.launch {
-            selfUserId = features.authFeature.getUserId().getOrNull()
+            selfUserId = features.authFeature.getUserId(needLogout = true).getOrNull()
             if (selfUserId == null) {
                 features.authFeature.logout()
                 return@launch

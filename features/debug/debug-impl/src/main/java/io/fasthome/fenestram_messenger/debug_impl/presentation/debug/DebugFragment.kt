@@ -8,13 +8,14 @@ import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.debug_impl.R
 import io.fasthome.fenestram_messenger.debug_impl.databinding.FragmentDebugBinding
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -28,13 +29,30 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+        debugFeatures.onClick {
+            vm.onFeaturesClicked()
+        }
+
+        debugComponents.onClick {
+            vm.onComponentsClicked()
+        }
+
+        debugRequests.onClick {
+            vm.onRequestsClicked()
+        }
+
+        debugLogin.onClick {
+            vm.onLoginClicked()
+        }
+
+        debugLoginAccept.onClick {
+            vm.onLoginAcceptClicked(phone = phoneInput.text.toString(), code = codeInput.text.toString())
+        }
 
         debugAuth.onClick {
             vm.onAuthClicked()
-        }
-
-        debugSocket.onClick {
-            vm.onSocketClicked()
         }
 
         debugProfileGuest.onClick {
@@ -79,11 +97,17 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
 
     }
 
-    override fun renderState(state: DebugState) {
-        with(binding){
-            linkField.text = state.token
-        }
+    override fun renderState(state: DebugState) = with(binding) {
+        featuresContainer.isVisible = state.featuresVisible
+        requestsContainer.isVisible = state.requestsVisible
+        componentsContainer.isVisible = state.componentsVisible
+        loginContainer.isVisible = state.loginVisible
+        linkField.text = state.token
+        userIdField.text = state.userId
+        phoneInput.setText(state.userPhone)
+        codeInput.setText(state.userCode)
     }
+
     override fun handleEvent(event: DebugEvent) {
         when (event) {
             is DebugEvent.ContactsDeleted -> {
