@@ -40,9 +40,16 @@ class ConversationFragment :
         componentFragmentContractInterface = PickFileComponentContract,
         paramsProvider = {
             PickFileComponentParams(
-                mimeType = PickFileComponentParams.MimeType.Image(
-                    compressToSize = null
-                )
+                mimeType = PickFileComponentParams.MimeType.Image(compressToSize = null)
+            )
+        }
+    )
+
+    private val pickDocumentFragment by registerFragment(
+        componentFragmentContractInterface = PickFileComponentContract,
+        paramsProvider = {
+            PickFileComponentParams(
+                mimeType = PickFileComponentParams.MimeType.Pdf()
             )
         }
     )
@@ -50,7 +57,7 @@ class ConversationFragment :
     override val vm: ConversationViewModel by viewModel(
         getParamsInterface = ConversationNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::pickImageFragment)
+            .register(::pickDocumentFragment ),
     )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {

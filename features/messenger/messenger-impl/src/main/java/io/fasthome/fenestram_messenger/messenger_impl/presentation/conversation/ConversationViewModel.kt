@@ -70,6 +70,13 @@ class ConversationViewModel(
                                 )
                             }
                         }
+                        else {
+                            updateState { state ->
+                                state.copy(attachedFiles = state.attachedFiles.plus(
+                                    AttachedFile.Document(file = it.tempFile)
+                                ))
+                            }
+                        }
                     }
                 }
             }
@@ -178,10 +185,10 @@ class ConversationViewModel(
         }
     }
 
-    private fun sendImages(attachedFiles: List<AttachedFile.Image>) {
+    private fun sendImages(attachedFiles: List<AttachedFile>) {
         val messages = currentViewState.messages
 
-        val tempMessages = attachedFiles.map {
+        val tempMessages = attachedFiles.filterIsInstance<AttachedFile.Image>().map {
             createImageMessage(null, it.bitmap, it.file)
         }
 

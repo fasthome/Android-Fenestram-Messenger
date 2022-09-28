@@ -6,5 +6,6 @@ import java.io.File
 sealed class AttachedFile {
 
     class Image(val bitmap : Bitmap, val file : File) : AttachedFile()
+    class Document(val file: File) : AttachedFile()
 
 }

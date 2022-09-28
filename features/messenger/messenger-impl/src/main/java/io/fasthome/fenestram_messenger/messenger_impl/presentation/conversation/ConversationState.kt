@@ -10,5 +10,5 @@ data class ConversationState(
     val avatar: String,
     val userOnline: Boolean,
     val isChatEmpty: Boolean,
-    val attachedFiles: List<AttachedFile.Image>
+    val attachedFiles: List<AttachedFile>
 )
