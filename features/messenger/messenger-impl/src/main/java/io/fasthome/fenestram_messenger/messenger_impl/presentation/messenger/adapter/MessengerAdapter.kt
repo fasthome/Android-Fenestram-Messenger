@@ -47,6 +47,7 @@ class MessengerAdapter(
         )
     )
 
+@SuppressLint("ClickableViewAccessibility")
 fun createMessengerAdapter(
     environment: Environment,
     chatClicked: (MessengerViewItem) -> Unit,
@@ -58,16 +59,28 @@ fun createMessengerAdapter(
         inflate = MessangerChatItemBinding::inflate,
         bind = { item, binding ->
             with(binding) {
-                viewBinderHelper.bind(binding.root, item.id.toString())
+                viewBinderHelper.bind(root, item.id.toString())
                 viewBinderHelper.setOpenOnlyOne(true)
+
+                itemChatLayout.setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_MOVE) {
+                        viewBinderHelper.closeOpened(item.id.toString(),root)
+                        return@setOnTouchListener true
+                    }
+                    return@setOnTouchListener false
+                }
+
                 itemChatLayout.onClick {
-                    if (viewBinderHelper.openCount == 0 && root.isClosed)
+                    if (viewBinderHelper.openCount == 0)
                         chatClicked(item)
                     else
                         viewBinderHelper.closeAll()
                 }
                 profilePicture.onClick {
-                    onProfileClicked(item)
+                    if (viewBinderHelper.openCount == 0)
+                        onProfileClicked(item)
+                    else
+                        viewBinderHelper.closeAll()
                 }
 
                 deleteLayout.onClick {

@@ -34,6 +34,8 @@ class MessengerFragment :
 
     private val environment by inject<Environment>()
 
+    private val viewBinderHelper = ViewBinderHelper()
+
     private var messageAdapter = MessengerAdapter(environment = environment,
         onChatClicked = {
             vm.launchConversation(it)
@@ -42,7 +44,7 @@ class MessengerFragment :
             vm.onProfileClicked(it)
         },
         onDeleteChat = { vm.onChatDelete(it) },
-        viewBinderHelper = ViewBinderHelper()
+        viewBinderHelper = viewBinderHelper
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,6 +81,11 @@ class MessengerFragment :
     override fun onResume() {
         super.onResume()
         vm.fetchNewMessages()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewBinderHelper.closeAll()
     }
 
     fun onClickRec() {

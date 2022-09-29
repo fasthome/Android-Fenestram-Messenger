@@ -225,6 +225,25 @@ public class ViewBinderHelper {
         }
     }
 
+    public void closeOpened(String id, SwipeRevealLayout swipeLayout) {
+        synchronized (stateChangeLock) {
+            // close other rows if openOnlyOne is true.
+            if (getOpenCount() > 0) {
+                for (Map.Entry<String, Integer> entry : mapStates.entrySet()) {
+                    if (!entry.getKey().equals(id)) {
+                        entry.setValue(SwipeRevealLayout.STATE_CLOSE);
+                    }
+                }
+
+                for (SwipeRevealLayout layout : mapLayouts.values()) {
+                    if (layout != swipeLayout) {
+                        layout.close(true);
+                    }
+                }
+            }
+        }
+    }
+
     public void closeAll() {
         synchronized (stateChangeLock) {
             if (getOpenCount() > 0) {

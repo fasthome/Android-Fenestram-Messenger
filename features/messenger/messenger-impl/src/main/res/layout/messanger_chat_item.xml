@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:dragEdge="right"
-    app:flingVelocity="1"
     app:mode="same_level"
     tools:ignore="MissingClass">
 
