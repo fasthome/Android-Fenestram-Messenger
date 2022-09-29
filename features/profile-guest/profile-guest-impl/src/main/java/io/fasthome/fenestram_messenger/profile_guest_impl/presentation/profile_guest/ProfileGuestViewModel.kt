@@ -155,12 +155,12 @@ class ProfileGuestViewModel(
                         imageUrl
                     )
                         .successOrSendError() != null
-                )
+                ) {
                     updateState { state ->
-                        state.copy(
-                            userAvatar = profileImageUrlConverter.convert(imageUrl)
-                        )
+                        state.copy(userAvatar = profileImageUrlConverter.convert(imageUrl))
                     }
+                }
+
             }
             updateState { state -> state.copy(editMode = false) }
         } else

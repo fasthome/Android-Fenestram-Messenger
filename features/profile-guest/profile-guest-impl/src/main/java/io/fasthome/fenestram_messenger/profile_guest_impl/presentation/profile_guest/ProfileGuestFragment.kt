@@ -179,13 +179,13 @@ class ProfileGuestFragment :
             when {
                 state.avatarBitmap != null -> profileGuestAvatar.loadCircle(
                     bitmap = state.avatarBitmap,
-                    placeholderRes = R.drawable.bg_account_circle
+                    placeholderRes = R.drawable.common_avatar
                 )
                 state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
                     url = state.userAvatar,
-                    placeholderRes = R.drawable.bg_account_circle
+                    placeholderRes = R.drawable.common_avatar
                 )
-                else -> profileGuestAvatar.loadCircle(R.drawable.bg_account_circle)
+                else -> profileGuestAvatar.loadCircle(R.drawable.common_avatar)
             }
 
             recentFilesHeader.recentFileCount.setPrintableText(

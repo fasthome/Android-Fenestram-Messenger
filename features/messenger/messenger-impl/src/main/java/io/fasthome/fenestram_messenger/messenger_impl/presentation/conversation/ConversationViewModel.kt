@@ -296,9 +296,9 @@ class ConversationViewModel(
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
-                            userName = params.chat.name,
+                            userName = it.chatName,
                             userNickname = "",
-                            userAvatar = params.chat.avatar ?: "",
+                            userAvatar = it.avatar ?: "",
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
                             userPhone = "",
