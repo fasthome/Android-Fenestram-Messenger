@@ -15,12 +15,11 @@ import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerItemTouchHelper
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.UnderlayButton
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -41,7 +40,9 @@ class MessengerFragment :
         },
         onProfileClicked = {
             vm.onProfileClicked(it)
-        }
+        },
+        onDeleteChat = { vm.onChatDelete(it) },
+        viewBinderHelper = ViewBinderHelper()
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,19 +50,6 @@ class MessengerFragment :
         binding.chatList.adapter = messageAdapter
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-
-        ItemTouchHelper(
-            MessengerItemTouchHelper(
-                binding.chatList, UnderlayButton(
-                    messageAdapter,
-                    requireContext(),
-                    vm::onChatDelete
-                )
-            )
-        ).attachToRecyclerView(binding.chatList)
-
-
-
 
         binding.chatsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
