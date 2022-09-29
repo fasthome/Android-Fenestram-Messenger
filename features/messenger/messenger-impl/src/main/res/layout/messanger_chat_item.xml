@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:dragEdge="right"
+    app:flingVelocity="1"
     app:mode="same_level"
-    app:flingVelocity="0"
     tools:ignore="MissingClass">
 
     <FrameLayout
@@ -15,12 +15,12 @@
         android:layout_width="70dp"
         android:layout_height="match_parent"
         android:background="@color/red">
+
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_delete"
-            />
+            android:background="@drawable/ic_delete" />
     </FrameLayout>
 
     <FrameLayout
@@ -120,7 +120,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
-
 
 
 </io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

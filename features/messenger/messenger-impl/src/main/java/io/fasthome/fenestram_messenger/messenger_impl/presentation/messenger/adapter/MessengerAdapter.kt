@@ -60,8 +60,11 @@ fun createMessengerAdapter(
             with(binding) {
                 viewBinderHelper.bind(binding.root, item.id.toString())
                 viewBinderHelper.setOpenOnlyOne(true)
-                root.onClick {
-                    chatClicked(item)
+                itemChatLayout.onClick {
+                    if (viewBinderHelper.openCount == 0 && root.isClosed)
+                        chatClicked(item)
+                    else
+                        viewBinderHelper.closeAll()
                 }
                 profilePicture.onClick {
                     onProfileClicked(item)
@@ -69,6 +72,7 @@ fun createMessengerAdapter(
 
                 deleteLayout.onClick {
                     onDeleteChat(item.id)
+                    root.close(true)
                 }
 
                 nameView.setPrintableText(item.name)
