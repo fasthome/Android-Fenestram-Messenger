@@ -8,7 +8,12 @@ import io.fasthome.network.tokens.AccessToken
 
 interface MessengerRepo {
 
-    suspend fun sendMessage(id: Long, text: String, type: String, localId: String): CallResult<SendMessageResult>
+    suspend fun sendMessage(
+        id: Long,
+        text: String,
+        type: String,
+        localId: String
+    ): CallResult<SendMessageResult>
 
     fun getPageChats(query: String): TotalPagingSource<Int, Chat>
 
@@ -18,7 +23,7 @@ interface MessengerRepo {
         isGroup: Boolean
     ): CallResult<PostChatsResult>
 
-    suspend fun postChatAvatar(id: Long, avatar: String): CallResult<Unit>
+    suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
     suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage>
@@ -26,7 +31,12 @@ interface MessengerRepo {
 
     fun closeSocket()
 
-    fun getClientSocket(chatId: String?, token: AccessToken, callback: SocketMessageCallback, selfUserId: Long?)
+    fun getClientSocket(
+        chatId: String?,
+        token: AccessToken,
+        callback: SocketMessageCallback,
+        selfUserId: Long?
+    )
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
 

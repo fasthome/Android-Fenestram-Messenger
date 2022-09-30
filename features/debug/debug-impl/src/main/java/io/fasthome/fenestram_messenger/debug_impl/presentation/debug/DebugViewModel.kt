@@ -100,7 +100,8 @@ class DebugViewModel(
                 userAvatar = "",
                 userPhone = "1234567",
                 chatParticipants = listOf(),
-                isGroup = false
+                isGroup = false,
+                editMode = false
             )
         )
     }

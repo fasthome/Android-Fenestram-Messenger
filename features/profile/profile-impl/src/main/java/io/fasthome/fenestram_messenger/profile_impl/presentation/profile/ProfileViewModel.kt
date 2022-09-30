@@ -3,7 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
-import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
@@ -61,7 +60,7 @@ class ProfileViewModel(
                                 )
                             }
                         } else {
-                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_error_photo)))
+                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.common_unable_to_download)))
                             updateState { state ->
                                 state.copy(
                                     avatarUrl = avatarUrl,
@@ -168,7 +167,15 @@ class ProfileViewModel(
     }
 
     override fun createInitialState(): ProfileState {
-        return ProfileState("", null, null, null, isEdit = false, isLoad = false, readyEnabled = false).also {
+        return ProfileState(
+            "",
+            null,
+            null,
+            null,
+            isEdit = false,
+            isLoad = false,
+            readyEnabled = false
+        ).also {
             personalityInterface.runEdit(false)
         }
     }
