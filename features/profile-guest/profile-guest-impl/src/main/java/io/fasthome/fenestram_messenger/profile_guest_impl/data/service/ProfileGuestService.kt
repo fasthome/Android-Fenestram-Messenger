@@ -12,14 +12,14 @@ class ProfileGuestService(clientFactory: NetworkClientFactory) {
     private val client = clientFactory.create()
 
     suspend fun patchChatAvatar(id: Long, avatar: String) {
-        client.runPatch<PatchChatAvatarRequest, BaseResponse<PatchChatAvatarRequest>>(
+        client.runPatch<PatchChatAvatarRequest, Unit>(
             path = "api/v1/chats/$id/avatar",
             body = PatchChatAvatarRequest(avatar)
         )
     }
 
     suspend fun patchChatName(id: Long, name: String) {
-        client.runPatch<PatchChatNameRequest, BaseResponse<PatchChatNameRequest>>(
+        client.runPatch<PatchChatNameRequest, Unit>(
             path = "api/v1/chats/$id/name",
             body = PatchChatNameRequest(name)
         )
