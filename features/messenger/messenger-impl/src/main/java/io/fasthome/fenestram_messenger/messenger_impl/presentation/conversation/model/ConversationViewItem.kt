@@ -69,6 +69,14 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
         ) : Receive()
+
+        data class Document(
+            override val id: Long,
+            override val content: String,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+        ) : Receive()
     }
 
     sealed class Group(
@@ -88,6 +96,17 @@ sealed interface ConversationViewItem {
         ) : Group(userName, avatar, phone)
 
         data class Image(
+            override val id: Long,
+            override val content: String,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+            override val userName: PrintableText,
+            override val avatar: String,
+            override val phone: String
+        ) : Group(userName, avatar, phone)
+
+        data class Document(
             override val id: Long,
             override val content: String,
             override val time: PrintableText,

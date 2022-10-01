@@ -26,8 +26,10 @@ class ConversationAdapter(
             createConversationSelfDocumentAdapterDelegate(onSelfMessageClicked, onDocumentClicked),
             createConversationReceiveTextAdapterDelegate(),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
+            createConversationReceiveDocumentAdapterDelegate(onDocumentClicked),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
+            createConversationGroupDocumentAdapterDelegate(onGroupProfileItemClicked, onDocumentClicked),
             createConversationSystemAdapterDelegate()
         )
     )
@@ -121,6 +123,18 @@ fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Un
         }
     }
 
+fun createConversationReceiveDocumentAdapterDelegate(onDocumentClicked: (String) -> Unit) =
+    adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
+        ConversationItemReceiveDocumentBinding::inflate
+    ) {
+        binding.messageContent.onClick {
+            onDocumentClicked(item.content)
+        }
+        bindWithBinding {
+            sendTimeView.setPrintableText(item.time)
+        }
+    }
+
 fun createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
@@ -156,6 +170,27 @@ fun createConversationGroupImageAdapterDelegate(
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }
+
+fun createConversationGroupDocumentAdapterDelegate(
+    onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
+    onDocumentClicked: (String) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
+        ConversationItemGroupDocumentBinding::inflate
+    ) {
+        binding.avatar.onClick {
+            onGroupProfileItemClicked(item)
+        }
+        binding.messageContent.onClick {
+            onDocumentClicked(item.content)
+        }
+        bindWithBinding {
+            username.setPrintableText(item.userName)
+            sendTimeView.setPrintableText(item.time)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+        }
+    }
+
 
 fun createConversationSystemAdapterDelegate() =
     adapterDelegateViewBinding<ConversationViewItem.System, ConversationItemSystemBinding>(
