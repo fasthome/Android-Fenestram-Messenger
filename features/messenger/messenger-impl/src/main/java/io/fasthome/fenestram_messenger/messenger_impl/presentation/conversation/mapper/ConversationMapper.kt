@@ -118,6 +118,20 @@ fun Message.toConversationViewItem(
                             phone = initiator?.phone ?: ""
                         )
                     }
+
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        ConversationViewItem.Group.Document(
+                            content = profileImageUrlConverter.convert(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            userName = PrintableText.Raw(getName(initiator)),
+                            avatar = initiator?.avatar ?: "",
+                            date = date,
+                            id = id,
+                            phone = initiator?.phone ?: ""
+                        )
+                    }
+
                     MESSAGE_TYPE_SYSTEM -> {
                         ConversationViewItem.System(
                             content = PrintableText.Raw(text),
@@ -150,6 +164,17 @@ fun Message.toConversationViewItem(
                             id = id
                         )
                     }
+
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        ConversationViewItem.Receive.Document(
+                            content = profileImageUrlConverter.convert(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
+                            date = date,
+                            id = id,
+                        )
+                    }
+
                     MESSAGE_TYPE_SYSTEM -> {
                         ConversationViewItem.System(
                             content = PrintableText.Raw(text),
