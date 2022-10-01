@@ -106,13 +106,15 @@ class ConversationFragment :
             vm.exitToMessenger()
         }
         profileToolBar.onClick {
-            vm.onUserClicked()
+            vm.onUserClicked(false)
         }
-        binding.backButton.increaseHitArea(16.dp)
+        backButton.increaseHitArea(16.dp)
 
-        binding.dropdownMenu.setOnClickListener {
+        dropdownMenu.setOnClickListener {
             vm.onOpenMenu()
         }
+
+
 
         attachButton.onClick {
             vm.onAttachClicked()
@@ -157,7 +159,7 @@ class ConversationFragment :
                 }
 
                 menuBinding.edit.onClick {
-                    //TODO Редактирование
+                    vm.onUserClicked(true)
                     popupMenu.dismiss()
                 }
 

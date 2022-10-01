@@ -15,7 +15,12 @@ class MessengerService(
 ) {
     private val client = clientFactory.create()
 
-    suspend fun sendMessage(id: Long, text: String, type: String, localId: String): SendMessageResult {
+    suspend fun sendMessage(
+        id: Long,
+        text: String,
+        type: String,
+        localId: String
+    ): SendMessageResult {
         val response: SendMessageResponse = client.runPost(
             path = "api/v1/chats/message/$id",
             body = SendMessageRequest(text, type)
@@ -48,11 +53,11 @@ class MessengerService(
             }
     }
 
-    suspend fun postChatAvatar(id: Long, avatar: String) {
-        client.runPatch<PostChatAvatarRequest, BaseResponse<PostChatAvatarRequest>>(
-                path = "api/v1/chats/$id/avatar",
-                body = PostChatAvatarRequest(avatar)
-            )
+    suspend fun patchChatAvatar(id: Long, avatar: String) {
+        client.runPatch<PatchChatAvatarRequest, BaseResponse<PatchChatAvatarRequest>>(
+            path = "api/v1/chats/$id/avatar",
+            body = PatchChatAvatarRequest(avatar)
+        )
     }
 
     suspend fun getChatById(id: Long): GetChatByIdResult {
@@ -90,9 +95,9 @@ class MessengerService(
             path = "api/v1/chats/$id/messages",
             params = mapOf("limit" to limit, "page" to page)
         )
-        if(response.data == null) throw Exception()
+        if (response.data == null) throw Exception()
         return response.let {
-            with(getChatsMapper){
+            with(getChatsMapper) {
                 val list = responseToGetMessagesByChat(it.data!!)
                 MessagesPage(
                     page = page,

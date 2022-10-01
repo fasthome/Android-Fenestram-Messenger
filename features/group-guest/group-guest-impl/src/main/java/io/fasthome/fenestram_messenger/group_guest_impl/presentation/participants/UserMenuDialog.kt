@@ -11,8 +11,10 @@ object UserMenuDialog {
     fun create(
         fragment: Fragment,
         delete: (id: Long) -> Unit,
-        addToContacts: (() -> Unit)? = null,
-        id: Long
+        addToContacts: ((name: String, phone: String) -> Unit),
+        id: Long,
+        name: String,
+        phone: String
 
     ): Dialog {
         val errorBinding = UserDropdownBinding.inflate(fragment.layoutInflater)
@@ -32,6 +34,7 @@ object UserMenuDialog {
             }
 
             profileGuestAddToContacts.onClick{
+                addToContacts(name, phone)
                 dialog.dismiss()
             }
 

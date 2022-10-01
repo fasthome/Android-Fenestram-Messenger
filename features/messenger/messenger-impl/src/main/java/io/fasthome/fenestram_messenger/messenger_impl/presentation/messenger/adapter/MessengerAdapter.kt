@@ -1,9 +1,11 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.*
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,36 +17,80 @@ import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MessangerChatItemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
+import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.uikit.paging.PagerDelegateAdapter
 import io.fasthome.fenestram_messenger.uikit.paging.createAdapterDelegate
 import io.fasthome.fenestram_messenger.util.AdapterUtil
+import io.fasthome.fenestram_messenger.util.dp
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
-class MessengerAdapter(environment: Environment, onChatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) :
+class MessengerAdapter(
+    environment: Environment,
+    onChatClicked: (MessengerViewItem) -> Unit,
+    onProfileClicked: (MessengerViewItem) -> Unit,
+    onDeleteChat: (id: Long) -> Unit,
+    viewBinderHelper: ViewBinderHelper
+) :
     PagerDelegateAdapter<MessengerViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
             keyExtractor = MessengerViewItem::lastMessage
         ),
         delegates = listOf(
-            createMessengerAdapter(environment,onChatClicked, onProfileClicked)
+            createMessengerAdapter(
+                environment,
+                onChatClicked,
+                onProfileClicked,
+                onDeleteChat,
+                viewBinderHelper
+            )
         )
     )
 
-fun createMessengerAdapter(environment: Environment,chatClicked: (MessengerViewItem) -> Unit, onProfileClicked: (MessengerViewItem) -> Unit) =
+@SuppressLint("ClickableViewAccessibility")
+fun createMessengerAdapter(
+    environment: Environment,
+    chatClicked: (MessengerViewItem) -> Unit,
+    onProfileClicked: (MessengerViewItem) -> Unit,
+    onDeleteChat: (id: Long) -> Unit,
+    viewBinderHelper: ViewBinderHelper
+) =
     createAdapterDelegate<MessengerViewItem, MessangerChatItemBinding>(
         inflate = MessangerChatItemBinding::inflate,
         bind = { item, binding ->
             with(binding) {
-                root.onClick {
-                    chatClicked(item)
+                viewBinderHelper.bind(root, item.id.toString())
+                viewBinderHelper.setOpenOnlyOne(true)
+
+                itemChatLayout.setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_MOVE) {
+                        viewBinderHelper.closeOpened(item.id.toString(),root)
+                        return@setOnTouchListener true
+                    }
+                    return@setOnTouchListener false
+                }
+
+                itemChatLayout.onClick {
+                    if (viewBinderHelper.openCount == 0)
+                        chatClicked(item)
+                    else
+                        viewBinderHelper.closeAll()
                 }
                 profilePicture.onClick {
-                    onProfileClicked(item)
+                    if (viewBinderHelper.openCount == 0)
+                        onProfileClicked(item)
+                    else
+                        viewBinderHelper.closeAll()
                 }
+
+                deleteLayout.onClick {
+                    onDeleteChat(item.id)
+                    root.close(true)
+                }
+
                 nameView.setPrintableText(item.name)
                 groupPicture.isVisible = item.isGroup
-                when(item.lastMessage){
+                when (item.lastMessage) {
                     is LastMessage.Image -> {
                         lastMessage.setText(R.string.messenger_image)
                         image.loadRounded(environment.endpoints.apiBaseUrl.dropLast(1) + item.lastMessage.imageUrl)
@@ -63,107 +109,3 @@ fun createMessengerAdapter(environment: Environment,chatClicked: (MessengerViewI
             }
         }
     )
-
-class MessengerItemTouchHelper(
-    val adapter: MessengerAdapter,
-    val deleteChat: (id: Long) -> Unit
-) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-    override fun onMove(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
-    ): Boolean {
-        return false
-    }
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        when (direction) {
-            ItemTouchHelper.LEFT -> {
-                deleteChat(adapter.snapshot().items[viewHolder.bindingAdapterPosition].id)
-                adapter.notifyItemChanged(viewHolder.bindingAdapterPosition)
-            }
-        }
-    }
-
-    override fun onChildDraw(
-        c: Canvas,
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        dX: Float,
-        dY: Float,
-        actionState: Int,
-        isCurrentlyActive: Boolean
-    ) {
-        val itemView = viewHolder.itemView
-        val p = Paint()
-        p.color = ContextCompat.getColor(recyclerView.context, R.color.red)
-
-        if (dX > 0) {
-            c.drawRect(
-                itemView.left.toFloat(),
-                itemView.top.toFloat(),
-                dX,
-                itemView.bottom.toFloat(),
-                p
-            )
-        } else {
-
-            c.drawRect(
-                itemView.right.toFloat() + dX,
-                itemView.top.toFloat(),
-                itemView.right.toFloat(),
-                itemView.bottom.toFloat(),
-                p
-            )
-
-        }
-
-        if (dX.equals(0f) && !isCurrentlyActive) {
-            p.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-            clearCanvas(
-                c,
-                itemView.right + dX,
-                itemView.top.toFloat(),
-                itemView.right.toFloat(),
-                itemView.bottom.toFloat(),
-                p
-            )
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            return
-        }
-
-        ContextCompat.getDrawable(recyclerView.context, R.drawable.ic_delete)
-            ?.let { deleteDrawable ->
-                val itemHeight: Int = itemView.height
-                val intrinsicHeight = deleteDrawable.intrinsicHeight
-                val intrinsicWidth = deleteDrawable.intrinsicWidth
-
-                val deleteIconTop: Int = itemView.top + (itemHeight - intrinsicHeight) / 2
-                val deleteIconMargin: Int = (itemHeight - intrinsicHeight) / 2
-                val deleteIconLeft: Int = itemView.right - deleteIconMargin - intrinsicWidth
-                val deleteIconRight = itemView.right - deleteIconMargin
-                val deleteIconBottom: Int = deleteIconTop + intrinsicHeight
-
-                deleteDrawable.setBounds(
-                    deleteIconLeft,
-                    deleteIconTop,
-                    deleteIconRight,
-                    deleteIconBottom
-                )
-                deleteDrawable.draw(c)
-            }
-
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-    }
-
-    private fun clearCanvas(
-        c: Canvas,
-        left: Float?,
-        top: Float?,
-        right: Float?,
-        bottom: Float?,
-        p: Paint
-    ) {
-        c.drawRect(left!!, top!!, right!!, bottom!!, p)
-    }
-}

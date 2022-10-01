@@ -1,11 +1,13 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
+import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
@@ -129,7 +131,7 @@ class ConversationViewModel(
                 ).withErrorHandled {
                     chatId = it.chatId
                     if (params.chat.avatar != null && params.chat.isGroup)
-                        if (messengerInteractor.postChatAvatar(it.chatId, params.chat.avatar)
+                        if (messengerInteractor.patchChatAvatar(it.chatId, params.chat.avatar)
                                 .successOrSendError() != null
                         )
                             updateState { state ->
@@ -336,7 +338,7 @@ class ConversationViewModel(
         }
     }
 
-    fun onUserClicked() {
+    fun onUserClicked(editMode: Boolean) {
         viewModelScope.launch {
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess {
@@ -344,12 +346,13 @@ class ConversationViewModel(
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
-                            userName = params.chat.name,
+                            userName = it.chatName,
                             userNickname = "",
-                            userAvatar = params.chat.avatar ?: "",
+                            userAvatar = it.avatar ?: "",
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = ""
+                            userPhone = "",
+                            editMode = editMode
                         )
                     )
                 }
@@ -405,7 +408,8 @@ class ConversationViewModel(
                 userAvatar = item.avatar,
                 chatParticipants = listOf(),
                 isGroup = false,
-                userPhone = item.phone
+                userPhone = item.phone,
+                editMode = false
             )
         )
     }

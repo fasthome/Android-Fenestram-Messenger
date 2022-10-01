@@ -7,8 +7,9 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.RequiresPermission
+import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +65,7 @@ class ContactsLoader(private val context: Context) {
         return _contactsList.toList()
     }
 
-    fun insertContact(firstName: String, secondName: String, mobileNumber: String, callback: ContactAddResult.() -> Unit) {
+    fun insertContact(firstName: String, secondName: String, mobileNumber: String, callback: ContactAddNavigationContract.ContactAddResult.() -> Unit) {
         val ops = ArrayList<ContentProviderOperation>()
         val rawContactInsertIndex: Int = ops.size
         ops.add(
@@ -99,10 +100,10 @@ class ContactsLoader(private val context: Context) {
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
             CoroutineScope(Dispatchers.Main).launch {
-                callback(ContactAddResult.Success)
+                callback(ContactAddNavigationContract.ContactAddResult.Success)
             }
         } catch (e: Exception) {
-            callback(ContactAddResult.Canceled)
+            callback(ContactAddNavigationContract.ContactAddResult.Canceled)
         }
 
     }

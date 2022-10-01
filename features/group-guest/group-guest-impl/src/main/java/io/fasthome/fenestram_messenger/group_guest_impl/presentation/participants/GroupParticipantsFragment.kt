@@ -25,8 +25,8 @@ class GroupParticipantsFragment :
         getParamsInterface = GroupParticipantsComponentContract.getParams
     )
 
-    private val adapter = ParticipantsAdapter(onMenuClicked = { id, view ->
-        vm.onMenuClicked(id, view)
+    private val adapter = ParticipantsAdapter(onMenuClicked = { id ->
+        vm.onMenuClicked(id)
     })
 
     private val binding by fragmentViewBinding(FragmentGroupParticipantsBinding::bind)
@@ -51,7 +51,10 @@ class GroupParticipantsFragment :
                 UserMenuDialog.create(
                     fragment = this,
                     delete = vm::onDeleteUserClicked,
-                    id = event.id
+                    addToContacts = vm::onAddToContactsClicked,
+                    id = event.id,
+                    name = event.name,
+                    phone = event.phone,
                 ).show()
             }
         }

@@ -6,22 +6,21 @@ package io.fasthome.fenestram_messenger.profile_guest_api
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import kotlinx.parcelize.Parcelize
 
 interface ProfileGuestFeature {
-    val profileGuestNavigationContract: NavigationContractApi<ProfileGuestParams, ProfileGuestResult >
+    val profileGuestNavigationContract: NavigationContractApi<ProfileGuestParams, ProfileGuestResult>
 
     @Parcelize
     class ProfileGuestParams(
-        val id : Long?,
-        val userName : String,
-        val userNickname : String,
-        val userPhone : String,
-        val userAvatar : String,
-        val chatParticipants : List<User>,
-        val isGroup : Boolean
+        val id: Long?,
+        val userName: String,
+        val userNickname: String,
+        val userPhone: String,
+        val userAvatar: String,
+        val chatParticipants: List<User>,
+        val isGroup: Boolean,
+        val editMode: Boolean
     ) : Parcelable
 
     sealed class ProfileGuestResult : Parcelable {
