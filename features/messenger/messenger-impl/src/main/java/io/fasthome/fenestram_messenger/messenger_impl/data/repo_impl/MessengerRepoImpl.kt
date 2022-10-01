@@ -71,6 +71,10 @@ class MessengerRepoImpl(
         messengerService.uploadImage(photoBytes, guid)
     }
 
+    override suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult> = callForResult {
+        messengerService.uploadDocument(documentBytes, guid)
+    }
+
     override fun closeSocket() {
         socket.closeClientSocket()
     }

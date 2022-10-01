@@ -189,12 +189,11 @@ class ConversationViewModel(
     private fun sendImages(attachedFiles: List<AttachedFile>) {
         val messages = currentViewState.messages
 
-        val tempImageMessages = attachedFiles.filterIsInstance<AttachedFile.Image>().map {
-            createImageMessage(null, it.bitmap, it.file)
-        }
-
-        val tempDocumentMessages = attachedFiles.filterIsInstance<AttachedFile.Document>().map {
-            createDocumentMessage(null, it.file)
+        val tempFileMessages = attachedFiles.map {
+            when (it) {
+                is AttachedFile.Image -> createImageMessage(null, it.bitmap, it.file)
+                is AttachedFile.Document -> createDocumentMessage(null, it.file)
+            }
         }
 
         updateState { state ->
@@ -204,16 +203,7 @@ class ConversationViewModel(
         viewModelScope.launch {
             updateState { state ->
                 state.copy(
-                    messages = tempImageMessages.reversed().associateBy({
-                        it.localId
-                    }, {
-                        it
-                    }).plus(messages)
-                )
-            }
-            updateState { state ->
-                state.copy(
-                    messages = tempDocumentMessages.reversed().associateBy({
+                    messages = tempFileMessages.reversed().associateBy({
                         it.localId
                     }, {
                         it
@@ -221,39 +211,72 @@ class ConversationViewModel(
                 )
             }
 
-            tempImageMessages.forEach { tempMessage ->
+            tempFileMessages.forEach { tempMessage ->
                 var imageUrl: String?
+                when (tempMessage) {
+                    is ConversationViewItem.Self.Image -> {
+                        FileOutputStream(tempMessage.file).use { output ->
+                            tempMessage.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                        }
 
-                FileOutputStream(tempMessage.file).use { output ->
-                    tempMessage.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, output)
-                }
-
-                messengerInteractor.uploadProfileImage(
-                    tempMessage.file?.readBytes() ?: return@launch
-                )
-                    .getOrNull()?.imagePath.let {
-                        imageUrl = it
-                        it
-                    }
-                when (messengerInteractor.sendMessage(
-                    id = chatId ?: return@launch,
-                    text = imageUrl ?: return@launch,
-                    type = "image",
-                    localId = tempMessage.localId
-                )) {
-                    is CallResult.Error -> {
-                        updateStatus(
-                            tempMessage,
-                            SentStatus.Error,
-                            profileImageUrlConverter.convert(imageUrl)
+                        messengerInteractor.uploadProfileImage(
+                            tempMessage.file?.readBytes() ?: return@launch
                         )
+                            .getOrNull()?.imagePath.let {
+                                imageUrl = it
+                                it
+                            }
+                        when (messengerInteractor.sendMessage(
+                            id = chatId ?: return@launch,
+                            text = imageUrl ?: return@launch,
+                            type = "image",
+                            localId = tempMessage.localId
+                        )) {
+                            is CallResult.Error -> {
+                                updateStatus(
+                                    tempMessage,
+                                    SentStatus.Error,
+                                    profileImageUrlConverter.convert(imageUrl)
+                                )
+                            }
+                            is CallResult.Success -> {
+                                updateStatus(
+                                    tempMessage,
+                                    SentStatus.Sent,
+                                    profileImageUrlConverter.convert(imageUrl)
+                                )
+                            }
+                        }
                     }
-                    is CallResult.Success -> {
-                        updateStatus(
-                            tempMessage,
-                            SentStatus.Sent,
-                            profileImageUrlConverter.convert(imageUrl)
+                    is ConversationViewItem.Self.Document -> {
+                        messengerInteractor.uploadDocument(
+                            tempMessage.file?.readBytes() ?: return@launch
                         )
+                            .getOrNull()?.documentPath.let {
+                                imageUrl = it
+                                it
+                            }
+                        when (messengerInteractor.sendMessage(
+                            id = chatId ?: return@launch,
+                            text = imageUrl ?: return@launch,
+                            type = "document",
+                            localId = tempMessage.localId
+                        )) {
+                            is CallResult.Error -> {
+                                updateStatus(
+                                    tempMessage,
+                                    SentStatus.Error,
+                                    profileImageUrlConverter.convert(imageUrl)
+                                )
+                            }
+                            is CallResult.Success -> {
+                                updateStatus(
+                                    tempMessage,
+                                    SentStatus.Sent,
+                                    profileImageUrlConverter.convert(imageUrl)
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -4,7 +4,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
-import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
@@ -73,6 +72,17 @@ class MessengerService(
             )
             .requireData()
         return UploadImageResult(imagePath = response.pathToFile)
+    }
+
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): UploadDocumentResult {
+        val response = client
+            .runSubmitFormWithFile<BaseResponse<UploadDocumentResponse>>(
+                path = "api/v1/files/upload",
+                binaryData = documentBytes,
+                filename = "$guid.pdf",
+            )
+            .requireData()
+        return UploadDocumentResult(documentPath = response.pathToFile)
     }
 
     suspend fun getMessagesByChat(id: Long, limit: Int, page: Int): MessagesPage {

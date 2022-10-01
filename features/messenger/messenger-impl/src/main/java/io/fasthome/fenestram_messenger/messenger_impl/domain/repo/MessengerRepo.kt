@@ -29,6 +29,7 @@ interface MessengerRepo {
     fun getClientSocket(chatId: String?, token: AccessToken, callback: SocketMessageCallback, selfUserId: Long?)
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult>
 
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)

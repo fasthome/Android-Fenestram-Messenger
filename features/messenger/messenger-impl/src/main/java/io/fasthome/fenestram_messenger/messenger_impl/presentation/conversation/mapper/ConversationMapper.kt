@@ -18,6 +18,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
+const val MESSAGE_TYPE_DOCUMENT = "document"
 
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
@@ -66,6 +67,18 @@ fun Message.toConversationViewItem(
                         localId = UUID.randomUUID().toString()
                     )
                 }
+
+                MESSAGE_TYPE_DOCUMENT -> {
+                    ConversationViewItem.Self.Document(
+                        content = profileImageUrlConverter.convert(text),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        localId = UUID.randomUUID().toString()
+                    )
+                }
+
                 MESSAGE_TYPE_SYSTEM -> {
                     ConversationViewItem.System(
                         content = PrintableText.Raw(text),
