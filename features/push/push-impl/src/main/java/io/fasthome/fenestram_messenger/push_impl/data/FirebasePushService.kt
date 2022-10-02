@@ -99,15 +99,15 @@ class FirebasePushService : FirebaseMessagingService() {
             if (message.data["is_group"].toBoolean()) {
                 it.setLargeIcon(getAvatar(message.data["chat_avatar"]))
             }
-            it.setSmallIcon(R.drawable.ic_message)
-            it.color = resources.color(R.color.blue)
-            it.setStyle(messagingStyle)
-            it.setShowWhen(true)
-            it.setAutoCancel(true)
-            it.setContentIntent(contentIntent)
-            it.setGroup(GROUP_HOOLICHAT)
-            it.addAction(buildAction(replyIntent))
-        }.build()
+        }.setSmallIcon(R.drawable.ic_message)
+            .setColor(resources.color(R.color.blue))
+            .setStyle(messagingStyle)
+            .setShowWhen(true)
+            .setAutoCancel(true)
+            .setContentIntent(contentIntent)
+            .setGroup(GROUP_HOOLICHAT)
+            .addAction(buildAction(replyIntent))
+            .build()
 
         val summaryNotification = NotificationCompat.Builder(this, Channel.Push.id)
             .setSmallIcon(R.drawable.ic_message)
@@ -135,7 +135,9 @@ class FirebasePushService : FirebaseMessagingService() {
         return NotificationCompat.MessagingStyle.Message(
             data["text"],
             ZonedDateTime.now().toInstant().toEpochMilli(),
-            Person.Builder()
+            Person.Builder().also { personBuilder ->
+                data["user_id"]?.let { userId -> personBuilder.setKey(userId) }
+            }
                 .setName(userName)
                 .setIcon(IconCompat.createWithBitmap(iconBitmap))
                 .build()
