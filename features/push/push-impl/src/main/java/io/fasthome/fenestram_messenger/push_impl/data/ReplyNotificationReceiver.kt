@@ -31,30 +31,27 @@ class ReplyNotificationReceiver : BroadcastReceiver(), KoinComponent {
         val notificationId = intent.getStringExtra("chat_id")?.toInt() ?: 0
 
         scope.launch {
-            if (pushRepo.sendMessage(
-                    notificationId.toLong(), inputtedText.toString(), "text"
-                ) is CallResult.Error
+            if (pushRepo.sendMessage(notificationId.toLong(), inputtedText.toString(), "text")
+                        is CallResult.Error
             ) {
                 notificationManager.cancel(notificationId)
                 return@launch
             }
 
-            val activeNotification = notificationManager.activeNotifications.firstOrNull {
+            val notification = notificationManager.activeNotifications.firstOrNull {
                 it.id == notificationId
-            } ?: return@launch
-            val notification = activeNotification.notification
+            }?.notification ?: return@launch
 
             val recoveredNotificationBuilder =
-                Notification.Builder.recoverBuilder(context, notification)
-            recoveredNotificationBuilder.also {
-                val messageStyle = it.style as Notification.MessagingStyle
-                messageStyle.addMessage(
-                    inputtedText,
-                    ZonedDateTime.now().toInstant().toEpochMilli(),
-                    messageStyle.user
-                )
-                it.style = messageStyle
-            }
+                Notification.Builder.recoverBuilder(context, notification).also {
+                    val messageStyle = it.style as Notification.MessagingStyle
+                    messageStyle.addMessage(
+                        inputtedText,
+                        ZonedDateTime.now().toInstant().toEpochMilli(),
+                        messageStyle.user
+                    )
+                    it.style = messageStyle
+                }
 
             notificationManager.notify(notificationId, recoveredNotificationBuilder.build())
         }

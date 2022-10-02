@@ -19,6 +19,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.presentation.base.AppFeature
 import io.fasthome.fenestram_messenger.presentation.base.util.Channel
 import io.fasthome.fenestram_messenger.presentation.base.util.createNotificationChannel
@@ -41,9 +42,12 @@ class FirebasePushService : FirebaseMessagingService() {
     private val remoteMessagesStorage by inject<RemoteMessagesStorage>()
     private val appFeature by inject<AppFeature>()
     private val authFeature by inject<AuthFeature>()
+    private val profileImageUrlConverter by inject<ProfileImageUrlConverter>()
 
     private val scope = CoroutineScope(DispatchersProvider.Default)
     private var initPushesJob by switchJob()
+
+    private val mePerson = Person.Builder().setName("Я").build()
 
     override fun onNewToken(token: String) {
         initPushesJob = scope.launch {
@@ -53,26 +57,25 @@ class FirebasePushService : FirebaseMessagingService() {
         }
     }
 
-    private val mePerson = Person.Builder().setName("Я").build()
-
     override fun onMessageReceived(message: RemoteMessage) {
-
         val notificationId =
             message.data["chat_id"]?.toInt() ?: remoteMessagesStorage.nextNotificationId()
 
         val activityIntent = Intent(this, appFeature.startActivityClazz.java)
-        message.data.forEach { (k, v) -> activityIntent.putExtra(k, v) }
+        val broadcastIntent = Intent(this, ReplyNotificationReceiver::class.java)
+        message.data.forEach { (k, v) ->
+            activityIntent.putExtra(k, v)
+            broadcastIntent.putExtra(k, v)
+        }
+
         val contentIntent = PendingIntent.getActivity(
             this,
             notificationId,
             activityIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntentCompat.FLAG_IMMUTABLE,
         )
-
-        val broadcastIntent = Intent(this, ReplyNotificationReceiver::class.java)
-        message.data.forEach { (k, v) -> broadcastIntent.putExtra(k, v) }
-        val replyPendingIntent = PendingIntent.getBroadcast(
-            applicationContext,
+        val replyIntent = PendingIntent.getBroadcast(
+            this,
             notificationId,
             broadcastIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
@@ -94,7 +97,7 @@ class FirebasePushService : FirebaseMessagingService() {
 
         val notification = NotificationCompat.Builder(this, Channel.Push.id).also {
             if (message.data["is_group"].toBoolean()) {
-                it.setLargeIcon(getAvatar(BASE_URL + (message.data["chat_avatar"])))
+                it.setLargeIcon(getAvatar(message.data["chat_avatar"]))
             }
             it.setSmallIcon(R.drawable.ic_message)
             it.color = resources.color(R.color.blue)
@@ -103,7 +106,7 @@ class FirebasePushService : FirebaseMessagingService() {
             it.setAutoCancel(true)
             it.setContentIntent(contentIntent)
             it.setGroup(GROUP_HOOLICHAT)
-            it.addAction(buildAction(replyPendingIntent))
+            it.addAction(buildAction(replyIntent))
         }.build()
 
         val summaryNotification = NotificationCompat.Builder(this, Channel.Push.id)
@@ -124,15 +127,17 @@ class FirebasePushService : FirebaseMessagingService() {
             !data["user_contact_name"].isNullOrEmpty() -> data["user_contact_name"]
             !data["user_nickname"].isNullOrEmpty() -> data["user_nickname"]
             !data["user_name"].isNullOrEmpty() -> data["user_name"]
-            else -> ""
-        } ?: ""
+            else -> "Test Push"
+        }
 
-        val iconBitmap = getAvatar(BASE_URL + data["user_avatar"])
+        val iconBitmap = getAvatar(data["user_avatar"])
 
         return NotificationCompat.MessagingStyle.Message(
             data["text"],
             ZonedDateTime.now().toInstant().toEpochMilli(),
-            Person.Builder().setName(userName).setIcon(IconCompat.createWithBitmap(iconBitmap))
+            Person.Builder()
+                .setName(userName)
+                .setIcon(IconCompat.createWithBitmap(iconBitmap))
                 .build()
         )
     }
@@ -155,7 +160,7 @@ class FirebasePushService : FirebaseMessagingService() {
         return try {
             Glide.with(this)
                 .asBitmap()
-                .load(url)
+                .load(profileImageUrlConverter.convert(url))
                 .error(R.drawable.common_avatar)
                 .transform(CircleCrop())
                 .submit(100, 100)
@@ -181,6 +186,5 @@ class FirebasePushService : FirebaseMessagingService() {
         private const val SUMMARY_ID = 0
         private const val GROUP_HOOLICHAT = "io.fasthome.fenestram_messenger.HOOLICHAT"
         const val KEY_TEXT_REPLY = "KEY_TEXT_REPLY"
-        private const val BASE_URL = "http://176.99.12.176" //TODO Убрать
     }
 }
