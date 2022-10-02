@@ -3,10 +3,18 @@
  */
 package io.fasthome.fenestram_messenger.push_impl.data
 
+import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.Person
+import androidx.core.app.RemoteInput
+import androidx.core.graphics.drawable.IconCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -24,6 +32,8 @@ import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import java.time.ZonedDateTime
+
 
 class FirebasePushService : FirebaseMessagingService() {
 
@@ -43,10 +53,12 @@ class FirebasePushService : FirebaseMessagingService() {
         }
     }
 
-    override fun onMessageReceived(message: RemoteMessage) {
-        val remoteNotification = message.notification ?: return
+    private val mePerson = Person.Builder().setName("Я").build()
 
-        val notificationId = remoteMessagesStorage.nextNotificationId()
+    override fun onMessageReceived(message: RemoteMessage) {
+
+        val notificationId =
+            message.data["chat_id"]?.toInt() ?: remoteMessagesStorage.nextNotificationId()
 
         val activityIntent = Intent(this, appFeature.startActivityClazz.java)
         message.data.forEach { (k, v) -> activityIntent.putExtra(k, v) }
@@ -57,19 +69,118 @@ class FirebasePushService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntentCompat.FLAG_IMMUTABLE,
         )
 
+        val broadcastIntent = Intent(this, ReplyNotificationReceiver::class.java)
+        message.data.forEach { (k, v) -> broadcastIntent.putExtra(k, v) }
+        val replyPendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            notificationId,
+            broadcastIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
+
         createNotificationChannel(Channel.Push)
-        val notification = NotificationCompat.Builder(this, Channel.Push.id)
+
+        val notificationMessage = buildMessage(message.data)
+        val messagingStyle = restoreMessagingStyle(notificationId)?.addMessage(notificationMessage)
+            ?: if (message.data["is_group"].toBoolean()) {
+                NotificationCompat.MessagingStyle(mePerson)
+                    .addMessage(notificationMessage)
+                    .setConversationTitle(message.data["chat_name"])
+                    .setGroupConversation(true)
+            } else {
+                NotificationCompat.MessagingStyle(mePerson)
+                    .addMessage(notificationMessage)
+            }
+
+        val notification = NotificationCompat.Builder(this, Channel.Push.id).also {
+            if (message.data["is_group"].toBoolean()) {
+                it.setLargeIcon(getAvatar(BASE_URL + (message.data["chat_avatar"])))
+            }
+            it.setSmallIcon(R.drawable.ic_message)
+            it.color = resources.color(R.color.blue)
+            it.setStyle(messagingStyle)
+            it.setShowWhen(true)
+            it.setAutoCancel(true)
+            it.setContentIntent(contentIntent)
+            it.setGroup(GROUP_HOOLICHAT)
+            it.addAction(buildAction(replyPendingIntent))
+        }.build()
+
+        val summaryNotification = NotificationCompat.Builder(this, Channel.Push.id)
             .setSmallIcon(R.drawable.ic_message)
-            .setColor(resources.color(R.color.blue))
-            .setTicker(remoteNotification.title)
-            .setContentTitle(remoteNotification.title)
-            .setContentText(remoteNotification.body)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(remoteNotification.body))
-            .setShowWhen(true)
-            .setAutoCancel(true)
-            .setContentIntent(contentIntent)
+            .setStyle(NotificationCompat.InboxStyle())
+            .setGroup(GROUP_HOOLICHAT)
+            .setGroupSummary(true)
             .build()
 
-        NotificationManagerCompat.from(this).notify(notificationId, notification)
+        NotificationManagerCompat.from(this).apply {
+            notify(notificationId, notification)
+            notify(SUMMARY_ID, summaryNotification)
+        }
+    }
+
+    private fun buildMessage(data: Map<String, String>): NotificationCompat.MessagingStyle.Message {
+        val userName = when {
+            !data["user_contact_name"].isNullOrEmpty() -> data["user_contact_name"]
+            !data["user_nickname"].isNullOrEmpty() -> data["user_nickname"]
+            !data["user_name"].isNullOrEmpty() -> data["user_name"]
+            else -> ""
+        } ?: ""
+
+        val iconBitmap = getAvatar(BASE_URL + data["user_avatar"])
+
+        return NotificationCompat.MessagingStyle.Message(
+            data["text"],
+            ZonedDateTime.now().toInstant().toEpochMilli(),
+            Person.Builder().setName(userName).setIcon(IconCompat.createWithBitmap(iconBitmap))
+                .build()
+        )
+    }
+
+    private fun buildAction(replyPendingIntent: PendingIntent): NotificationCompat.Action {
+        val remoteInput: RemoteInput = RemoteInput.Builder(KEY_TEXT_REPLY).run {
+            setLabel(resources.getString(R.string.reply_label))
+            build()
+        }
+        return NotificationCompat.Action.Builder(
+            R.drawable.ic_baseline_send_24,
+            getString(R.string.reply_label),
+            replyPendingIntent
+        )
+            .addRemoteInput(remoteInput)
+            .build()
+    }
+
+    private fun getAvatar(url: String?): Bitmap {
+        return try {
+            Glide.with(this)
+                .asBitmap()
+                .load(url)
+                .error(R.drawable.common_avatar)
+                .transform(CircleCrop())
+                .submit(100, 100)
+                .get()
+        } catch (e: Exception) {
+            Glide.with(this)
+                .asBitmap()
+                .load(R.drawable.common_avatar)
+                .submit(100, 100)
+                .get()
+        }
+    }
+
+    private fun restoreMessagingStyle(notificationId: Int): NotificationCompat.MessagingStyle? {
+        return (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .activeNotifications
+            .find { it.id == notificationId }
+            ?.notification
+            ?.let { NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(it) }
+    }
+
+    companion object {
+        private const val SUMMARY_ID = 0
+        private const val GROUP_HOOLICHAT = "io.fasthome.fenestram_messenger.HOOLICHAT"
+        const val KEY_TEXT_REPLY = "KEY_TEXT_REPLY"
+        private const val BASE_URL = "http://176.99.12.176" //TODO Убрать
     }
 }
