@@ -95,7 +95,8 @@ class ProfileGuestViewModel(
             editMode = params.editMode,
             avatarBitmap = null,
             chatImageFile = null,
-            participantsQuantity = params.groupParticipantsParams.participants.size
+            participantsQuantity = params.groupParticipantsParams.participants.size,
+            profileGuestNameBackground = R.color.dark1
         )
 
     fun fetchFilesAndPhotos() {
@@ -133,10 +134,28 @@ class ProfileGuestViewModel(
             sendEvent(ProfileGuestEvent.DeleteChatEvent(params.id))
     }
 
+    fun onProfileNameChanged() {
+        if (currentViewState.profileGuestNameBackground == R.color.red)
+            updateState { state ->
+                state.copy(
+                    profileGuestNameBackground = R.color.white
+                )
+            }
+    }
+
     fun onEditGroupClicked(newName: String) {
 
         if (currentViewState.editMode) {
             viewModelScope.launch {
+                if (newName.isEmpty()) {
+                    updateState { state ->
+                        state.copy(
+                            profileGuestNameBackground = R.color.red
+                        )
+                    }
+                    return@launch
+                }
+
                 if (newName != params.userName &&
                     profileGuestInteractor.patchChatName(params.id!!, newName)
                         .successOrSendError() != null
@@ -160,11 +179,20 @@ class ProfileGuestViewModel(
                         state.copy(userAvatar = profileImageUrlConverter.convert(imageUrl))
                     }
                 }
-
+                updateState { state ->
+                    state.copy(
+                        editMode = false,
+                        profileGuestNameBackground = R.color.dark1
+                    )
+                }
             }
-            updateState { state -> state.copy(editMode = false) }
         } else
-            updateState { state -> state.copy(editMode = true) }
+            updateState { state ->
+                state.copy(
+                    editMode = true,
+                    profileGuestNameBackground = R.color.white
+                )
+            }
     }
 
     fun deleteChat(id: Long) {
