@@ -19,6 +19,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -134,13 +135,23 @@ class ProfileGuestViewModel(
             sendEvent(ProfileGuestEvent.DeleteChatEvent(params.id))
     }
 
-    fun onProfileNameChanged() {
-        if (currentViewState.profileGuestNameBackground == R.color.red)
+    fun onProfileNameChanged(newName: String) {
+        if (!currentViewState.editMode) {
+            return
+        }
+        if (newName.isEmpty()) {
+            updateState { state ->
+                state.copy(
+                    profileGuestNameBackground = R.color.red
+                )
+            }
+        } else {
             updateState { state ->
                 state.copy(
                     profileGuestNameBackground = R.color.white
                 )
             }
+        }
     }
 
     fun onEditGroupClicked(newName: String) {
@@ -148,15 +159,10 @@ class ProfileGuestViewModel(
         if (currentViewState.editMode) {
             viewModelScope.launch {
                 if (newName.isEmpty()) {
-                    updateState { state ->
-                        state.copy(
-                            profileGuestNameBackground = R.color.red
-                        )
-                    }
                     return@launch
                 }
 
-                if (newName != params.userName &&
+                if (newName != getPrintableRawText(currentViewState.userName) &&
                     profileGuestInteractor.patchChatName(params.id!!, newName)
                         .successOrSendError() != null
                 ) {

@@ -74,7 +74,7 @@ class ProfileGuestFragment :
 
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
-        profileGuestName.addTextChangedListener { vm.onProfileNameChanged() }
+        profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
 
 //        vm.fetchFilesAndPhotos()
 
@@ -137,8 +137,7 @@ class ProfileGuestFragment :
             profileGuestCall.isVisible = !state.editMode
             pickPhotoIcon.isVisible = state.editMode
             profileGuestName.isEnabled = state.editMode
-            if (state.profileGuestNameBackground == R.color.dark1)
-                profileGuestName.setPrintableText(state.userName)
+
             profileGuestName.background.setTint(
                 ContextCompat.getColor(
                     requireContext(),
@@ -188,6 +187,7 @@ class ProfileGuestFragment :
                         R.drawable.ic_edit
                     )
                 )
+                profileGuestName.setPrintableText(state.userName)
             }
 
             when {
