@@ -3,10 +3,8 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
@@ -19,7 +17,8 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MessengerViewModel(
@@ -114,7 +113,8 @@ class MessengerViewModel(
                 userAvatar = messengerViewItem.profileImageUrl ?: "",
                 userPhone = "",
                 chatParticipants = listOf(),
-                isGroup = false
+                isGroup = false,
+                editMode = false
             )
         )
     }

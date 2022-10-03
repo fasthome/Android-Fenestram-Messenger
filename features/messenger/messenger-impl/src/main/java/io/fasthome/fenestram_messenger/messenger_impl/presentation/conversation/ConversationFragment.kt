@@ -1,7 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -20,14 +18,12 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.util.model.Bytes
 
 
 class ConversationFragment :
@@ -101,13 +97,15 @@ class ConversationFragment :
             vm.exitToMessenger()
         }
         profileToolBar.onClick {
-            vm.onUserClicked()
+            vm.onUserClicked(false)
         }
-        binding.backButton.increaseHitArea(16.dp)
+        backButton.increaseHitArea(16.dp)
 
-        binding.dropdownMenu.setOnClickListener {
+        dropdownMenu.setOnClickListener {
             vm.onOpenMenu()
         }
+
+
 
         attachButton.onClick {
             vm.onAttachClicked()
@@ -152,7 +150,7 @@ class ConversationFragment :
                 }
 
                 menuBinding.edit.onClick {
-                    //TODO Редактирование
+                    vm.onUserClicked(true)
                     popupMenu.dismiss()
                 }
 

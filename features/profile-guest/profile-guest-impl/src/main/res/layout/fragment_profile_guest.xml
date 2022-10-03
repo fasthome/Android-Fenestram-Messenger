@@ -21,26 +21,61 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/profile_guest_avatar"
+            <RelativeLayout
+                android:id="@+id/avatar_container"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="@dimen/profile_guest_avatar_margin_start_top"
                 android:layout_marginTop="@dimen/profile_guest_avatar_margin_start_top"
-                android:src="@drawable/common_avatar"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
+                <androidx.constraintlayout.utils.widget.ImageFilterView
+                    android:id="@+id/profile_guest_avatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/common_avatar"
+                    app:brightness="0.5" />
+
+                <ImageView
+                    android:id="@+id/pick_photo_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="18dp"
+                    android:layout_alignLeft="@id/profile_guest_avatar"
+                    android:layout_alignTop="@id/profile_guest_avatar"
+                    android:layout_alignRight="@id/profile_guest_avatar"
+                    android:layout_alignBottom="@id/profile_guest_avatar"
+                    android:scaleX="0.3"
+                    android:scaleY="0.3"
+                    android:src="@drawable/ic_pick_photo" />
+            </RelativeLayout>
+
+            <EditText
                 android:id="@+id/profile_guest_name"
                 style="@style/ProfileGuestName"
                 android:layout_width="0dp"
+                android:enabled="false"
+                android:background="@android:color/transparent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
+                android:layout_marginEnd="60dp"
                 android:text="@string/no_name"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
+                app:layout_constraintStart_toEndOf="@id/avatar_container"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/profile_guest_edit_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="18dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -51,7 +86,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
                 android:text="@string/profile_guest_no_nickname"
-                app:layout_constraintStart_toEndOf="@id/profile_guest_avatar"
+                app:layout_constraintStart_toEndOf="@id/avatar_container"
                 app:layout_constraintTop_toBottomOf="@id/profile_guest_name" />
 
             <ImageButton
@@ -64,7 +99,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.3"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_guest_avatar" />
+                app:layout_constraintTop_toBottomOf="@id/avatar_container" />
 
             <ImageButton
                 android:id="@+id/profile_guest_call"
@@ -78,60 +113,69 @@
                 app:layout_constraintTop_toTopOf="@id/profile_guest_video_chat" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <FrameLayout
-            android:id="@+id/participants_container"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/profile_guest_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/profile_guest_appbar" />
+            app:layout_constraintTop_toBottomOf="@id/profile_guest_appbar">
 
-        <include
-            android:id="@+id/recent_files_header"
-            layout="@layout/recent_files_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/participants_container" />
+            <FrameLayout
+                android:id="@+id/participants_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recent_files_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxHeight="120dp"
-            android:nestedScrollingEnabled="false"
-            android:paddingTop="10dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recent_files_header"
-            tools:listitem="@layout/recent_file_item" />
+            <include
+                android:id="@+id/recent_files_header"
+                layout="@layout/recent_files_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/participants_container" />
 
-        <include
-            android:id="@+id/recent_images_header"
-            layout="@layout/recent_images_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recent_files_list" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_files_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="120dp"
+                android:nestedScrollingEnabled="false"
+                android:paddingTop="10dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recent_files_header"
+                tools:listitem="@layout/recent_file_item" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recent_images_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxHeight="120dp"
-            android:paddingStart="25dp"
-            android:paddingEnd="25dp"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recent_images_header"
-            tools:itemCount="6"
-            tools:listitem="@layout/recent_image_item"
-            tools:spanCount="3" />
+            <include
+                android:id="@+id/recent_images_header"
+                layout="@layout/recent_images_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recent_files_list" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recent_images_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="120dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/recent_images_header"
+                tools:itemCount="6"
+                tools:listitem="@layout/recent_image_item"
+                tools:spanCount="3" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonDeleteChat"
@@ -140,15 +184,14 @@
             android:layout_height="80dp"
             android:layout_marginTop="10dp"
             android:background="@color/dark2"
-            android:drawableTint="@color/red"
             android:drawableLeft="@drawable/ic_delete"
             android:drawablePadding="10dp"
+            android:drawableTint="@color/red"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:text="@string/profile_guest_delete_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recent_images_list" />
-
+            app:layout_constraintTop_toBottomOf="@id/profile_guest_container" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

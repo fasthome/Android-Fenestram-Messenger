@@ -6,8 +6,6 @@ package io.fasthome.fenestram_messenger.profile_guest_impl
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.contract.map
-import io.fasthome.fenestram_messenger.navigation.contract.mapParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.ProfileGuestNavigationContract
 
@@ -22,12 +20,15 @@ class ProfileGuestFeatureImpl : ProfileGuestFeature {
                     userAvatar = it.userAvatar,
                     groupParticipantsParams = ParticipantsParams(it.chatParticipants, it.id),
                     isGroup = it.isGroup,
-                    userPhone = it.userPhone
+                    userPhone = it.userPhone,
+                    editMode = it.editMode
                 )
             },
             resultMapper = {
                 when (it) {
-                    is ProfileGuestNavigationContract.Result.ChatDeleted -> ProfileGuestFeature.ProfileGuestResult.ChatDeleted(it.id)
+                    is ProfileGuestNavigationContract.Result.ChatDeleted -> ProfileGuestFeature.ProfileGuestResult.ChatDeleted(
+                        it.id
+                    )
                     is ProfileGuestNavigationContract.Result.Canceled -> ProfileGuestFeature.ProfileGuestResult.Canceled
                 }
             }
