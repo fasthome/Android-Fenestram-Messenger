@@ -84,7 +84,7 @@ class MessengerService(
             .runSubmitFormWithFile<BaseResponse<UploadDocumentResponse>>(
                 path = "api/v1/files/upload",
                 binaryData = documentBytes,
-                filename = "$guid.pdf",
+                filename = "$guid.jpg", //TODO заменить на PDF
             )
             .requireData()
         return UploadDocumentResult(documentPath = response.pathToFile)

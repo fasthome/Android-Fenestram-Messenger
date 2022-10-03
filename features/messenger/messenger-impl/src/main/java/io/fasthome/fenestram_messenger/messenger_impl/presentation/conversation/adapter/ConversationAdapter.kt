@@ -13,7 +13,7 @@ class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
     onImageClicked: (String) -> Unit,
-    onDocumentClicked: (String) -> Unit
+    onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -29,7 +29,10 @@ class ConversationAdapter(
             createConversationReceiveDocumentAdapterDelegate(onDocumentClicked),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
-            createConversationGroupDocumentAdapterDelegate(onGroupProfileItemClicked, onDocumentClicked),
+            createConversationGroupDocumentAdapterDelegate(
+                onGroupProfileItemClicked,
+                onDocumentClicked
+            ),
             createConversationSystemAdapterDelegate()
         )
     )
@@ -77,13 +80,15 @@ fun createConversationSelfImageAdapterDelegate(
 
 fun createConversationSelfDocumentAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onDocumentClicked: (String) -> Unit
+    onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
         ConversationItemSelfDocumentBinding::inflate
     ) {
         binding.messageContent.onClick {
-            onDocumentClicked(item.content)
+            onDocumentClicked(item.content, item.path) {
+                item.path = it
+            }
         }
         binding.root.onClick {
             onSelfMessageClicked(item)
@@ -123,12 +128,14 @@ fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Un
         }
     }
 
-fun createConversationReceiveDocumentAdapterDelegate(onDocumentClicked: (String) -> Unit) =
+fun createConversationReceiveDocumentAdapterDelegate(onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
         ConversationItemReceiveDocumentBinding::inflate
     ) {
         binding.messageContent.onClick {
-            onDocumentClicked(item.content)
+            onDocumentClicked(item.content, item.path) {
+                item.path = it
+            }
         }
         bindWithBinding {
             sendTimeView.setPrintableText(item.time)
@@ -173,7 +180,7 @@ fun createConversationGroupImageAdapterDelegate(
 
 fun createConversationGroupDocumentAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onDocumentClicked: (String) -> Unit
+    onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
         ConversationItemGroupDocumentBinding::inflate
@@ -182,7 +189,9 @@ fun createConversationGroupDocumentAdapterDelegate(
             onGroupProfileItemClicked(item)
         }
         binding.messageContent.onClick {
-            onDocumentClicked(item.content)
+            onDocumentClicked(item.content, item.path) {
+                item.path = it
+            }
         }
         bindWithBinding {
             username.setPrintableText(item.userName)

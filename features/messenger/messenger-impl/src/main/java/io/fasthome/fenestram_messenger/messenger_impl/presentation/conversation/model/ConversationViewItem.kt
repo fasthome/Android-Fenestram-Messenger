@@ -49,7 +49,8 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override var sentStatus: SentStatus,
             override val localId: String,
-            val file: File? = null
+            val file: File? = null,
+            var path: String? = null,
         ) : Self()
     }
 
@@ -76,6 +77,7 @@ sealed interface ConversationViewItem {
             override val time: PrintableText,
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
+            var path: String? = null,
         ) : Receive()
     }
 
@@ -114,7 +116,8 @@ sealed interface ConversationViewItem {
             override val sentStatus: SentStatus,
             override val userName: PrintableText,
             override val avatar: String,
-            override val phone: String
+            override val phone: String,
+            var path: String? = null,
         ) : Group(userName, avatar, phone)
     }
 

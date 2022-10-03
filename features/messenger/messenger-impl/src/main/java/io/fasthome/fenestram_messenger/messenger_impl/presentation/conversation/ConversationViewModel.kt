@@ -1,27 +1,28 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.data.DownloadFileManager
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenFileNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.util.*
@@ -33,6 +34,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.util.*
+import java.util.jar.Manifest
+
 
 class ConversationViewModel(
     router: ContractRouter,
@@ -43,6 +46,8 @@ class ConversationViewModel(
     private val pickFileInterface: PickFileInterface,
     private val profileImageUtil: ProfileImageUtil,
     private val profileImageUrlConverter: ProfileImageUrlConverter,
+    private val downloadFileManager: DownloadFileManager,
+    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -51,6 +56,8 @@ class ConversationViewModel(
     private var selfUserId: Long? = null
     private var loadItemsJob by switchJob()
     private var lastPage: MessagesPage? = null
+
+    private val openFileLauncher = registerScreen(OpenFileNavigationContract)
 
     init {
         pickFileInterface.resultEvents()
@@ -216,6 +223,7 @@ class ConversationViewModel(
 
             tempFileMessages.forEach { tempMessage ->
                 var imageUrl: String?
+                var documentUrl: String?
                 when (tempMessage) {
                     is ConversationViewItem.Self.Image -> {
                         FileOutputStream(tempMessage.file).use { output ->
@@ -256,12 +264,12 @@ class ConversationViewModel(
                             tempMessage.file?.readBytes() ?: return@launch
                         )
                             .getOrNull()?.documentPath.let {
-                                imageUrl = it
+                                documentUrl = it
                                 it
                             }
                         when (messengerInteractor.sendMessage(
                             id = chatId ?: return@launch,
-                            text = imageUrl ?: return@launch,
+                            text = documentUrl ?: return@launch,
                             type = "document",
                             localId = tempMessage.localId
                         )) {
@@ -269,14 +277,14 @@ class ConversationViewModel(
                                 updateStatus(
                                     tempMessage,
                                     SentStatus.Error,
-                                    profileImageUrlConverter.convert(imageUrl)
+                                    profileImageUrlConverter.convert(documentUrl)
                                 )
                             }
                             is CallResult.Success -> {
                                 updateStatus(
                                     tempMessage,
                                     SentStatus.Sent,
-                                    profileImageUrlConverter.convert(imageUrl)
+                                    profileImageUrlConverter.convert(documentUrl)
                                 )
                             }
                         }
@@ -329,6 +337,10 @@ class ConversationViewModel(
                     newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
                 }
                 is ConversationViewItem.Self.Image -> {
+                    newMessages[tempMessage.localId] =
+                        tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
+                }
+                is ConversationViewItem.Self.Document -> {
                     newMessages[tempMessage.localId] =
                         tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                 }
@@ -512,8 +524,32 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onDocumentClicked() {
-        //TODO ОТКРЫТИЕ ДОКУМЕНТА
+    fun onDocumentClicked(
+        content: String,
+        path: String?,
+        callback: (String?) -> Unit
+    ) {
+        viewModelScope.launch {
+            val permissionWriteGranted =
+                permissionInterface.request(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+            val permissionsReadGranted =
+                permissionInterface.request(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            if (permissionWriteGranted && permissionsReadGranted) {
+
+                if (!path.isNullOrEmpty())
+                    openFileLauncher.launch(OpenFileNavigationContract.Params(path))
+                else {
+                    downloadFileManager.downloadFile(
+                        content,
+                        content.drop(29)
+                    ) {
+                        callback(it)
+                    }
+                }
+            }
+        }
     }
 
 }
