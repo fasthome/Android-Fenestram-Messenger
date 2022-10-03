@@ -47,7 +47,7 @@ class PickFileViewModel(
                         )
                         tempFile
                     }
-                    is PickFileComponentParams.MimeType.Pdf -> {
+                    is PickFileComponentParams.MimeType.Document -> {
                         pickFileOperations.copyFile(uri, tempFile)
                         pickFileOperations.renameFile(tempFile, uri, fileSystemInterface.cacheDir)
                     }

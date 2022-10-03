@@ -6,7 +6,6 @@ import android.view.WindowManager
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromConversation
@@ -25,15 +24,11 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.*
-import java.io.File
-
 
 class ConversationFragment :
     BaseFragment<ConversationState, ConversationEvent>(R.layout.fragment_conversation) {
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
-
-    private val permissionInterface by registerFragment(PermissionComponentContract)
 
     private val pickFileFragment by registerFragment(
         componentFragmentContractInterface = PickFileComponentContract,
@@ -48,7 +43,6 @@ class ConversationFragment :
         getParamsInterface = ConversationNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::pickFileFragment)
-            .register(::permissionInterface)
     )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {

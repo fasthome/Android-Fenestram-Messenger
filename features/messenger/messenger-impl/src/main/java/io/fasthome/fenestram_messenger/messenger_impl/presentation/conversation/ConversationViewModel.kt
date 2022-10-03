@@ -46,7 +46,6 @@ class ConversationViewModel(
     private val profileImageUtil: ProfileImageUtil,
     private val profileImageUrlConverter: ProfileImageUrlConverter,
     private val downloadFileManager: DownloadFileManager,
-    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -443,7 +442,7 @@ class ConversationViewModel(
     }
 
     fun selectAttachFile() {
-        pickFileInterface.pickFile(PickFileComponentParams.MimeType.Pdf())
+        pickFileInterface.pickFile(PickFileComponentParams.MimeType.Document())
     }
 
 
@@ -534,26 +533,16 @@ class ConversationViewModel(
         callback: (String?) -> Unit
     ) {
         viewModelScope.launch {
-            val permissionWriteGranted =
-                permissionInterface.request(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-            val permissionsReadGranted =
-                permissionInterface.request(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-
-            if (permissionWriteGranted && permissionsReadGranted) {
-
-                if (!path.isNullOrEmpty())
-                    openFileLauncher.launch(OpenFileNavigationContract.Params(path))
-                else {
-                    downloadFileManager.downloadFile(
-                        content,
-                        content.drop(29)
-                    ) {
-                        callback(it)
-                    }
+            if (!path.isNullOrEmpty())
+                openFileLauncher.launch(OpenFileNavigationContract.Params(path))
+            else {
+                downloadFileManager.downloadFile(
+                    content,
+                    content.drop(29)
+                ) {
+                    callback(it)
                 }
             }
         }
     }
-
 }
