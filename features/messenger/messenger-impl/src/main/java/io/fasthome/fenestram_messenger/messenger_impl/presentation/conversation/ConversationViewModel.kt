@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.util.*
-import java.util.jar.Manifest
 
 
 class ConversationViewModel(
@@ -188,7 +187,7 @@ class ConversationViewModel(
         val attachedFiles = currentViewState.attachedFiles
 
         if (attachedFiles.isNotEmpty()) {
-            sendImages(attachedFiles)
+            sendFiles(attachedFiles)
         }
 
         if (mess.isNotEmpty()) {
@@ -196,7 +195,7 @@ class ConversationViewModel(
         }
     }
 
-    private fun sendImages(attachedFiles: List<AttachedFile>) {
+    private fun sendFiles(attachedFiles: List<AttachedFile>) {
         val messages = currentViewState.messages
 
         val tempFileMessages = attachedFiles.map {
@@ -222,8 +221,7 @@ class ConversationViewModel(
             }
 
             tempFileMessages.forEach { tempMessage ->
-                var imageUrl: String?
-                var documentUrl: String?
+                var fileUrl: String?
                 when (tempMessage) {
                     is ConversationViewItem.Self.Image -> {
                         FileOutputStream(tempMessage.file).use { output ->
@@ -234,12 +232,12 @@ class ConversationViewModel(
                             tempMessage.file?.readBytes() ?: return@launch
                         )
                             .getOrNull()?.imagePath.let {
-                                imageUrl = it
+                                fileUrl = it
                                 it
                             }
                         when (messengerInteractor.sendMessage(
                             id = chatId ?: return@launch,
-                            text = imageUrl ?: return@launch,
+                            text = fileUrl ?: return@launch,
                             type = "image",
                             localId = tempMessage.localId
                         )) {
@@ -247,14 +245,14 @@ class ConversationViewModel(
                                 updateStatus(
                                     tempMessage,
                                     SentStatus.Error,
-                                    profileImageUrlConverter.convert(imageUrl)
+                                    profileImageUrlConverter.convert(fileUrl)
                                 )
                             }
                             is CallResult.Success -> {
                                 updateStatus(
                                     tempMessage,
                                     SentStatus.Sent,
-                                    profileImageUrlConverter.convert(imageUrl)
+                                    profileImageUrlConverter.convert(fileUrl)
                                 )
                             }
                         }
@@ -264,12 +262,12 @@ class ConversationViewModel(
                             tempMessage.file?.readBytes() ?: return@launch
                         )
                             .getOrNull()?.documentPath.let {
-                                documentUrl = it
+                                fileUrl = it
                                 it
                             }
                         when (messengerInteractor.sendMessage(
                             id = chatId ?: return@launch,
-                            text = documentUrl ?: return@launch,
+                            text = fileUrl ?: return@launch,
                             type = "document",
                             localId = tempMessage.localId
                         )) {
@@ -277,18 +275,19 @@ class ConversationViewModel(
                                 updateStatus(
                                     tempMessage,
                                     SentStatus.Error,
-                                    profileImageUrlConverter.convert(documentUrl)
+                                    profileImageUrlConverter.convert(fileUrl)
                                 )
                             }
                             is CallResult.Success -> {
                                 updateStatus(
                                     tempMessage,
                                     SentStatus.Sent,
-                                    profileImageUrlConverter.convert(documentUrl)
+                                    profileImageUrlConverter.convert(fileUrl)
                                 )
                             }
                         }
                     }
+                    else -> {}
                 }
             }
 
@@ -361,7 +360,7 @@ class ConversationViewModel(
                             id = chatId,
                             userName = it.chatName,
                             userNickname = "",
-                            userAvatar = it.avatar ?: "",
+                            userAvatar = it.avatar,
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
                             userPhone = "",
@@ -500,13 +499,18 @@ class ConversationViewModel(
                 sendMessage(getPrintableRawText(selfViewItem.content))
             }
             is ConversationViewItem.Self.Image -> {
-                sendImages(
+                sendFiles(
                     listOf(
                         AttachedFile.Image(
                             selfViewItem.bitmap ?: return,
                             selfViewItem.file ?: return
                         )
                     )
+                )
+            }
+            is ConversationViewItem.Self.Document -> {
+                sendFiles(
+                    listOf(AttachedFile.Document(selfViewItem.file ?: return))
                 )
             }
         }
