@@ -10,7 +10,7 @@ interface PickFileInterface {
         data class Picked(val tempFile: File) : ResultEvent
     }
 
-    fun pickFile()
+    fun pickFile(mimeType: PickFileComponentParams.MimeType? = null)
 
     fun launchCamera()
 

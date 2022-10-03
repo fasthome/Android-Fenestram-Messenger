@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.graphics.Bitmap
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -431,7 +432,7 @@ class ConversationViewModel(
     }
 
     fun selectAttachFile() {
-        pickFileInterface.pickFile()
+        pickFileInterface.pickFile(PickFileComponentParams.MimeType.Pdf())
     }
 
 
@@ -512,7 +513,7 @@ class ConversationViewModel(
     }
 
     fun onDocumentClicked() {
-
+        //TODO ОТКРЫТИЕ ДОКУМЕНТА
     }
 
 }

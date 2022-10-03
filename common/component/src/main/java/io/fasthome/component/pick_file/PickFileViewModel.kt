@@ -83,7 +83,7 @@ class PickFileViewModel(
     override fun resultEvents(): Flow<PickFileInterface.ResultEvent> =
         resultEventsChannel.receiveAsFlow()
 
-    override fun pickFile() {
+    override fun pickFile(mimeType: PickFileComponentParams.MimeType?) {
         viewModelScope.launch {
             val permissionGranted =
                 permissionInterface.request(
@@ -91,7 +91,10 @@ class PickFileViewModel(
                     canOpenSettings = true
                 )
             if (permissionGranted) {
-                pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
+                if (mimeType != null)
+                    pickFileLauncher.launch(PickFileNavigationContract.Params(mimeType.value))
+                else
+                    pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
             }
         }
     }
