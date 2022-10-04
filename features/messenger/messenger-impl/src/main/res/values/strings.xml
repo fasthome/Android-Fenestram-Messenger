@@ -25,4 +25,7 @@
     <string name="messenger_cancel_sent">Отменить отправку</string>
     <string name="search">Поиск</string>
     <string name="messenger_image_viewer_toolbar">Просмотр изображения</string>
+    <string name="messenger_create_group_chat">Создать групповой чат</string>
+    <string name="messenger_create_private_chat">Создать личный чат</string>
+    <string name="messenger_create_chat_cancel">Отмена</string>
 </resources>

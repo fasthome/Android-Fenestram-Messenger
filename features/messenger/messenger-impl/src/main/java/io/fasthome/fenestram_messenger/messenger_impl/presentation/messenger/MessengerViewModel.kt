@@ -101,7 +101,11 @@ class MessengerViewModel(
     }
 
     fun onCreateChatClicked() {
-        createGroupChatLauncher.launch(NoParams)
+        sendEvent(MessengerEvent.CreateChatEvent)
+    }
+
+    fun createChatClicked(isGroup: Boolean) {
+        createGroupChatLauncher.launch(CreateGroupChatContract.Params(isGroup))
     }
 
     fun onProfileClicked(messengerViewItem: MessengerViewItem) {
