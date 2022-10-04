@@ -137,7 +137,12 @@ class ContactAddFragment :
                 }
                 is ContactAddState.ContactAutoFillStatus -> {
                     state.name?.let { contactAddInputFirstName.includeEditText.setText(it) }
-                    state.phone?.let { contactAddInputNumber.setText(it) }
+                    state.phone?.let {
+                        contactAddInputNumber.apply {
+                            setText(it)
+                            isEnabled = false
+                        }
+                    }
                 }
             }
         }
