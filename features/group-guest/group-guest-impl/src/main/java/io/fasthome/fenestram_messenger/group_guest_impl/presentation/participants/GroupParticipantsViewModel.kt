@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participant
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import kotlinx.coroutines.launch
 
 class GroupParticipantsViewModel(
@@ -19,6 +20,7 @@ class GroupParticipantsViewModel(
     private val params: ParticipantsParams,
     private val groupGuestInteractor: GroupGuestInteractor,
     private val contactsFeature: ContactsFeature,
+    private val profileGuestFeature: ProfileGuestFeature,
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
@@ -61,6 +63,9 @@ class GroupParticipantsViewModel(
             }
         }
 
+    private val profileGuestLauncher =
+        registerScreen(profileGuestFeature.profileGuestNavigationContract) {}
+
     override fun createInitialState(): GroupParticipantsState {
         return GroupParticipantsState(listOf())
     }
@@ -99,6 +104,25 @@ class GroupParticipantsViewModel(
 
     fun onAddToContactsClicked(name: String, phone: String) {
         addUserToContactsLauncher.launch(ContactsFeature.Params(name, phone))
+    }
+
+    fun onAnotherUserClicked(userId: Long) {
+        val selectedUser = params.participants.find { it.id == userId }
+        val userName =
+            if (selectedUser?.contactName?.isNotEmpty() == true) selectedUser.contactName else selectedUser?.name
+
+        profileGuestLauncher.launch(
+            ProfileGuestFeature.ProfileGuestParams(
+                id = 0,
+                userName = userName ?: "",
+                userNickname = selectedUser?.nickname ?: "",
+                userAvatar = selectedUser?.avatar ?: "",
+                chatParticipants = listOf(),
+                isGroup = false,
+                userPhone = selectedUser?.phone ?: "",
+                editMode = false
+            )
+        )
     }
 
 }

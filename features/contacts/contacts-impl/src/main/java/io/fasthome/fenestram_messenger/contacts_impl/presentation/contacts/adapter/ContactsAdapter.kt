@@ -8,16 +8,23 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.util.*
 
-class ContactsAdapter(onItemClicked: (ContactsViewItem) -> Unit) : AsyncListDifferDelegationAdapter<ContactsViewItem>(
-    AdapterUtil.diffUtilItemCallbackEquals(),
-    AdapterUtil.adapterDelegatesManager(
-        createApiContactsAdapterDelegate(onItemClicked),
-        createLocalContactsAdapterDelegate(onItemClicked),
-        createHeaderAdapterDelegate()
-    )
-) {}
+class ContactsAdapter(
+    onItemClicked: (ContactsViewItem) -> Unit,
+    onAvatarClicked: (Long) -> Unit
+) :
+    AsyncListDifferDelegationAdapter<ContactsViewItem>(
+        AdapterUtil.diffUtilItemCallbackEquals(),
+        AdapterUtil.adapterDelegatesManager(
+            createApiContactsAdapterDelegate(onItemClicked, onAvatarClicked),
+            createLocalContactsAdapterDelegate(onItemClicked),
+            createHeaderAdapterDelegate()
+        )
+    ) {}
 
-fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
+fun createApiContactsAdapterDelegate(
+    onItemClicked: (ContactsViewItem) -> Unit,
+    onAvatarClicked: (Long) -> Unit
+) =
     adapterDelegateViewBinding<ContactsViewItem.Api, ContactItemBinding>(
         ContactItemBinding::inflate,
     ) {
@@ -30,6 +37,7 @@ fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) 
             contactAvatar.loadCircle(
                 url = item.avatar
             )
+            contactAvatar.setOnClickListener { onAvatarClicked(item.userId) }
         }
     }
 

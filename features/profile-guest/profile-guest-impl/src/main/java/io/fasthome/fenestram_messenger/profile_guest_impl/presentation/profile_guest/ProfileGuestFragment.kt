@@ -22,6 +22,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
@@ -125,6 +126,7 @@ class ProfileGuestFragment :
         with(binding) {
             profileGuestEditGroup.isVisible = state.isGroup
             participantsContainer.isVisible = state.isGroup
+            profileGuestPhone.isVisible = !state.isGroup
             profileGuestContainer.isVisible = !state.editMode
             profileGuestVideoChat.isVisible = !state.editMode
             profileGuestCall.isVisible = !state.editMode
@@ -155,7 +157,11 @@ class ProfileGuestFragment :
                     )
                 )
                 profileGuestNickname.textSize = 18F
-                profileGuestNickname.setPrintableText(state.userPhone)
+                profileGuestNickname.isVisible =
+                    getPrintableRawText(state.userNickname).isNotEmpty()
+                profileGuestNickname.setPrintableText(
+                    PrintableText.Raw("@" + getPrintableRawText(state.userNickname))
+                )
             }
 
             if (state.editMode) {
@@ -174,6 +180,7 @@ class ProfileGuestFragment :
                         R.drawable.ic_edit
                     )
                 )
+                profileGuestPhone.setPrintableText(state.userPhone)
             }
 
             when {

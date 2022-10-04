@@ -297,11 +297,13 @@ class ConversationViewModel(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
                             userName = chat.chatName,
-                            userNickname = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.nickname,
+                            userNickname = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.nickname
+                                ?: "",
                             userAvatar = chat.avatar,
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.phone,
+                            userPhone = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.phone
+                                ?: "",
                             editMode = editMode && params.chat.isGroup
                         )
                     )
@@ -354,7 +356,7 @@ class ConversationViewModel(
             ProfileGuestFeature.ProfileGuestParams(
                 id = item.id,
                 userName = getPrintableRawText(item.userName),
-                userNickname = "",
+                userNickname = item.nickname,
                 userAvatar = item.avatar,
                 chatParticipants = listOf(),
                 isGroup = false,

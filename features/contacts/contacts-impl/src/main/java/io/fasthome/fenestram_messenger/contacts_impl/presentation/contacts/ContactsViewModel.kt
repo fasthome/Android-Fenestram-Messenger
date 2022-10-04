@@ -7,18 +7,20 @@ import android.Manifest
 import android.annotation.SuppressLint
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
+import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.*
-import io.ktor.util.reflect.*
+import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -27,6 +29,7 @@ class ContactsViewModel(
     private val permissionInterface: PermissionInterface,
     private val contactsInteractor: ContactsInteractor,
     private val messengerFeature: MessengerFeature,
+    private val profileGuestFeature: ProfileGuestFeature
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
 
     init {
@@ -40,9 +43,14 @@ class ContactsViewModel(
         }
     }
 
-    private var originalContacts = mutableListOf<ContactsViewItem>()
+    private var originalContactsViewItem = mutableListOf<ContactsViewItem>()
+    private var originalContacts = listOf<Contact>()
 
-    private val conversationLauncher = registerScreen(messengerFeature.conversationNavigationContract) { }
+    private val conversationLauncher =
+        registerScreen(messengerFeature.conversationNavigationContract) { }
+
+    private val profileGuestLauncher =
+        registerScreen(profileGuestFeature.profileGuestNavigationContract) {}
 
     @SuppressLint("MissingPermission")
     fun requestPermissionAndLoadContacts() {
@@ -55,13 +63,14 @@ class ContactsViewModel(
             if (permissionGranted) {
                 contactsInteractor.getContactsAndUploadContacts()
                     .withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts ->
+                        originalContacts = contacts
                         updateState { state ->
-                            originalContacts =
+                            originalContactsViewItem =
                                 ContactsMapper.contactsListToViewList(contacts).toMutableList()
-                            if (originalContacts.isEmpty()) {
+                            if (originalContactsViewItem.isEmpty()) {
                                 state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
                             } else {
-                                state.copy(loadingState = LoadingState.Success(data = originalContacts))
+                                state.copy(loadingState = LoadingState.Success(data = originalContactsViewItem))
                             }
                         }
                     }
@@ -86,9 +95,9 @@ class ContactsViewModel(
 
     fun filterContacts(text: String) {
         val filteredContacts = if (text.isEmpty()) {
-            originalContacts
+            originalContactsViewItem
         } else {
-            originalContacts.filter {
+            originalContactsViewItem.filter {
                 if (it !is ContactsViewItem.Header) {
                     getPrintableRawText(it.name).contains(text.trim(), true)
                 } else {
@@ -114,6 +123,22 @@ class ContactsViewModel(
                 )
             )
         }
+    }
+
+    fun onAvatarClicked(userId: Long) {
+        val selectedUser = originalContacts.find { it.userId == userId }
+        profileGuestLauncher.launch(
+            ProfileGuestFeature.ProfileGuestParams(
+                id = 0,
+                userName = selectedUser?.userName ?: "",
+                userNickname = selectedUser?.user?.nickname ?: "",
+                userAvatar = selectedUser?.user?.avatar ?: "",
+                chatParticipants = listOf(),
+                isGroup = false,
+                userPhone = selectedUser?.phone ?: "",
+                editMode = false
+            )
+        )
     }
 
 }

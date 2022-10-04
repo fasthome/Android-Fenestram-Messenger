@@ -59,7 +59,7 @@
                 android:background="@android:color/transparent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="60dp"
                 android:text="@string/no_name"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -79,15 +79,24 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/profile_guest_nickname"
-                style="@style/ProfileGuestNickName"
+                android:id="@+id/profile_guest_phone"
+                style="@style/Text.Blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
-                android:text="@string/profile_guest_no_nickname"
                 app:layout_constraintStart_toEndOf="@id/avatar_container"
                 app:layout_constraintTop_toBottomOf="@id/profile_guest_name" />
+
+            <TextView
+                android:id="@+id/profile_guest_nickname"
+                style="@style/Text.Blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="@string/profile_guest_no_nickname"
+                app:layout_constraintStart_toEndOf="@id/avatar_container"
+                app:layout_constraintTop_toBottomOf="@id/profile_guest_phone" />
 
             <ImageButton
                 android:id="@+id/profile_guest_video_chat"

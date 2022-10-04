@@ -2,8 +2,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
-import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import java.io.File
 import java.time.ZonedDateTime
@@ -66,7 +64,8 @@ sealed interface ConversationViewItem {
     sealed class Group(
         open val userName: PrintableText,
         open val avatar: String,
-        open val phone : String
+        open val phone: String,
+        open val nickname: String
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
@@ -76,8 +75,9 @@ sealed interface ConversationViewItem {
             override val sentStatus: SentStatus,
             override val userName: PrintableText,
             override val avatar: String,
-            override val phone: String
-        ) : Group(userName, avatar, phone)
+            override val phone: String,
+            override val nickname: String,
+        ) : Group(userName, nickname, avatar, phone)
 
         data class Image(
             override val id: Long,
@@ -87,8 +87,9 @@ sealed interface ConversationViewItem {
             override val sentStatus: SentStatus,
             override val userName: PrintableText,
             override val avatar: String,
-            override val phone: String
-        ) : Group(userName, avatar, phone)
+            override val phone: String,
+            override val nickname: String,
+        ) : Group(userName, avatar, phone, nickname)
     }
 
     data class System(

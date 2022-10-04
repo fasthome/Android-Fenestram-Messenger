@@ -113,11 +113,13 @@ class MessengerViewModel(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
                             userName = chat.chatName,
-                            userNickname = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.nickname,
+                            userNickname = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.nickname
+                                ?: "",
                             userAvatar = chat.avatar,
                             chatParticipants = chat.chatUsers,
                             isGroup = messengerViewItem.isGroup,
-                            userPhone = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.phone,
+                            userPhone = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.phone
+                                ?: "",
                             editMode = false
                         )
                     )
