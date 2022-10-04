@@ -2,7 +2,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
-import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -538,7 +537,7 @@ class ConversationViewModel(
             else {
                 downloadFileManager.downloadFile(
                     content,
-                    content.drop(29)
+                    content.drop(29) //.dropLast(3) + "docx" НА БЭК ОТПРАВЛЯЕТСЯ ФАЙЛ С РАЗРЕШЕНИЕМ JPG
                 ) {
                     callback(it)
                 }

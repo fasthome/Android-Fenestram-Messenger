@@ -6,11 +6,13 @@ import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.content.FileProvider
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.UnitResult
 import io.fasthome.fenestram_messenger.presentation.base.ui.ActivityResultFragment
 import kotlinx.parcelize.Parcelize
 import java.io.File
+
 
 object OpenFileNavigationContract :
     NavigationContract<OpenFileNavigationContract.Params, UnitResult>(OpenFileFragment::class) {
@@ -23,8 +25,8 @@ object OpenFileActivityContract : ActivityResultContract<String, Unit>() {
         val file =
             File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path + input)
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            type = "application/pdf"
-            data = Uri.fromFile(file)
+            setDataAndType(FileProvider.getUriForFile(context,context.packageName,file), context.contentResolver.getType(Uri.fromFile(file)))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         return intent
     }
