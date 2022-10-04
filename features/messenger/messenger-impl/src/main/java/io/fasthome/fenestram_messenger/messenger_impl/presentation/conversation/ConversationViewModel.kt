@@ -39,7 +39,7 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
     private val profileImageUtil: ProfileImageUtil,
-    private val profileImageUrlConverter: ProfileImageUrlConverter,
+    private val profileImageUrlConverter: ProfileImageUrlConverter
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -291,18 +291,18 @@ class ConversationViewModel(
     fun onUserClicked(editMode: Boolean) {
         viewModelScope.launch {
             if (chatId != null)
-                messengerInteractor.getChatById(chatId!!).onSuccess {
-                    chatUsers = it.chatUsers
+                messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
+                    chatUsers = chat.chatUsers
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
-                            userName = it.chatName,
-                            userNickname = "",
-                            userAvatar = it.avatar ?: "",
+                            userName = chat.chatName,
+                            userNickname = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.nickname,
+                            userAvatar = chat.avatar,
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = "",
-                            editMode = editMode
+                            userPhone = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.phone,
+                            editMode = editMode && params.chat.isGroup
                         )
                     )
                 }

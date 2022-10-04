@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
 import android.util.Log
+import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -21,6 +22,7 @@ class MessengerInteractor(
     private val messageRepo: MessengerRepo,
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
+    private val userStorage: UserStorage
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -92,4 +94,6 @@ class MessengerInteractor(
 
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
+
+    suspend fun getUserId() = userStorage.getUserId()
 }

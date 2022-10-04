@@ -16,7 +16,7 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -105,18 +105,24 @@ class MessengerViewModel(
     }
 
     fun onProfileClicked(messengerViewItem: MessengerViewItem) {
-        profileGuestLauncher.launch(
-            ProfileGuestFeature.ProfileGuestParams(
-                id = messengerViewItem.id,
-                userName = getPrintableRawText(messengerViewItem.name),
-                userNickname = "",
-                userAvatar = messengerViewItem.profileImageUrl ?: "",
-                userPhone = "",
-                chatParticipants = listOf(),
-                isGroup = false,
-                editMode = false
-            )
-        )
+        viewModelScope.launch {
+            val chatId = messengerViewItem.originalChat.id
+            if (chatId != null)
+                messengerInteractor.getChatById(chatId).onSuccess { chat ->
+                    profileGuestLauncher.launch(
+                        ProfileGuestFeature.ProfileGuestParams(
+                            id = chatId,
+                            userName = chat.chatName,
+                            userNickname = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.nickname,
+                            userAvatar = chat.avatar,
+                            chatParticipants = chat.chatUsers,
+                            isGroup = messengerViewItem.isGroup,
+                            userPhone = chat.chatUsers.first { it.id != messengerInteractor.getUserId() }.phone,
+                            editMode = false
+                        )
+                    )
+                }
+        }
     }
 
     private suspend fun subscribeMessages() {
