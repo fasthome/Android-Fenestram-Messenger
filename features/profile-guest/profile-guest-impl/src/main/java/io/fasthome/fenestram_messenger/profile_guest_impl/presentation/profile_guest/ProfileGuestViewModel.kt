@@ -19,6 +19,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -95,7 +96,8 @@ class ProfileGuestViewModel(
             editMode = params.editMode,
             avatarBitmap = null,
             chatImageFile = null,
-            participantsQuantity = params.groupParticipantsParams.participants.size
+            participantsQuantity = params.groupParticipantsParams.participants.size,
+            profileGuestNameBackground = R.color.dark1
         )
 
     fun fetchFilesAndPhotos() {
@@ -133,11 +135,34 @@ class ProfileGuestViewModel(
             sendEvent(ProfileGuestEvent.DeleteChatEvent(params.id))
     }
 
+    fun onProfileNameChanged(newName: String) {
+        if (!currentViewState.editMode) {
+            return
+        }
+        if (newName.isEmpty()) {
+            updateState { state ->
+                state.copy(
+                    profileGuestNameBackground = R.color.red
+                )
+            }
+        } else {
+            updateState { state ->
+                state.copy(
+                    profileGuestNameBackground = R.color.white
+                )
+            }
+        }
+    }
+
     fun onEditGroupClicked(newName: String) {
 
         if (currentViewState.editMode) {
             viewModelScope.launch {
-                if (newName != params.userName &&
+                if (newName.isEmpty()) {
+                    return@launch
+                }
+
+                if (newName != getPrintableRawText(currentViewState.userName) &&
                     profileGuestInteractor.patchChatName(params.id!!, newName)
                         .successOrSendError() != null
                 ) {
@@ -160,11 +185,20 @@ class ProfileGuestViewModel(
                         state.copy(userAvatar = profileImageUrlConverter.convert(imageUrl))
                     }
                 }
-
+                updateState { state ->
+                    state.copy(
+                        editMode = false,
+                        profileGuestNameBackground = R.color.dark1
+                    )
+                }
             }
-            updateState { state -> state.copy(editMode = false) }
         } else
-            updateState { state -> state.copy(editMode = true) }
+            updateState { state ->
+                state.copy(
+                    editMode = true,
+                    profileGuestNameBackground = R.color.white
+                )
+            }
     }
 
     fun deleteChat(id: Long) {
