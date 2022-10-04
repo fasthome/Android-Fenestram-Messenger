@@ -99,7 +99,7 @@ class FirebasePushService : FirebaseMessagingService() {
         val notification = NotificationCompat.Builder(this, Channel.Push.id).also {
             if (notificationData.isGroup) it.setLargeIcon(getAvatar(notificationData.chatAvatar))
         }
-            .setSmallIcon(R.drawable.ic_message)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setColor(resources.color(R.color.background))
             .setStyle(messagingStyle)
             .setShowWhen(true)
@@ -110,7 +110,7 @@ class FirebasePushService : FirebaseMessagingService() {
             .build()
 
         val summaryNotification = NotificationCompat.Builder(this, Channel.Push.id)
-            .setSmallIcon(R.drawable.ic_message)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setStyle(NotificationCompat.InboxStyle())
             .setGroup(GROUP_HOOLICHAT)
             .setGroupSummary(true)
