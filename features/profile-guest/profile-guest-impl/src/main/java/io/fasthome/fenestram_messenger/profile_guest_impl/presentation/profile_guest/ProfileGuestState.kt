@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
 import android.graphics.Bitmap
+import androidx.annotation.ColorRes
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -17,6 +18,7 @@ data class ProfileGuestState(
     val editMode: Boolean,
     val avatarBitmap: Bitmap?,
     val chatImageFile: File?,
-    val participantsQuantity: Int
+    val participantsQuantity: Int,
+    @ColorRes val profileGuestNameBackground: Int
 ) {
 }
