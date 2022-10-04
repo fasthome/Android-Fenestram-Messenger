@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_api
 
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
@@ -18,12 +19,19 @@ interface MessengerFeature {
 
     suspend fun deleteChat(id: Long): CallResult<Unit>
 
+    suspend fun sendMessage(
+        id: Long,
+        text: String,
+        type: String,
+        localId: String
+    ): CallResult<SendMessageResult>
+
     @Parcelize
     data class Params(
         val chatId: String? = null,
         val userIds: List<Long>,
         val chatName: String,
-        val avatar : String,
+        val avatar: String,
         val isGroup: Boolean
     ) : Parcelable
 

@@ -24,7 +24,9 @@ import io.fasthome.fenestram_messenger.presentation.base.AppFeature
 import io.fasthome.fenestram_messenger.presentation.base.util.Channel
 import io.fasthome.fenestram_messenger.presentation.base.util.createNotificationChannel
 import io.fasthome.fenestram_messenger.push_impl.R
+import io.fasthome.fenestram_messenger.push_impl.data.service.mapper.NotificationDataMapper
 import io.fasthome.fenestram_messenger.push_impl.data.storage.RemoteMessagesStorage
+import io.fasthome.fenestram_messenger.push_impl.domain.entity.NotificationData
 import io.fasthome.fenestram_messenger.push_impl.domain.repo.PushRepo
 import io.fasthome.fenestram_messenger.util.PendingIntentCompat
 import io.fasthome.fenestram_messenger.util.android.color
@@ -47,8 +49,6 @@ class FirebasePushService : FirebaseMessagingService() {
     private val scope = CoroutineScope(DispatchersProvider.Default)
     private var initPushesJob by switchJob()
 
-    private val mePerson = Person.Builder().setName("Я").build()
-
     override fun onNewToken(token: String) {
         initPushesJob = scope.launch {
             if (authFeature.isUserAuthorized().getOrDefault(false)) {
@@ -58,8 +58,8 @@ class FirebasePushService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val notificationId =
-            message.data["chat_id"]?.toInt() ?: remoteMessagesStorage.nextNotificationId()
+        val notificationData = NotificationDataMapper().getNotificationData(message.data)
+        val notificationId = notificationData.chatId ?: remoteMessagesStorage.nextNotificationId()
 
         val activityIntent = Intent(this, appFeature.startActivityClazz.java)
         val broadcastIntent = Intent(this, ReplyNotificationReceiver::class.java)
@@ -82,13 +82,14 @@ class FirebasePushService : FirebaseMessagingService() {
         )
 
         createNotificationChannel(Channel.Push)
+        val mePerson = Person.Builder().setName(resources.getString(R.string.my_user_name)).build()
+        val notificationMessage = buildMessage(notificationData)
 
-        val notificationMessage = buildMessage(message.data)
         val messagingStyle = restoreMessagingStyle(notificationId)?.addMessage(notificationMessage)
-            ?: if (message.data["is_group"].toBoolean()) {
+            ?: if (notificationData.isGroup) {
                 NotificationCompat.MessagingStyle(mePerson)
                     .addMessage(notificationMessage)
-                    .setConversationTitle(message.data["chat_name"])
+                    .setConversationTitle(notificationData.chatName)
                     .setGroupConversation(true)
             } else {
                 NotificationCompat.MessagingStyle(mePerson)
@@ -96,11 +97,10 @@ class FirebasePushService : FirebaseMessagingService() {
             }
 
         val notification = NotificationCompat.Builder(this, Channel.Push.id).also {
-            if (message.data["is_group"].toBoolean()) {
-                it.setLargeIcon(getAvatar(message.data["chat_avatar"]))
-            }
-        }.setSmallIcon(R.drawable.ic_message)
-            .setColor(resources.color(R.color.blue))
+            if (notificationData.isGroup) it.setLargeIcon(getAvatar(notificationData.chatAvatar))
+        }
+            .setSmallIcon(R.drawable.ic_message)
+            .setColor(resources.color(R.color.background))
             .setStyle(messagingStyle)
             .setShowWhen(true)
             .setAutoCancel(true)
@@ -122,23 +122,15 @@ class FirebasePushService : FirebaseMessagingService() {
         }
     }
 
-    private fun buildMessage(data: Map<String, String>): NotificationCompat.MessagingStyle.Message {
-        val userName = when {
-            !data["user_contact_name"].isNullOrEmpty() -> data["user_contact_name"]
-            !data["user_nickname"].isNullOrEmpty() -> data["user_nickname"]
-            !data["user_name"].isNullOrEmpty() -> data["user_name"]
-            else -> "Test Push"
-        }
-
-        val iconBitmap = getAvatar(data["user_avatar"])
+    private fun buildMessage(notificationData: NotificationData): NotificationCompat.MessagingStyle.Message {
+        val iconBitmap = getAvatar(notificationData.userAvatar)
 
         return NotificationCompat.MessagingStyle.Message(
-            data["text"],
+            notificationData.text,
             ZonedDateTime.now().toInstant().toEpochMilli(),
-            Person.Builder().also { personBuilder ->
-                data["user_id"]?.let { userId -> personBuilder.setKey(userId) }
-            }
-                .setName(userName)
+            Person.Builder()
+                .setKey(notificationData.userId)
+                .setName(notificationData.userName)
                 .setIcon(IconCompat.createWithBitmap(iconBitmap))
                 .build()
         )

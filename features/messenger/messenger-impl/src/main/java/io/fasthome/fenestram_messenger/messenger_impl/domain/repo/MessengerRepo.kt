@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.repo
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
@@ -8,7 +9,12 @@ import io.fasthome.network.tokens.AccessToken
 
 interface MessengerRepo {
 
-    suspend fun sendMessage(id: Long, text: String, type: String, localId: String): CallResult<SendMessageResult>
+    suspend fun sendMessage(
+        id: Long,
+        text: String,
+        type: String,
+        localId: String
+    ): CallResult<SendMessageResult>
 
     fun getPageChats(query: String): TotalPagingSource<Int, Chat>
 
@@ -26,7 +32,12 @@ interface MessengerRepo {
 
     fun closeSocket()
 
-    fun getClientSocket(chatId: String?, token: AccessToken, callback: SocketMessageCallback, selfUserId: Long?)
+    fun getClientSocket(
+        chatId: String?,
+        token: AccessToken,
+        callback: SocketMessageCallback,
+        selfUserId: Long?
+    )
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
 

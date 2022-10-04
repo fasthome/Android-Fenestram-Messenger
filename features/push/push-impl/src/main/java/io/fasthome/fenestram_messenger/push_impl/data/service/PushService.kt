@@ -3,7 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.push_impl.data.service
 
-import io.fasthome.fenestram_messenger.push_impl.data.service.model.SendMessageRequest
 import io.fasthome.fenestram_messenger.push_impl.data.service.model.SendTokenRequest
 import io.fasthome.fenestram_messenger.push_impl.data.service.model.TestPushRequest
 import io.fasthome.network.client.NetworkClientFactory
@@ -32,16 +31,5 @@ class PushService(clientFactory: NetworkClientFactory) {
 
     suspend fun clearPushToken() {
 
-    }
-
-    suspend fun sendMessage(
-        id: Long,
-        text: String,
-        type: String
-    ) {
-        client.runPost<SendMessageRequest, Unit>(
-            path = "api/v1/chats/message/$id",
-            body = SendMessageRequest(text, type)
-        )
     }
 }

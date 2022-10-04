@@ -43,10 +43,4 @@ class PushRepoImpl(private val pushService: PushService, private val pushesStora
     override suspend fun clearPushToken(): CallResult<Unit> = callForResult {
         pushService.clearPushToken()
     }
-
-    override suspend fun sendMessage(id: Long, text: String, type: String): CallResult<Unit> =
-        callForResult {
-            pushService.sendMessage(id, text, type)
-        }
-
 }
