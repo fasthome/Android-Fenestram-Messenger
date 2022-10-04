@@ -6,6 +6,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateGroupChatBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -44,12 +46,23 @@ class CreateGroupChatFragment :
         next.onClick {
             vm.onNextClicked()
         }
+
+        contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    vm.filterContacts(it)
+                }
+                return true
+            }
+        })
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun renderState(state: CreateGroupChatState) {
-        // if (state.isGroupChat) {
-
         contactsAdapter.items = state.contacts.map { item ->
             item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
             item
@@ -57,6 +70,8 @@ class CreateGroupChatFragment :
         if (state.addedContacts.isEmpty()) binding.next.hide() else binding.next.show()
 
         contactsAdapter.notifyDataSetChanged()
+
+        binding.listAddedInChat.isVisible = (state.addedContacts.isNotEmpty() && state.isGroupChat)
 
         if (state.isGroupChat) {
             addedContactsAdapter.items = state.addedContacts

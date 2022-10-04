@@ -102,6 +102,21 @@ class CreateGroupChatViewModel(
         }
     }
 
+    fun filterContacts(text: String) {
+        val filteredContacts = if (text.isEmpty()) {
+            originalContacts
+        } else {
+            originalContacts.filter {
+                it.userName?.contains(text.trim(), true) ?: false
+            }
+        }
+        updateState { state ->
+            state.copy(
+                contacts = filteredContacts.map(::mapToContactViewItem)
+            )
+        }
+    }
+
     override fun onBackPressed(): Boolean {
         exitWithoutResult()
         return true
