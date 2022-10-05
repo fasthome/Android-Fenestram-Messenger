@@ -4,38 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/create_private_chat"
-        style="@style/Text.Blue"
+        style="@style/CreateChatButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:background="@drawable/bg_create_chat_button"
-        android:drawableLeft="@drawable/ic_create_private_chat"
-        android:drawablePadding="-100dp"
-        android:paddingStart="100dp"
+        android:paddingVertical="15dp"
         android:text="@string/messenger_create_private_chat"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:icon="@drawable/ic_create_private_chat"
+        app:iconGravity="textStart"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/create_group_chat"
-        style="@style/Text.Blue.14sp"
+        style="@style/CreateChatButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:background="@drawable/bg_create_chat_button"
-        android:drawableLeft="@drawable/ic_create_group_chat"
-        android:drawablePadding="-100dp"
-        android:paddingStart="100dp"
-        android:text="@string/messenger_create_private_chat"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:paddingVertical="15dp"
+        android:text="@string/messenger_create_group_chat"
+        app:icon="@drawable/ic_create_group_chat"
+        app:iconGravity="textStart"
         app:layout_constraintTop_toBottomOf="@id/create_private_chat" />
 
     <TextView
