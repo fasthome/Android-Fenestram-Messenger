@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
@@ -182,8 +183,7 @@ class DebugViewModel(
     fun onLoginAcceptClicked(phone: String, code: String) {
         viewModelScope.launch {
             features.authFeature.login(phone, code).withErrorHandled {
-                router.backTo(null)
-                registerScreen(features.mainFeature.mainNavigationContract).launch()
+                router.newRootScreen(features.mainFeature.mainNavigationContract.createParams())
             }
         }
     }
