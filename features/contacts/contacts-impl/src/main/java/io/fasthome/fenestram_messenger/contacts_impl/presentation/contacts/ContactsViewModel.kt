@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
@@ -36,8 +35,8 @@ class ContactsViewModel(
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
-            is ContactAddResult.Success -> requestPermissionAndLoadContacts()
-            is ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
+            is ContactAddNavigationContract.ContactAddResult.Success -> requestPermissionAndLoadContacts()
+            is ContactAddNavigationContract.ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
         }
     }
 
@@ -82,7 +81,7 @@ class ContactsViewModel(
     }
 
     fun addContact() {
-        addContactLauncher.launch(NoParams)
+        addContactLauncher.launch(ContactAddNavigationContract.Params(null, null))
     }
 
     fun filterContacts(text: String) {

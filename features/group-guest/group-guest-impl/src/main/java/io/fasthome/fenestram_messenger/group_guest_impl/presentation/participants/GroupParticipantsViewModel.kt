@@ -1,7 +1,7 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
-import android.view.View
 import androidx.lifecycle.viewModelScope
+import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
@@ -18,6 +18,7 @@ class GroupParticipantsViewModel(
     requestParams: RequestParams,
     private val params: ParticipantsParams,
     private val groupGuestInteractor: GroupGuestInteractor,
+    private val contactsFeature: ContactsFeature,
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
@@ -48,6 +49,18 @@ class GroupParticipantsViewModel(
         exitWithResult(GroupGuestContract.createResult(result))
     }
 
+    private val addUserToContactsLauncher =
+        registerScreen(contactsFeature.contactAddNavigationContract) { result ->
+            when (result) {
+                is ContactsFeature.ContactAddResult.Success -> {
+                    viewModelScope.launch {
+                        contactsFeature.getContactsAndUploadContacts()
+                    }
+                }
+                is ContactsFeature.ContactAddResult.Canceled -> {}
+            }
+        }
+
     override fun createInitialState(): GroupParticipantsState {
         return GroupParticipantsState(listOf())
     }
@@ -61,8 +74,12 @@ class GroupParticipantsViewModel(
         )
     }
 
-    fun onMenuClicked(id: Long, view: View) {
-        sendEvent(GroupParticipantsEvent.MenuOpenEvent(id, view))
+    fun onMenuClicked(id: Long) {
+        params.participants.find { user ->
+            user.id == id
+        }?.let {
+            sendEvent(GroupParticipantsEvent.MenuOpenEvent(id, it.nickname, it.phone))
+        }
     }
 
     fun onDeleteUserClicked(id: Long) {
@@ -78,6 +95,10 @@ class GroupParticipantsViewModel(
                     }
             }
         }
+    }
+
+    fun onAddToContactsClicked(name: String, phone: String) {
+        addUserToContactsLauncher.launch(ContactsFeature.Params(name, phone))
     }
 
 }

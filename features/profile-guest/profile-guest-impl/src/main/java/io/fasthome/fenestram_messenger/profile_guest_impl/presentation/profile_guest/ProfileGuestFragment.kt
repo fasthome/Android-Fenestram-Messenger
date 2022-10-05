@@ -1,23 +1,31 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import io.fasthome.component.pick_file.PickFileComponentContract
+import io.fasthome.component.pick_file.PickFileComponentParams
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
-import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.*
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestBinding
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
 
@@ -36,10 +44,20 @@ class ProfileGuestFragment :
         containerViewId = R.id.participants_container
     )
 
+    private val pickImageFragment by registerFragment(
+        componentFragmentContractInterface = PickFileComponentContract,
+        paramsProvider = {
+            PickFileComponentParams(
+                mimeType = PickFileComponentParams.MimeType.Image(compressToSize = Bytes(Bytes.BYTES_PER_MB))
+            )
+        }
+    )
+
     override val vm: ProfileGuestViewModel by viewModel(
         getParamsInterface = ProfileGuestNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::groupParticipantsInterface)
+            .register(::pickImageFragment)
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
@@ -54,6 +72,10 @@ class ProfileGuestFragment :
             }
         }
 
+        profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
+        profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
+        profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
+
 //        vm.fetchFilesAndPhotos()
 
         recentFilesHeader.recentFilesShowAll.setOnClickListener {
@@ -63,8 +85,16 @@ class ProfileGuestFragment :
             vm.onShowPhotosClicked()
         }
 
-        binding.buttonDeleteChat.setOnClickListener {
+        buttonDeleteChat.setOnClickListener {
             vm.onDeleteChatClicked()
+        }
+
+        profileGuestEditGroup.setOnClickListener {
+            vm.onEditGroupClicked(profileGuestName.text.toString().trim())
+        }
+
+        profileGuestAvatar.setOnClickListener {
+            vm.onAvatarClicked()
         }
     }
 
@@ -100,12 +130,76 @@ class ProfileGuestFragment :
         }
 
         with(binding) {
+            profileGuestEditGroup.isVisible = state.isGroup
             participantsContainer.isVisible = state.isGroup
-            profileGuestName.setPrintableText(state.userName)
-            profileGuestNickname.setPrintableText(state.userPhone)
-            
-            if (state.userAvatar.isNotEmpty()) {
-                profileGuestAvatar.loadCircle(url = state.userAvatar, placeholderRes = R.drawable.common_avatar)
+            profileGuestContainer.isVisible = !state.editMode
+            profileGuestVideoChat.isVisible = !state.editMode
+            profileGuestCall.isVisible = !state.editMode
+            pickPhotoIcon.isVisible = state.editMode
+            profileGuestName.isEnabled = state.editMode
+
+            profileGuestName.background.setTint(
+                ContextCompat.getColor(
+                    requireContext(),
+                    state.profileGuestNameBackground
+                )
+            )
+
+            if (state.isGroup) {
+                profileGuestNickname.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.gray1
+                    )
+                )
+                profileGuestNickname.textSize = 14F
+                profileGuestNickname.setPrintableText(
+                    PrintableText.PluralResource(
+                        R.plurals.chat_participants_count,
+                        state.participantsQuantity,
+                        state.participantsQuantity
+                    )
+                )
+            } else {
+                profileGuestNickname.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.blue
+                    )
+                )
+                profileGuestNickname.textSize = 18F
+                profileGuestNickname.setPrintableText(state.userPhone)
+            }
+
+            if (state.editMode) {
+                profileGuestAvatar.brightness = 0.5F
+                profileGuestEditGroup.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_complete_edit
+                    )
+                )
+            } else {
+                profileGuestAvatar.brightness = 1F
+                profileGuestEditGroup.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_edit
+                    )
+                )
+                profileGuestName.setPrintableText(state.userName)
+            }
+
+            when {
+                state.avatarBitmap != null -> profileGuestAvatar.loadCircle(
+                    bitmap = state.avatarBitmap,
+                    placeholderRes = R.drawable.common_avatar
+                )
+                state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
+                    url = state.userAvatar,
+                    placeholderRes = R.drawable.common_avatar
+                )
+                else -> profileGuestAvatar.loadCircle(R.drawable.common_avatar)
             }
 
             recentFilesHeader.recentFileCount.setPrintableText(
@@ -127,7 +221,7 @@ class ProfileGuestFragment :
 
     override fun handleEvent(event: ProfileGuestEvent) {
         when (event) {
-            is ProfileGuestEvent.DeleteChatEvent -> DeleteChatDialog.create(
+            is ProfileGuestEvent.DeleteChatEvent -> AcceptDialog.create(
                 this,
                 PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 vm::deleteChat,

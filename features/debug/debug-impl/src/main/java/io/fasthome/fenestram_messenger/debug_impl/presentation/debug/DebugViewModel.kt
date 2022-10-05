@@ -6,6 +6,8 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
+import io.fasthome.fenestram_messenger.core.debug.DebugRepo
+import io.fasthome.fenestram_messenger.core.debug.EndpointsConfig
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -18,7 +20,6 @@ import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
-import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
@@ -26,7 +27,8 @@ import kotlinx.coroutines.launch
 class DebugViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val features: Features
+    private val features: Features,
+    private val debugRepo: DebugRepo
 ) : BaseViewModel<DebugState, DebugEvent>(router, requestParams) {
 
     class Features(
@@ -37,7 +39,7 @@ class DebugViewModel(
         val contactsFeature: ContactsFeature,
         val groupGuestFeature: GroupGuestFeature,
         val pushFeature: PushFeature,
-        val mainFeature: MainFeature
+        val mainFeature: MainFeature,
     )
 
     private var personalData: PersonalData? = null
@@ -78,7 +80,8 @@ class DebugViewModel(
         requestsVisible = false,
         loginVisible = false,
         userCode = "",
-        userPhone = ""
+        userPhone = "",
+        selectedEnv = debugRepo.endpointsConfig
     )
 
     fun onAuthClicked() {
@@ -100,7 +103,8 @@ class DebugViewModel(
                 userAvatar = "",
                 userPhone = "1234567",
                 chatParticipants = listOf(),
-                isGroup = false
+                isGroup = false,
+                editMode = false
             )
         )
     }
@@ -191,6 +195,15 @@ class DebugViewModel(
         updateState { state ->
             state.copy(loginVisible = !state.loginVisible)
         }
+    }
+
+    fun onEnvironmentChangedClicked(config: EndpointsConfig) {
+        sendEvent(DebugEvent.AcceptEnvChangeDialog(config))
+    }
+
+    fun onEnvironmentChanged(config: EndpointsConfig) {
+        debugRepo.endpointsConfig = config
+        sendEvent(DebugEvent.RebirthApplication)
     }
 
 }

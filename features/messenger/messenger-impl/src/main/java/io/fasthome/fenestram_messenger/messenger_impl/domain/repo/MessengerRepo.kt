@@ -24,7 +24,7 @@ interface MessengerRepo {
         isGroup: Boolean
     ): CallResult<PostChatsResult>
 
-    suspend fun postChatAvatar(id: Long, avatar: String): CallResult<Unit>
+    suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
     suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage>

@@ -54,10 +54,10 @@ class MessengerService(
             }
     }
 
-    suspend fun postChatAvatar(id: Long, avatar: String) {
-        client.runPatch<PostChatAvatarRequest, BaseResponse<PostChatAvatarRequest>>(
+    suspend fun patchChatAvatar(id: Long, avatar: String) {
+        client.runPatch<PatchChatAvatarRequest, BaseResponse<PatchChatAvatarRequest>>(
             path = "api/v1/chats/$id/avatar",
-            body = PostChatAvatarRequest(avatar)
+            body = PatchChatAvatarRequest(avatar)
         )
     }
 

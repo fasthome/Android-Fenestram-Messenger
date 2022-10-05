@@ -3,7 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
-import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
@@ -21,6 +20,7 @@ import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
 import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
+import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
@@ -61,7 +61,7 @@ class ProfileViewModel(
                                 )
                             }
                         } else {
-                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_error_photo)))
+                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.common_unable_to_download)))
                             updateState { state ->
                                 state.copy(
                                     avatarUrl = avatarUrl,
@@ -141,34 +141,52 @@ class ProfileViewModel(
                 playerId = ""
             )
 
-            profileInteractor.sendPersonalData(
+            when (val result = profileInteractor.sendPersonalData(
                 personalData.copy(avatar = avatar)
-            ).withErrorHandled(
-                showErrorType = ShowErrorType.Dialog
-            ) {
-                showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_successs_changed)))
-                personalityInterface.setFields(
-                    UserDetail(
-                        name = personalData.username ?: "",
-                        mail = personalData.email ?: "",
-                        birthday = personalData.birth ?: "",
-                        nickname = personalData.nickname ?: ""
+            )) {
+                is CallResult.Error -> {
+                    onError(showErrorType = ShowErrorType.Dialog, throwable = result.error)
+                    updateState { state ->
+                        personalityInterface.runEdit(false)
+                        state.copy(
+                            isLoad = false,
+                            isEdit = false
+                        )
+                    }
+                }
+                is CallResult.Success ->{
+                    showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_successs_changed)))
+                    personalityInterface.setFields(
+                        UserDetail(
+                            name = personalData.username ?: "",
+                            mail = personalData.email ?: "",
+                            birthday = personalData.birth ?: "",
+                            nickname = personalData.nickname ?: ""
+                        )
                     )
-                )
-                updateState { state ->
-                    personalityInterface.runEdit(false)
-                    state.copy(
-                        username = personalData.username ?: state.username,
-                        isEdit = false,
-                        isLoad = false
-                    )
+                    updateState { state ->
+                        personalityInterface.runEdit(false)
+                        state.copy(
+                            username = personalData.username ?: state.username,
+                            isEdit = false,
+                            isLoad = false
+                        )
+                    }
                 }
             }
         }
     }
 
     override fun createInitialState(): ProfileState {
-        return ProfileState("", null, null, null, isEdit = false, isLoad = false, readyEnabled = false).also {
+        return ProfileState(
+            "",
+            null,
+            null,
+            null,
+            isEdit = false,
+            isLoad = false,
+            readyEnabled = false
+        ).also {
             personalityInterface.runEdit(false)
         }
     }
