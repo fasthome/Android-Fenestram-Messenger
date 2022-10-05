@@ -6,9 +6,7 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
-import android.content.Intent
 import android.os.Bundle
-import android.os.Process
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -25,7 +23,6 @@ import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
-import java.util.*
 
 class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_debug) {
 

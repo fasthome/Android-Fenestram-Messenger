@@ -3,7 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
-import io.fasthome.fenestram_messenger.core.debug.DebugRepo
 import io.fasthome.fenestram_messenger.core.debug.EndpointsConfig
 
 sealed interface DebugEvent {
