@@ -84,7 +84,7 @@ sealed interface ConversationViewItem {
     sealed class Group(
         open val userName: PrintableText,
         open val avatar: String,
-        open val phone : String
+        open val phone: String
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
