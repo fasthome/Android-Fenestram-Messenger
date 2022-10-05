@@ -2,7 +2,7 @@ package io.fasthome.fenestram_messenger.push_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.push_impl.domain.entity.NotificationData
 
-class NotificationDataMapper {
+object NotificationDataMapper {
 
     fun getNotificationData(data: Map<String, String>): NotificationData {
         val userName = when {

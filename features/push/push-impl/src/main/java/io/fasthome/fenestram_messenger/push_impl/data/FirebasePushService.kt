@@ -58,7 +58,7 @@ class FirebasePushService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val notificationData = NotificationDataMapper().getNotificationData(message.data)
+        val notificationData = NotificationDataMapper.getNotificationData(message.data)
         val notificationId = notificationData.chatId ?: remoteMessagesStorage.nextNotificationId()
 
         val activityIntent = Intent(this, appFeature.startActivityClazz.java)
