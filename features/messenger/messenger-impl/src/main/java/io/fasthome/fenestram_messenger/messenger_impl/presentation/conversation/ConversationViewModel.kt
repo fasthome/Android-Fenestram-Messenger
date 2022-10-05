@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
@@ -543,7 +544,7 @@ class ConversationViewModel(
             else {
                 downloadFileManager.downloadFile(
                     content,
-                    content.drop(29) //.dropLast(3) + "docx" НА БЭК ОТПРАВЛЯЕТСЯ ФАЙЛ С РАЗРЕШЕНИЕМ JPG
+                    content.drop(29)
                 ) {
                     callback(it)
                 }
