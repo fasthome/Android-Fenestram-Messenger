@@ -1,9 +1,12 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.fasthome.component.pick_file.PickFileComponentContract
@@ -69,6 +72,10 @@ class ProfileGuestFragment :
             }
         }
 
+        profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
+        profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
+        profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
+
 //        vm.fetchFilesAndPhotos()
 
         recentFilesHeader.recentFilesShowAll.setOnClickListener {
@@ -83,7 +90,7 @@ class ProfileGuestFragment :
         }
 
         profileGuestEditGroup.setOnClickListener {
-            vm.onEditGroupClicked(profileGuestName.text.toString())
+            vm.onEditGroupClicked(profileGuestName.text.toString().trim())
         }
 
         profileGuestAvatar.setOnClickListener {
@@ -130,7 +137,13 @@ class ProfileGuestFragment :
             profileGuestCall.isVisible = !state.editMode
             pickPhotoIcon.isVisible = state.editMode
             profileGuestName.isEnabled = state.editMode
-            profileGuestName.setPrintableText(state.userName)
+
+            profileGuestName.background.setTint(
+                ContextCompat.getColor(
+                    requireContext(),
+                    state.profileGuestNameBackground
+                )
+            )
 
             if (state.isGroup) {
                 profileGuestNickname.setTextColor(
@@ -174,6 +187,7 @@ class ProfileGuestFragment :
                         R.drawable.ic_edit
                     )
                 )
+                profileGuestName.setPrintableText(state.userName)
             }
 
             when {
