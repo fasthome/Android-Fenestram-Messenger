@@ -9,9 +9,8 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.ItemTouchHelper
 import io.fasthome.fenestram_messenger.core.environment.Environment
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
@@ -96,7 +95,7 @@ class MessengerFragment :
 
     override fun handleEvent(event: MessengerEvent) {
         when (event) {
-            is MessengerEvent.DeleteChatEvent -> DeleteChatDialog.create(
+            is MessengerEvent.DeleteChatEvent -> AcceptDialog.create(
                 this,
                 PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 vm::deleteChat,

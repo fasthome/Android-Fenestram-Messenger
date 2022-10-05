@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -75,6 +76,48 @@
                     android:padding="15dp"
                     android:textColor="@color/blue" />
             </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            style="@style/Text.White.16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Server"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/server_develop"
+                style="@style/Button.Blue"
+                android:background="@drawable/activator_blue_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="Dev"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/server_prod"
+                style="@style/Button.Blue"
+                android:background="@drawable/activator_blue_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:text="Prod"
+                tools:ignore="HardcodedText" />
+
         </LinearLayout>
 
         <Button
@@ -232,8 +275,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
 
             <EditText
                 android:id="@+id/phone_input"
@@ -256,8 +298,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
                 android:background="@drawable/rounded_border"
                 android:fontFamily="@font/geometria"
                 android:gravity="center"
@@ -265,8 +307,7 @@
                 android:maxLength="4"
                 android:textColor="@color/gray1"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/debug_login_accept"
