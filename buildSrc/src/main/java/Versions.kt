@@ -36,5 +36,6 @@ object Versions {
     const val kotlinXSerialization = "1.4.30"
     const val serializationJson = "1.1.0"
     const val glide = "4.13.2"
+    const val processPhoenix = "2.1.2"
 
 }

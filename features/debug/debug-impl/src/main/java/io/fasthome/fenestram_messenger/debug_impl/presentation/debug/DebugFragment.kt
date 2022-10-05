@@ -6,11 +6,16 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.Intent
 import android.os.Bundle
+import android.os.Process
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
+import com.jakewharton.processphoenix.ProcessPhoenix
+import io.fasthome.fenestram_messenger.core.debug.EndpointsConfig
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.debug_impl.R
 import io.fasthome.fenestram_messenger.debug_impl.databinding.FragmentDebugBinding
 import io.fasthome.fenestram_messenger.mvi.Message
@@ -20,6 +25,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
+import java.util.*
 
 class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_debug) {
 
@@ -94,6 +100,12 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         linkField.onClick {
             vm.onLinkFieldClicked(linkField.text.toString())
         }
+        serverDevelop.onClick {
+            vm.onEnvironmentChangedClicked(EndpointsConfig.Dev)
+        }
+        serverProd.onClick {
+            vm.onEnvironmentChangedClicked(EndpointsConfig.Prod)
+        }
 
     }
 
@@ -106,6 +118,8 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         userIdField.text = state.userId
         phoneInput.setText(state.userPhone)
         codeInput.setText(state.userCode)
+        serverDevelop.isSelected = state.selectedEnv == EndpointsConfig.Dev
+        serverProd.isSelected = state.selectedEnv == EndpointsConfig.Prod
     }
 
     override fun handleEvent(event: DebugEvent) {
@@ -123,6 +137,14 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
                 )
                 Toast.makeText(requireContext(), "Токен скопирован", Toast.LENGTH_SHORT).show()
             }
+            is DebugEvent.AcceptEnvChangeDialog -> AcceptDialog.create(
+                fragment = this,
+                titleText = PrintableText.StringResource(R.string.debug_rebirth_endpoints),
+                accept = { vm.onEnvironmentChanged(event.endpointsConfig) },
+                id = 0,
+                acceptButtonRes = R.string.common_accept
+            ).show()
+            DebugEvent.RebirthApplication -> ProcessPhoenix.triggerRebirth(context)
         }
     }
 }

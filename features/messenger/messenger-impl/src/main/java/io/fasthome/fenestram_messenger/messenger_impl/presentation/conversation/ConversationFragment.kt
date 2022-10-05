@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
@@ -167,7 +167,7 @@ class ConversationFragment :
                         )
                     )
             }
-            is ConversationEvent.ShowDeleteChatDialog -> DeleteChatDialog.create(
+            is ConversationEvent.ShowDeleteChatDialog -> AcceptDialog.create(
                 fragment = this,
                 titleText = PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 accept = vm::deleteChat,
