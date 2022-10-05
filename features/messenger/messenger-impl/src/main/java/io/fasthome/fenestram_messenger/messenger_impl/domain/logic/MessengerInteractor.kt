@@ -93,6 +93,6 @@ class MessengerInteractor(
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
-    suspend fun uploadDocument(documentBytes: ByteArray) =
-        messageRepo.uploadDocument(documentBytes, UUID.randomUUID().toString())
+    suspend fun uploadDocument(documentBytes: ByteArray, extension: String) =
+        messageRepo.uploadDocument(documentBytes, UUID.randomUUID().toString() + extension)
 }

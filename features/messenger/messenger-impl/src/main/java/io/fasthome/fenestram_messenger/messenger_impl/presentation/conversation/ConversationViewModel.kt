@@ -257,7 +257,13 @@ class ConversationViewModel(
                     }
                     is ConversationViewItem.Self.Document -> {
                         messengerInteractor.uploadDocument(
-                            tempMessage.file?.readBytes() ?: return@launch
+                            tempMessage.file?.readBytes() ?: return@launch,
+                            tempMessage.file.name.let { fileName ->
+                                if (fileName.substring(fileName.lastIndexOf('.'), fileName.length) == ".pdf")
+                                    ".pdf"
+                                else
+                                    ".txt"
+                            }
                         )
                             .getOrNull()?.documentPath.let {
                                 fileUrl = it
