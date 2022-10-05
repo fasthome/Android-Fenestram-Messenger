@@ -2,9 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.app.Dialog
 import androidx.fragment.app.Fragment
-import io.fasthome.fenestram_messenger.core.databinding.DialogDeleteChatBinding
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
-import io.fasthome.fenestram_messenger.core.ui.dialog.DialogBuilder
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DialogCreateChatBinding
 import io.fasthome.fenestram_messenger.util.onClick
 
