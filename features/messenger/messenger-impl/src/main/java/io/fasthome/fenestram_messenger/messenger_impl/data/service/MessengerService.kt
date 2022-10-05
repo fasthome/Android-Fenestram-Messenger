@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
