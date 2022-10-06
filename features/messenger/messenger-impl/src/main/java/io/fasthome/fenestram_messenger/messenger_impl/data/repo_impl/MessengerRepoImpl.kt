@@ -20,9 +20,10 @@ class MessengerRepoImpl(
         id: Long,
         text: String,
         type: String,
-        localId: String
+        localId: String,
+        authorId: Long
     ): CallResult<SendMessageResult> = callForResult {
-        messengerService.sendMessage(id, text, type, localId)
+        messengerService.sendMessage(id, text, type, localId, authorId)
     }
 
     override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(
@@ -61,6 +62,10 @@ class MessengerRepoImpl(
 
     override suspend fun deleteChat(id: Long) = callForResult {
         messengerService.deleteChat(id)
+    }
+
+    override suspend fun deleteMessage(messageId: Long, chatId: Long) = callForResult {
+        messengerService.deleteMessage(messageId, chatId)
     }
 
     override fun getClientSocket(

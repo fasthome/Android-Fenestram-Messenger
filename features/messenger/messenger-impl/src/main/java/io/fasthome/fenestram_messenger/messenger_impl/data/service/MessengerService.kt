@@ -19,11 +19,12 @@ class MessengerService(
         id: Long,
         text: String,
         type: String,
-        localId: String
+        localId: String,
+        authorId: Long
     ): SendMessageResult {
         val response: SendMessageResponse = client.runPost(
             path = "api/v1/chats/message/$id",
-            body = SendMessageRequest(text, type)
+            body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
 
         return SendMessageMapper.responseToSendMessageResult(response, localId)
@@ -102,6 +103,14 @@ class MessengerService(
             client.runDelete<DeleteChatRequest?, BaseResponse<DeleteChatResponse>>(
                 path = "api/v1/chats/$id",
                 body = null
+            )
+    }
+
+    suspend fun deleteMessage(messageId: Long, chatId: Long) {
+        val response: BaseResponse<DeleteMessageResponse> =
+            client.runDelete<DeleteMessageRequest?, BaseResponse<DeleteMessageResponse>>(
+                path = "api/v1/chats/message/$chatId/$messageId",
+                body = DeleteMessageRequest(true)
             )
     }
 

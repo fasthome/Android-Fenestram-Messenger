@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -15,6 +16,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -214,7 +216,8 @@ class ConversationViewModel(
                     id = chatId ?: return@launch,
                     text = imageUrl ?: return@launch,
                     type = "image",
-                    localId = tempMessage.localId
+                    localId = tempMessage.localId,
+                    authorId = selfUserId ?: return@launch
                 )) {
                     is CallResult.Error -> {
                         updateStatus(
@@ -253,7 +256,8 @@ class ConversationViewModel(
                 id = chatId ?: return@launch,
                 text = mess,
                 type = "text",
-                localId = tempMessage.localId
+                localId = tempMessage.localId,
+                authorId = selfUserId ?: return@launch
             )) {
                 is CallResult.Error -> {
                     updateStatus(tempMessage, SentStatus.Error)
@@ -454,6 +458,27 @@ class ConversationViewModel(
 
     fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
+    }
+
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    }
+
+    fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
+        viewModelScope.launch {
+            messengerInteractor.deleteMessage(messageId = conversationViewItem.id,
+                chatId = chatId ?: return@launch).onSuccess {
+                updateState {
+                    val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
+                    currentViewState.messages.entries.forEach { item ->
+                        if (item.value.id != conversationViewItem.id)
+                            messages[item.key] = item.value
+                    }
+                    it.copy(messages = messages)
+                }
+            }
+
+        }
     }
 
 }

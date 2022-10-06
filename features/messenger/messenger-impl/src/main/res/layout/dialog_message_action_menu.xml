@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/copy_message_text"
+        style="@style/BottomActionDialogButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:paddingVertical="15dp"
+        android:text="@string/conversation_copy_message"
+        app:icon="@drawable/ic_action_copy"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/edit_message_text"
+        android:elevation="0dp"
+        style="@style/BottomActionDialogButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:paddingVertical="15dp"
+        android:text="@string/conversation_edit_message"
+        app:icon="@drawable/ic_action_edit"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/copy_message_text" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/delete_message"
+        style="@style/BottomActionDialogButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:icon="@drawable/ic_action_trash"
+        android:paddingVertical="15dp"
+        android:text="@string/conversation_delete_message"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/edit_message_text" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
