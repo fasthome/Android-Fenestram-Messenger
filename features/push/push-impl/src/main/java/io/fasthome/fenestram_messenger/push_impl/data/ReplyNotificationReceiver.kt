@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.RemoteInput
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
+import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.push_impl.data.FirebasePushService.Companion.KEY_TEXT_REPLY
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -20,6 +21,7 @@ class ReplyNotificationReceiver : BroadcastReceiver(), KoinComponent {
 
     private val scope = CoroutineScope(DispatchersProvider.Default)
     private val messengerFeature by inject<MessengerFeature>()
+    private val userStorage by inject<UserStorage>()
 
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager =
@@ -31,11 +33,13 @@ class ReplyNotificationReceiver : BroadcastReceiver(), KoinComponent {
         val notificationId = intent.getStringExtra("chat_id")?.toInt() ?: 0
 
         scope.launch {
+            val selfUserId = userStorage.getUserId() ?: return@launch
             if (messengerFeature.sendMessage(
                     id = notificationId.toLong(),
                     text = inputtedText.toString(),
                     type = "text",
-                    localId = ""
+                    localId = "",
+                    authorId = selfUserId
                 ) is CallResult.Error
             ) {
                 notificationManager.cancel(notificationId)

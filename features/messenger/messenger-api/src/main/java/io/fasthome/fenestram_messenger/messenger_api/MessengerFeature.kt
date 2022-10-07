@@ -23,7 +23,8 @@ interface MessengerFeature {
         id: Long,
         text: String,
         type: String,
-        localId: String
+        localId: String,
+        authorId: Long
     ): CallResult<SendMessageResult>
 
     @Parcelize
