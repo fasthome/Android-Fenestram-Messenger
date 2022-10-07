@@ -26,7 +26,8 @@ object PersonDetailDialog {
 
             name.text = personDetail.userName
             phone.text = personDetail.phone
-            nickname.text = personDetail.userNickname
+            if (personDetail.userNickname.isNotEmpty())
+                nickname.text = "@${personDetail.userNickname}"
             avatar.loadCircle(personDetail.avatar)
 
             launchFacecall.onClick {
