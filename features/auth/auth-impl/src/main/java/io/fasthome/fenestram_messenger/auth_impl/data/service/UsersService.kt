@@ -16,7 +16,7 @@ class UsersService(
 
     suspend fun getUsers(): UsersResult {
         val response: BaseResponse<List<UsersResponse>> = client.runGet(
-            path = "api/v1/users",
+            path = "users",
         )
 
         return UsersMapper.responseToUsersResult(response)

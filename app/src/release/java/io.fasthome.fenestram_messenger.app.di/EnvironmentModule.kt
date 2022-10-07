@@ -10,16 +10,18 @@ object EnvironmentModule {
             val repo = get<DebugRepo>()
 
 
-            val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_PROD
+            val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_PROD + "api/${BuildConfig.PROD_API_VERSION}/"
 
-            val refreshTokenUrl = BuildConfig.REFRESH_TOKEN_URL_PROD
+            val refreshTokenUrl = BuildConfig.REFRESH_TOKEN_URL_PROD + "api/${BuildConfig.PROD_API_VERSION}/"
 
             Environment(
                 endpoints = Endpoints(
+                    baseUrl = BuildConfig.MAIN_API_BASE_URL_PROD,
                     apiBaseUrl = apiBaseUrl,
                     refreshTokenUrl = refreshTokenUrl,
                 ),
                 isDebug = BuildConfig.IS_DEBUG,
+                apiVersion = BuildConfig.PROD_API_VERSION
             )
         }
     }
