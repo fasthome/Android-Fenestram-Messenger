@@ -136,7 +136,7 @@ class ConversationViewModel(
 
     class Features(
         val profileGuestFeature: ProfileGuestFeature,
-        val authFeature: AuthFeature
+        val authFeature: AuthFeature,
     )
 
     private val profileGuestLauncher =
@@ -210,25 +210,27 @@ class ConversationViewModel(
                         imageUrl = it
                         it
                     }
-                when (messengerInteractor.sendMessage(
+                val sendMessageResponse = messengerInteractor.sendMessage(
                     id = chatId ?: return@launch,
                     text = imageUrl ?: return@launch,
                     type = "image",
                     localId = tempMessage.localId,
                     authorId = selfUserId ?: return@launch
-                )) {
+                )
+                when (sendMessageResponse) {
                     is CallResult.Error -> {
                         updateStatus(
                             tempMessage,
                             SentStatus.Error,
-                            profileImageUrlConverter.convert(imageUrl)
+                            profileImageUrlConverter.convert(imageUrl),
                         )
                     }
                     is CallResult.Success -> {
                         updateStatus(
                             tempMessage,
                             SentStatus.Sent,
-                            profileImageUrlConverter.convert(imageUrl)
+                            profileImageUrlConverter.convert(imageUrl),
+                            sendMessageResponse.data.id
                         )
                     }
                 }
@@ -249,19 +251,19 @@ class ConversationViewModel(
                     messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                 )
             }
-
-            when (messengerInteractor.sendMessage(
+            val sendMessageResponse = messengerInteractor.sendMessage(
                 id = chatId ?: return@launch,
                 text = mess,
                 type = "text",
                 localId = tempMessage.localId,
                 authorId = selfUserId ?: return@launch
-            )) {
+            )
+            when (sendMessageResponse) {
                 is CallResult.Error -> {
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
-                    updateStatus(tempMessage, SentStatus.Sent)
+                    updateStatus(tempMessage, SentStatus.Sent, id = sendMessageResponse.data.id)
                 }
             }
         }
@@ -271,17 +273,27 @@ class ConversationViewModel(
     private fun updateStatus(
         tempMessage: ConversationViewItem.Self,
         status: SentStatus,
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        id: Long? = null,
     ) {
         updateState { state ->
             val newMessages = state.messages.toMutableMap()
             when (tempMessage) {
                 is ConversationViewItem.Self.Text -> {
-                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+                    newMessages[tempMessage.localId] =
+                        if (id != null) {
+                            tempMessage.copy(sentStatus = status, id = id)
+                        } else {
+                            tempMessage.copy(sentStatus = status)
+                        }
                 }
                 is ConversationViewItem.Self.Image -> {
                     newMessages[tempMessage.localId] =
-                        tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
+                        if (id != null) {
+                            tempMessage.copy(id = id, sentStatus = status, content = imageUrl ?: "")
+                        } else {
+                            tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
+                        }
                 }
             }
             state.copy(
