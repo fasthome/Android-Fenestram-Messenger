@@ -1,5 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -19,6 +22,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -206,7 +210,18 @@ class ConversationFragment :
             is ConversationEvent.ShowSelfMessageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onDelete = {
-                    vm.onDeleteMessageClicked(event.conversationViewItem, )
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
+                },
+                onCopy = if (event.conversationViewItem is ConversationViewItem.Self.Text) {
+                    {
+                        (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+                            ClipData.newPlainText("copy",
+                               getPrintableText(event.conversationViewItem.content)
+                            )
+                        )
+                    }
+                } else {
+                    null
                 }
             ).show()
         }
