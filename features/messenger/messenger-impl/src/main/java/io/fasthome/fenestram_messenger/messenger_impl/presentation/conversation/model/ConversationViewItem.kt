@@ -65,7 +65,8 @@ sealed interface ConversationViewItem {
         open val userName: PrintableText,
         open val avatar: String,
         open val phone: String,
-        open val nickname: String
+        open val nickname: String,
+        open val userId: Long
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
@@ -77,7 +78,8 @@ sealed interface ConversationViewItem {
             override val avatar: String,
             override val phone: String,
             override val nickname: String,
-        ) : Group(userName, nickname, avatar, phone)
+            override val userId: Long
+        ) : Group(userName, nickname, avatar, phone, userId)
 
         data class Image(
             override val id: Long,
@@ -89,7 +91,8 @@ sealed interface ConversationViewItem {
             override val avatar: String,
             override val phone: String,
             override val nickname: String,
-        ) : Group(userName, avatar, phone, nickname)
+            override val userId: Long,
+        ) : Group(userName, avatar, phone, nickname, userId)
     }
 
     data class System(

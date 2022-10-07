@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participan
 
 import android.os.Bundle
 import android.view.View
+import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.FragmentGroupParticipantsBinding
@@ -53,6 +54,22 @@ class GroupParticipantsFragment :
                     name = event.name,
                     phone = event.phone,
                 ).show()
+            }
+            is GroupParticipantsEvent.ShowPersonDetailDialog -> {
+                PersonDetailDialog
+                    .create(
+                        fragment = this,
+                        personDetail = event.selectedPerson,
+                        launchFaceCallClicked = {
+                            //TODO
+                        },
+                        launchCallClicked = {
+                            //TODO
+                        },
+                        launchConversationClicked = {
+                            vm.onLaunchConversationClicked(it)
+                        })
+                    .show()
             }
         }
     }

@@ -9,22 +9,18 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.util.*
 
 class ContactsAdapter(
-    onItemClicked: (ContactsViewItem) -> Unit,
-    onAvatarClicked: (Long) -> Unit
+    onItemClicked: (ContactsViewItem) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ContactsViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(),
         AdapterUtil.adapterDelegatesManager(
-            createApiContactsAdapterDelegate(onItemClicked, onAvatarClicked),
+            createApiContactsAdapterDelegate(onItemClicked),
             createLocalContactsAdapterDelegate(onItemClicked),
             createHeaderAdapterDelegate()
         )
     ) {}
 
-fun createApiContactsAdapterDelegate(
-    onItemClicked: (ContactsViewItem) -> Unit,
-    onAvatarClicked: (Long) -> Unit
-) =
+fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) =
     adapterDelegateViewBinding<ContactsViewItem.Api, ContactItemBinding>(
         ContactItemBinding::inflate,
     ) {
@@ -37,7 +33,6 @@ fun createApiContactsAdapterDelegate(
             contactAvatar.loadCircle(
                 url = item.avatar
             )
-            contactAvatar.setOnClickListener { onAvatarClicked(item.userId) }
         }
     }
 

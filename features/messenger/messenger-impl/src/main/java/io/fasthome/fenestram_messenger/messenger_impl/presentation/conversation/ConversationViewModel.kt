@@ -2,12 +2,14 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
@@ -352,16 +354,31 @@ class ConversationViewModel(
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
-        profileGuestLauncher.launch(
-            ProfileGuestFeature.ProfileGuestParams(
-                id = item.id,
-                userName = getPrintableRawText(item.userName),
-                userNickname = item.nickname,
-                userAvatar = item.avatar,
-                chatParticipants = listOf(),
-                isGroup = false,
-                userPhone = item.phone,
-                editMode = false
+        sendEvent(
+            ConversationEvent.ShowPersonDetailDialog(
+                PersonDetail(
+                    userId = item.userId,
+                    avatar = item.avatar,
+                    userName = getPrintableRawText(item.userName),
+                    phone = item.phone,
+                    userNickname = item.nickname
+                )
+            )
+        )
+    }
+
+    fun onLaunchConversationClicked(personDetail: PersonDetail) {
+        registerScreen(ConversationNavigationContract) {}.launch(
+            ConversationNavigationContract.Params(
+                chat = Chat(
+                    id = null,
+                    users = listOf(personDetail.userId),
+                    messages = listOf(),
+                    time = null,
+                    name = personDetail.userName,
+                    avatar = personDetail.avatar,
+                    isGroup = false
+                )
             )
         )
     }

@@ -91,7 +91,8 @@ fun Message.toConversationViewItem(
                             date = date,
                             id = id,
                             phone = initiator?.phone ?: "",
-                            nickname = initiator?.nickname ?: ""
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -104,7 +105,8 @@ fun Message.toConversationViewItem(
                             date = date,
                             id = id,
                             phone = initiator?.phone ?: "",
-                            nickname = initiator?.nickname ?: ""
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {

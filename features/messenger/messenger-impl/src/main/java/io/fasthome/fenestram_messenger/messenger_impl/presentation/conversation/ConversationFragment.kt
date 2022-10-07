@@ -6,6 +6,7 @@ import android.view.WindowManager
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
@@ -189,6 +190,21 @@ class ConversationFragment :
                             vm.selectFromGallery()
                         })
                     .show()
+            is ConversationEvent.ShowPersonDetailDialog ->
+                PersonDetailDialog
+                    .create(
+                        fragment = this,
+                        personDetail = event.selectedPerson,
+                        launchFaceCallClicked = {
+                            //TODO
+                        },
+                        launchCallClicked = {
+                            //TODO
+                        },
+                        launchConversationClicked = {
+                            vm.onLaunchConversationClicked(it)
+                        })
+                    .show()
             is ConversationEvent.ShowErrorSentDialog -> {
                 ErrorSentDialog.create(
                     fragment = this,
@@ -202,6 +218,7 @@ class ConversationFragment :
             }
         }
     }
+
 
     override fun onStop() {
         super.onStop()

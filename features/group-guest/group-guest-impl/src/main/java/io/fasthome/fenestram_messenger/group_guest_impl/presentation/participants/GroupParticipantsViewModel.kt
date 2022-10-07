@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
@@ -8,10 +9,10 @@ import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestI
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestContract
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.participantsViewItemToDifferentUsers
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.userToParticipantsItem
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import kotlinx.coroutines.launch
 
 class GroupParticipantsViewModel(
@@ -20,11 +21,15 @@ class GroupParticipantsViewModel(
     private val params: ParticipantsParams,
     private val groupGuestInteractor: GroupGuestInteractor,
     private val contactsFeature: ContactsFeature,
-    private val profileGuestFeature: ProfileGuestFeature,
+    private val messengerFeature: MessengerFeature
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
     private var userId: Long? = null
+
+
+    private val conversationLauncher =
+        registerScreen(messengerFeature.conversationNavigationContract) { }
 
     init {
         viewModelScope.launch {
@@ -62,9 +67,6 @@ class GroupParticipantsViewModel(
                 is ContactsFeature.ContactAddResult.Canceled -> {}
             }
         }
-
-    private val profileGuestLauncher =
-        registerScreen(profileGuestFeature.profileGuestNavigationContract) {}
 
     override fun createInitialState(): GroupParticipantsState {
         return GroupParticipantsState(listOf())
@@ -107,22 +109,32 @@ class GroupParticipantsViewModel(
     }
 
     fun onAnotherUserClicked(userId: Long) {
-        val selectedUser = params.participants.find { it.id == userId }
+        val selectedUser = params.participants.find { it.id == userId }!!
         val userName =
-            if (selectedUser?.contactName?.isNotEmpty() == true) selectedUser.contactName else selectedUser?.name
-
-        profileGuestLauncher.launch(
-            ProfileGuestFeature.ProfileGuestParams(
-                id = 0,
-                userName = userName ?: "",
-                userNickname = selectedUser?.nickname ?: "",
-                userAvatar = selectedUser?.avatar ?: "",
-                chatParticipants = listOf(),
-                isGroup = false,
-                userPhone = selectedUser?.phone ?: "",
-                editMode = false
+            if (!selectedUser.contactName.isNullOrEmpty()) selectedUser.contactName else selectedUser.name
+        sendEvent(
+            GroupParticipantsEvent.ShowPersonDetailDialog(
+                PersonDetail(
+                    userId = userId,
+                    userName = userName!!,
+                    userNickname = selectedUser.nickname,
+                    avatar = selectedUser.avatar,
+                    phone = selectedUser.phone
+                )
             )
         )
     }
+
+    fun onLaunchConversationClicked(personDetail: PersonDetail) {
+        conversationLauncher.launch(
+            MessengerFeature.Params(
+                userIds = listOf(personDetail.userId),
+                chatName = personDetail.userName,
+                avatar = personDetail.avatar,
+                isGroup = false
+            )
+        )
+    }
+
 
 }
