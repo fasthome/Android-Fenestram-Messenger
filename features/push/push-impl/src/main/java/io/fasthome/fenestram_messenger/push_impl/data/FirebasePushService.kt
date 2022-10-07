@@ -182,9 +182,6 @@ class FirebasePushService : FirebaseMessagingService() {
         private const val SUMMARY_ID = 0
         private const val GROUP_HOOLICHAT = "io.fasthome.fenestram_messenger.HOOLICHAT"
         const val KEY_TEXT_REPLY = "KEY_TEXT_REPLY"
-    }
-
-    companion object {
         const val KEY_FROM_NOTIFICATION = "key_from_notification"
     }
 }
