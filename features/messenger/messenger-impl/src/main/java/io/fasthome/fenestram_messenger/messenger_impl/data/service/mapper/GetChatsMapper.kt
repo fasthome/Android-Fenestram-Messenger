@@ -33,7 +33,7 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                     }
                     ),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
-                    avatar = profileImageUrlConverter.convert(chat.avatar),
+                    avatar = chat.avatar,
                     isGroup = chat.isGroup
                 )
             }

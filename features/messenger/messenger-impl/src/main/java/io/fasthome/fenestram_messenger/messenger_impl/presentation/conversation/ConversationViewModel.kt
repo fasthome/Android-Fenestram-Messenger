@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -16,7 +15,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -80,7 +78,7 @@ class ConversationViewModel(
         return params.fromContacts
     }
 
-    fun loadItems() {
+    fun loadItems(isResumed: Boolean) {
         loadItemsJob = viewModelScope.launch {
             lastPage?.let {
                 if (it.total <= PAGE_SIZE) {
@@ -88,7 +86,7 @@ class ConversationViewModel(
                 }
             }
 
-            messengerInteractor.getChatPageItems(chatId ?: return@launch).onSuccess {
+            messengerInteractor.getChatPageItems(isResumed, chatId ?: return@launch).onSuccess {
                 lastPage = it
                 updateState { state ->
                     state.copy(
@@ -105,7 +103,7 @@ class ConversationViewModel(
         }
     }
 
-    fun fetchMessages() {
+    fun fetchMessages(isResumed: Boolean) {
         viewModelScope.launch {
             selfUserId = features.authFeature.getUserId(needLogout = true).getOrNull()
             if (selfUserId == null) {
@@ -130,6 +128,7 @@ class ConversationViewModel(
                 }
             }
             subscribeMessages(
+                isResumed = isResumed,
                 chatId ?: params.chat.id ?: return@launch,
                 selfUserId ?: return@launch
             )
@@ -161,7 +160,7 @@ class ConversationViewModel(
             userName = PrintableText.Raw(params.chat.name),
             userOnline = false,
             isChatEmpty = false,
-            avatar = params.chat.avatar ?: "",
+            avatar = profileImageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf()
         )
     }
@@ -317,8 +316,8 @@ class ConversationViewModel(
         messengerInteractor.closeSocket()
     }
 
-    private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
-        loadItems()
+    private suspend fun subscribeMessages(isResumed: Boolean, chatId: Long, selfUserId: Long) {
+        loadItems(isResumed)
         messengerInteractor.getMessagesFromChat(chatId, selfUserId)
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -466,8 +465,10 @@ class ConversationViewModel(
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
         viewModelScope.launch {
-            messengerInteractor.deleteMessage(messageId = conversationViewItem.id,
-                chatId = chatId ?: return@launch).onSuccess {
+            messengerInteractor.deleteMessage(
+                messageId = conversationViewItem.id,
+                chatId = chatId ?: return@launch
+            ).onSuccess {
                 updateState {
                     val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
                     currentViewState.messages.entries.forEach { item ->

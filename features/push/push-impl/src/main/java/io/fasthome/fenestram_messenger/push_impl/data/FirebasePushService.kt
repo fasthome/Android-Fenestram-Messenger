@@ -49,6 +49,7 @@ class FirebasePushService : FirebaseMessagingService() {
         val notificationId = remoteMessagesStorage.nextNotificationId()
 
         val activityIntent = Intent(this, appFeature.startActivityClazz.java)
+        activityIntent.putExtra(KEY_FROM_NOTIFICATION, true)
         message.data.forEach { (k, v) -> activityIntent.putExtra(k, v) }
         val contentIntent = PendingIntent.getActivity(
             this,
@@ -71,5 +72,9 @@ class FirebasePushService : FirebaseMessagingService() {
             .build()
 
         NotificationManagerCompat.from(this).notify(notificationId, notification)
+    }
+
+    companion object {
+        const val KEY_FROM_NOTIFICATION = "key_from_notification"
     }
 }

@@ -82,7 +82,7 @@ class ConversationFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
-                    vm.loadItems()
+                    vm.loadItems(isResumed)
                 }
             }
         })
@@ -119,7 +119,7 @@ class ConversationFragment :
 
     override fun onResume() {
         super.onResume()
-        vm.fetchMessages()
+        vm.fetchMessages(isResumed = true)
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
@@ -212,8 +212,8 @@ class ConversationFragment :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         vm.closeSocket()
     }
 }

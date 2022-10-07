@@ -87,7 +87,10 @@ class MessengerInteractor(
 
     private var page = 0
 
-    suspend fun getChatPageItems(id: Long): CallResult<MessagesPage> {
+    suspend fun getChatPageItems(isResumed: Boolean, id: Long): CallResult<MessagesPage> {
+        if(isResumed) {
+            page = 0
+        }
         page++
         return messageRepo.getMessagesFromChat(id, page)
     }
