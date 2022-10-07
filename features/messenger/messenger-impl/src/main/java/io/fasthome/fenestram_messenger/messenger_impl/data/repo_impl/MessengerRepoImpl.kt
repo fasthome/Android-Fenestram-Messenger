@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*

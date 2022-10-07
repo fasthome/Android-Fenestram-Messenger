@@ -2,8 +2,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.SendMessageResult
-import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import java.io.File
 import java.time.ZonedDateTime
@@ -66,7 +64,7 @@ sealed interface ConversationViewItem {
     sealed class Group(
         open val userName: PrintableText,
         open val avatar: String,
-        open val phone : String
+        open val phone: String
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
