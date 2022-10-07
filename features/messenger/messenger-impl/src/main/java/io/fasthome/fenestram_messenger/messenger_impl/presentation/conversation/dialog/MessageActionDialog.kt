@@ -28,12 +28,15 @@ object MessageActionDialog {
 
             deleteMessage.setOnClickListener {
                 onDelete?.invoke()
+                dialog.dismiss()
             }
             editMessageText.setOnClickListener {
                 onEdit?.invoke()
+                dialog.dismiss()
             }
             copyMessageText.setOnClickListener {
                 onCopy?.invoke()
+                dialog.dismiss()
             }
 
             return dialog.build()
