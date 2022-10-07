@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -16,7 +15,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -460,7 +458,7 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self.Text) {
         sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
     }
 
@@ -479,6 +477,14 @@ class ConversationViewModel(
             }
 
         }
+    }
+
+    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive.Text) {
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
+    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group.Text) {
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
 }

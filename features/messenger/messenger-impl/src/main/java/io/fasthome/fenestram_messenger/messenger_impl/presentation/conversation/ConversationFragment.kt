@@ -22,7 +22,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -61,6 +60,11 @@ class ConversationFragment :
         vm.onImageClicked(it)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
+    }, onReceiveMessageLongClicked = {
+        vm.onReceiveMessageLongClicked(it)
+    },
+    onGroupMessageLongClicked = {
+        vm.onGroupMessageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -212,19 +216,33 @@ class ConversationFragment :
                 onDelete = {
                     vm.onDeleteMessageClicked(event.conversationViewItem)
                 },
-                onCopy = if (event.conversationViewItem is ConversationViewItem.Self.Text) {
-                    {
-                        (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
-                            ClipData.newPlainText("copy",
-                               getPrintableText(event.conversationViewItem.content)
-                            )
-                        )
+                onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
                     }
-                } else {
-                    null
+            ).show()
+            is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
+                    }
+
+            ).show()
+            is ConversationEvent.ShowGroupMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onCopy = {
+                    copyPrintableText(event.conversationViewItem.content)
                 }
+
             ).show()
         }
+    }
+
+    private fun copyPrintableText(printableText: PrintableText) {
+        (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+            ClipData.newPlainText("copy",
+                getPrintableText(printableText)
+            )
+        )
     }
 
     override fun onStop() {
