@@ -487,4 +487,8 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
+    fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
+        sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
+    }
+
 }

@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
+import android.view.View
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
@@ -15,6 +16,7 @@ class ConversationAdapter(
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
+    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -23,7 +25,7 @@ class ConversationAdapter(
         ),
         AdapterUtil.adapterDelegatesManager(
             createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
-            createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked),
+            createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked, onSelfImageLongClicked),
             createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked, onGroupMessageLongClicked),
@@ -55,7 +57,8 @@ fun createConversationSelfTextAdapterDelegate(
 
 fun createConversationSelfImageAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (String) -> Unit,
+    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemImageBinding>(
         ConversationItemImageBinding::inflate
@@ -66,6 +69,12 @@ fun createConversationSelfImageAdapterDelegate(
         binding.root.onClick {
             onSelfMessageClicked(item)
         }
+        val imageLongClick = View.OnLongClickListener {
+            onSelfImageLongClicked(item)
+            true
+        }
+        binding.root.setOnLongClickListener(imageLongClick)
+        binding.messageContent.setOnLongClickListener(imageLongClick)
         bindWithBinding {
             when {
                 item.bitmap != null -> {

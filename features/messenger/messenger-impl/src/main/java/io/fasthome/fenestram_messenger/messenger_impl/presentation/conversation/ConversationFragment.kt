@@ -62,9 +62,10 @@ class ConversationFragment :
         vm.onSelfMessageLongClicked(it)
     }, onReceiveMessageLongClicked = {
         vm.onReceiveMessageLongClicked(it)
-    },
-    onGroupMessageLongClicked = {
+    }, onGroupMessageLongClicked = {
         vm.onGroupMessageLongClicked(it)
+    }, onSelfImageLongClicked = {
+        vm.onSelfImageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -233,6 +234,12 @@ class ConversationFragment :
                     copyPrintableText(event.conversationViewItem.content)
                 }
 
+            ).show()
+            is ConversationEvent.ShowSelfImageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
+                }
             ).show()
         }
     }

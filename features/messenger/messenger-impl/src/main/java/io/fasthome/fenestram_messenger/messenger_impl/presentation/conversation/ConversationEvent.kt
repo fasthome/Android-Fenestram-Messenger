@@ -12,4 +12,5 @@ sealed interface ConversationEvent {
     class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self.Text) : ConversationEvent
     class ShowReceiveMessageActionDialog(val conversationViewItem: ConversationViewItem.Receive.Text) : ConversationEvent
     class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group.Text) : ConversationEvent
+    class ShowSelfImageActionDialog(val conversationViewItem: ConversationViewItem.Self.Image) : ConversationEvent
 }
