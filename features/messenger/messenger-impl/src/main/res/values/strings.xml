@@ -25,4 +25,8 @@
     <string name="messenger_cancel_sent">Отменить отправку</string>
     <string name="search">Поиск</string>
     <string name="messenger_image_viewer_toolbar">Просмотр изображения</string>
+
+    <string name="conversation_copy_message">Скопировать текст</string>
+    <string name="conversation_delete_message">Удалить сообщение</string>
+    <string name="conversation_edit_message">Редактировать сообщение</string>
 </resources>

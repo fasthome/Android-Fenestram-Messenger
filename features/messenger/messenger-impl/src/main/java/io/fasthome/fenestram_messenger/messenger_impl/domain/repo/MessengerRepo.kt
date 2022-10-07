@@ -13,7 +13,8 @@ interface MessengerRepo {
         id: Long,
         text: String,
         type: String,
-        localId: String
+        localId: String,
+        authorId:Long
     ): CallResult<SendMessageResult>
 
     fun getPageChats(query: String): TotalPagingSource<Int, Chat>
@@ -29,6 +30,7 @@ interface MessengerRepo {
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
     suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage>
     suspend fun deleteChat(id: Long): CallResult<Unit>
+    suspend fun deleteMessage(messageId: Long, chatId: Long): CallResult<Unit>
 
     fun closeSocket()
 

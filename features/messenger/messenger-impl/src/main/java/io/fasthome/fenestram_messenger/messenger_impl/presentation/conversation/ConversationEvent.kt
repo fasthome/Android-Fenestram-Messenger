@@ -9,4 +9,5 @@ sealed interface ConversationEvent {
     object InvalidateList : ConversationEvent
     object ShowSelectFromDialog : ConversationEvent
     class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) : ConversationEvent
+    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self) : ConversationEvent
 }

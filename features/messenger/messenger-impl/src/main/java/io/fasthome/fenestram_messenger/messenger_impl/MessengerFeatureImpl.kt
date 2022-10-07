@@ -41,7 +41,8 @@ class MessengerFeatureImpl(
 
     override suspend fun deleteChat(id: Long) = messengerInteractor.deleteChat(id)
 
-    override suspend fun sendMessage(id: Long, text: String, type: String, localId: String) =
-        messengerInteractor.sendMessage(id, text, type, localId)
+    override suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
+        messengerInteractor.sendMessage(id, text, type, localId, authorId)
+
 
 }

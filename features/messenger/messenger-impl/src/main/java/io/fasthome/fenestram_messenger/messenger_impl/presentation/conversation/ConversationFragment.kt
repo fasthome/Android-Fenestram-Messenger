@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConver
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -54,6 +55,8 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
+    }, onSelfMessageLongClicked = {
+        vm.onSelfMessageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -200,6 +203,12 @@ class ConversationFragment :
                     }
                 ).show()
             }
+            is ConversationEvent.ShowSelfMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem, )
+                }
+            ).show()
         }
     }
 
