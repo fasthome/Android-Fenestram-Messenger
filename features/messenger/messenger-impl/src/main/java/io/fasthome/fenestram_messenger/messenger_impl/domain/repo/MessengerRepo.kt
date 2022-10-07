@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.repo
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource

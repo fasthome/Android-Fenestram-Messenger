@@ -35,12 +35,12 @@ class PushRepoImpl(private val pushService: PushService, private val pushesStora
     override suspend fun getPushToken(): String =
         when (val deviceTokenResult = pushesStorage.getDeviceToken()) {
             is DeviceTokenResult.TokenReceived -> deviceTokenResult.deviceToken
-            else -> { "" }
+            else -> {
+                ""
+            }
         }
-
 
     override suspend fun clearPushToken(): CallResult<Unit> = callForResult {
         pushService.clearPushToken()
     }
-
 }

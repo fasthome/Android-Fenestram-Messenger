@@ -1,6 +1,7 @@
 plugins {
     `android-common`
     `kotlinx-serialization`
+    `kotlin-kapt`
 }
 
 android {
@@ -21,5 +22,8 @@ dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.network))
     implementation(project(Modules.Common.data))
+
+    implementation(Deps.Glide.core)
+    kapt(Deps.Glide.compiler)
 
 }
