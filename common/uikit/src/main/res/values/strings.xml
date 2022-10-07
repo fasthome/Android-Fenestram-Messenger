@@ -22,5 +22,6 @@
     <string name="common_delete_chat_dialog">Вы уверены, что хотите удалить чат?</string>
     <string name="common_retry">Повторить</string>
     <string name="common_unable_to_download">Невозможно загрузить данный файл</string>
+    <string name="common_accept">Подтвердить</string>
 
 </resources>

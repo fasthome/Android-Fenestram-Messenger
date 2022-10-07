@@ -36,8 +36,8 @@ class MessengerInteractor(
     private val messagesFlow: Flow<Message> = _messagesChannel.receiveAsFlow()
     private val newMessagesFlow: Flow<Message> = _newMessagesChannel.receiveAsFlow()
 
-    suspend fun sendMessage(id: Long, text: String, type: String, localId: String) =
-        messageRepo.sendMessage(id, text, type, localId)
+    suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
+        messageRepo.sendMessage(id, text, type, localId, authorId)
 
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
@@ -80,6 +80,8 @@ class MessengerInteractor(
     }
 
     suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
+
+    suspend fun deleteMessage(messageId: Long, chatId: Long) = messageRepo.deleteMessage(messageId, chatId)
 
 
     fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =

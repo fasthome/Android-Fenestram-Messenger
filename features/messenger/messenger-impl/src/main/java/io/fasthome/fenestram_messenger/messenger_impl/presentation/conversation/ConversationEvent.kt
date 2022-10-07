@@ -12,4 +12,5 @@ sealed interface ConversationEvent {
     class ShowPersonDetailDialog(val selectedPerson: PersonDetail) : ConversationEvent
     class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) :
         ConversationEvent
+    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self) : ConversationEvent
 }

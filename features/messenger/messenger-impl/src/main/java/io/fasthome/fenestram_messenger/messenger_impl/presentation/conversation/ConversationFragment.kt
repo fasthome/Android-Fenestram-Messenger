@@ -10,7 +10,7 @@ import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
@@ -18,6 +18,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConver
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -55,6 +56,8 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
+    }, onSelfMessageLongClicked = {
+        vm.onSelfMessageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -168,7 +171,7 @@ class ConversationFragment :
                         )
                     )
             }
-            is ConversationEvent.ShowDeleteChatDialog -> DeleteChatDialog.create(
+            is ConversationEvent.ShowDeleteChatDialog -> AcceptDialog.create(
                 fragment = this,
                 titleText = PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 accept = vm::deleteChat,
@@ -216,6 +219,12 @@ class ConversationFragment :
                     }
                 ).show()
             }
+            is ConversationEvent.ShowSelfMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem, )
+                }
+            ).show()
         }
     }
 

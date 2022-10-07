@@ -11,7 +11,8 @@ import io.fasthome.fenestram_messenger.core.R
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked : (String) -> Unit
+    onImageClicked : (String) -> Unit,
+    onSelfMessageLongClicked: (ConversationViewItem.Self) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -19,7 +20,7 @@ class ConversationAdapter(
             ConversationViewItem::sentStatus
         ),
         AdapterUtil.adapterDelegatesManager(
-            createConversationSelfTextAdapterDelegate(onSelfMessageClicked),
+            createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
             createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked),
             createConversationReceiveTextAdapterDelegate(),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
@@ -29,12 +30,19 @@ class ConversationAdapter(
         )
     )
 
-fun createConversationSelfTextAdapterDelegate(onSelfMessageClicked: (ConversationViewItem.Self) -> Unit) =
+fun createConversationSelfTextAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onSelfMessageLongClicked: (ConversationViewItem.Self) -> Unit
+) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Text, ConversationItemSelfTextBinding>(
         ConversationItemSelfTextBinding::inflate
     ) {
         binding.root.onClick {
             onSelfMessageClicked(item)
+        }
+        binding.root.setOnLongClickListener {
+            onSelfMessageLongClicked(item)
+            true
         }
         bindWithBinding {
             messageContent.setPrintableText(item.content)

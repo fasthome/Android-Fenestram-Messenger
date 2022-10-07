@@ -1,16 +1,18 @@
-package io.fasthome.fenestram_messenger.di
+package io.fasthome.fenestram_messenger.app.di
 
-import io.fasthome.fenestram_messenger.BuildConfig
-import io.fasthome.fenestram_messenger.core.environment.Endpoints
-import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.core.debug.DebugRepo
+import io.fasthome.fenestram_messenger.core.debug.EndpointsConfig
 import org.koin.dsl.module
 
 object EnvironmentModule {
     operator fun invoke() = module {
         single {
+            val repo = get<DebugRepo>()
 
-            val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_DEV
-            val refreshTokenUrl = BuildConfig.REFRESH_TOKEN_URL_DEV
+
+            val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_PROD
+
+            val refreshTokenUrl = BuildConfig.REFRESH_TOKEN_URL_PROD
 
             Environment(
                 endpoints = Endpoints(

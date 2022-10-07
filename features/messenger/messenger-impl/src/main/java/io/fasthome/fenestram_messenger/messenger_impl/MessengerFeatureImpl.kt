@@ -10,8 +10,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerNavigationContract
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.contract.map
-import io.fasthome.fenestram_messenger.navigation.contract.mapParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
 class MessengerFeatureImpl(
     private val messengerInteractor: MessengerInteractor
@@ -41,6 +39,10 @@ class MessengerFeatureImpl(
 
             })
 
-    override suspend fun deleteChat(id : Long) = messengerInteractor.deleteChat(id)
+    override suspend fun deleteChat(id: Long) = messengerInteractor.deleteChat(id)
+
+    override suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
+        messengerInteractor.sendMessage(id, text, type, localId, authorId)
+
 
 }
