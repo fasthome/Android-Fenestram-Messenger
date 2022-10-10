@@ -7,13 +7,19 @@ import io.fasthome.fenestram_messenger.group_guest_impl.databinding.ItemParticip
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.AnotherUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.CurrentUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.AdapterUtil
+import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
+import io.fasthome.fenestram_messenger.util.bindWithBinding
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
-class ParticipantsAdapter(onMenuClicked: (Long) -> Unit) :
+class ParticipantsAdapter(
+    onMenuClicked: (Long) -> Unit,
+    onAnotherUserClicked: (Long) -> Unit
+) :
     AsyncListDifferDelegationAdapter<ParticipantsViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(),
         AdapterUtil.adapterDelegatesManager(
-            createParticipantsAdapter(onMenuClicked),
+            createParticipantsAdapter(onMenuClicked, onAnotherUserClicked),
             createCurrentUserAdapterDelegate()
         )
     )
@@ -29,14 +35,18 @@ fun createCurrentUserAdapterDelegate() =
     }
 
 
-fun createParticipantsAdapter(onMenuClicked: (Long) -> Unit) =
+fun createParticipantsAdapter(
+    onMenuClicked: (Long) -> Unit,
+    onAnotherUserClicked: (Long) -> Unit
+) =
     adapterDelegateViewBinding<AnotherUserViewItem, ItemParticipantBinding>(
         ItemParticipantBinding::inflate
     ) {
         binding.dropdownMenu.setOnClickListener {
             onMenuClicked(item.userId)
         }
-
+        binding.root.setOnClickListener { onAnotherUserClicked(item.userId) }
+        
         bindWithBinding {
             avatar.loadCircle(item.avatar)
             name.setPrintableText(item.name)

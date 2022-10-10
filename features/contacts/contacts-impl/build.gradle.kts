@@ -11,6 +11,7 @@ dependencies {
     implementation(project(Modules.Feature.contacts.api))
     implementation(project(Modules.Feature.auth.api))
     implementation(project(Modules.Feature.messenger.api))
+
     implementation(project(Modules.Common.component))
     implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.core))

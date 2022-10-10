@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
 import android.util.Log
+import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -24,7 +25,8 @@ class MessengerInteractor(
     private val messageRepo: MessengerRepo,
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
-    private val filesRepo: FilesRepo
+    private val filesRepo: FilesRepo,
+    private val userStorage: UserStorage
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -83,7 +85,8 @@ class MessengerInteractor(
 
     suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
 
-    suspend fun deleteMessage(messageId: Long, chatId: Long) = messageRepo.deleteMessage(messageId, chatId)
+    suspend fun deleteMessage(messageId: Long, chatId: Long) =
+        messageRepo.deleteMessage(messageId, chatId)
 
 
     fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =
@@ -109,4 +112,6 @@ class MessengerInteractor(
     suspend fun saveFile(itemId: String, tempFile: File) {
         filesRepo.saveFile(itemId = itemId, tempFile.readBytes(), tempFile.name)
     }
+
+    suspend fun getUserId() = userStorage.getUserId()
 }

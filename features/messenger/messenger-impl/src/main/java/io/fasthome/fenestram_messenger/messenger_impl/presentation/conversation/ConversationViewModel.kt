@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.camera_api.CameraFeature
@@ -12,6 +13,7 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
@@ -46,28 +48,30 @@ class ConversationViewModel(
     private val features: Features,
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUrlConverter: ProfileImageUrlConverter,
+    private val profileImageUrlConverter: ProfileImageUrlConverter
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
 
-    private val cameraLauncher = registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
-        val tempFile = result.tempFile
+    private val cameraLauncher =
+        registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
+            val tempFile = result.tempFile
 
-        photoPreviewLauncher.launch(
-            ConfirmParams(
-                content = Content.FileContent(tempFile),
+            photoPreviewLauncher.launch(
+                ConfirmParams(
+                    content = Content.FileContent(tempFile),
+                )
             )
-        )
-    }
-
-    private val photoPreviewLauncher = registerScreen(features.cameraFeature.confirmNavigationContract) { result ->
-        when (val action = result.action) {
-            is ConfirmResult.Action.Confirm -> saveFile(action.tempFile)
-            ConfirmResult.Action.Retake -> openCameraFragment()
-            ConfirmResult.Action.Cancel -> Unit
         }
-    }
+
+    private val photoPreviewLauncher =
+        registerScreen(features.cameraFeature.confirmNavigationContract) { result ->
+            when (val action = result.action) {
+                is ConfirmResult.Action.Confirm -> saveFile(action.tempFile)
+                ConfirmResult.Action.Retake -> openCameraFragment()
+                ConfirmResult.Action.Cancel -> Unit
+            }
+        }
 
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
@@ -335,18 +339,20 @@ class ConversationViewModel(
     fun onUserClicked(editMode: Boolean) {
         viewModelScope.launch {
             if (chatId != null)
-                messengerInteractor.getChatById(chatId!!).onSuccess {
-                    chatUsers = it.chatUsers
+                messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
+                    chatUsers = chat.chatUsers
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
-                            userName = it.chatName,
-                            userNickname = "",
-                            userAvatar = it.avatar ?: "",
+                            userName = chat.chatName,
+                            userNickname = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.nickname
+                                ?: "",
+                            userAvatar = chat.avatar,
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = "",
-                            editMode = editMode
+                            userPhone = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.phone
+                                ?: "",
+                            editMode = editMode && params.chat.isGroup
                         )
                     )
                 }
@@ -394,16 +400,31 @@ class ConversationViewModel(
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
-        profileGuestLauncher.launch(
-            ProfileGuestFeature.ProfileGuestParams(
-                id = item.id,
-                userName = getPrintableRawText(item.userName),
-                userNickname = "",
-                userAvatar = item.avatar,
-                chatParticipants = listOf(),
-                isGroup = false,
-                userPhone = item.phone,
-                editMode = false
+        sendEvent(
+            ConversationEvent.ShowPersonDetailDialog(
+                PersonDetail(
+                    userId = item.userId,
+                    avatar = item.avatar,
+                    userName = getPrintableRawText(item.userName),
+                    phone = item.phone,
+                    userNickname = item.nickname
+                )
+            )
+        )
+    }
+
+    fun onLaunchConversationClicked(personDetail: PersonDetail) {
+        registerScreen(ConversationNavigationContract) {}.launch(
+            ConversationNavigationContract.Params(
+                chat = Chat(
+                    id = null,
+                    users = listOf(personDetail.userId),
+                    messages = listOf(),
+                    time = null,
+                    name = personDetail.userName,
+                    avatar = profileImageUrlConverter.extractPath(personDetail.avatar),
+                    isGroup = false
+                )
             )
         )
     }

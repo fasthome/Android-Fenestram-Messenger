@@ -14,5 +14,11 @@ class ProfileImageUrlConverter(private val environment: Environment) {
             environment.endpoints.baseUrl.dropLast(1) + path
         }
 
+    fun extractPath(imageUrl: String?) =
+        if (imageUrl.isNullOrEmpty() || imageUrl == "null") {
+            ""
+        } else {
+            imageUrl.substring(environment.endpoints.baseUrl.length - 1, imageUrl.length)
+        }
 
 }

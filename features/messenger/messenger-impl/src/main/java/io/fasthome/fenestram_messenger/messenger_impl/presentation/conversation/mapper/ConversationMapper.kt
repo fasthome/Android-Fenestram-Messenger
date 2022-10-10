@@ -89,7 +89,9 @@ fun Message.toConversationViewItem(
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id,
-                            phone = initiator?.phone ?: ""
+                            phone = initiator?.phone ?: "",
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -101,7 +103,9 @@ fun Message.toConversationViewItem(
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id,
-                            phone = initiator?.phone ?: ""
+                            phone = initiator?.phone ?: "",
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {
@@ -202,15 +206,16 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     localId = UUID.randomUUID().toString()
 )
 
-fun createImageMessage(image: String?, loadableContent : Content) = ConversationViewItem.Self.Image(
-    content = image ?: "",
-    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
-    sentStatus = SentStatus.Loading,
-    date = ZonedDateTime.now(),
-    id = 0,
-    localId = UUID.randomUUID().toString(),
-    loadableContent = loadableContent
-)
+fun createImageMessage(image: String?, loadableContent : Content) =
+    ConversationViewItem.Self.Image(
+        content = image ?: "",
+        time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+        sentStatus = SentStatus.Loading,
+        date = ZonedDateTime.now(),
+        id = 0,
+        localId = UUID.randomUUID().toString(),
+        loadableContent = loadableContent
+    )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     content = getFuzzyDateString(date),
@@ -220,9 +225,9 @@ fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     sentStatus = SentStatus.None
 )
 
-private fun getName(user: User?) : String{
-    if(user == null) return "Неизвестный пользователь"
-    return when{
+private fun getName(user: User?): String {
+    if (user == null) return "Неизвестный пользователь"
+    return when {
         user.contactName?.isNotEmpty() == true -> user.contactName!!
         user.name.isNotEmpty() -> user.name
         else -> user.phone.setMaskByCountry(Country.RUSSIA)
