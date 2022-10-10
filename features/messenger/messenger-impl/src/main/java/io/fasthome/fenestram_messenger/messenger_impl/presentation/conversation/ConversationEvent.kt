@@ -10,7 +10,9 @@ sealed interface ConversationEvent {
     object InvalidateList : ConversationEvent
     object ShowSelectFromDialog : ConversationEvent
     class ShowPersonDetailDialog(val selectedPerson: PersonDetail) : ConversationEvent
-    class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) :
-        ConversationEvent
-    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self) : ConversationEvent
+    class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) : ConversationEvent
+    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self.Text) : ConversationEvent
+    class ShowReceiveMessageActionDialog(val conversationViewItem: ConversationViewItem.Receive.Text) : ConversationEvent
+    class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group.Text) : ConversationEvent
+    class ShowSelfImageActionDialog(val conversationViewItem: ConversationViewItem.Self.Image) : ConversationEvent
 }

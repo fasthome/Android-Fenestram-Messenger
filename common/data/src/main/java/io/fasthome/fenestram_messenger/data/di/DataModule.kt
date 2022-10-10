@@ -1,12 +1,8 @@
 package io.fasthome.fenestram_messenger.data.di
 
-import io.fasthome.fenestram_messenger.data.FileSystemInterface
-import io.fasthome.fenestram_messenger.data.FileSystemInterfaceImpl
-import io.fasthome.fenestram_messenger.data.KeyValueStorage
-import io.fasthome.fenestram_messenger.data.StorageQualifier
+import io.fasthome.fenestram_messenger.data.*
 import io.fasthome.fenestram_messenger.data.prefs.InMemoryKeyValueStorage
 import io.fasthome.fenestram_messenger.data.prefs.PreferenceKeyValueStorage
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.single
 import org.koin.core.module.Module
@@ -32,10 +28,14 @@ object DataModule {
             named(StorageQualifier.Simple)
         ) bindSafe KeyValueStorage.Factory::class
 
-        single(
-            PreferenceKeyValueStorage::SecureFactory,
-            named(StorageQualifier.Secure)
-        ) bindSafe KeyValueStorage.Factory::class
+        /***
+         * todo Использовать хранилище с шифрованием для хранения токенов
+         * сейчас при использовании его бывает краш при открытии приложения
+         */
+//        single(
+//            PreferenceKeyValueStorage::SecureFactory,
+//            named(StorageQualifier.Secure)
+//        ) bindSafe KeyValueStorage.Factory::class
     }
 
     private fun createFile() = module{

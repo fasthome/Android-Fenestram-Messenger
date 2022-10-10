@@ -24,8 +24,17 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="CornersShapeRounded10">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+    </style>
+
     <style name="BottomActionDialogButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="materialThemeOverlay">@style/DarkButtonThemeOverlay</item>
+        <item name="shapeAppearanceOverlay">@style/CornersShapeRounded10</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/gray2</item>
         <item name="iconTint">@color/gray2</item>
@@ -36,5 +45,6 @@
     <style name="DarkButtonThemeOverlay">
         <item name="colorPrimary">@color/dark2</item>
     </style>
+
 
 </resources>

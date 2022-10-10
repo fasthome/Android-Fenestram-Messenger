@@ -8,12 +8,7 @@ import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.network.client.JwtNetworkClientFactory
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.client.SimpleNetworkClientFactory
-import io.fasthome.network.tokens.AccessTokenStorage
-import io.fasthome.network.tokens.InMemoryTokensStorage
-import io.fasthome.network.tokens.RefreshTokenStorage
-import io.fasthome.network.tokens.TokensRepo
-import io.fasthome.network.tokens.TokensRepoImpl
-import io.fasthome.network.tokens.TokensService
+import io.fasthome.network.tokens.*
 import io.fasthome.network.util.NetworkController
 import io.fasthome.network.util.NetworkLogger
 import io.ktor.client.engine.*
@@ -73,8 +68,9 @@ object NetworkModule {
         } bindSafe HttpClientEngine::class
 
         single(::InMemoryTokensStorage)
-        single { RefreshTokenStorage(get(named(StorageQualifier.Secure))) }
-        single { AccessTokenStorage(get(named(StorageQualifier.Secure))) }
+        //TODO использовать StorageQualifier.Secure
+        single { RefreshTokenStorage(get(named(StorageQualifier.Simple))) }
+        single { AccessTokenStorage(get(named(StorageQualifier.Simple))) }
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 

@@ -111,4 +111,9 @@
     <style name="Text.Gray.16sp">
         <item name="android:textSize">16sp</item>
     </style>
+
+    <style name="Text.Blue.14sp">
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>

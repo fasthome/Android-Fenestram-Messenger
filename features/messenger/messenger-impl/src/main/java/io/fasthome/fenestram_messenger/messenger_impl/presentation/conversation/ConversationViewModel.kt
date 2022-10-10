@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
@@ -18,7 +17,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -82,7 +80,7 @@ class ConversationViewModel(
         return params.fromContacts
     }
 
-    fun loadItems() {
+    fun loadItems(isResumed: Boolean) {
         loadItemsJob = viewModelScope.launch {
             lastPage?.let {
                 if (it.total <= PAGE_SIZE) {
@@ -90,7 +88,7 @@ class ConversationViewModel(
                 }
             }
 
-            messengerInteractor.getChatPageItems(chatId ?: return@launch).onSuccess {
+            messengerInteractor.getChatPageItems(isResumed, chatId ?: return@launch).onSuccess {
                 lastPage = it
                 updateState { state ->
                     state.copy(
@@ -107,7 +105,7 @@ class ConversationViewModel(
         }
     }
 
-    fun fetchMessages() {
+    fun fetchMessages(isResumed: Boolean) {
         viewModelScope.launch {
             selfUserId = features.authFeature.getUserId(needLogout = true).getOrNull()
             if (selfUserId == null) {
@@ -132,6 +130,7 @@ class ConversationViewModel(
                 }
             }
             subscribeMessages(
+                isResumed = isResumed,
                 chatId ?: params.chat.id ?: return@launch,
                 selfUserId ?: return@launch
             )
@@ -140,7 +139,7 @@ class ConversationViewModel(
 
     class Features(
         val profileGuestFeature: ProfileGuestFeature,
-        val authFeature: AuthFeature
+        val authFeature: AuthFeature,
     )
 
     private val profileGuestLauncher =
@@ -163,7 +162,7 @@ class ConversationViewModel(
             userName = PrintableText.Raw(params.chat.name),
             userOnline = false,
             isChatEmpty = false,
-            avatar = params.chat.avatar ?: "",
+            avatar = profileImageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf()
         )
     }
@@ -214,25 +213,27 @@ class ConversationViewModel(
                         imageUrl = it
                         it
                     }
-                when (messengerInteractor.sendMessage(
+                val sendMessageResponse = messengerInteractor.sendMessage(
                     id = chatId ?: return@launch,
                     text = imageUrl ?: return@launch,
                     type = "image",
                     localId = tempMessage.localId,
                     authorId = selfUserId ?: return@launch
-                )) {
+                )
+                when (sendMessageResponse) {
                     is CallResult.Error -> {
                         updateStatus(
                             tempMessage,
                             SentStatus.Error,
-                            profileImageUrlConverter.convert(imageUrl)
+                            profileImageUrlConverter.convert(imageUrl),
                         )
                     }
                     is CallResult.Success -> {
                         updateStatus(
                             tempMessage,
                             SentStatus.Sent,
-                            profileImageUrlConverter.convert(imageUrl)
+                            profileImageUrlConverter.convert(imageUrl),
+                            sendMessageResponse.data.id
                         )
                     }
                 }
@@ -253,19 +254,19 @@ class ConversationViewModel(
                     messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                 )
             }
-
-            when (messengerInteractor.sendMessage(
+            val sendMessageResponse = messengerInteractor.sendMessage(
                 id = chatId ?: return@launch,
                 text = mess,
                 type = "text",
                 localId = tempMessage.localId,
                 authorId = selfUserId ?: return@launch
-            )) {
+            )
+            when (sendMessageResponse) {
                 is CallResult.Error -> {
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
-                    updateStatus(tempMessage, SentStatus.Sent)
+                    updateStatus(tempMessage, SentStatus.Sent, id = sendMessageResponse.data.id)
                 }
             }
         }
@@ -275,17 +276,27 @@ class ConversationViewModel(
     private fun updateStatus(
         tempMessage: ConversationViewItem.Self,
         status: SentStatus,
-        imageUrl: String? = null
+        imageUrl: String? = null,
+        id: Long? = null,
     ) {
         updateState { state ->
             val newMessages = state.messages.toMutableMap()
             when (tempMessage) {
                 is ConversationViewItem.Self.Text -> {
-                    newMessages[tempMessage.localId] = tempMessage.copy(sentStatus = status)
+                    newMessages[tempMessage.localId] =
+                        if (id != null) {
+                            tempMessage.copy(sentStatus = status, id = id)
+                        } else {
+                            tempMessage.copy(sentStatus = status)
+                        }
                 }
                 is ConversationViewItem.Self.Image -> {
                     newMessages[tempMessage.localId] =
-                        tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
+                        if (id != null) {
+                            tempMessage.copy(id = id, sentStatus = status, content = imageUrl ?: "")
+                        } else {
+                            tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
+                        }
                 }
             }
             state.copy(
@@ -321,8 +332,8 @@ class ConversationViewModel(
         messengerInteractor.closeSocket()
     }
 
-    private suspend fun subscribeMessages(chatId: Long, selfUserId: Long) {
-        loadItems()
+    private suspend fun subscribeMessages(isResumed: Boolean, chatId: Long, selfUserId: Long) {
+        loadItems(isResumed)
         messengerInteractor.getMessagesFromChat(chatId, selfUserId)
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -479,14 +490,16 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self.Text) {
         sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
     }
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
         viewModelScope.launch {
-            messengerInteractor.deleteMessage(messageId = conversationViewItem.id,
-                chatId = chatId ?: return@launch).onSuccess {
+            messengerInteractor.deleteMessage(
+                messageId = conversationViewItem.id,
+                chatId = chatId ?: return@launch
+            ).onSuccess {
                 updateState {
                     val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
                     currentViewState.messages.entries.forEach { item ->
@@ -498,6 +511,18 @@ class ConversationViewModel(
             }
 
         }
+    }
+
+    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive.Text) {
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
+    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group.Text) {
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+    }
+
+    fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
+        sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
     }
 
 }
