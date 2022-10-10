@@ -200,10 +200,10 @@
             android:layout_height="16dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_delete"
-            android:tint="@color/dark2"
             app:layout_constraintBottom_toBottomOf="@+id/tv_edit_message_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_edit_message_title" />
+            app:layout_constraintTop_toTopOf="@+id/tv_edit_message_title"
+            app:tint="@color/dark2" />
 
         <TextView
             android:id="@+id/tv_edit_message_title"
