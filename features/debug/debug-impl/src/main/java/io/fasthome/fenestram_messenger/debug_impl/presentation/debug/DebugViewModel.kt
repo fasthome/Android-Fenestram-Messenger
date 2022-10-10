@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.core.debug.DebugRepo
@@ -16,8 +17,8 @@ import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.navigation.model.createParams
-import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.onboarding_api.OnboardingFeature
+import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
@@ -204,6 +205,20 @@ class DebugViewModel(
     fun onEnvironmentChanged(config: EndpointsConfig) {
         debugRepo.endpointsConfig = config
         sendEvent(DebugEvent.RebirthApplication)
+    }
+
+    fun onPersonDetailClicked() {
+        sendEvent(
+            DebugEvent.ShowPersonDetailDialog(
+                PersonDetail(
+                    0,
+                    "",
+                    "ExampleUserName",
+                    "ExampleNickName",
+                    "+74357274377"
+                )
+            )
+        )
     }
 
 }

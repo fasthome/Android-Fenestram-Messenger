@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -125,6 +126,7 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
+        latestPersonDetailDialog = Dialog(requireContext())
     }
 
     override fun onResume() {
@@ -149,6 +151,8 @@ class ConversationFragment :
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
     }
+
+    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
@@ -203,20 +207,22 @@ class ConversationFragment :
                         })
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->
-                PersonDetailDialog
-                    .create(
-                        fragment = this,
-                        personDetail = event.selectedPerson,
-                        launchFaceCallClicked = {
-                            //TODO
-                        },
-                        launchCallClicked = {
-                            //TODO
-                        },
-                        launchConversationClicked = {
-                            vm.onLaunchConversationClicked(it)
-                        })
-                    .show()
+                if (!latestPersonDetailDialog.isShowing) {
+                    latestPersonDetailDialog = PersonDetailDialog
+                        .create(
+                            fragment = this,
+                            personDetail = event.selectedPerson,
+                            launchFaceCallClicked = {
+                                //TODO
+                            },
+                            launchCallClicked = {
+                                //TODO
+                            },
+                            launchConversationClicked = {
+                                vm.onLaunchConversationClicked(it)
+                            })
+                    latestPersonDetailDialog.show()
+                }
             is ConversationEvent.ShowErrorSentDialog -> {
                 ErrorSentDialog.create(
                     fragment = this,
@@ -234,14 +240,14 @@ class ConversationFragment :
                     vm.onDeleteMessageClicked(event.conversationViewItem)
                 },
                 onCopy = {
-                        copyPrintableText(event.conversationViewItem.content)
-                    }
+                    copyPrintableText(event.conversationViewItem.content)
+                }
             ).show()
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onCopy = {
-                        copyPrintableText(event.conversationViewItem.content)
-                    }
+                    copyPrintableText(event.conversationViewItem.content)
+                }
 
             ).show()
             is ConversationEvent.ShowGroupMessageActionDialog -> MessageActionDialog.create(
@@ -262,7 +268,8 @@ class ConversationFragment :
 
     private fun copyPrintableText(printableText: PrintableText) {
         (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
-            ClipData.newPlainText("copy",
+            ClipData.newPlainText(
+                "copy",
                 getPrintableText(printableText)
             )
         )

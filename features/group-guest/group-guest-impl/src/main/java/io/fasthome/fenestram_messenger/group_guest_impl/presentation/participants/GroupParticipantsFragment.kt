@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import io.fasthome.component.person_detail.PersonDetailDialog
@@ -37,11 +38,15 @@ class GroupParticipantsFragment :
         binding.addUserToChat.onClick {
             vm.onAddUserToChat()
         }
+        
+        latestPersonDetailDialog = Dialog(requireContext())
     }
 
     override fun renderState(state: GroupParticipantsState) {
         adapter.items = state.participants
     }
+
+    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: GroupParticipantsEvent) {
         when (event) {
@@ -56,20 +61,22 @@ class GroupParticipantsFragment :
                 ).show()
             }
             is GroupParticipantsEvent.ShowPersonDetailDialog -> {
-                PersonDetailDialog
-                    .create(
-                        fragment = this,
-                        personDetail = event.selectedPerson,
-                        launchFaceCallClicked = {
-                            //TODO
-                        },
-                        launchCallClicked = {
-                            //TODO
-                        },
-                        launchConversationClicked = {
-                            vm.onLaunchConversationClicked(it)
-                        })
-                    .show()
+                if (!latestPersonDetailDialog.isShowing) {
+                    latestPersonDetailDialog = PersonDetailDialog
+                        .create(
+                            fragment = this,
+                            personDetail = event.selectedPerson,
+                            launchFaceCallClicked = {
+                                //TODO
+                            },
+                            launchCallClicked = {
+                                //TODO
+                            },
+                            launchConversationClicked = {
+                                vm.onLaunchConversationClicked(it)
+                            })
+                    latestPersonDetailDialog.show()
+                }
             }
         }
     }

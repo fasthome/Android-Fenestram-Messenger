@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="24dp"
         android:src="@drawable/common_avatar" />
 
     <TextView
@@ -19,39 +19,38 @@
         style="@style/Text.White.18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="@id/avatar"
         app:layout_constraintStart_toEndOf="@id/avatar"
-        app:layout_constraintTop_toTopOf="@id/avatar" />
+        android:layout_marginStart="20dp" />
 
     <TextView
         android:id="@+id/phone"
         style="@style/Text.Blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/name"
-        app:layout_constraintTop_toBottomOf="@id/name" />
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintStart_toStartOf="@id/name" />
 
     <TextView
         android:id="@+id/nickname"
         style="@style/Text.Blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/phone"
-        app:layout_constraintTop_toBottomOf="@id/phone" />
-
+        app:layout_constraintTop_toBottomOf="@id/phone"
+        app:layout_constraintStart_toStartOf="@id/phone" />
 
     <ImageButton
         android:id="@+id/launch_facecall"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/shape_button_circle"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toStartOf="@+id/launch_call"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/avatar"
         app:srcCompat="@drawable/ic_facecall"
+        app:layout_constraintEnd_toStartOf="@id/launch_call"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginTop="30dp"
         android:scaleType="fitXY" />
 
     <ImageButton
@@ -59,11 +58,11 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/shape_button_circle"
-        app:layout_constraintEnd_toStartOf="@+id/launch_conversation"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/launch_facecall"
-        app:layout_constraintTop_toTopOf="@id/launch_facecall"
         app:srcCompat="@drawable/ic_call"
+        app:layout_constraintStart_toEndOf="@id/launch_facecall"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@id/launch_conversation"
+        app:layout_constraintTop_toTopOf="@id/launch_facecall"
         android:scaleType="fitXY" />
 
     <ImageButton
@@ -71,12 +70,10 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:background="@drawable/shape_button_circle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/launch_call"
-        app:layout_constraintTop_toTopOf="@id/launch_facecall"
         app:srcCompat="@drawable/ic_open_dialog"
-        android:scaleType="fitXY" />
-
+        app:layout_constraintStart_toEndOf="@id/launch_call"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/launch_facecall" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
