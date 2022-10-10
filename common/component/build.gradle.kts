@@ -17,5 +17,10 @@ dependencies {
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
 
+    api(Deps.AndroidX.Camera.core)
+    api(Deps.AndroidX.Camera.camera2)
+    api(Deps.AndroidX.Camera.lifecycle)
+    api(Deps.AndroidX.Camera.view)
+
     implementation(project(Modules.Feature.auth.api))
 }

@@ -107,6 +107,9 @@ dependencies {
     implementation(project(Modules.Feature.onboarding.api))
     implementation(project(Modules.Feature.onboarding.impl))
 
+    implementation(project(Modules.Feature.camera.api))
+    implementation(project(Modules.Feature.camera.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)

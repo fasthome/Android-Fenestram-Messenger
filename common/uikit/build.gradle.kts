@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlin-kapt`
 }
 
 android {
@@ -21,4 +22,7 @@ dependencies {
     api(Deps.Koin.android)
     api(Deps.Koin.test)
     api(Deps.Koin.workmanager)
+
+    api(Deps.Glide.core)
+    kapt(Deps.Glide.compiler)
 }

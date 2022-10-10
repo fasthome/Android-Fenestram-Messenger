@@ -5,8 +5,10 @@ import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.FileData
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
+import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -16,13 +18,15 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import java.io.File
 import java.util.*
 
 class MessengerInteractor(
     private val messageRepo: MessengerRepo,
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
-    private val userStorage: UserStorage
+    private val userStorage: UserStorage,
+    private val filesRepo: FilesRepo
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -90,7 +94,7 @@ class MessengerInteractor(
     private var page = 0
 
     suspend fun getChatPageItems(isResumed: Boolean, id: Long): CallResult<MessagesPage> {
-        if(isResumed) {
+        if (isResumed) {
             page = 0
         }
         page++
@@ -99,6 +103,14 @@ class MessengerInteractor(
 
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
+
+    suspend fun getFile(itemId: String): CallResult<FileData?> =
+        filesRepo.getFile(itemId)
+
+
+    suspend fun saveFile(itemId: String, tempFile: File) {
+        filesRepo.saveFile(itemId = itemId, tempFile.readBytes(), tempFile.name)
+    }
 
     suspend fun getUserId() = userStorage.getUserId()
 }

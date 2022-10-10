@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.data.di
 
 import io.fasthome.fenestram_messenger.data.*
+import io.fasthome.fenestram_messenger.data.file.SimpleFileStorage
 import io.fasthome.fenestram_messenger.data.prefs.InMemoryKeyValueStorage
 import io.fasthome.fenestram_messenger.data.prefs.PreferenceKeyValueStorage
 import io.fasthome.fenestram_messenger.di.bindSafe
@@ -40,6 +41,11 @@ object DataModule {
 
     private fun createFile() = module{
         single(::FileSystemInterfaceImpl) bindSafe FileSystemInterface::class
+
+        single(
+            SimpleFileStorage::FactoryFiles,
+            named(StorageQualifier.Simple)
+        ) bindSafe FileStorage.Factory::class
     }
 
     private fun createExt() = module{
