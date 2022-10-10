@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -161,8 +162,18 @@ class ConversationViewModel(
             userOnline = false,
             isChatEmpty = false,
             avatar = profileImageUrlConverter.convert(params.chat.avatar),
-            attachedFiles = listOf()
+            attachedFiles = listOf(),
+            messageToEdit = null
         )
+    }
+
+    fun editMessageMode(conversationViewItem: ConversationViewItem.Self.Text?) {
+        updateState { state ->
+            state.copy(
+                attachedFiles = emptyList(),
+                messageToEdit = conversationViewItem
+            )
+        }
     }
 
     fun addMessageToConversation(mess: String) {
@@ -171,7 +182,12 @@ class ConversationViewModel(
         if (attachedFiles.isNotEmpty()) {
             sendImages(attachedFiles)
         }
-
+        if (currentViewState.messageToEdit != null) {
+            if (mess.isNotEmpty()) {
+                editMessage(mess)
+            }
+            return
+        }
         if (mess.isNotEmpty()) {
             sendMessage(mess)
         }
@@ -240,6 +256,26 @@ class ConversationViewModel(
         }
         sendEvent(ConversationEvent.MessageSent)
 
+    }
+
+    private fun editMessage(newText: String) {
+        viewModelScope.launch {
+            val messageToEdit = currentViewState.messageToEdit ?: return@launch
+            messengerInteractor.editMessage(
+                chatId = chatId ?: return@launch,
+                messageId = messageToEdit.id,
+                newText = newText
+            ).onSuccess {
+                val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
+                val key = message.keys.firstOrNull() ?: return@launch
+                updateState { state ->
+                    state.copy(
+                        messages = state.messages.plus(Pair(key, messageToEdit)),
+                        messageToEdit = null
+                    )
+                }
+            }
+        }
     }
 
     private fun sendMessage(mess: String) {
@@ -317,7 +353,7 @@ class ConversationViewModel(
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
                             userPhone = "",
-                            editMode = editMode
+                            editMode = editMode,
                         )
                     )
                 }

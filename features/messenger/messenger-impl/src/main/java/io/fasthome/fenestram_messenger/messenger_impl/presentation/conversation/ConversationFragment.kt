@@ -6,6 +6,9 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.DimenRes
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +25,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -102,6 +106,7 @@ class ConversationFragment :
         sendButton.setOnClickListener() {
             vm.addMessageToConversation(inputMessage.text.toString())
             inputMessage.text?.clear()
+            changeEditMode(null)
             messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
 
@@ -117,7 +122,10 @@ class ConversationFragment :
             vm.onOpenMenu()
         }
 
-
+        ivCloseEdit.setOnClickListener {
+            vm.editMessageMode(null)
+            inputMessage.setText("")
+        }
 
         attachButton.onClick {
             vm.onAttachClicked()
@@ -147,6 +155,7 @@ class ConversationFragment :
         username.setPrintableText(state.userName)
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
+        changeEditMode(state.messageToEdit)
     }
 
     override fun handleEvent(event: ConversationEvent) {
@@ -206,8 +215,7 @@ class ConversationFragment :
                     fragment = this,
                     onRetryClicked = {
                         vm.onRetrySentClicked(event.conversationViewItem)
-                    },
-                    onCancelClicked = {
+                    }, onCancelClicked = {
                         vm.onCancelSentClicked(event.conversationViewItem)
                     }
                 ).show()
@@ -216,16 +224,17 @@ class ConversationFragment :
                 fragment = this,
                 onDelete = {
                     vm.onDeleteMessageClicked(event.conversationViewItem)
-                },
-                onCopy = {
-                        copyPrintableText(event.conversationViewItem.content)
-                    }
+                }, onCopy = {
+                    copyPrintableText(event.conversationViewItem.content)
+                }, onEdit = {
+                    vm.editMessageMode(event.conversationViewItem)
+                }
             ).show()
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onCopy = {
-                        copyPrintableText(event.conversationViewItem.content)
-                    }
+                    copyPrintableText(event.conversationViewItem.content)
+                }
 
             ).show()
             is ConversationEvent.ShowGroupMessageActionDialog -> MessageActionDialog.create(
@@ -242,6 +251,36 @@ class ConversationFragment :
                 }
             ).show()
         }
+    }
+
+    private fun changeEditMode(selfMessage: ConversationViewItem.Self.Text?) {
+        with(binding) {
+            val isEditMode = selfMessage != null
+            clEditMessage.isInvisible = !isEditMode
+            attachButton.isVisible = !isEditMode
+            horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
+            val constraintsSet = ConstraintSet().apply {
+                clone(root)
+                connect(R.id.messages_list,ConstraintSet.BOTTOM,if(isEditMode) R.id.cl_edit_message else R.id.input_message,ConstraintSet.TOP)
+            }
+            root.setConstraintSet(constraintsSet)
+            if (!isEditMode) return
+            inputMessage.setOnSizeChanged(onHeightChanged = {
+                clEditMessage.setPadding(0, 0, 0, it+10.dp)
+            })
+            val textToEdit = getPrintableText(selfMessage!!.content)
+            tvTextToEdit.text = textToEdit
+            inputMessage.setText(textToEdit)
+        }
+    }
+
+    private fun horizontalPaddingInput(@DimenRes dimenRes: Int) {
+        val padding = resources.getDimension(dimenRes).toInt()
+        binding.inputMessage.setPadding(
+            padding,
+            binding.inputMessage.paddingBottom,
+            padding,
+            binding.inputMessage.paddingTop)
     }
 
     private fun copyPrintableText(printableText: PrintableText) {
