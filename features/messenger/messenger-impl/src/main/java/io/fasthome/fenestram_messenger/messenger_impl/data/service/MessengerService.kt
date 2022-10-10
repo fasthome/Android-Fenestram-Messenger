@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service
 
-import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
@@ -28,6 +27,7 @@ class MessengerService(
             path = "api/v1/chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
+        
         return SendMessageMapper.responseToSendMessageResult(response, localId)
     }
 
