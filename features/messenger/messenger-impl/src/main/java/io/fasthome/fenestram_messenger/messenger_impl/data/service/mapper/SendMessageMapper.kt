@@ -10,7 +10,7 @@ object SendMessageMapper {
         localId: String
     ): SendMessageResult {
         response.message?.let {
-            return SendMessageResult(localId)
+            return SendMessageResult(localId, response.message.id)
         }
         throw Exception()
     }

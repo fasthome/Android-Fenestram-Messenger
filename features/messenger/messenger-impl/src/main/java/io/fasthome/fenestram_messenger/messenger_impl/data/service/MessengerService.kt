@@ -27,7 +27,7 @@ class MessengerService(
             path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
-
+        
         return SendMessageMapper.responseToSendMessageResult(response, localId)
     }
 

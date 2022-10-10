@@ -1,5 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -57,6 +60,12 @@ class ConversationFragment :
         vm.onImageClicked(it)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
+    }, onReceiveMessageLongClicked = {
+        vm.onReceiveMessageLongClicked(it)
+    }, onGroupMessageLongClicked = {
+        vm.onGroupMessageLongClicked(it)
+    }, onSelfImageLongClicked = {
+        vm.onSelfImageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -206,10 +215,41 @@ class ConversationFragment :
             is ConversationEvent.ShowSelfMessageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onDelete = {
-                    vm.onDeleteMessageClicked(event.conversationViewItem, )
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
+                },
+                onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
+                    }
+            ).show()
+            is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
+                    }
+
+            ).show()
+            is ConversationEvent.ShowGroupMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onCopy = {
+                    copyPrintableText(event.conversationViewItem.content)
+                }
+
+            ).show()
+            is ConversationEvent.ShowSelfImageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
                 }
             ).show()
         }
+    }
+
+    private fun copyPrintableText(printableText: PrintableText) {
+        (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+            ClipData.newPlainText("copy",
+                getPrintableText(printableText)
+            )
+        )
     }
 
     override fun onDestroy() {
