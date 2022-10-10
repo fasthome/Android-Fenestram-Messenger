@@ -21,7 +21,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.network.di.singleAuthorizedService
 import org.koin.dsl.module
