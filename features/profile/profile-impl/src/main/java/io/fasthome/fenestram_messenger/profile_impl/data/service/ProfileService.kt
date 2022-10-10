@@ -1,10 +1,10 @@
 package io.fasthome.fenestram_messenger.profile_impl.data.service
 
-import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileImageResponse
-import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileRequest
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_api.entity.ProfileImageResult
 import io.fasthome.fenestram_messenger.profile_impl.data.service.mapper.ProfileMapper
+import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileImageResponse
+import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileRequest
 import io.fasthome.fenestram_messenger.profile_impl.data.service.model.ProfileResponse
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
@@ -23,7 +23,7 @@ class ProfileService(
 
         return client
             .runPatch<ProfileRequest, BaseResponse<ProfileResponse>>(
-                path = "api/v1/profile",
+                path = "profile",
                 body = body
             )
             .requireData()
@@ -33,7 +33,7 @@ class ProfileService(
     suspend fun uploadProfileImage(photoBytes: ByteArray, guid: String): ProfileImageResult {
         val response = client
             .runSubmitFormWithFile<BaseResponse<ProfileImageResponse>>(
-                path = "api/v1/files/upload",
+                path = "files/upload",
                 binaryData = photoBytes,
                 filename = "$guid.jpg",
             )
@@ -43,7 +43,7 @@ class ProfileService(
 
     suspend fun getProfile(): PersonalData =
         client
-            .runGet<BaseResponse<ProfileResponse>>(path = "api/v1/profile")
+            .runGet<BaseResponse<ProfileResponse>>(path = "profile")
             .requireData()
             .let(profileMapper::responseToPersonalData)
 }

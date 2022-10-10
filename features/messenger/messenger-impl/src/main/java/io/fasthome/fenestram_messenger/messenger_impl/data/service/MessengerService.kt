@@ -24,7 +24,7 @@ class MessengerService(
         authorId: Long
     ): SendMessageResult {
         val response: SendMessageResponse = client.runPost(
-            path = "api/v1/chats/message/$id",
+            path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
 
@@ -33,7 +33,7 @@ class MessengerService(
 
     suspend fun getChats(query: String, limit: Int, page: Int): ListWithTotal<Chat> {
         val response: GetChatsResponse = client.runGet(
-            path = "api/v1/chats",
+            path = "chats",
             params = mapOf("like" to query, "limit" to limit, "page" to page)
         )
 
@@ -46,7 +46,7 @@ class MessengerService(
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean): PostChatsResult {
         return client
             .runPost<PostChatsRequest, BaseResponse<PostChatsResponse>>(
-                path = "api/v1/chats",
+                path = "chats",
                 body = PostChatsRequest(name, users, isGroup)
             )
             .requireData()
@@ -57,14 +57,14 @@ class MessengerService(
 
     suspend fun patchChatAvatar(id: Long, avatar: String) {
         client.runPatch<PatchChatAvatarRequest, BaseResponse<PatchChatAvatarRequest>>(
-            path = "api/v1/chats/$id/avatar",
+            path = "chats/$id/avatar",
             body = PatchChatAvatarRequest(avatar)
         )
     }
 
     suspend fun getChatById(id: Long): GetChatByIdResult {
         val response: BaseResponse<GetChatByIdResponse> = client.runGet(
-            path = "api/v1/chats/$id"
+            path = "chats/$id"
         )
 
         return getChatByIdMapper.responseToGetChatById(response)
@@ -73,7 +73,7 @@ class MessengerService(
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): UploadImageResult {
         val response = client
             .runSubmitFormWithFile<BaseResponse<UploadImageResponse>>(
-                path = "api/v1/files/upload",
+                path = "files/upload",
                 binaryData = photoBytes,
                 filename = "$guid.jpg",
             )
@@ -83,7 +83,7 @@ class MessengerService(
 
     suspend fun getMessagesByChat(id: Long, limit: Int, page: Int): MessagesPage {
         val response: GetMessagesResponse = client.runGet(
-            path = "api/v1/chats/$id/messages",
+            path = "chats/$id/messages",
             params = mapOf("limit" to limit, "page" to page)
         )
         if (response.data == null) throw Exception()
@@ -102,7 +102,7 @@ class MessengerService(
     suspend fun deleteChat(id: Long) {
         val response: BaseResponse<DeleteChatResponse> =
             client.runDelete<DeleteChatRequest?, BaseResponse<DeleteChatResponse>>(
-                path = "api/v1/chats/$id",
+                path = "chats/$id",
                 body = null
             )
     }
@@ -110,7 +110,7 @@ class MessengerService(
     suspend fun deleteMessage(messageId: Long, chatId: Long) {
         val response: BaseResponse<DeleteMessageResponse> =
             client.runDelete<DeleteMessageRequest?, BaseResponse<DeleteMessageResponse>>(
-                path = "api/v1/chats/message/$chatId/$messageId",
+                path = "chats/message/$chatId/$messageId",
                 body = DeleteMessageRequest(true)
             )
     }

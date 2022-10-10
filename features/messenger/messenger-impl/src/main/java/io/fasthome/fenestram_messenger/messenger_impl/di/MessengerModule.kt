@@ -18,8 +18,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatViewModel
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerViewModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.network.di.singleAuthorizedService
 import org.koin.dsl.module
@@ -43,7 +43,7 @@ object MessengerModule {
         factory(::GetChatByIdMapper)
         factory(::ChatsMapper)
 
-        factory { MessengerSocket(get<Environment>().endpoints.apiBaseUrl) }
+        factory { MessengerSocket(get<Environment>().endpoints.baseUrl) }
         singleAuthorizedService(::MessengerService)
     }
 

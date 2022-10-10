@@ -14,7 +14,7 @@ class SettingsService (clientFactory: NetworkClientFactory) {
     suspend fun deleteAccount(userId : Long) =
         client
             .runDelete<BaseResponse<Unit>>(
-                path = "api/v1/users/$userId"
+                path = "users/$userId"
             )
             .requireData()
 

@@ -17,7 +17,7 @@ import io.fasthome.network.tokens.TokensRepo
 class AuthService(
     clientFactory: NetworkClientFactory,
     private val tokensRepo: TokensRepo,
-    private val loginMapper: LoginMapper
+    private val loginMapper: LoginMapper,
 ) {
     private val client = clientFactory.create()
 
@@ -25,7 +25,7 @@ class AuthService(
 
     suspend fun sendCode(phoneNumber: String): CodeResult {
         val response: BaseResponse<String> = client.runPost(
-            path = "api/v1/authorization/send_code",
+            path = "authorization/send_code",
             body = CodeRequest(phoneNumber)
         )
 
@@ -34,7 +34,7 @@ class AuthService(
 
     suspend fun login(phoneNumber: String, code: String): LoginResult {
         val response: BaseResponse<LoginResponse> = client.runPost(
-            path = "api/v1/authorization/login",
+            path = "authorization/login",
             body = LoginRequest(phoneNumber, code)
         )
 
