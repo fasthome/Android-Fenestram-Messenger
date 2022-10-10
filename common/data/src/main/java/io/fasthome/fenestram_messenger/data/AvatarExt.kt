@@ -11,7 +11,7 @@ class ProfileImageUrlConverter(private val environment: Environment) {
         if (path.isNullOrEmpty() || path == "null") {
             ""
         } else {
-            environment.endpoints.apiBaseUrl.dropLast(1) + path
+            environment.endpoints.baseUrl.dropLast(1) + path
         }
 
 

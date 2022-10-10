@@ -13,14 +13,14 @@ class ProfileGuestService(clientFactory: NetworkClientFactory) {
 
     suspend fun patchChatAvatar(id: Long, avatar: String) {
         client.runPatch<PatchChatAvatarRequest, Unit>(
-            path = "api/v1/chats/$id/avatar",
+            path = "chats/$id/avatar",
             body = PatchChatAvatarRequest(avatar)
         )
     }
 
     suspend fun patchChatName(id: Long, name: String) {
         client.runPatch<PatchChatNameRequest, Unit>(
-            path = "api/v1/chats/$id/name",
+            path = "chats/$id/name",
             body = PatchChatNameRequest(name)
         )
     }
@@ -28,7 +28,7 @@ class ProfileGuestService(clientFactory: NetworkClientFactory) {
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): UploadImageResult {
         val response = client
             .runSubmitFormWithFile<BaseResponse<UploadImageResponse>>(
-                path = "api/v1/files/upload",
+                path = "files/upload",
                 binaryData = photoBytes,
                 filename = "$guid.jpg",
             )

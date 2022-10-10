@@ -34,8 +34,7 @@
                     android:id="@+id/profile_guest_avatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/common_avatar"
+                    android:background="@drawable/common_avatar"
                     app:brightness="0.5" />
 
                 <ImageView

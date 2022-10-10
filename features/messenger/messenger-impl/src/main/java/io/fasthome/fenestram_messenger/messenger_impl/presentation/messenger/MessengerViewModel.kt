@@ -8,7 +8,7 @@ import androidx.paging.cachedIn
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.toMessengerViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -27,6 +27,7 @@ class MessengerViewModel(
     private val messengerInteractor: MessengerInteractor,
     profileGuestFeature: ProfileGuestFeature,
     private val loadDataHelper: PagingDataViewModelHelper,
+    private val messengerMapper: MessengerMapper
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
     private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
@@ -69,9 +70,7 @@ class MessengerViewModel(
             messengerInteractor.getMessengerPageItems(_query)
         },
         getCachedSelectedId = { null },
-        mapDataItem = {
-            toMessengerViewItem(it)
-        },
+        mapDataItem = messengerMapper::toMessengerViewItem,
         getItemId = { it.id },
         getItem = { null }
     ).cachedIn(viewModelScope)

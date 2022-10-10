@@ -1,7 +1,5 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.personality
 
-import android.util.Log
-import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import io.fasthome.component.personality_data.FillState
@@ -96,7 +94,7 @@ class PersonalityViewModel(
         val detail = params.userDetail
 
         avatarUrl = if (!detail.profileImageUrl.isNullOrEmpty())
-            environment.endpoints.apiBaseUrl.dropLast(1) + detail.profileImageUrl
+            environment.endpoints.baseUrl.dropLast(1) + detail.profileImageUrl
         else
             null
 
@@ -138,7 +136,7 @@ class PersonalityViewModel(
                 avatarFile != null -> {
                     profileFeature.uploadProfileImage(avatarFile.readBytes())
                         .getOrNull()?.profileImagePath.let {
-                            avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + it
+                            avatarUrl = environment.endpoints.baseUrl.dropLast(1) + it
                             it
                         }
                 }
