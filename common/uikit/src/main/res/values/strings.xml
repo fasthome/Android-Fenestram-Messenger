@@ -23,5 +23,6 @@
     <string name="common_retry">Повторить</string>
     <string name="common_unable_to_download">Невозможно загрузить данный файл</string>
     <string name="common_accept">Подтвердить</string>
+    <string name="common_save">Сохранить</string>
 
 </resources>

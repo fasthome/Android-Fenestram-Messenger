@@ -2,9 +2,13 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
-import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.camera_api.CameraFeature
+import io.fasthome.fenestram_messenger.camera_api.CameraParams
+import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
+import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -12,6 +16,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
@@ -20,15 +25,18 @@ import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
+import io.fasthome.fenestram_messenger.util.model.Bytes
+import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.io.FileOutputStream
+import java.io.File
 import java.util.*
 
 class ConversationViewModel(
@@ -38,11 +46,29 @@ class ConversationViewModel(
     private val features: Features,
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUtil: ProfileImageUtil,
     private val profileImageUrlConverter: ProfileImageUrlConverter,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
+
+    private val cameraLauncher = registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
+        val tempFile = result.tempFile
+
+        photoPreviewLauncher.launch(
+            ConfirmParams(
+                content = Content.FileContent(tempFile),
+            )
+        )
+    }
+
+    private val photoPreviewLauncher = registerScreen(features.cameraFeature.confirmNavigationContract) { result ->
+        when (val action = result.action) {
+            is ConfirmResult.Action.Confirm -> saveFile(action.tempFile)
+            ConfirmResult.Action.Retake -> openCameraFragment()
+            ConfirmResult.Action.Cancel -> Unit
+        }
+    }
+
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
     private var selfUserId: Long? = null
@@ -55,19 +81,7 @@ class ConversationViewModel(
                 when (it) {
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
                     is PickFileInterface.ResultEvent.Picked -> {
-                        val bitmap = profileImageUtil.getPhoto(it.tempFile)
-                        if (bitmap != null) {
-                            updateState { state ->
-                                state.copy(
-                                    attachedFiles = state.attachedFiles.plus(
-                                        AttachedFile.Image(
-                                            bitmap = bitmap,
-                                            file = it.tempFile
-                                        )
-                                    )
-                                )
-                            }
-                        }
+                        attachContentFile(Content.FileContent(it.tempFile))
                     }
                 }
             }
@@ -138,6 +152,7 @@ class ConversationViewModel(
     class Features(
         val profileGuestFeature: ProfileGuestFeature,
         val authFeature: AuthFeature,
+        val cameraFeature: CameraFeature,
     )
 
     private val profileGuestLauncher =
@@ -165,6 +180,18 @@ class ConversationViewModel(
         )
     }
 
+    private fun attachContentFile(content: Content) {
+        updateState { state ->
+            state.copy(
+                attachedFiles = state.attachedFiles.plus(
+                    AttachedFile.Image(
+                        content = content
+                    )
+                )
+            )
+        }
+    }
+
     fun addMessageToConversation(mess: String) {
         val attachedFiles = currentViewState.attachedFiles
 
@@ -181,7 +208,7 @@ class ConversationViewModel(
         val messages = currentViewState.messages
 
         val tempMessages = attachedFiles.map {
-            createImageMessage(null, it.bitmap, it.file)
+            createImageMessage(null, it.content)
         }
 
         updateState { state ->
@@ -200,12 +227,14 @@ class ConversationViewModel(
             tempMessages.forEach { tempMessage ->
                 var imageUrl: String?
 
-                FileOutputStream(tempMessage.file).use { output ->
-                    tempMessage.bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, output)
+                val byteArray = when (val content = tempMessage.loadableContent) {
+                    is Content.FileContent -> content.file.readBytes()
+                    is Content.LoadableContent -> content.load()?.array
+                    null -> return@launch
                 }
 
                 messengerInteractor.uploadProfileImage(
-                    tempMessage.file?.readBytes() ?: return@launch
+                    byteArray ?: return@launch
                 )
                     .getOrNull()?.imagePath.let {
                         imageUrl = it
@@ -379,6 +408,9 @@ class ConversationViewModel(
         )
     }
 
+    private val fileCapturedItem: CapturedItem
+        get() = CapturedItem(UUID.randomUUID().toString())
+
     fun onAttachClicked() {
         if (currentViewState.attachedFiles.size == 10) {
             showMessage(Message.PopUp(PrintableText.StringResource(R.string.messenger_max_attach)))
@@ -387,8 +419,33 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.ShowSelectFromDialog)
     }
 
+    private fun openCameraFragment() {
+        cameraLauncher.launch(
+            CameraParams(
+                cameraComponentParams = CameraComponentParams(
+                    maxPhotoSize = Bytes(BYTES_PER_MB),
+                    fixedOrientation = null,
+                    copyToExternalDir = true
+                ),
+            )
+        )
+    }
+
+    private fun saveFile(tempFile: File) {
+        viewModelScope.launch {
+
+            val content = fileCapturedItem.id.let {
+                messengerInteractor.saveFile(it, tempFile)
+
+                PhotoLoadableContent(it)
+            }
+
+            attachContentFile(content)
+        }
+    }
+
     fun selectFromCamera() {
-        pickFileInterface.launchCamera()
+        openCameraFragment()
     }
 
     fun selectFromGallery() {
@@ -450,8 +507,7 @@ class ConversationViewModel(
                 sendImages(
                     listOf(
                         AttachedFile.Image(
-                            selfViewItem.bitmap ?: return,
-                            selfViewItem.file ?: return
+                            selfViewItem.loadableContent ?: return
                         )
                     )
                 )

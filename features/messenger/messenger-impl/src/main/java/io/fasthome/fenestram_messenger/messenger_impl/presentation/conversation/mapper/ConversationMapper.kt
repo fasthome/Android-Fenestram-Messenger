@@ -1,13 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
-import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
-import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -203,15 +202,14 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     localId = UUID.randomUUID().toString()
 )
 
-fun createImageMessage(image: String?, bitmap: Bitmap, file: File) = ConversationViewItem.Self.Image(
+fun createImageMessage(image: String?, loadableContent : Content) = ConversationViewItem.Self.Image(
     content = image ?: "",
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
     date = ZonedDateTime.now(),
     id = 0,
     localId = UUID.randomUUID().toString(),
-    bitmap = bitmap,
-    file = file
+    loadableContent = loadableContent
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

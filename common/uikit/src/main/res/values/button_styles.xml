@@ -11,6 +11,12 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="Button.Grey">
+        <item name="android:background">@drawable/rounded_gray_button</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
     <style name="Button.Dialog">
         <item name="android:background">@drawable/background_dialog_button</item>
     </style>
