@@ -9,6 +9,7 @@ import android.view.Surface
 import androidx.annotation.CallSuper
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.fasthome.component.R
@@ -123,6 +124,8 @@ class CameraComponentFragment :
                     continuation.resume(Unit)
                     return@addListener
                 }
+
+                binding.previewView.scaleType = PreviewView.ScaleType.FIT_CENTER
 
                 val preview = Preview.Builder()
                     .build()

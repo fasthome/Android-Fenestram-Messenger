@@ -76,14 +76,7 @@ fun createConversationSelfImageAdapterDelegate(
         binding.root.setOnLongClickListener(imageLongClick)
         binding.messageContent.setOnLongClickListener(imageLongClick)
         bindWithBinding {
-            when {
-//                item.bitmap != null -> {
-//                    messageContent.loadRounded(item.bitmap)
-//                }
-                else -> {
-                    messageContent.loadRounded(item.content)
-                }
-            }
+            messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
         }
