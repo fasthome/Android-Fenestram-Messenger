@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participan
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
+import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
@@ -21,7 +22,8 @@ class GroupParticipantsViewModel(
     private val params: ParticipantsParams,
     private val groupGuestInteractor: GroupGuestInteractor,
     private val contactsFeature: ContactsFeature,
-    private val messengerFeature: MessengerFeature
+    private val messengerFeature: MessengerFeature,
+    private val profileImageUrlConverter: ProfileImageUrlConverter
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
@@ -130,7 +132,7 @@ class GroupParticipantsViewModel(
             MessengerFeature.Params(
                 userIds = listOf(personDetail.userId),
                 chatName = personDetail.userName,
-                avatar = personDetail.avatar,
+                avatar = profileImageUrlConverter.extractPath(personDetail.avatar),
                 isGroup = false
             )
         )

@@ -25,8 +25,8 @@ class MessengerInteractor(
     private val messageRepo: MessengerRepo,
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
-    private val userStorage: UserStorage,
-    private val filesRepo: FilesRepo
+    private val filesRepo: FilesRepo,
+    private val userStorage: UserStorage
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -85,7 +85,8 @@ class MessengerInteractor(
 
     suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
 
-    suspend fun deleteMessage(messageId: Long, chatId: Long) = messageRepo.deleteMessage(messageId, chatId)
+    suspend fun deleteMessage(messageId: Long, chatId: Long) =
+        messageRepo.deleteMessage(messageId, chatId)
 
 
     fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =

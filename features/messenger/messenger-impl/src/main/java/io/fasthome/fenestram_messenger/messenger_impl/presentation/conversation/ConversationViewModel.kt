@@ -2,8 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
-import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.camera_api.CameraFeature
@@ -53,23 +53,25 @@ class ConversationViewModel(
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
 
-    private val cameraLauncher = registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
-        val tempFile = result.tempFile
+    private val cameraLauncher =
+        registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
+            val tempFile = result.tempFile
 
-        photoPreviewLauncher.launch(
-            ConfirmParams(
-                content = Content.FileContent(tempFile),
+            photoPreviewLauncher.launch(
+                ConfirmParams(
+                    content = Content.FileContent(tempFile),
+                )
             )
-        )
-    }
-
-    private val photoPreviewLauncher = registerScreen(features.cameraFeature.confirmNavigationContract) { result ->
-        when (val action = result.action) {
-            is ConfirmResult.Action.Confirm -> saveFile(action.tempFile)
-            ConfirmResult.Action.Retake -> openCameraFragment()
-            ConfirmResult.Action.Cancel -> Unit
         }
-    }
+
+    private val photoPreviewLauncher =
+        registerScreen(features.cameraFeature.confirmNavigationContract) { result ->
+            when (val action = result.action) {
+                is ConfirmResult.Action.Confirm -> saveFile(action.tempFile)
+                ConfirmResult.Action.Retake -> openCameraFragment()
+                ConfirmResult.Action.Cancel -> Unit
+            }
+        }
 
     private var chatId = params.chat.id
     private var chatUsers = listOf<User>()
@@ -420,7 +422,7 @@ class ConversationViewModel(
                     messages = listOf(),
                     time = null,
                     name = personDetail.userName,
-                    avatar = personDetail.avatar,
+                    avatar = profileImageUrlConverter.extractPath(personDetail.avatar),
                     isGroup = false
                 )
             )
