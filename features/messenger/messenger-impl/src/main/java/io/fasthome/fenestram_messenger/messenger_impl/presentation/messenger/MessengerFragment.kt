@@ -35,7 +35,8 @@ class MessengerFragment :
 
     private val viewBinderHelper = ViewBinderHelper()
 
-    private var messageAdapter = MessengerAdapter(environment = environment,
+    private var messageAdapter = MessengerAdapter(
+        environment = environment,
         onChatClicked = {
             vm.launchConversation(it)
         },
@@ -87,10 +88,6 @@ class MessengerFragment :
         viewBinderHelper.closeAll()
     }
 
-    fun onClickRec() {
-        Log.d("here", "here")
-    }
-
     override fun renderState(state: MessengerState) = nothingToRender()
 
     override fun handleEvent(event: MessengerEvent) {
@@ -102,6 +99,10 @@ class MessengerFragment :
                 event.id
             )
                 .show()
+            is MessengerEvent.CreateChatEvent -> CreateChatDialog.create(
+                this,
+                vm::createChatClicked
+            ).show()
         }
     }
 

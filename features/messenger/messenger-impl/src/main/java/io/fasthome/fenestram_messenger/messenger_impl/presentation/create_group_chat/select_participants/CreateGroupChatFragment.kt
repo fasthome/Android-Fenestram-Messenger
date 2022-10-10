@@ -6,9 +6,11 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateGroupChatBinding
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.AddedContactsAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.ContactsAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -20,7 +22,7 @@ import io.fasthome.fenestram_messenger.util.onClick
 class CreateGroupChatFragment :
     BaseFragment<CreateGroupChatState, CreateGroupChatEvent>(R.layout.fragment_create_group_chat) {
 
-    override val vm: CreateGroupChatViewModel by viewModel()
+    override val vm: CreateGroupChatViewModel by viewModel(getParamsInterface = ConversationNavigationContract.getParams)
 
     private val binding by fragmentViewBinding(FragmentCreateGroupChatBinding::bind)
 
@@ -44,31 +46,47 @@ class CreateGroupChatFragment :
         next.onClick {
             vm.onNextClicked()
         }
+
+        contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    vm.filterContacts(it)
+                }
+                return true
+            }
+        })
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun renderState(state: CreateGroupChatState) {
-        contactsAdapter.items = state.contacts.map { item->
+        contactsAdapter.items = state.contacts.map { item ->
             item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
             item
         }
-        if(state.addedContacts.isEmpty()) binding.next.hide() else binding.next.show()
+        if (state.addedContacts.isEmpty()) binding.next.hide() else binding.next.show()
 
         contactsAdapter.notifyDataSetChanged()
 
-        binding.hint.isVisible = state.addedContacts.isEmpty()
-        addedContactsAdapter.items = state.addedContacts
+        binding.listAddedInChat.isVisible = (state.addedContacts.isNotEmpty() && state.isGroupChat)
 
-        /***
-         * Необходимо дать время binding.listAddedInChat обновить список, решается выставлением задержки для скролла
-         *
-         * state.addedContacts.isNotEmpty() не скролить, если список пустой
-         * state.needScroll не скролить, если последний элемент был удален
-         */
-        if (state.addedContacts.isNotEmpty() && state.needScroll) {
-            binding.listAddedInChat.postDelayed({
-                binding.listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
-            }, 100)
+        if (state.isGroupChat) {
+            addedContactsAdapter.items = state.addedContacts
+
+            /***
+             * Необходимо дать время binding.listAddedInChat обновить список, решается выставлением задержки для скролла
+             *
+             * state.addedContacts.isNotEmpty() не скролить, если список пустой
+             * state.needScroll не скролить, если последний элемент был удален
+             */
+            if (state.addedContacts.isNotEmpty() && state.needScroll) {
+                binding.listAddedInChat.postDelayed({
+                    binding.listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
+                }, 100)
+            }
         }
     }
 
