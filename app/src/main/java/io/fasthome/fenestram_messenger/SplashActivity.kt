@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import io.fasthome.fenestram_messenger.push_impl.data.FirebasePushService.Companion.KEY_FROM_NOTIFICATION
 import kotlinx.coroutines.delay
 
 class SplashActivity : AppCompatActivity(R.layout.activity_splash) {
@@ -19,18 +20,20 @@ class SplashActivity : AppCompatActivity(R.layout.activity_splash) {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launchWhenStarted {
-            delay(SPLASH_DELAY)
             openMain()
         }
     }
 
-    private fun openMain() {
+    private suspend fun openMain() {
         val mainIntent = Intent(this, MainActivity::class.java)
 
         if (!intent.wasLaunchedFromRecent) {
             intent.action?.let(mainIntent::setAction)
             intent.data?.let(mainIntent::setData)
             intent.extras?.let(mainIntent::putExtras)
+        }
+        if(!intent.getBooleanExtra(KEY_FROM_NOTIFICATION, false)){
+            delay(SPLASH_DELAY)
         }
 
         startActivity(mainIntent)
