@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
+import android.view.View
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
@@ -11,7 +12,11 @@ import io.fasthome.fenestram_messenger.core.R
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked : (String) -> Unit
+    onImageClicked : (String) -> Unit,
+    onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
+    onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
+    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
+    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -19,22 +24,29 @@ class ConversationAdapter(
             ConversationViewItem::sentStatus
         ),
         AdapterUtil.adapterDelegatesManager(
-            createConversationSelfTextAdapterDelegate(onSelfMessageClicked),
-            createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked),
-            createConversationReceiveTextAdapterDelegate(),
+            createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
+            createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked, onSelfImageLongClicked),
+            createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
-            createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked),
+            createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked, onGroupMessageLongClicked),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
             createConversationSystemAdapterDelegate()
         )
     )
 
-fun createConversationSelfTextAdapterDelegate(onSelfMessageClicked: (ConversationViewItem.Self) -> Unit) =
+fun createConversationSelfTextAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit
+) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Text, ConversationItemSelfTextBinding>(
         ConversationItemSelfTextBinding::inflate
     ) {
         binding.root.onClick {
             onSelfMessageClicked(item)
+        }
+        binding.root.setOnLongClickListener {
+            onSelfMessageLongClicked(item)
+            true
         }
         bindWithBinding {
             messageContent.setPrintableText(item.content)
@@ -45,7 +57,8 @@ fun createConversationSelfTextAdapterDelegate(onSelfMessageClicked: (Conversatio
 
 fun createConversationSelfImageAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (String) -> Unit,
+    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemImageBinding>(
         ConversationItemImageBinding::inflate
@@ -56,6 +69,12 @@ fun createConversationSelfImageAdapterDelegate(
         binding.root.onClick {
             onSelfMessageClicked(item)
         }
+        val imageLongClick = View.OnLongClickListener {
+            onSelfImageLongClicked(item)
+            true
+        }
+        binding.root.setOnLongClickListener(imageLongClick)
+        binding.messageContent.setOnLongClickListener(imageLongClick)
         bindWithBinding {
             when {
                 item.bitmap != null -> {
@@ -70,11 +89,16 @@ fun createConversationSelfImageAdapterDelegate(
         }
     }
 
-fun createConversationReceiveTextAdapterDelegate() =
+fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
-        ConversationItemReceiveTextBinding::inflate
+        ConversationItemReceiveTextBinding::inflate,
+
     ) {
         bindWithBinding {
+            root.setOnLongClickListener {
+                onReceiveMessageLongClicked(item)
+                true
+            }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
         }
@@ -93,12 +117,18 @@ fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Un
         }
     }
 
-fun createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit) =
+fun createConversationGroupTextAdapterDelegate(
+    onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
+    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
     ) {
         binding.avatar.onClick {
             onGroupProfileItemClicked(item)
+        }
+        binding.root.setOnLongClickListener {
+            onGroupMessageLongClicked(item)
+            true
         }
         bindWithBinding {
             username.setPrintableText(item.userName)

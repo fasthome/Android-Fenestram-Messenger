@@ -16,7 +16,7 @@ class GroupGuestService(
 
     suspend fun addUsersToChat(idChat: Long?, usersId: List<Long>?): List<ParticipantsViewItem> {
         val response: BaseResponse<AddUsersToChatResponse> = client.runPatch(
-            path = "api/v1/chats/$idChat/add-user",
+            path = "chats/$idChat/add-user",
             body = usersId
         )
 
@@ -25,7 +25,7 @@ class GroupGuestService(
 
     suspend fun deleteUserFromChat(idChat: Long, idUser: Long): List<ParticipantsViewItem> {
         val response: BaseResponse<AddUsersToChatResponse> = client.runPatch(
-            path = "api/v1/chats/$idChat/remove-user",
+            path = "chats/$idChat/remove-user",
             body = listOf(idUser)
         )
 

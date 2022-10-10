@@ -1,5 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -9,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
@@ -17,6 +20,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConver
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -54,6 +58,14 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
+    }, onSelfMessageLongClicked = {
+        vm.onSelfMessageLongClicked(it)
+    }, onReceiveMessageLongClicked = {
+        vm.onReceiveMessageLongClicked(it)
+    }, onGroupMessageLongClicked = {
+        vm.onGroupMessageLongClicked(it)
+    }, onSelfImageLongClicked = {
+        vm.onSelfImageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -79,7 +91,7 @@ class ConversationFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
-                    vm.loadItems()
+                    vm.loadItems(isResumed)
                 }
             }
         })
@@ -116,7 +128,7 @@ class ConversationFragment :
 
     override fun onResume() {
         super.onResume()
-        vm.fetchMessages()
+        vm.fetchMessages(isResumed = true)
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
@@ -167,7 +179,7 @@ class ConversationFragment :
                         )
                     )
             }
-            is ConversationEvent.ShowDeleteChatDialog -> DeleteChatDialog.create(
+            is ConversationEvent.ShowDeleteChatDialog -> AcceptDialog.create(
                 fragment = this,
                 titleText = PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 accept = vm::deleteChat,
@@ -200,11 +212,48 @@ class ConversationFragment :
                     }
                 ).show()
             }
+            is ConversationEvent.ShowSelfMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
+                },
+                onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
+                    }
+            ).show()
+            is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
+                    }
+
+            ).show()
+            is ConversationEvent.ShowGroupMessageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onCopy = {
+                    copyPrintableText(event.conversationViewItem.content)
+                }
+
+            ).show()
+            is ConversationEvent.ShowSelfImageActionDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
+                }
+            ).show()
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    private fun copyPrintableText(printableText: PrintableText) {
+        (requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
+            ClipData.newPlainText("copy",
+                getPrintableText(printableText)
+            )
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         vm.closeSocket()
     }
 }

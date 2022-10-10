@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
@@ -20,9 +21,10 @@ class MessengerRepoImpl(
         id: Long,
         text: String,
         type: String,
-        localId: String
+        localId: String,
+        authorId: Long
     ): CallResult<SendMessageResult> = callForResult {
-        messengerService.sendMessage(id, text, type, localId)
+        messengerService.sendMessage(id, text, type, localId, authorId)
     }
 
     override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(
@@ -61,6 +63,10 @@ class MessengerRepoImpl(
 
     override suspend fun deleteChat(id: Long) = callForResult {
         messengerService.deleteChat(id)
+    }
+
+    override suspend fun deleteMessage(messageId: Long, chatId: Long) = callForResult {
+        messengerService.deleteMessage(messageId, chatId)
     }
 
     override fun getClientSocket(

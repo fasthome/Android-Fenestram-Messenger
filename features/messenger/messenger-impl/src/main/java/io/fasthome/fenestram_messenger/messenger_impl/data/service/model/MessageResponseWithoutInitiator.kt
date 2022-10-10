@@ -18,5 +18,8 @@ class MessageResponseWithoutInitiator(
     val type: String,
 
     @SerialName("created_at")
-    val date: String
+    val date: String,
+
+    @SerialName("is_edited")
+    val isEdited: Boolean,
 )

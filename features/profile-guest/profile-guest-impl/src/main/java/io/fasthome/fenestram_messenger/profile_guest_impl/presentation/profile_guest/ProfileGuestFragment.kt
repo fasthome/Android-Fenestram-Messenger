@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
-import io.fasthome.fenestram_messenger.core.ui.dialog.DeleteChatDialog
+import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -221,7 +221,7 @@ class ProfileGuestFragment :
 
     override fun handleEvent(event: ProfileGuestEvent) {
         when (event) {
-            is ProfileGuestEvent.DeleteChatEvent -> DeleteChatDialog.create(
+            is ProfileGuestEvent.DeleteChatEvent -> AcceptDialog.create(
                 this,
                 PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 vm::deleteChat,

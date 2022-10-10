@@ -1,6 +1,8 @@
 package io.fasthome.fenestram_messenger.di
 
 import io.fasthome.component.di.ComponentModule
+import io.fasthome.fenestram_messenger.app.di.BuildTypeModule
+import io.fasthome.fenestram_messenger.app.di.EnvironmentModule
 import io.fasthome.fenestram_messenger.auth_impl.di.AuthModule
 import io.fasthome.fenestram_messenger.contacts_impl.di.ContactsModule
 import io.fasthome.fenestram_messenger.data.di.DataModule
@@ -23,6 +25,7 @@ object AppModule {
         createFeatureModules(),
         PresentationModule(),
         listOf(EnvironmentModule()),
+        BuildTypeModule(),
         NetworkModule(),
         DataModule(),
         listOf(ComponentModule())

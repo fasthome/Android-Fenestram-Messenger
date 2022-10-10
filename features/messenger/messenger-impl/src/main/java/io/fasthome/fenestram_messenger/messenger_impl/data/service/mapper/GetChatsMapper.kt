@@ -15,7 +15,7 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
     fun responseToGetChatsResult(response: GetChatsResponse): List<Chat> {
         response.data?.let { list ->
             return list.map { chat ->
-                val lastMessage = chat.message?.lastOrNull()
+                val lastMessage = chat.message
                 Chat(
                     id = chat.id,
                     users = chat.users,
@@ -33,7 +33,7 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                     }
                     ),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
-                    avatar = profileImageUrlConverter.convert(chat.avatar),
+                    avatar = chat.avatar,
                     isGroup = chat.isGroup
                 )
             }

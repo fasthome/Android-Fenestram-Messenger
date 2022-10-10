@@ -29,4 +29,8 @@
     <string name="messenger_create_private_chat">Создать личный чат</string>
     <string name="messenger_create_chat_cancel">Отмена</string>
     <string name="messenger_search_contacts">Поиск контакта</string>
+
+    <string name="conversation_copy_message">Скопировать текст</string>
+    <string name="conversation_delete_message">Удалить сообщение</string>
+    <string name="conversation_edit_message">Редактировать сообщение</string>
 </resources>

@@ -16,7 +16,7 @@ class PushService(clientFactory: NetworkClientFactory) {
     suspend fun sendTestPush() =
         client
             .runPost<TestPushRequest, BaseResponse<Unit>>(
-                path = "api/v1/chats/test_push",
+                path = "chats/test_push",
                 body = TestPushRequest("test", "text")
             )
             .requireData()
@@ -24,7 +24,7 @@ class PushService(clientFactory: NetworkClientFactory) {
     suspend fun sendPushToken(deviceToken: String): List<String> =
         client
             .runPost<SendTokenRequest, BaseResponse<List<String>>>(
-                path = "api/v1/authorization/firebase_token",
+                path = "authorization/firebase_token",
                 body = SendTokenRequest(deviceToken)
             )
             .requireData()
