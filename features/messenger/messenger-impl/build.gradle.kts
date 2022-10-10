@@ -13,6 +13,7 @@ dependencies {
     implementation(project(Modules.Feature.auth.api))
     implementation(project(Modules.Feature.contacts.api))
     implementation(project(Modules.Feature.profile.api))
+    implementation(project(Modules.Feature.camera.api))
 
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.data))

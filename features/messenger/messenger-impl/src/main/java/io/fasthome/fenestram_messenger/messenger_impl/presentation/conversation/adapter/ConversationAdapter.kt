@@ -2,12 +2,12 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.view.View
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
+import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.core.R
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
@@ -77,9 +77,9 @@ fun createConversationSelfImageAdapterDelegate(
         binding.messageContent.setOnLongClickListener(imageLongClick)
         bindWithBinding {
             when {
-                item.bitmap != null -> {
-                    messageContent.loadRounded(item.bitmap)
-                }
+//                item.bitmap != null -> {
+//                    messageContent.loadRounded(item.bitmap)
+//                }
                 else -> {
                     messageContent.loadRounded(item.content)
                 }

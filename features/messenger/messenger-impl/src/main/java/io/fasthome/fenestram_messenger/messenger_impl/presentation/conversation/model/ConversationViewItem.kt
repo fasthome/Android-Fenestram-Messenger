@@ -1,9 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
-import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
-import java.io.File
 import java.time.ZonedDateTime
 
 typealias OnStatusChanged = (SentStatus) -> Unit
@@ -38,8 +37,7 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override var sentStatus: SentStatus,
             override val localId: String,
-            val bitmap: Bitmap? = null,
-            val file: File? = null
+            val loadableContent: Content? = null
         ) : Self()
     }
 
