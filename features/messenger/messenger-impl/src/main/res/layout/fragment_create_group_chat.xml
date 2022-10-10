@@ -12,34 +12,48 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/messenger_creating_chat" />
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/contacts_sv"
+        style="@style/SearchView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/shape_input_search"
+        app:iconifiedByDefault="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:queryHint="@string/search"
+        app:searchIcon="@drawable/ic_magnifier" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_added_in_chat"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginTop="15dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/contacts_sv" />
 
-    <TextView
-        android:id="@+id/hint"
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:text="@string/messenger_select_hint"
-        style="@style/Text.Light"
-        app:layout_constraintBottom_toBottomOf="@+id/list_added_in_chat"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="list_added_in_chat, toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_contacts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="15dp"
         android:clipToPadding="false"
         android:paddingBottom="60dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/list_added_in_chat" />
+        app:layout_constraintTop_toBottomOf="@id/barrier" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/next"
@@ -47,8 +61,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
-        android:visibility="invisible"
         android:layout_marginBottom="20dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_fab_next" />

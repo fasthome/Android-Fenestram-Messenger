@@ -8,5 +8,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_
 data class CreateGroupChatState(
     val contacts: List<ContactViewItem>,
     val addedContacts: List<ContactViewItem>,
-    val needScroll: Boolean
+    val needScroll: Boolean,
+    val isGroupChat: Boolean,
 )
