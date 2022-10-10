@@ -87,7 +87,7 @@ class ProfileViewModel(
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
                     avatarUrl = if (!personalData.avatar.isNullOrEmpty())
-                        environment.endpoints.apiBaseUrl.dropLast(1) + personalData.avatar
+                        environment.endpoints.baseUrl.dropLast(1) + personalData.avatar
                     else
                         null
 
@@ -120,7 +120,7 @@ class ProfileViewModel(
                 avatarFile != null -> {
                     profileInteractor.uploadProfileImage(avatarFile.readBytes())
                         .getOrNull()?.profileImagePath.let {
-                            avatarUrl = environment.endpoints.apiBaseUrl.dropLast(1) + it
+                            avatarUrl = environment.endpoints.baseUrl.dropLast(1) + it
                             it
                         }
                 }
