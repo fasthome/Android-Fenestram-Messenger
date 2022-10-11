@@ -14,14 +14,8 @@ class MessageFullResponse(
     @SerialName("user")
     val initiator: Initiator?,
 
-    @SerialName("reply_message_id")
-    val replyMessageId: Long?,
-
-    @SerialName("access")
-    val access: List<Long>,
-
-    @SerialName("accessChats")
-    val accessChats: List<Long>,
+    @SerialName("replyMessage")
+    val replyMessage: MessageResponse?,
 
     @SerialName("is_edited")
     val isEdited: Boolean,
@@ -29,8 +23,8 @@ class MessageFullResponse(
     @SerialName("text")
     val text: String,
 
-    @SerialName("author_id")
-    val authorId: Long?,
+    @SerialName("author")
+    val author: Unit?,
 
     @SerialName("message_type")
     val type: String,

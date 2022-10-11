@@ -116,7 +116,7 @@ class MessengerService(
     }
 
     suspend fun editMessage(messageId: Long, chatId: Long,newText: String) {
-        val response: BaseResponse<MessageFullResponse> =
+        val response: BaseResponse<EditMessageResponse> =
             client.runPatch(
                 path = "chats/message/$chatId/$messageId",
                 body = EditMessageRequest(newText)

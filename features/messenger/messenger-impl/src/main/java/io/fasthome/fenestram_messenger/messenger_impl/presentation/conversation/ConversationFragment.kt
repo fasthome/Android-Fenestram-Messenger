@@ -124,7 +124,7 @@ class ConversationFragment :
         }
 
         ivCloseEdit.setOnClickListener {
-            vm.editMessageMode(null)
+            vm.editMessageMode(false)
             inputMessage.setText("")
         }
 
@@ -157,7 +157,7 @@ class ConversationFragment :
         username.setPrintableText(state.userName)
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
-        renderStateEditMode(state.editMode,state.messageToEdit)
+        renderStateEditMode(state.editMode, state.messageToEdit)
     }
 
     lateinit var latestPersonDetailDialog: Dialog
@@ -248,7 +248,7 @@ class ConversationFragment :
                 }, onCopy = {
                     copyPrintableText(event.conversationViewItem.content)
                 }, onEdit = {
-                    vm.editMessageMode(event.conversationViewItem)
+                    vm.editMessageMode(true,event.conversationViewItem)
                 }
             ).show()
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
@@ -271,9 +271,6 @@ class ConversationFragment :
                     vm.onDeleteMessageClicked(event.conversationViewItem)
                 }
             ).show()
-            is ConversationEvent.ChangeEditMode -> {
-                renderStateEditMode(event.isEditMode, event.conversationViewItem)
-            }
         }
     }
 
@@ -287,11 +284,11 @@ class ConversationFragment :
                 connect(R.id.messages_list,ConstraintSet.BOTTOM,if(isEditMode) R.id.cl_edit_message else R.id.input_message,ConstraintSet.TOP)
             }
             root.setConstraintSet(constraintsSet)
-            if (!isEditMode) return
+            if (!isEditMode || selfMessage == null) return
             inputMessage.setOnSizeChanged(onHeightChanged = {
                 clEditMessage.setPadding(0, 0, 0, it+10.dp)
             })
-            val textToEdit = getPrintableText(selfMessage!!.content)
+            val textToEdit = getPrintableText(selfMessage.content)
             tvTextToEdit.text = textToEdit
             inputMessage.setText(textToEdit)
         }

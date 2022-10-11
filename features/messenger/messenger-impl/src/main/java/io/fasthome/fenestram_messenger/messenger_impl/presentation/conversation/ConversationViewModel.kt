@@ -187,12 +187,12 @@ class ConversationViewModel(
         )
     }
 
-    fun editMessageMode(conversationViewItem: ConversationViewItem.Self.Text?) {
+    fun editMessageMode(isEditMode: Boolean, conversationViewItem: ConversationViewItem.Self.Text? = null) {
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
                 messageToEdit = conversationViewItem,
-                editMode = conversationViewItem != null
+                editMode = isEditMode
             )
         }
     }
@@ -294,7 +294,6 @@ class ConversationViewModel(
     }
 
     private fun editMessage(newText: String) {
-        sendEvent(ConversationEvent.ChangeEditMode(false,null))
         viewModelScope.launch {
             val messageToEdit = currentViewState.messageToEdit ?: return@launch
             messengerInteractor.editMessage(
@@ -304,10 +303,12 @@ class ConversationViewModel(
             ).onSuccess {
                 val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
                 val key = message.keys.firstOrNull() ?: return@launch
+                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText)) else it.value }
                 updateState { state ->
                     state.copy(
-                        messages = state.messages.plus(Pair(key, messageToEdit)),
-                        messageToEdit = null
+                        messages = newMessages,
+                        messageToEdit = null,
+                        editMode = false
                     )
                 }
             }
