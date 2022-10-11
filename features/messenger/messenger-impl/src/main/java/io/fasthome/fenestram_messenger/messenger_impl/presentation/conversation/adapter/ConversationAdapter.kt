@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
 import android.view.View
+import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -21,7 +22,8 @@ class ConversationAdapter(
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
             ConversationViewItem::id,
-            ConversationViewItem::sentStatus
+            ConversationViewItem::sentStatus,
+            ConversationViewItem::timeVisible,
         ),
         AdapterUtil.adapterDelegatesManager(
             createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
@@ -51,6 +53,8 @@ fun createConversationSelfTextAdapterDelegate(
         bindWithBinding {
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+            status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
         }
     }
@@ -78,7 +82,9 @@ fun createConversationSelfImageAdapterDelegate(
         bindWithBinding {
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
+            status.isVisible = item.timeVisible
         }
     }
 
@@ -94,6 +100,7 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
         }
     }
 
@@ -107,6 +114,7 @@ fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Un
         bindWithBinding {
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
         }
     }
 
@@ -127,6 +135,7 @@ fun createConversationGroupTextAdapterDelegate(
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }
@@ -148,6 +157,7 @@ fun createConversationGroupImageAdapterDelegate(
             username.setPrintableText(item.userName)
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }

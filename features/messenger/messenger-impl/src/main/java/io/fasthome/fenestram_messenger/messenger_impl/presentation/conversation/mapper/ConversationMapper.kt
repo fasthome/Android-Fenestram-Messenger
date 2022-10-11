@@ -7,6 +7,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
+import io.ktor.util.reflect.*
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -39,7 +40,8 @@ fun Message.toConversationViewItem(
             time = PrintableText.EMPTY,
             date = date,
             id = id,
-            sentStatus = SentStatus.None
+            sentStatus = SentStatus.None,
+            timeVisible = true
         )
     }
     return when (selfUserId) {
@@ -52,7 +54,8 @@ fun Message.toConversationViewItem(
                         sentStatus = SentStatus.Sent,
                         date = date,
                         id = id,
-                        localId = UUID.randomUUID().toString()
+                        localId = UUID.randomUUID().toString(),
+                        timeVisible = true
                     )
                 }
                 MESSAGE_TYPE_IMAGE -> {
@@ -62,7 +65,8 @@ fun Message.toConversationViewItem(
                         sentStatus = SentStatus.Sent,
                         date = date,
                         id = id,
-                        localId = UUID.randomUUID().toString()
+                        localId = UUID.randomUUID().toString(),
+                        timeVisible = true
                     )
                 }
                 MESSAGE_TYPE_SYSTEM -> {
@@ -71,7 +75,8 @@ fun Message.toConversationViewItem(
                         time = PrintableText.Raw(timeFormatter.format(date)),
                         sentStatus = SentStatus.Sent,
                         date = date,
-                        id = id
+                        id = id,
+                        timeVisible = true
                     )
                 }
                 else -> error("Unknown Message Type! type $messageType")
@@ -91,7 +96,8 @@ fun Message.toConversationViewItem(
                             id = id,
                             phone = initiator?.phone ?: "",
                             nickname = initiator?.nickname ?: "",
-                            userId = initiator?.id ?: 0
+                            userId = initiator?.id ?: 0,
+                            timeVisible = true
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -105,7 +111,8 @@ fun Message.toConversationViewItem(
                             id = id,
                             phone = initiator?.phone ?: "",
                             nickname = initiator?.nickname ?: "",
-                            userId = initiator?.id ?: 0
+                            userId = initiator?.id ?: 0,
+                            timeVisible = true
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {
@@ -114,7 +121,8 @@ fun Message.toConversationViewItem(
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.Sent,
                             date = date,
-                            id = id
+                            id = id,
+                            timeVisible = true
                         )
                     }
                     else -> error("Unknown Message Type! type $messageType")
@@ -128,7 +136,8 @@ fun Message.toConversationViewItem(
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
                             date = date,
-                            id = id
+                            id = id,
+                            timeVisible = true
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -137,7 +146,8 @@ fun Message.toConversationViewItem(
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
                             date = date,
-                            id = id
+                            id = id,
+                            timeVisible = true
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {
@@ -146,7 +156,8 @@ fun Message.toConversationViewItem(
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.Sent,
                             date = date,
-                            id = id
+                            id = id,
+                            timeVisible = true
                         )
                     }
                     else -> error("Unknown Message Type! type $messageType")
@@ -197,16 +208,78 @@ fun List<ConversationViewItem>.addHeaders(): List<ConversationViewItem> {
     return messagesWithHeaders
 }
 
+fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
+    val messages = this.toMutableList()
+    for (position in messages.indices) {
+        if (position == this.lastIndex) continue
+        val conversationViewItem = messages[position]
+        val previousViewItem = messages[position + 1]
+
+        if (!singleSameTimeIsContinue(conversationViewItem, previousViewItem)) {
+            if (previousViewItem is ConversationViewItem.Group && previousViewItem.userId != (conversationViewItem as ConversationViewItem.Group).userId) {
+                continue
+            }
+
+            var tempPreviousCounter = position + 1
+            var nextInvisibleItem: ConversationViewItem
+
+            var isInvisible = true
+
+            while (isInvisible) {
+                if (tempPreviousCounter >= messages.lastIndex) break
+                nextInvisibleItem = messages[tempPreviousCounter]
+
+                if(singleSameTimeIsContinue(conversationViewItem, nextInvisibleItem)) break
+
+                isInvisible = conversationViewItem.date?.minute == nextInvisibleItem.date?.minute
+
+                when (val next = messages[tempPreviousCounter]) {
+                    is ConversationViewItem.Group.Image -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Group.Text -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Receive.Image -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Receive.Text -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Self.Image -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Self.Text -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.System -> messages[tempPreviousCounter]
+                }
+
+                tempPreviousCounter++
+            }
+        }
+    }
+    return messages
+}
+
+private fun singleSameTimeIsContinue(
+    conversationViewItem: ConversationViewItem,
+    otherConversationViewItem: ConversationViewItem
+): Boolean {
+    return when {
+        conversationViewItem is ConversationViewItem.Self && otherConversationViewItem is ConversationViewItem.Self -> false
+        conversationViewItem is ConversationViewItem.Group && otherConversationViewItem is ConversationViewItem.Group -> false
+        conversationViewItem is ConversationViewItem.Receive && otherConversationViewItem is ConversationViewItem.Receive -> false
+        conversationViewItem is ConversationViewItem.System && otherConversationViewItem is ConversationViewItem.System -> false
+        else -> true
+    }
+}
+
 fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     content = PrintableText.Raw(text),
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
     date = ZonedDateTime.now(),
     id = 0,
-    localId = UUID.randomUUID().toString()
+    localId = UUID.randomUUID().toString(),
+    timeVisible = true
 )
 
-fun createImageMessage(image: String?, loadableContent : Content) =
+fun createImageMessage(image: String?, loadableContent: Content) =
     ConversationViewItem.Self.Image(
         content = image ?: "",
         time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
@@ -214,7 +287,8 @@ fun createImageMessage(image: String?, loadableContent : Content) =
         date = ZonedDateTime.now(),
         id = 0,
         localId = UUID.randomUUID().toString(),
-        loadableContent = loadableContent
+        loadableContent = loadableContent,
+        timeVisible = true
     )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
@@ -222,7 +296,8 @@ fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     time = PrintableText.EMPTY,
     date = date,
     id = 0,
-    sentStatus = SentStatus.None
+    sentStatus = SentStatus.None,
+    timeVisible = true
 )
 
 private fun getName(user: User?): String {
