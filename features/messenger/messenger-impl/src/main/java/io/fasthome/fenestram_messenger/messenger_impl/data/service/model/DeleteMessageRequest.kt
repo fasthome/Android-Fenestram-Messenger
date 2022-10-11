@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeleteMessageRequest(
-    val fromAll: Boolean
+    val fromAll: Boolean,
+    val messages: List<String>
 )
