@@ -163,7 +163,8 @@ class ConversationViewModel(
             isChatEmpty = false,
             avatar = profileImageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
-            messageToEdit = null
+            messageToEdit = null,
+            editMode = false
         )
     }
 
@@ -171,7 +172,8 @@ class ConversationViewModel(
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                messageToEdit = conversationViewItem
+                messageToEdit = conversationViewItem,
+                editMode = conversationViewItem != null
             )
         }
     }
@@ -182,7 +184,7 @@ class ConversationViewModel(
         if (attachedFiles.isNotEmpty()) {
             sendImages(attachedFiles)
         }
-        if (currentViewState.messageToEdit != null) {
+        if (currentViewState.editMode) {
             if (mess.isNotEmpty()) {
                 editMessage(mess)
             }
@@ -259,6 +261,7 @@ class ConversationViewModel(
     }
 
     private fun editMessage(newText: String) {
+        sendEvent(ConversationEvent.ChangeEditMode(false,null))
         viewModelScope.launch {
             val messageToEdit = currentViewState.messageToEdit ?: return@launch
             messengerInteractor.editMessage(

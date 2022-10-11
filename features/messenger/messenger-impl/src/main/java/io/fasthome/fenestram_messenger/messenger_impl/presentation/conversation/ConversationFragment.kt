@@ -106,7 +106,6 @@ class ConversationFragment :
         sendButton.setOnClickListener() {
             vm.addMessageToConversation(inputMessage.text.toString())
             inputMessage.text?.clear()
-            changeEditMode(null)
             messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
 
@@ -155,7 +154,7 @@ class ConversationFragment :
         username.setPrintableText(state.userName)
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
-        changeEditMode(state.messageToEdit)
+        renderStateEditMode(state.editMode,state.messageToEdit)
     }
 
     override fun handleEvent(event: ConversationEvent) {
@@ -250,12 +249,14 @@ class ConversationFragment :
                     vm.onDeleteMessageClicked(event.conversationViewItem)
                 }
             ).show()
+            is ConversationEvent.ChangeEditMode -> {
+                renderStateEditMode(event.isEditMode, event.conversationViewItem)
+            }
         }
     }
 
-    private fun changeEditMode(selfMessage: ConversationViewItem.Self.Text?) {
+    private fun renderStateEditMode(isEditMode: Boolean, selfMessage:ConversationViewItem.Self.Text? = null) {
         with(binding) {
-            val isEditMode = selfMessage != null
             clEditMessage.isInvisible = !isEditMode
             attachButton.isVisible = !isEditMode
             horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)

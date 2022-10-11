@@ -13,4 +13,5 @@ sealed interface ConversationEvent {
     class ShowReceiveMessageActionDialog(val conversationViewItem: ConversationViewItem.Receive.Text) : ConversationEvent
     class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group.Text) : ConversationEvent
     class ShowSelfImageActionDialog(val conversationViewItem: ConversationViewItem.Self.Image) : ConversationEvent
+    class ChangeEditMode(val isEditMode: Boolean, val conversationViewItem: ConversationViewItem.Self.Text?): ConversationEvent
 }
