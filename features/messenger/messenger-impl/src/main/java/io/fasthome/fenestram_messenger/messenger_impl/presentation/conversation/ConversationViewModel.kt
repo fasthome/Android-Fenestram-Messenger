@@ -49,7 +49,7 @@ class ConversationViewModel(
     private val features: Features,
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUrlConverter: ProfileImageUrlConverter
+    private val profileImageUrlConverter: ProfileImageUrlConverter,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -409,6 +409,17 @@ class ConversationViewModel(
             .flowOn(Dispatchers.Main)
             .onEach { message ->
                 updateState { state ->
+                    if (message.isEdited && state.messages.filter { it.value.id == message.id }.isNotEmpty()) {
+                        return@updateState state.copy(
+                            messages = state.messages.mapValues {
+                                if (it.value.id == message.id)
+                                    message.toConversationViewItem(selfUserId,
+                                        params.chat.isGroup,
+                                        profileImageUrlConverter)
+                                else it.value
+                            }
+                        )
+                    }
                     state.copy(
                         messages = mapOf(
                             UUID.randomUUID().toString() to message.toConversationViewItem(

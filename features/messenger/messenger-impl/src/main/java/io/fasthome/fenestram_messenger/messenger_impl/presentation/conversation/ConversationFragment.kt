@@ -291,6 +291,8 @@ class ConversationFragment :
             val textToEdit = getPrintableText(selfMessage.content)
             tvTextToEdit.text = textToEdit
             inputMessage.setText(textToEdit)
+            inputMessage.lastCharFocus()
+            inputMessage.showKeyboard()
         }
     }
 
