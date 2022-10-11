@@ -15,6 +15,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.Transformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -39,7 +40,8 @@ class AppGlideModule : AppGlideModule(), KoinComponent {
 fun ImageView.loadRounded(
     url: String?,
     placeholderRes: Int? = null,
-    radius: Int = 5.dp
+    radius: Int = 5.dp,
+    transform: BitmapTransformation? = CenterCrop()
 ) {
     var plcRes = placeholderRes
     if (plcRes == null) {
@@ -48,7 +50,7 @@ fun ImageView.loadRounded(
     Glide
         .with(this)
         .load(url)
-        .transform(CenterCrop(), RoundedCorners(radius))
+        .transform(transform, RoundedCorners(radius))
         .diskCacheStrategy(DiskCacheStrategy.ALL)
         .placeholder(plcRes)
         .into(this)
@@ -57,7 +59,8 @@ fun ImageView.loadRounded(
 fun ImageView.loadRounded(
     bitmap: Bitmap?,
     placeholderRes: Int? = null,
-    radius: Int = 5.dp
+    radius: Int = 5.dp,
+    transform: BitmapTransformation? = CenterCrop()
 ) {
     var plcRes = placeholderRes
     if (plcRes == null) {
@@ -66,7 +69,7 @@ fun ImageView.loadRounded(
     Glide
         .with(this)
         .load(bitmap)
-        .transform(CenterCrop(), RoundedCorners(radius))
+        .transform(transform, RoundedCorners(radius))
         .diskCacheStrategy(DiskCacheStrategy.ALL)
         .placeholder(plcRes)
         .into(this)
