@@ -23,12 +23,12 @@ class MessengerService(
         localId: String,
         authorId: Long
     ): SendMessageResult {
-        val response: SendMessageResponse = client.runPost(
+        val response: BaseResponse<SendMessageResponse> = client.runPost(
             path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
         
-        return SendMessageMapper.responseToSendMessageResult(response, localId)
+        return SendMessageMapper.responseToSendMessageResult(response.requireData(), localId)
     }
 
     suspend fun getChats(query: String, limit: Int, page: Int): ListWithTotal<Chat> {

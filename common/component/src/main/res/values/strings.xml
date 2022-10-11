@@ -11,4 +11,7 @@
     <string name="personality_incorrect_nickname">Некорректный никнейм</string>
     <string name="personality_incorrect_length_nickname">Некорректная длина никнейма</string>
     <string name="personality_same_nickname">Никнейм занят</string>
+    <string name="camera_permission_denied">Требуется доступ к камере</string>
+    <string name="camera_capture_error">Ошибка фотографирования</string>
+    <string name="camera_need_free_space_message" formatted="true">На устройстве мало места. Рекомендуемый объём памяти %d Мб</string>
 </resources>

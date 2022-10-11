@@ -10,4 +10,7 @@ dependencies {
 
     implementation(Deps.AndroidX.crypto)
 
+    api(Deps.Room.runtime)
+    api(Deps.Room.ktx)
+    kapt(Deps.Room.compiler)
 }

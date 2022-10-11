@@ -1,9 +1,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
-import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
-import java.io.File
 import java.time.ZonedDateTime
 
 typealias OnStatusChanged = (SentStatus) -> Unit
@@ -38,8 +37,7 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override var sentStatus: SentStatus,
             override val localId: String,
-            val bitmap: Bitmap? = null,
-            val file: File? = null
+            val loadableContent: Content? = null
         ) : Self()
     }
 
@@ -64,7 +62,9 @@ sealed interface ConversationViewItem {
     sealed class Group(
         open val userName: PrintableText,
         open val avatar: String,
-        open val phone: String
+        open val phone: String,
+        open val nickname: String,
+        open val userId: Long
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
@@ -74,8 +74,10 @@ sealed interface ConversationViewItem {
             override val sentStatus: SentStatus,
             override val userName: PrintableText,
             override val avatar: String,
-            override val phone: String
-        ) : Group(userName, avatar, phone)
+            override val phone: String,
+            override val nickname: String,
+            override val userId: Long
+        ) : Group(userName, nickname, avatar, phone, userId)
 
         data class Image(
             override val id: Long,
@@ -85,8 +87,10 @@ sealed interface ConversationViewItem {
             override val sentStatus: SentStatus,
             override val userName: PrintableText,
             override val avatar: String,
-            override val phone: String
-        ) : Group(userName, avatar, phone)
+            override val phone: String,
+            override val nickname: String,
+            override val userId: Long,
+        ) : Group(userName, avatar, phone, nickname, userId)
     }
 
     data class System(

@@ -4,9 +4,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
+import io.fasthome.fenestram_messenger.core.ui.extensions.setContent
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderAttachedImageBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
 
 class AttachedAdapter(onRemoveClicked : (AttachedFile) -> Unit) :
@@ -28,6 +28,6 @@ fun createImageAdapterDelegate(onRemoveClicked : (AttachedFile) -> Unit) =
         bindWithBinding {
             image.clipToOutline = true
             image.outlineProvider = RoundedCornersOutlineProvider(5.dp.toFloat())
-            image.setImageBitmap(item.bitmap)
+            image.setContent(item.content)
         }
     }

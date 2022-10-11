@@ -3,21 +3,38 @@
  */
 package io.fasthome.fenestram_messenger.core.ui.extensions
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Registry
+import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.Transformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.fasthome.fenestram_messenger.core.R
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.ContentLoaderFactory
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.dp
+import org.koin.core.component.KoinComponent
+import java.nio.ByteBuffer
+
+@GlideModule
+class AppGlideModule : AppGlideModule(), KoinComponent {
+
+    override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
+        registry.prepend(Content.LoadableContent::class.java, ByteBuffer::class.java, ContentLoaderFactory())
+    }
+}
 
 fun ImageView.loadRounded(
     url: String?,
@@ -121,5 +138,20 @@ fun ImageView.loadCircle(bitmap: Bitmap?, placeholderRes: Int = R.drawable.shape
         .load(bitmap)
         .transform(CircleCrop())
         .placeholder(placeholderRes)
+        .into(this)
+}
+
+fun ImageView.setContent(content: Content, vararg transformations: Transformation<Bitmap>) {
+    GlideApp
+        .with(this)
+        .load(
+            when (content) {
+                is Content.FileContent -> content.file
+                is Content.LoadableContent -> content
+            }
+        )
+        .transform(*transformations)
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
         .into(this)
 }

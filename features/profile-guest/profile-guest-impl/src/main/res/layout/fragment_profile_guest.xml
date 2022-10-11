@@ -52,11 +52,14 @@
 
             <EditText
                 android:id="@+id/profile_guest_name"
-                style="@style/ProfileGuestName"
+                style="@style/Text.White.18sp"
                 android:layout_width="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="10dp"
+                android:paddingStart="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="60dp"
                 android:enabled="false"
                 android:maxLines="2"
@@ -80,15 +83,21 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/profile_guest_nickname"
-                style="@style/ProfileGuestNickName"
+                android:id="@+id/profile_guest_phone"
+                style="@style/Text.Blue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/profile_guest_no_nickname"
-                app:layout_constraintStart_toEndOf="@id/avatar_container"
+                app:layout_constraintStart_toStartOf="@id/profile_guest_name"
                 app:layout_constraintTop_toBottomOf="@id/profile_guest_name" />
+
+            <TextView
+                android:id="@+id/profile_guest_nickname"
+                style="@style/Text.Blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_guest_no_nickname"
+                app:layout_constraintStart_toStartOf="@id/profile_guest_name"
+                app:layout_constraintTop_toBottomOf="@id/profile_guest_phone" />
 
             <ImageButton
                 android:id="@+id/profile_guest_video_chat"
@@ -96,18 +105,18 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="30dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_facecall"
+                android:src="@drawable/ic_facecall_60dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.3"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_guest_nickname" />
+                app:layout_constraintTop_toBottomOf="@id/avatar_container" />
 
             <ImageButton
                 android:id="@+id/profile_guest_call"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_call"
+                android:src="@drawable/ic_call_60dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.7"
                 app:layout_constraintStart_toStartOf="parent"

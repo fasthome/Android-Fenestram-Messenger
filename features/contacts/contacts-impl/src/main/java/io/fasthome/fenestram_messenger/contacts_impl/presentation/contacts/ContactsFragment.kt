@@ -3,18 +3,12 @@
  */
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
@@ -24,9 +18,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import io.fasthome.fenestram_messenger.util.isLoading
 import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 
@@ -42,9 +34,7 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     )
 
     private val binding: FragmentContactsBinding by fragmentViewBinding(FragmentContactsBinding::bind)
-    private val contactsAdapter = ContactsAdapter(onItemClicked = {
-        vm.onContactClicked(it)
-    })
+    private val contactsAdapter = ContactsAdapter(onItemClicked = { vm.onContactClicked(it) })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

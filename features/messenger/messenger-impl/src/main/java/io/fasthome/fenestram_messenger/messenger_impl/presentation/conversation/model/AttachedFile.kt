@@ -1,10 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
-import android.graphics.Bitmap
-import java.io.File
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 
 sealed class AttachedFile {
 
-    class Image(val bitmap : Bitmap, val file : File) : AttachedFile()
+    class Image(val content : Content) : AttachedFile()
 
 }

@@ -1,19 +1,17 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import io.fasthome.component.select_from.SelectFromDialog
+import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.FragmentGroupParticipantsBinding
-import io.fasthome.fenestram_messenger.group_guest_impl.databinding.UserDropdownBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.adapter.ParticipantsAdapter
 import io.fasthome.fenestram_messenger.navigation.contract.InterfaceFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import io.fasthome.fenestram_messenger.util.PopupMenu
-import io.fasthome.fenestram_messenger.util.dp
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
 
@@ -25,9 +23,10 @@ class GroupParticipantsFragment :
         getParamsInterface = GroupParticipantsComponentContract.getParams
     )
 
-    private val adapter = ParticipantsAdapter(onMenuClicked = { id ->
-        vm.onMenuClicked(id)
-    })
+    private val adapter = ParticipantsAdapter(
+        onMenuClicked = { id -> vm.onMenuClicked(id) },
+        onAnotherUserClicked = { userId -> vm.onAnotherUserClicked(userId) }
+    )
 
     private val binding by fragmentViewBinding(FragmentGroupParticipantsBinding::bind)
 
@@ -39,11 +38,15 @@ class GroupParticipantsFragment :
         binding.addUserToChat.onClick {
             vm.onAddUserToChat()
         }
+        
+        latestPersonDetailDialog = Dialog(requireContext())
     }
 
     override fun renderState(state: GroupParticipantsState) {
         adapter.items = state.participants
     }
+
+    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: GroupParticipantsEvent) {
         when (event) {
@@ -56,6 +59,24 @@ class GroupParticipantsFragment :
                     name = event.name,
                     phone = event.phone,
                 ).show()
+            }
+            is GroupParticipantsEvent.ShowPersonDetailDialog -> {
+                if (!latestPersonDetailDialog.isShowing) {
+                    latestPersonDetailDialog = PersonDetailDialog
+                        .create(
+                            fragment = this,
+                            personDetail = event.selectedPerson,
+                            launchFaceCallClicked = {
+                                //TODO
+                            },
+                            launchCallClicked = {
+                                //TODO
+                            },
+                            launchConversationClicked = {
+                                vm.onLaunchConversationClicked(it)
+                            })
+                    latestPersonDetailDialog.show()
+                }
             }
         }
     }

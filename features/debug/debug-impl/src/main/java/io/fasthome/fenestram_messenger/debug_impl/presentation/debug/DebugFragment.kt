@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import com.jakewharton.processphoenix.ProcessPhoenix
+import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.fenestram_messenger.core.debug.EndpointsConfig
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.debug_impl.R
@@ -51,7 +52,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         }
 
         debugLoginAccept.onClick {
-            vm.onLoginAcceptClicked(phone = phoneInput.text.toString(), code = codeInput.text.toString())
+            vm.onLoginAcceptClicked(
+                phone = phoneInput.text.toString(),
+                code = codeInput.text.toString()
+            )
         }
 
         debugAuth.onClick {
@@ -92,6 +96,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
 
         debugOnboarding.onClick {
             vm.onOnboardingClicked()
+        }
+
+        debugPersonDetailDialog.onClick {
+            vm.onPersonDetailClicked()
         }
 
         linkField.onClick {
@@ -141,6 +149,20 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
                 id = 0,
                 acceptButtonRes = R.string.common_accept
             ).show()
+            is DebugEvent.ShowPersonDetailDialog ->
+                PersonDetailDialog
+                    .create(
+                        fragment = this,
+                        personDetail = event.selectedPerson,
+                        launchFaceCallClicked = {
+                            //TODO
+                        },
+                        launchCallClicked = {
+                            //TODO
+                        },
+                        launchConversationClicked = {
+                        })
+                    .show()
             DebugEvent.RebirthApplication -> ProcessPhoenix.triggerRebirth(context)
         }
     }

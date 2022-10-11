@@ -1,13 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
-import android.graphics.Bitmap
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
-import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -90,7 +89,9 @@ fun Message.toConversationViewItem(
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id,
-                            phone = initiator?.phone ?: ""
+                            phone = initiator?.phone ?: "",
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -102,7 +103,9 @@ fun Message.toConversationViewItem(
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id,
-                            phone = initiator?.phone ?: ""
+                            phone = initiator?.phone ?: "",
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {
@@ -203,16 +206,16 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     localId = UUID.randomUUID().toString()
 )
 
-fun createImageMessage(image: String?, bitmap: Bitmap, file: File) = ConversationViewItem.Self.Image(
-    content = image ?: "",
-    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
-    sentStatus = SentStatus.Loading,
-    date = ZonedDateTime.now(),
-    id = 0,
-    localId = UUID.randomUUID().toString(),
-    bitmap = bitmap,
-    file = file
-)
+fun createImageMessage(image: String?, loadableContent : Content) =
+    ConversationViewItem.Self.Image(
+        content = image ?: "",
+        time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+        sentStatus = SentStatus.Loading,
+        date = ZonedDateTime.now(),
+        id = 0,
+        localId = UUID.randomUUID().toString(),
+        loadableContent = loadableContent
+    )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     content = getFuzzyDateString(date),
@@ -222,9 +225,9 @@ fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     sentStatus = SentStatus.None
 )
 
-private fun getName(user: User?) : String{
-    if(user == null) return "Неизвестный пользователь"
-    return when{
+private fun getName(user: User?): String {
+    if (user == null) return "Неизвестный пользователь"
+    return when {
         user.contactName?.isNotEmpty() == true -> user.contactName!!
         user.name.isNotEmpty() -> user.name
         else -> user.phone.setMaskByCountry(Country.RUSSIA)

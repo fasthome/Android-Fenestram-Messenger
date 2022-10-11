@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -211,6 +210,16 @@
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="8dp"
                 android:text="Error dialog"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_person_detail_dialog"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Person detail dialog"
                 tools:ignore="HardcodedText" />
 
         </LinearLayout>
