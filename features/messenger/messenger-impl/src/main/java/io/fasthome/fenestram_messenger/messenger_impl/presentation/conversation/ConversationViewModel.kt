@@ -392,8 +392,6 @@ class ConversationViewModel(
                             userPhone = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.phone
                                 ?: "",
                             editMode = editMode && params.chat.isGroup
-                            userPhone = "",
-                            editMode = editMode,
                         )
                     )
                 }
