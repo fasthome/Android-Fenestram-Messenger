@@ -110,8 +110,8 @@ class MessengerService(
     suspend fun deleteMessage(messageId: Long, chatId: Long) {
         val response: BaseResponse<DeleteMessageResponse> =
             client.runDelete<DeleteMessageRequest?, BaseResponse<DeleteMessageResponse>>(
-                path = "chats/message/$chatId/$messageId",
-                body = DeleteMessageRequest(true)
+                path = "chats/message/$chatId",
+                body = DeleteMessageRequest(true, listOf(messageId.toString()))
             )
     }
 
