@@ -22,4 +22,7 @@ class MessageResponse(
 
     @SerialName("created_at")
     val createdDate: String,
+
+    @SerialName("is_edited")
+    val isEdited: Boolean
 )

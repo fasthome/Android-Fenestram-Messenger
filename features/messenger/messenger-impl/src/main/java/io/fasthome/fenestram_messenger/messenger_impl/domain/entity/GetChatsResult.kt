@@ -25,7 +25,8 @@ data class Message(
     val date: ZonedDateTime?,
     val initiator: User?,
     val chatId: String? = null,
-    val isDate : Boolean
+    val isDate : Boolean,
+    val isEdited: Boolean
 ) : Parcelable {
     companion object {
         fun onlyDate(date: ZonedDateTime) = Message(
@@ -36,7 +37,8 @@ data class Message(
             date = date,
             initiator = null,
             chatId = null,
-            isDate = true
+            isDate = true,
+            isEdited = false
         )
     }
 }

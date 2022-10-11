@@ -28,7 +28,8 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                             messageType = lastMessage.type,
                             date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
                             initiator = null,
-                            isDate = false
+                            isDate = false,
+                            isEdited = lastMessage.isEdited
                         )
                     }
                     ),
@@ -63,7 +64,8 @@ class GetChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConver
                         lastActive = ZonedDateTime.now()
                     )
                 },
-                isDate = false
+                isDate = false,
+                isEdited = it.isEdited
             )
         }
     }

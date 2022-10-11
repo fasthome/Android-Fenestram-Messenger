@@ -303,7 +303,7 @@ class ConversationViewModel(
             ).onSuccess {
                 val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
                 val key = message.keys.firstOrNull() ?: return@launch
-                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText)) else it.value }
+                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText), isEdited = true) else it.value }
                 updateState { state ->
                     state.copy(
                         messages = newMessages,

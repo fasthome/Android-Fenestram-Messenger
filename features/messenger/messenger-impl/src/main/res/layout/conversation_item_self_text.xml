@@ -6,30 +6,52 @@
     android:layout_height="wrap_content"
     android:clickable="true">
 
-    <TextView
-        android:id="@+id/message_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/message_rectangle_self"
-        android:fontFamily="@font/geometria"
-        android:maxEms="16"
-        android:minWidth="48dp"
-        android:minHeight="24dp"
-        android:paddingStart="12dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="5dp"
-        android:text="@string/MessageContentCheck"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        app:barrierMargin="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="TouchTargetSizeCheck" />
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:id="@+id/cl_message"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="16dp"
+       android:paddingStart="12dp"
+       android:paddingTop="5dp"
+       android:paddingEnd="12dp"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toTopOf="parent"
+       tools:ignore="TouchTargetSizeCheck"
+       android:paddingBottom="5dp"
+       android:layout_marginEnd="10dp"
+       android:background="@drawable/message_rectangle_self"
+       android:layout_marginBottom="16dp">
+
+       <TextView
+           android:id="@+id/message_content"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:fontFamily="@font/geometria"
+           android:maxEms="16"
+           android:minWidth="48dp"
+           android:minHeight="24dp"
+           android:text="@string/MessageContentCheck"
+           android:textColor="@color/white"
+           android:textSize="14sp"
+           app:barrierMargin="5dp"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintVertical_bias="0.0" />
+
+       <TextView
+           android:id="@+id/tv_edited"
+           style="@style/Text.Gray.10sp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:visibility="gone"
+           android:text="@string/messenger_edited"
+           app:layout_constraintEnd_toEndOf="@+id/message_content"
+           app:layout_constraintTop_toBottomOf="@+id/message_content" />
+
+   </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/send_time_view"
@@ -42,7 +64,7 @@
         android:textColor="@color/gray1"
         android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/message_content" />
+        app:layout_constraintTop_toBottomOf="@+id/cl_message" />
 
     <ImageView
         android:id="@+id/status"
@@ -51,7 +73,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/message_content"
+        app:layout_constraintTop_toBottomOf="@+id/cl_message"
         app:srcCompat="@drawable/ic_approve_send" />
 
 
