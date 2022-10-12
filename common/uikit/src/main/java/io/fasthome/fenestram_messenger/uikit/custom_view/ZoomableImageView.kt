@@ -37,6 +37,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     private var viewHeight = 0
     private var lastPoint = PointF()
     private var startPoint = PointF()
+    private var startY = 0f
     private var dY = 0f
     private var centerY = 0f
 
@@ -117,6 +118,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         origWidth = viewWidth - 2 * redundantXSpace
         origHeight = viewHeight - 2 * redundantYSpace
         imageMatrix = matrixGeneral
+        startY = y
     }
 
     fun fixTranslation() {
@@ -206,13 +208,13 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
             MotionEvent.ACTION_UP -> {
                 if (canSwipe) {
                     if (saveScale == MIN_SCALE) {
-                        var middleTopCenter = centerY / 2
+                        val middleTopCenter = centerY / 4
                         if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
                             onDownSwipe?.invoke()
                         }
                     }
                     view.animate()
-                        .y(0f)
+                        .y(startY)
                         .setDuration(100)
                         .alpha(1f)
                         .start()
