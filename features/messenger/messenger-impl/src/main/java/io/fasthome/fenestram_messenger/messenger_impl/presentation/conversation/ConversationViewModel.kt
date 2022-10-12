@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.person_detail.PersonDetail
@@ -48,7 +49,7 @@ class ConversationViewModel(
     private val features: Features,
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUrlConverter: ProfileImageUrlConverter
+    private val profileImageUrlConverter: ProfileImageUrlConverter,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -180,8 +181,20 @@ class ConversationViewModel(
             userOnline = false,
             isChatEmpty = false,
             avatar = profileImageUrlConverter.convert(params.chat.avatar),
-            attachedFiles = listOf()
+            attachedFiles = listOf(),
+            messageToEdit = null,
+            editMode = false
         )
+    }
+
+    fun editMessageMode(isEditMode: Boolean, conversationViewItem: ConversationViewItem.Self.Text? = null) {
+        updateState { state ->
+            state.copy(
+                attachedFiles = emptyList(),
+                messageToEdit = conversationViewItem,
+                editMode = isEditMode
+            )
+        }
     }
 
     private fun attachContentFile(content: Content) {
@@ -202,7 +215,12 @@ class ConversationViewModel(
         if (attachedFiles.isNotEmpty()) {
             sendImages(attachedFiles)
         }
-
+        if (currentViewState.editMode) {
+            if (mess.isNotEmpty()) {
+                editMessage(mess)
+            }
+            return
+        }
         if (mess.isNotEmpty()) {
             sendMessage(mess)
         }
@@ -273,6 +291,28 @@ class ConversationViewModel(
         }
         sendEvent(ConversationEvent.MessageSent)
 
+    }
+
+    private fun editMessage(newText: String) {
+        viewModelScope.launch {
+            val messageToEdit = currentViewState.messageToEdit ?: return@launch
+            messengerInteractor.editMessage(
+                chatId = chatId ?: return@launch,
+                messageId = messageToEdit.id,
+                newText = newText
+            ).onSuccess {
+                val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
+                val key = message.keys.firstOrNull() ?: return@launch
+                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText), isEdited = true) else it.value }
+                updateState { state ->
+                    state.copy(
+                        messages = newMessages,
+                        messageToEdit = null,
+                        editMode = false
+                    )
+                }
+            }
+        }
     }
 
     private fun sendMessage(mess: String) {
@@ -369,6 +409,17 @@ class ConversationViewModel(
             .flowOn(Dispatchers.Main)
             .onEach { message ->
                 updateState { state ->
+                    if (message.isEdited && state.messages.filter { it.value.id == message.id }.isNotEmpty()) {
+                        return@updateState state.copy(
+                            messages = state.messages.mapValues {
+                                if (it.value.id == message.id)
+                                    message.toConversationViewItem(selfUserId,
+                                        params.chat.isGroup,
+                                        profileImageUrlConverter)
+                                else it.value
+                            }
+                        )
+                    }
                     state.copy(
                         messages = mapOf(
                             UUID.randomUUID().toString() to message.toConversationViewItem(

@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
 import android.view.View
+import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -49,6 +50,7 @@ fun createConversationSelfTextAdapterDelegate(
             true
         }
         bindWithBinding {
+            tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)

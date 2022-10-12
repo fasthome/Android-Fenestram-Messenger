@@ -32,6 +32,7 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
             )
         },
         chatId = messageResponse.chatId,
-        isDate = false
+        isDate = false,
+        isEdited = messageResponse.isEdited
     )
 }
