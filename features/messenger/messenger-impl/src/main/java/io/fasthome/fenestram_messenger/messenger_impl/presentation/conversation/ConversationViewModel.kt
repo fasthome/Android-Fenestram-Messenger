@@ -130,7 +130,7 @@ class ConversationViewModel(
                 return@launch
             }
 
-            if (params.chat.id == null) {
+            if (chatId == null) {
                 messengerInteractor.postChats(
                     name = params.chat.name,
                     users = params.chat.users,

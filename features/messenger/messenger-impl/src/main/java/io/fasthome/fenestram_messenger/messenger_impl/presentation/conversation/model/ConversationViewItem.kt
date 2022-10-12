@@ -13,6 +13,7 @@ sealed interface ConversationViewItem {
     val content: Any
     val time: PrintableText
     val date: ZonedDateTime?
+    val timeVisible : Boolean
     val sentStatus: SentStatus
 
     val statusIcon: Int
@@ -28,6 +29,7 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override var sentStatus: SentStatus,
             override val localId: String,
+            override val timeVisible: Boolean,
             val isEdited: Boolean
         ) : Self()
 
@@ -38,6 +40,7 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override var sentStatus: SentStatus,
             override val localId: String,
+            override val timeVisible: Boolean,
             val loadableContent: Content? = null
         ) : Self()
     }
@@ -49,6 +52,7 @@ sealed interface ConversationViewItem {
             override val time: PrintableText,
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
+            override val timeVisible: Boolean,
             val isEdited: Boolean
         ) : Receive()
 
@@ -58,6 +62,7 @@ sealed interface ConversationViewItem {
             override val time: PrintableText,
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
+            override val timeVisible: Boolean,
         ) : Receive()
     }
 
@@ -79,6 +84,7 @@ sealed interface ConversationViewItem {
             override val phone: String,
             override val nickname: String,
             override val userId: Long,
+            override val timeVisible: Boolean,
             val isEdited: Boolean
         ) : Group(userName, nickname, avatar, phone, userId)
 
@@ -93,6 +99,7 @@ sealed interface ConversationViewItem {
             override val phone: String,
             override val nickname: String,
             override val userId: Long,
+            override val timeVisible: Boolean,
         ) : Group(userName, avatar, phone, nickname, userId)
     }
 
@@ -102,6 +109,7 @@ sealed interface ConversationViewItem {
         override val time: PrintableText,
         override val date: ZonedDateTime?,
         override val sentStatus: SentStatus,
+        override var timeVisible: Boolean,
     ) : ConversationViewItem
 
 }

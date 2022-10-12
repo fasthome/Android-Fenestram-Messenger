@@ -95,9 +95,7 @@ class MessengerInteractor(
     private var page = 0
 
     suspend fun getChatPageItems(isResumed: Boolean, id: Long): CallResult<MessagesPage> {
-        if (isResumed) {
-            page = 0
-        }
+        //todo isResumed оставить, возможно вернется баг с загрузкой из onResume
         page++
         return messageRepo.getMessagesFromChat(id, page)
     }

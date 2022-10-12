@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -27,12 +28,14 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.singleSameTime
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.util.*
 
 
@@ -102,7 +105,20 @@ class ConversationFragment :
             }
         })
         messagesList.itemAnimator = null
+        messagesList.addItemDecoration(SpacingItemDecoration { index, itemCount ->
+            val bottomMargin = if (conversationAdapter.items[index].timeVisible) {
+                16.dp
+            } else {
+                8.dp
+            }
 
+            Rect(
+                0.dp,
+                0.dp,
+                0.dp,
+                bottomMargin,
+            )
+        })
         attachedList.adapter = attachedAdapter
 
         sendButton.setOnClickListener() {
@@ -153,7 +169,13 @@ class ConversationFragment :
             emptyContainer.isVisible = false
             emptyContainer.alpha = 0f
         }
-        conversationAdapter.items = state.messages.toList().map { it.second }.addHeaders()
+        val newItems = state
+            .messages
+            .toList()
+            .map { it.second }
+            .addHeaders()
+            .singleSameTime()
+        conversationAdapter.items = newItems
         username.setPrintableText(state.userName)
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles

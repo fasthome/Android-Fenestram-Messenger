@@ -21,7 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="16dp"
         android:background="@drawable/message_rectangle_receive"
         android:orientation="vertical"
         app:layout_constraintStart_toEndOf="@+id/avatar"
