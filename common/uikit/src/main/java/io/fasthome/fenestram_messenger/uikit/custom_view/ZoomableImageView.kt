@@ -21,6 +21,8 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     private var mGestureDetector: GestureDetector? = null
     var mMatrix: Matrix? = null
     private var onDownSwipe: (() -> Unit)? = null
+    private val canSwipe: Boolean
+    get() = onDownSwipe != null
     private var mMatrixValues: FloatArray? = null
     var mode = NONE
 
@@ -185,7 +187,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 centerY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
-                if (mSaveScale == MIN_SCALE) {
+                if (mSaveScale == MIN_SCALE && canSwipe) {
                     view.animate()
                         .y(event.rawY + dY)
                         .setDuration(0)
@@ -205,17 +207,19 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
             MotionEvent.ACTION_POINTER_UP -> mode = NONE
 
             MotionEvent.ACTION_UP -> {
-                if (mSaveScale == MIN_SCALE) {
-                    var middleTopCenter = centerY / 2
-                    if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
-                        onDownSwipe?.invoke()
+                if (canSwipe) {
+                    if (mSaveScale == MIN_SCALE) {
+                        var middleTopCenter = centerY / 2
+                        if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
+                            onDownSwipe?.invoke()
+                        }
                     }
+                    view.animate()
+                        .y(0f)
+                        .setDuration(100)
+                        .alpha(1f)
+                        .start()
                 }
-                view.animate()
-                    .y(0f)
-                    .setDuration(100)
-                    .alpha(1f)
-                    .start()
             }
         }
         imageMatrix = mMatrix
