@@ -7,6 +7,5 @@ import io.fasthome.fenestram_messenger.util.LoadingState
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class ContactsState(
-    val loadingState: LoadingState<ErrorInfo, List<ContactsViewItem>>,
-    val permissionGranted: Boolean
+    val loadingState: LoadingState<ErrorInfo, List<ContactsViewItem>>
 )

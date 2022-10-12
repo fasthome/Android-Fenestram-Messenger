@@ -134,7 +134,7 @@ abstract class BaseViewModel<S : Any, E : Any>(
         sendEvent(BaseViewEvent.ShowMessage(Message.Dialog(messageText = messageText, titleText = titleText)))
     }
 
-    protected fun onError(showErrorType: ShowErrorType, throwable: Throwable) {
+    fun onError(showErrorType: ShowErrorType, throwable: Throwable) {
         val errorInfo = errorConverter.convert(throwable)
 
         when (showErrorType) {
