@@ -41,5 +41,3 @@ suspend fun View.awaitPost() = suspendCancellableCoroutine<Unit> { continuation 
 }
 
 val View.layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
-
-fun Float.toIntAlpha(): Int = (this/0.003921568627451).roundToInt()

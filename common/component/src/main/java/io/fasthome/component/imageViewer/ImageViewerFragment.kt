@@ -27,7 +27,7 @@ class ImageViewerFragment : BaseFragment<ImageViewerState, ImageViewerEvent>(R.l
         binding.ibCancel.onClick(vm::onBackPressed)
         binding.image.setOnSwipeDownListener(vm::onBackPressed)
         binding.image.setOnAlphaChangedListener { alpha ->
-            view.background.alpha = alpha.toIntAlpha()
+            binding.root.alpha = alpha
         }
     }
 
