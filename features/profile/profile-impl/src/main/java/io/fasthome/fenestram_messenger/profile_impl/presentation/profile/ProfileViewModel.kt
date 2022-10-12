@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.personality_data.UserDetail
@@ -44,6 +45,7 @@ class ProfileViewModel(
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
     private var updateContinueButtonJob by switchJob()
     private var avatarUrl: String? = null
+    private val imageViewerLauncher = registerScreen(ImageViewerContract)
 
     init {
         pickFileInterface.resultEvents()
@@ -192,7 +194,13 @@ class ProfileViewModel(
     }
 
     fun onAvatarClicked() {
-        pickFileInterface.pickFile()
+        if(currentViewState.isEdit) {
+            pickFileInterface.pickFile()
+        } else {
+            if (currentViewState.avatarUrl != null || currentViewState.avatarBitmap != null) {
+                imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.avatarUrl, currentViewState.avatarBitmap))
+            }
+        }
     }
 
     fun editClicked() {

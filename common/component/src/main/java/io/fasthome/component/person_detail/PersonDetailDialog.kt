@@ -3,6 +3,7 @@ package io.fasthome.component.person_detail
 import android.app.Dialog
 import androidx.fragment.app.Fragment
 import io.fasthome.component.databinding.DialogPersonDetailBinding
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.util.onClick
@@ -14,8 +15,10 @@ object PersonDetailDialog {
         personDetail: PersonDetail,
         launchFaceCallClicked: () -> Unit,
         launchCallClicked: () -> Unit,
-        launchConversationClicked: (personDetail: PersonDetail) -> Unit
+        launchConversationClicked: (personDetail: PersonDetail) -> Unit,
+        onAvatarClicked:(avatarUrl: String?) -> Unit
     ): Dialog {
+
         val personDetailBinding = DialogPersonDetailBinding.inflate(fragment.layoutInflater)
 
         with(personDetailBinding) {
@@ -29,6 +32,9 @@ object PersonDetailDialog {
             if (personDetail.userNickname.isNotEmpty())
                 nickname.text = "@${personDetail.userNickname}"
             avatar.loadCircle(personDetail.avatar)
+            avatar.onClick {
+                onAvatarClicked(personDetail.avatar)
+            }
 
             launchFacecall.onClick {
                 launchFaceCallClicked()

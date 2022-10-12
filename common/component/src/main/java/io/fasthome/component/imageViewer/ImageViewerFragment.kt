@@ -1,11 +1,11 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer
+package io.fasthome.component.imageViewer
 
 import android.os.Bundle
 import android.view.View
 import com.bumptech.glide.load.resource.bitmap.FitCenter
+import io.fasthome.component.R
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
-import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentImageViewerBinding
+import io.fasthome.component.databinding.FragmentImageViewerBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected

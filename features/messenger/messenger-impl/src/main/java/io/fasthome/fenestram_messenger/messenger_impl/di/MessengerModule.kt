@@ -22,7 +22,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatViewModel
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerViewModel
+import io.fasthome.component.imageViewer.ImageViewerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper

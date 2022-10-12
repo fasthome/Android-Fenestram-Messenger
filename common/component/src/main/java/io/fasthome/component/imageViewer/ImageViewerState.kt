@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer
+package io.fasthome.component.imageViewer
 
 import android.graphics.Bitmap
 
