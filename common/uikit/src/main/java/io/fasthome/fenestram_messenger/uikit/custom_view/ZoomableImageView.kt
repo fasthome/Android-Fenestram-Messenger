@@ -16,30 +16,29 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
     //shared constructing
-    private var mContext: Context? = null
-    private var mScaleDetector: ScaleGestureDetector? = null
-    private var mGestureDetector: GestureDetector? = null
-    var mMatrix: Matrix? = null
+    private var scaleDetector: ScaleGestureDetector? = null
+    private var gestureDetector: GestureDetector? = null
+    private var matrixGeneral: Matrix? = null
     private var onDownSwipe: (() -> Unit)? = null
     private val canSwipe: Boolean
-    get() = onDownSwipe != null
-    private var mMatrixValues: FloatArray? = null
-    var mode = NONE
+        get() = onDownSwipe != null
+    private var matrixValues: FloatArray? = null
+    private var mode = NONE
 
     // Scales
-    var mSaveScale = 1f
-    var mMinScale = MIN_SCALE
-    var mMaxScale = MAX_SCALE
+    private var saveScale = 1f
+    private var minScale = MIN_SCALE
+    private var maxScale = MAX_SCALE
 
     // view dimensions
-    var origWidth = 0f
-    var origHeight = 0f
-    var viewWidth = 0
-    var viewHeight = 0
-    private var mLast = PointF()
-    private var mStart = PointF()
-    var dY = 0f
-    var centerY = 0f
+    private var origWidth = 0f
+    private var origHeight = 0f
+    private var viewWidth = 0
+    private var viewHeight = 0
+    private var lastPoint = PointF()
+    private var startPoint = PointF()
+    private var dY = 0f
+    private var centerY = 0f
 
     constructor(context: Context) : super(context) {
         sharedConstructing(context)
@@ -55,13 +54,12 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
 
     private fun sharedConstructing(context: Context) {
         super.setClickable(true)
-        mContext = context
-        mScaleDetector = ScaleGestureDetector(context, ScaleListener())
-        mMatrix = Matrix()
-        mMatrixValues = FloatArray(9)
-        imageMatrix = mMatrix
+        scaleDetector = ScaleGestureDetector(context, ScaleListener())
+        matrixGeneral = Matrix()
+        matrixValues = FloatArray(9)
+        imageMatrix = matrixGeneral
         scaleType = ScaleType.MATRIX
-        mGestureDetector = GestureDetector(context, this)
+        gestureDetector = GestureDetector(context, this)
         setOnTouchListener(this)
     }
 
@@ -73,22 +71,22 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
 
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             var mScaleFactor = detector.scaleFactor
-            val prevScale = mSaveScale
-            mSaveScale *= mScaleFactor
-            if (mSaveScale > mMaxScale) {
-                mSaveScale = mMaxScale
-                mScaleFactor = mMaxScale / prevScale
-            } else if (mSaveScale < mMinScale) {
-                mSaveScale = mMinScale
-                mScaleFactor = mMinScale / prevScale
+            val prevScale = saveScale
+            saveScale *= mScaleFactor
+            if (saveScale > maxScale) {
+                saveScale = maxScale
+                mScaleFactor = maxScale / prevScale
+            } else if (saveScale < minScale) {
+                saveScale = minScale
+                mScaleFactor = minScale / prevScale
             }
-            if (origWidth * mSaveScale <= viewWidth
-                || origHeight * mSaveScale <= viewHeight
+            if (origWidth * saveScale <= viewWidth
+                || origHeight * saveScale <= viewHeight
             ) {
-                mMatrix!!.postScale(mScaleFactor, mScaleFactor, viewWidth / 2.toFloat(),
+                matrixGeneral!!.postScale(mScaleFactor, mScaleFactor, viewWidth / 2.toFloat(),
                     viewHeight / 2.toFloat())
             } else {
-                mMatrix!!.postScale(mScaleFactor, mScaleFactor,
+                matrixGeneral!!.postScale(mScaleFactor, mScaleFactor,
                     detector.focusX, detector.focusY)
             }
             fixTranslation()
@@ -97,7 +95,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     }
 
     private fun fitToScreen() {
-        mSaveScale = 1f
+        saveScale = 1f
         val scale: Float
         val drawable = drawable
         if (drawable == null || drawable.intrinsicWidth == 0 || drawable.intrinsicHeight == 0) return
@@ -106,7 +104,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         val scaleX = viewWidth.toFloat() / imageWidth.toFloat()
         val scaleY = viewHeight.toFloat() / imageHeight.toFloat()
         scale = scaleX.coerceAtMost(scaleY)
-        mMatrix!!.setScale(scale, scale)
+        matrixGeneral!!.setScale(scale, scale)
 
         // Center the image
         var redundantYSpace = (viewHeight.toFloat()
@@ -115,21 +113,21 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 - scale * imageWidth.toFloat())
         redundantYSpace /= 2.toFloat()
         redundantXSpace /= 2.toFloat()
-        mMatrix!!.postTranslate(redundantXSpace, redundantYSpace)
+        matrixGeneral!!.postTranslate(redundantXSpace, redundantYSpace)
         origWidth = viewWidth - 2 * redundantXSpace
         origHeight = viewHeight - 2 * redundantYSpace
-        imageMatrix = mMatrix
+        imageMatrix = matrixGeneral
     }
 
     fun fixTranslation() {
-        mMatrix!!.getValues(mMatrixValues) //put matrix values into a float array so we can analyze
+        matrixGeneral!!.getValues(matrixValues) //put matrix values into a float array so we can analyze
         val transX =
-            mMatrixValues!![Matrix.MTRANS_X] //get the most recent translation in x direction
+            matrixValues!![Matrix.MTRANS_X] //get the most recent translation in x direction
         val transY =
-            mMatrixValues!![Matrix.MTRANS_Y] //get the most recent translation in y direction
-        val fixTransX = getFixTranslation(transX, viewWidth.toFloat(), origWidth * mSaveScale)
-        val fixTransY = getFixTranslation(transY, viewHeight.toFloat(), origHeight * mSaveScale)
-        if (fixTransX != 0f || fixTransY != 0f) mMatrix!!.postTranslate(fixTransX, fixTransY)
+            matrixValues!![Matrix.MTRANS_Y] //get the most recent translation in y direction
+        val fixTransX = getFixTranslation(transX, viewWidth.toFloat(), origWidth * saveScale)
+        val fixTransY = getFixTranslation(transY, viewHeight.toFloat(), origHeight * saveScale)
+        if (fixTransX != 0f || fixTransY != 0f) matrixGeneral!!.postTranslate(fixTransX, fixTransY)
     }
 
     private fun getFixTranslation(trans: Float, viewSize: Float, contentSize: Float): Float {
@@ -165,7 +163,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         viewHeight = MeasureSpec.getSize(heightMeasureSpec)
-        if (mSaveScale == 1f) {
+        if (saveScale == 1f) {
             fitToScreen()
         }
     }
@@ -175,40 +173,39 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
      */
     override fun onTouch(view: View?, event: MotionEvent): Boolean {
         if (view == null) return false
-        mScaleDetector!!.onTouchEvent(event)
-        mGestureDetector!!.onTouchEvent(event)
+        scaleDetector!!.onTouchEvent(event)
+        gestureDetector!!.onTouchEvent(event)
         val currentPoint = PointF(event.x, event.y)
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                mLast.set(currentPoint)
-                mStart.set(mLast)
+                lastPoint.set(currentPoint)
+                startPoint.set(lastPoint)
                 mode = DRAG
                 dY = view.y - event.rawY
                 centerY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
-                if (mSaveScale == MIN_SCALE && canSwipe) {
+                if (saveScale == MIN_SCALE && canSwipe) {
                     view.animate()
                         .y(event.rawY + dY)
                         .setDuration(0)
                         .start()
                     view.alpha =
                         if (event.rawY < centerY) event.rawY / centerY else centerY / event.rawY
-                    // Log.d("ZoomableImageView", "ACTION_SWIPE_DRAG rawY=${event.rawY}, dY=$dY, alpha=$newAlpha, centerY=$centerY")
                 }
-                val dx = currentPoint.x - mLast.x
-                val dy = currentPoint.y - mLast.y
-                val fixTransX = getFixDragTrans(dx, viewWidth.toFloat(), origWidth * mSaveScale)
-                val fixTransY = getFixDragTrans(dy, viewHeight.toFloat(), origHeight * mSaveScale)
-                mMatrix!!.postTranslate(fixTransX, fixTransY)
+                val dx = currentPoint.x - lastPoint.x
+                val dy = currentPoint.y - lastPoint.y
+                val fixTransX = getFixDragTrans(dx, viewWidth.toFloat(), origWidth * saveScale)
+                val fixTransY = getFixDragTrans(dy, viewHeight.toFloat(), origHeight * saveScale)
+                matrixGeneral!!.postTranslate(fixTransX, fixTransY)
                 fixTranslation()
-                mLast[currentPoint.x] = currentPoint.y
+                lastPoint[currentPoint.x] = currentPoint.y
             }
             MotionEvent.ACTION_POINTER_UP -> mode = NONE
 
             MotionEvent.ACTION_UP -> {
                 if (canSwipe) {
-                    if (mSaveScale == MIN_SCALE) {
+                    if (saveScale == MIN_SCALE) {
                         var middleTopCenter = centerY / 2
                         if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
                             onDownSwipe?.invoke()
@@ -222,7 +219,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 }
             }
         }
-        imageMatrix = mMatrix
+        imageMatrix = matrixGeneral
         return false
     }
 
