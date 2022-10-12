@@ -87,6 +87,10 @@ class MessengerRepoImpl(
         messengerService.uploadImage(photoBytes, guid)
     }
 
+    override suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit> = callForResult {
+        messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
+    }
+
     override fun closeSocket() {
         socket.closeClientSocket()
     }

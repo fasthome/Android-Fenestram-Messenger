@@ -103,6 +103,8 @@ class MessengerInteractor(
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
+    suspend fun editMessage(chatId: Long, messageId: Long, newText: String) = messageRepo.editMessage(chatId = chatId,messageId = messageId,newText = newText)
+
     suspend fun getFile(itemId: String): CallResult<FileData?> =
         filesRepo.getFile(itemId)
 

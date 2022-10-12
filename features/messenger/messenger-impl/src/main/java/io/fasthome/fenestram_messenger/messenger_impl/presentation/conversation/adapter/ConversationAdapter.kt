@@ -51,6 +51,7 @@ fun createConversationSelfTextAdapterDelegate(
             true
         }
         bindWithBinding {
+            tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible

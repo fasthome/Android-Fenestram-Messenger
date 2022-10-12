@@ -55,7 +55,8 @@ fun Message.toConversationViewItem(
                         date = date,
                         id = id,
                         localId = UUID.randomUUID().toString(),
-                        timeVisible = true
+                        timeVisible = true,
+                        isEdited = isEdited
                     )
                 }
                 MESSAGE_TYPE_IMAGE -> {
@@ -97,6 +98,7 @@ fun Message.toConversationViewItem(
                             phone = initiator?.phone ?: "",
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
+                            isEdited = isEdited,
                             timeVisible = true
                         )
                     }
@@ -137,7 +139,8 @@ fun Message.toConversationViewItem(
                             sentStatus = SentStatus.None,
                             date = date,
                             id = id,
-                            timeVisible = true
+                            timeVisible = true,
+                            isEdited = isEdited
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -276,6 +279,7 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     date = ZonedDateTime.now(),
     id = 0,
     localId = UUID.randomUUID().toString(),
+    isEdited = false,
     timeVisible = true
 )
 

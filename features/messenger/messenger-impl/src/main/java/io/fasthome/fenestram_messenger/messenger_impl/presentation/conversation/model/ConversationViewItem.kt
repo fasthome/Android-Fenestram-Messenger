@@ -30,6 +30,7 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             override val timeVisible: Boolean,
+            val isEdited: Boolean
         ) : Self()
 
         data class Image(
@@ -52,6 +53,7 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
             override val timeVisible: Boolean,
+            val isEdited: Boolean
         ) : Receive()
 
         data class Image(
@@ -83,6 +85,7 @@ sealed interface ConversationViewItem {
             override val nickname: String,
             override val userId: Long,
             override val timeVisible: Boolean,
+            val isEdited: Boolean
         ) : Group(userName, nickname, avatar, phone, userId)
 
         data class Image(

@@ -100,8 +100,20 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="Text.Blue.12sp">
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="Text.Gray">
         <item name="android:textColor">@color/gray1</item>
+    </style>
+
+    <style name="Text.Gray.10sp">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="Text.Gray.12sp">
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Text.Gray.14sp">
