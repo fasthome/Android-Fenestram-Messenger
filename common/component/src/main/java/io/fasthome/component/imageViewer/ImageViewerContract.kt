@@ -6,7 +6,7 @@ import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import kotlinx.parcelize.Parcelize
 
-object ImageViewerContract : NavigationContract<ImageViewerContract.Params, NoResult>(ImageViewerFragment::class) {
+object ImageViewerContract : NavigationContract<ImageViewerContract.Params, NoResult>(ImageViewerDialog::class) {
 
     @Parcelize
     data class Params(
