@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.math.roundToInt
 
 inline fun View.onClick(crossinline action: () -> Unit) {
     setOnClickListener { action() }
@@ -40,3 +41,5 @@ suspend fun View.awaitPost() = suspendCancellableCoroutine<Unit> { continuation 
 }
 
 val View.layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
+
+fun Float.toIntAlpha(): Int = (this/0.003921568627451).roundToInt()

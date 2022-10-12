@@ -11,6 +11,8 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.toIntAlpha
+import kotlin.math.roundToInt
 
 class ImageViewerFragment : BaseFragment<ImageViewerState, ImageViewerEvent>(R.layout.fragment_image_viewer) {
 
@@ -24,6 +26,9 @@ class ImageViewerFragment : BaseFragment<ImageViewerState, ImageViewerEvent>(R.l
         super.onViewCreated(view, savedInstanceState)
         binding.ibCancel.onClick(vm::onBackPressed)
         binding.image.setOnSwipeDownListener(vm::onBackPressed)
+        binding.image.setOnAlphaChangedListener { alpha ->
+            view.background.alpha = alpha.toIntAlpha()
+        }
     }
 
     override fun renderState(state: ImageViewerState) {

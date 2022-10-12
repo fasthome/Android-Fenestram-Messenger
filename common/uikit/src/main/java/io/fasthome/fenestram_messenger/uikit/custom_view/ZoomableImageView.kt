@@ -20,6 +20,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     private var gestureDetector: GestureDetector? = null
     private var matrixGeneral: Matrix? = null
     private var onDownSwipe: (() -> Unit)? = null
+    private var onAlphaChanged: ((alpha: Float) -> Unit)? = null
     private val canSwipe: Boolean
         get() = onDownSwipe != null
     private var matrixValues: FloatArray? = null
@@ -161,6 +162,10 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         onDownSwipe = onSwipe
     }
 
+    fun setOnAlphaChangedListener(onChanged: ((alpha: Float) -> Unit)?) {
+        onAlphaChanged = onChanged
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         viewWidth = MeasureSpec.getSize(widthMeasureSpec)
@@ -192,8 +197,10 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                         .y(event.rawY + dY)
                         .setDuration(0)
                         .start()
-                    view.alpha =
-                        if (event.rawY < centerY) event.rawY / centerY else centerY / event.rawY
+
+                    val newAlpha = if (event.rawY < centerY) event.rawY / centerY else centerY / event.rawY
+                    view.alpha = newAlpha
+                    onAlphaChanged?.invoke(newAlpha)
                 }
                 val dx = currentPoint.x - lastPoint.x
                 val dy = currentPoint.y - lastPoint.y
@@ -218,6 +225,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                         .setDuration(100)
                         .alpha(1f)
                         .start()
+                    onAlphaChanged?.invoke(1f)
                 }
             }
         }
