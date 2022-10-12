@@ -11,6 +11,7 @@ import android.view.View
 import androidx.annotation.Nullable
 import androidx.appcompat.widget.AppCompatImageView
 
+
 class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
@@ -28,9 +29,6 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     var mMinScale = MIN_SCALE
     var mMaxScale = MAX_SCALE
 
-    private val fittedToScreen: Boolean
-        get() = mSaveScale == MIN_SCALE
-
     // view dimensions
     var origWidth = 0f
     var origHeight = 0f
@@ -38,6 +36,8 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     var viewHeight = 0
     private var mLast = PointF()
     private var mStart = PointF()
+    var dY = 0f
+    var centerY = 0f
 
     constructor(context: Context) : super(context) {
         sharedConstructing(context)
@@ -164,8 +164,6 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         viewWidth = MeasureSpec.getSize(widthMeasureSpec)
         viewHeight = MeasureSpec.getSize(heightMeasureSpec)
         if (mSaveScale == 1f) {
-
-            // Fit to screen.
             fitToScreen()
         }
     }
@@ -174,6 +172,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         Ontouch
      */
     override fun onTouch(view: View?, event: MotionEvent): Boolean {
+        if (view == null) return false
         mScaleDetector!!.onTouchEvent(event)
         mGestureDetector!!.onTouchEvent(event)
         val currentPoint = PointF(event.x, event.y)
@@ -182,8 +181,19 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 mLast.set(currentPoint)
                 mStart.set(mLast)
                 mode = DRAG
+                dY = view.y - event.rawY
+                centerY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
+                if (mSaveScale == MIN_SCALE) {
+                    view.animate()
+                        .y(event.rawY + dY)
+                        .setDuration(0)
+                        .start()
+                    view.alpha =
+                        if (event.rawY < centerY) event.rawY / centerY else centerY / event.rawY
+                    // Log.d("ZoomableImageView", "ACTION_SWIPE_DRAG rawY=${event.rawY}, dY=$dY, alpha=$newAlpha, centerY=$centerY")
+                }
                 val dx = currentPoint.x - mLast.x
                 val dy = currentPoint.y - mLast.y
                 val fixTransX = getFixDragTrans(dx, viewWidth.toFloat(), origWidth * mSaveScale)
@@ -193,6 +203,20 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 mLast[currentPoint.x] = currentPoint.y
             }
             MotionEvent.ACTION_POINTER_UP -> mode = NONE
+
+            MotionEvent.ACTION_UP -> {
+                if (mSaveScale == MIN_SCALE) {
+                    var middleTopCenter = centerY / 2
+                    if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
+                        onDownSwipe?.invoke()
+                    }
+                }
+                view.animate()
+                    .y(0f)
+                    .setDuration(100)
+                    .alpha(1f)
+                    .start()
+            }
         }
         imageMatrix = mMatrix
         return false
@@ -216,12 +240,6 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         vx: Float,
         vy: Float,
     ): Boolean {
-        if (motionEvent.action == MotionEvent.ACTION_DOWN && vy > 75f) {
-            if (mSaveScale in MIN_SCALE..MIN_SCALE + DOWN_SWIPE_SCALE_SPREADING) {
-                onDownSwipe?.invoke()
-                return true
-            }
-        }
         return false
     }
 
@@ -258,7 +276,6 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         const val DRAG = 1
         const val ZOOM = 2
 
-        const val DOWN_SWIPE_SCALE_SPREADING = 0.05f
         const val MIN_SCALE = 1f
         const val MAX_SCALE = 4f
     }
