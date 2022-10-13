@@ -235,6 +235,9 @@ class ProfileGuestFragment :
                 id = event.id
             )
                 .show()
+            is ProfileGuestEvent.SetProfileName -> {
+                binding.profileGuestName.setPrintableText(event.name)
+            }
         }
     }
 

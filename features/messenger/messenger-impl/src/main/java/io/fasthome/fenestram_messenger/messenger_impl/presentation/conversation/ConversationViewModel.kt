@@ -1,9 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -22,7 +22,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -187,7 +186,10 @@ class ConversationViewModel(
         )
     }
 
-    fun editMessageMode(isEditMode: Boolean, conversationViewItem: ConversationViewItem.Self.Text? = null) {
+    fun editMessageMode(
+        isEditMode: Boolean,
+        conversationViewItem: ConversationViewItem.Self.Text? = null
+    ) {
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
@@ -303,7 +305,12 @@ class ConversationViewModel(
             ).onSuccess {
                 val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
                 val key = message.keys.firstOrNull() ?: return@launch
-                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText), isEdited = true) else it.value }
+                val newMessages = currentViewState.messages.mapValues {
+                    if (it.key == key) messageToEdit.copy(
+                        content = PrintableText.Raw(newText),
+                        isEdited = true
+                    ) else it.value
+                }
                 updateState { state ->
                     state.copy(
                         messages = newMessages,
@@ -381,16 +388,17 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
+                    val myUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
                             userName = chat.chatName,
-                            userNickname = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.nickname
+                            userNickname = chat.chatUsers.firstOrNull { it.id != myUserId }?.nickname
                                 ?: "",
                             userAvatar = chat.avatar,
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.phone
+                            userPhone = chat.chatUsers.firstOrNull { it.id != myUserId }?.phone
                                 ?: "",
                             editMode = editMode && params.chat.isGroup
                         )
@@ -409,13 +417,16 @@ class ConversationViewModel(
             .flowOn(Dispatchers.Main)
             .onEach { message ->
                 updateState { state ->
-                    if (message.isEdited && state.messages.filter { it.value.id == message.id }.isNotEmpty()) {
+                    if (message.isEdited && state.messages.filter { it.value.id == message.id }
+                            .isNotEmpty()) {
                         return@updateState state.copy(
                             messages = state.messages.mapValues {
                                 if (it.value.id == message.id)
-                                    message.toConversationViewItem(selfUserId,
+                                    message.toConversationViewItem(
+                                        selfUserId,
                                         params.chat.isGroup,
-                                        profileImageUrlConverter)
+                                        profileImageUrlConverter
+                                    )
                                 else it.value
                             }
                         )

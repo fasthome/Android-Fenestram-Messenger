@@ -3,12 +3,13 @@ package io.fasthome.component.person_detail
 import android.app.Dialog
 import androidx.fragment.app.Fragment
 import io.fasthome.component.databinding.DialogPersonDetailBinding
-import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.util.onClick
 
 object PersonDetailDialog {
+
+    private var latestDialog: Dialog? = null
 
     fun create(
         fragment: Fragment,
@@ -16,7 +17,7 @@ object PersonDetailDialog {
         launchFaceCallClicked: () -> Unit,
         launchCallClicked: () -> Unit,
         launchConversationClicked: (personDetail: PersonDetail) -> Unit,
-        onAvatarClicked:(avatarUrl: String?) -> Unit
+        onAvatarClicked: (avatarUrl: String?) -> Unit
     ): Dialog {
 
         val personDetailBinding = DialogPersonDetailBinding.inflate(fragment.layoutInflater)
@@ -48,8 +49,12 @@ object PersonDetailDialog {
                 launchConversationClicked(personDetail)
                 dialog.dismiss()
             }
-            return dialog.build()
+
+            latestDialog = dialog.build()
+            return latestDialog!!
         }
     }
+
+    fun isShowing() = latestDialog != null && latestDialog!!.isShowing
 
 }

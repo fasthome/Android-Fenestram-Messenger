@@ -87,8 +87,9 @@ class ProfileGuestViewModel(
     }
 
 
-    override fun createInitialState() =
-        ProfileGuestState(
+    override fun createInitialState(): ProfileGuestState {
+        sendEvent(ProfileGuestEvent.SetProfileName(PrintableText.Raw(params.userName)))
+        return ProfileGuestState(
             userName = PrintableText.Raw(params.userName),
             userNickname = PrintableText.Raw(params.userNickname),
             userAvatar = params.userAvatar,
@@ -102,6 +103,7 @@ class ProfileGuestViewModel(
             participantsQuantity = params.groupParticipantsParams.participants.size,
             profileGuestNameBackground = R.color.dark1
         )
+    }
 
     fun fetchFilesAndPhotos() {
         val files = listOf(
@@ -215,7 +217,12 @@ class ProfileGuestViewModel(
         if (currentViewState.editMode)
             pickFileInterface.pickFile()
         if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
-            imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+            imageViewerLauncher.launch(
+                ImageViewerContract.Params(
+                    currentViewState.userAvatar,
+                    currentViewState.avatarBitmap
+                )
+            )
         }
     }
 }

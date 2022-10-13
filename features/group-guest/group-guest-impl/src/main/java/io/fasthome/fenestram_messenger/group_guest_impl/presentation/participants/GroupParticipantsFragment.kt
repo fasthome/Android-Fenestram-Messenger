@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import io.fasthome.component.person_detail.PersonDetailDialog
@@ -38,15 +37,11 @@ class GroupParticipantsFragment :
         binding.addUserToChat.onClick {
             vm.onAddUserToChat()
         }
-        
-        latestPersonDetailDialog = Dialog(requireContext())
     }
 
     override fun renderState(state: GroupParticipantsState) {
         adapter.items = state.participants
     }
-
-    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: GroupParticipantsEvent) {
         when (event) {
@@ -61,8 +56,8 @@ class GroupParticipantsFragment :
                 ).show()
             }
             is GroupParticipantsEvent.ShowPersonDetailDialog -> {
-                if (!latestPersonDetailDialog.isShowing) {
-                    latestPersonDetailDialog = PersonDetailDialog
+                if (!PersonDetailDialog.isShowing()) {
+                    PersonDetailDialog
                         .create(
                             fragment = this,
                             personDetail = event.selectedPerson,
@@ -78,7 +73,7 @@ class GroupParticipantsFragment :
                             onAvatarClicked = { avatarUrl ->
                                 vm.onImageClicked(url = avatarUrl)
                             })
-                    latestPersonDetailDialog.show()
+                        .show()
                 }
             }
         }

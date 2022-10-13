@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -149,7 +148,6 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
-        latestPersonDetailDialog = Dialog(requireContext())
     }
 
     override fun onResume() {
@@ -182,7 +180,6 @@ class ConversationFragment :
         renderStateEditMode(state.editMode, state.messageToEdit)
     }
 
-    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
@@ -237,8 +234,8 @@ class ConversationFragment :
                         })
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->
-                if (!latestPersonDetailDialog.isShowing) {
-                    latestPersonDetailDialog = PersonDetailDialog
+                if (!PersonDetailDialog.isShowing()) {
+                    PersonDetailDialog
                         .create(
                             fragment = this,
                             personDetail = event.selectedPerson,
@@ -254,7 +251,7 @@ class ConversationFragment :
                             onAvatarClicked = { avatarUrl ->
                                 vm.onImageClicked(url = avatarUrl)
                             })
-                    latestPersonDetailDialog.show()
+                        .show()
                 }
             is ConversationEvent.ShowErrorSentDialog -> {
                 ErrorSentDialog.create(
@@ -273,7 +270,7 @@ class ConversationFragment :
                 }, onCopy = {
                     copyPrintableText(event.conversationViewItem.content)
                 }, onEdit = {
-                    vm.editMessageMode(true,event.conversationViewItem)
+                    vm.editMessageMode(true, event.conversationViewItem)
                 }
             ).show()
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
@@ -299,19 +296,27 @@ class ConversationFragment :
         }
     }
 
-    private fun renderStateEditMode(isEditMode: Boolean, selfMessage:ConversationViewItem.Self.Text? = null) {
+    private fun renderStateEditMode(
+        isEditMode: Boolean,
+        selfMessage: ConversationViewItem.Self.Text? = null
+    ) {
         with(binding) {
             clEditMessage.isInvisible = !isEditMode
             attachButton.isVisible = !isEditMode
             horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,ConstraintSet.BOTTOM,if(isEditMode) R.id.cl_edit_message else R.id.input_message,ConstraintSet.TOP)
+                connect(
+                    R.id.messages_list,
+                    ConstraintSet.BOTTOM,
+                    if (isEditMode) R.id.cl_edit_message else R.id.input_message,
+                    ConstraintSet.TOP
+                )
             }
             root.setConstraintSet(constraintsSet)
             if (!isEditMode || selfMessage == null) return
             inputMessage.setOnSizeChanged(onHeightChanged = {
-                clEditMessage.setPadding(0, 0, 0, it+10.dp)
+                clEditMessage.setPadding(0, 0, 0, it + 10.dp)
             })
             val textToEdit = getPrintableText(selfMessage.content)
             tvTextToEdit.text = textToEdit
@@ -327,7 +332,8 @@ class ConversationFragment :
             padding,
             binding.inputMessage.paddingBottom,
             padding,
-            binding.inputMessage.paddingTop)
+            binding.inputMessage.paddingTop
+        )
     }
 
     private fun copyPrintableText(printableText: PrintableText) {
