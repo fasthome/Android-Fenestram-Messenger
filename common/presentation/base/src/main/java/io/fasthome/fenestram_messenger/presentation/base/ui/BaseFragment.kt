@@ -14,6 +14,7 @@ import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.util.onBackPressed
 import io.fasthome.fenestram_messenger.presentation.base.util.onFabClicked
+import io.fasthome.fenestram_messenger.presentation.base.util.onFabUpdateIcon
 import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnCreate
@@ -56,6 +57,9 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
     override fun onFabClicked(): Boolean =
         childFragmentManager.onFabClicked()
 
+    override fun updateFabIcon(iconRes: Int?, badgeCount : Int) {
+        requireActivity().supportFragmentManager.onFabUpdateIcon(iconRes, badgeCount)
+    }
 
     protected abstract fun renderState(state: State)
     protected abstract fun handleEvent(event: Event)

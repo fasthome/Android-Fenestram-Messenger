@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
 
+
 class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) {
 
     override val vm: MainViewModel by viewModel()
@@ -38,7 +39,7 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
 
     override fun renderState(state: MainState) {
         binding.debug.isVisible = state.debugVisible
-        binding.fab.isVisible = state.fabVisible
+        binding.fabContainer.isVisible = state.fabVisible
         val tabToOpen = state.currentTab
 
         binding.navigationView.selectedItemId = TabsMapper.mapTabToItemId(tabToOpen)
@@ -62,4 +63,10 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
     }
 
     override fun handleEvent(event: MainEvent) = noEventsExpected()
+
+    override fun updateFabIcon(iconRes: Int?, badgeCount : Int) {
+        binding.fab.setImageResource(iconRes ?: R.drawable.bg_add_contact_cross)
+        binding.badge.isVisible = badgeCount != 0
+        binding.badge.text = badgeCount.toString()
+    }
 }

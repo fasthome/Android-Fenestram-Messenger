@@ -212,10 +212,13 @@ class ProfileGuestViewModel(
     }
 
     fun onAvatarClicked() {
-        if (currentViewState.editMode)
+        if (currentViewState.editMode) {
             pickFileInterface.pickFile()
-        if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
-            imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+        }
+        else {
+            if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
+                imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+            }
         }
     }
 }

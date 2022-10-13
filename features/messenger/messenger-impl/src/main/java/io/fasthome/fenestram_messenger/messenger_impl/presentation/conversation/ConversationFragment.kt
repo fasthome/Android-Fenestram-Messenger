@@ -125,13 +125,13 @@ class ConversationFragment :
         })
         attachedList.adapter = attachedAdapter
 
-        sendButton.setOnClickListener() {
+        sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
             inputMessage.text?.clear()
             messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
 
-        backButton.setOnClickListener() {
+        backButton.onClick() {
             vm.exitToMessenger()
         }
         profileToolBar.onClick {
@@ -139,11 +139,11 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
-        dropdownMenu.setOnClickListener {
+        dropdownMenu.onClick {
             vm.onOpenMenu()
         }
 
-        ivCloseEdit.setOnClickListener {
+        ivCloseEdit.onClick {
             vm.editMessageMode(false)
             inputMessage.setText("")
         }

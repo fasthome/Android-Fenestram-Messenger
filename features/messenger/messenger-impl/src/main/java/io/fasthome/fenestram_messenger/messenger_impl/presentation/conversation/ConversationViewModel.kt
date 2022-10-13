@@ -227,7 +227,7 @@ class ConversationViewModel(
         if (attachedFiles.isNotEmpty()) {
             sendImages(attachedFiles)
         }
-        if (mess.isNotEmpty()) {
+        if (mess.trim().isNotEmpty()) {
             when (currentViewState.inputMessageMode) {
                 is InputMessageMode.Default -> {
                     sendMessage(mess)
