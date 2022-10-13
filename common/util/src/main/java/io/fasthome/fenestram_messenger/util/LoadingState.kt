@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.util
 
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.viewbinding.ViewBinding
@@ -7,13 +8,13 @@ import androidx.viewbinding.ViewBinding
 sealed class LoadingState<out E, out T> {
     object None : LoadingState<Nothing, Nothing>()
     object Loading : LoadingState<Nothing, Nothing>()
-    data class Error<out E>(val error: E) : LoadingState<E, Nothing>()
+    data class Error<out E>(val error: E, val throwable: Throwable) : LoadingState<E, Nothing>()
     data class Success<out T>(val data: T) : LoadingState<Nothing, T>()
 
     companion object
 }
 
-fun LoadingState.Companion.Error() = LoadingState.Error(Unit)
+fun LoadingState.Companion.Error() = LoadingState.Error(Unit, Exception())
 fun LoadingState.Companion.Success() = LoadingState.Success(Unit)
 
 fun LoadingState.Companion.fromLoading(isLoading: Boolean): LoadingState<Nothing, Unit> =
@@ -36,7 +37,7 @@ fun <E> List<LoadingState<E, *>>.commonStateWithError(): LoadingState<E, Unit> {
     val firstErrorState: LoadingState.Error<E>? = filterIsInstance<LoadingState.Error<E>>().firstOrNull()
 
     return when {
-        firstErrorState != null -> LoadingState.Error(firstErrorState.error)
+        firstErrorState != null -> LoadingState.Error(firstErrorState.error, Exception())
         all { it is LoadingState.Success } -> LoadingState.Success()
         any { it is LoadingState.Loading } -> LoadingState.Loading
         else -> LoadingState.None
@@ -46,17 +47,16 @@ fun <E> List<LoadingState<E, *>>.commonStateWithError(): LoadingState<E, Unit> {
 inline fun <T> renderLoadingState(
     loadingState: LoadingState<ErrorInfo, T>,
     progressContainer: View?,
-    errorContainer: View?,
     contentContainer: View?,
     renderData: (T) -> Unit = {},
+    renderError : (error : ErrorInfo, throwable : Throwable) -> Unit
 ) {
+    Log.d("LoadingState", "renderLoadingState: $loadingState")
     progressContainer?.isVisible = loadingState.isLoading
-    errorContainer?.isVisible = loadingState is LoadingState.Error
     contentContainer?.isVisible = loadingState.isSuccess
 
     if (loadingState is LoadingState.Error) {
-        //todo добавить стандартное отображение ошибки
-//        errorContainer.renderError(loadingState.error)
+        renderError(loadingState.error, loadingState.throwable)
     }
 
     loadingState.dataOrNull?.apply(renderData)
