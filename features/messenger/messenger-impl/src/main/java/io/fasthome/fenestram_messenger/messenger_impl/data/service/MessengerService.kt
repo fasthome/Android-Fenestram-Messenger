@@ -84,7 +84,7 @@ class MessengerService(
     suspend fun uploadDocument(documentBytes: ByteArray, guid: String): UploadDocumentResult {
         val response = client
             .runSubmitFormWithFile<BaseResponse<UploadDocumentResponse>>(
-                path = "api/v1/files/upload",
+                path = "files/upload",
                 binaryData = documentBytes,
                 filename = guid,
             )

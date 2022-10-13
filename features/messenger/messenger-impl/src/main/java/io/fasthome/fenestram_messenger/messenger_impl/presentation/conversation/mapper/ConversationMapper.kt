@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
 import io.ktor.util.reflect.*
+import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -79,7 +80,10 @@ fun Message.toConversationViewItem(
                         sentStatus = SentStatus.Sent,
                         date = date,
                         id = id,
-                        localId = UUID.randomUUID().toString()
+                        localId = UUID.randomUUID().toString(),
+                        timeVisible = true,
+                        file = null,
+                        path = null
                     )
                 }
 
@@ -90,7 +94,7 @@ fun Message.toConversationViewItem(
                         sentStatus = SentStatus.Sent,
                         date = date,
                         id = id,
-                        timeVisible = true
+                        timeVisible = true,
                     )
                 }
                 else -> error("Unknown Message Type! type $messageType")
@@ -140,7 +144,10 @@ fun Message.toConversationViewItem(
                             avatar = initiator?.avatar ?: "",
                             date = date,
                             id = id,
-                            phone = initiator?.phone ?: ""
+                            phone = initiator?.phone ?: "",
+                            timeVisible = true,
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0,
                         )
                     }
 
@@ -188,6 +195,7 @@ fun Message.toConversationViewItem(
                             sentStatus = SentStatus.Sent,
                             date = date,
                             id = id,
+                            timeVisible = true
                         )
                     }
 
@@ -270,7 +278,7 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
                 if (tempPreviousCounter >= messages.lastIndex) break
                 nextInvisibleItem = messages[tempPreviousCounter]
 
-                if(singleSameTimeIsContinue(conversationViewItem, nextInvisibleItem)) break
+                if (singleSameTimeIsContinue(conversationViewItem, nextInvisibleItem)) break
 
                 isInvisible = conversationViewItem.date?.minute == nextInvisibleItem.date?.minute
 
@@ -340,7 +348,9 @@ fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.
     date = ZonedDateTime.now(),
     id = 0,
     localId = UUID.randomUUID().toString(),
-    file = file
+    file = file,
+    timeVisible = true,
+    path = null
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

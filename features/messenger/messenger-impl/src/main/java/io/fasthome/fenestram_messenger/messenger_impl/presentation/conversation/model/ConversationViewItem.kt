@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
+import java.io.File
 import java.time.ZonedDateTime
 
 typealias OnStatusChanged = (SentStatus) -> Unit
@@ -51,6 +52,7 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override var sentStatus: SentStatus,
             override val localId: String,
+            override val timeVisible: Boolean,
             val file: File? = null,
             var path: String? = null,
         ) : Self()
@@ -82,6 +84,7 @@ sealed interface ConversationViewItem {
             override val time: PrintableText,
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
+            override val timeVisible: Boolean,
             var path: String? = null,
         ) : Receive()
     }
@@ -131,8 +134,11 @@ sealed interface ConversationViewItem {
             override val userName: PrintableText,
             override val avatar: String,
             override val phone: String,
+            override val timeVisible: Boolean,
+            override val nickname: String,
+            override val userId: Long,
             var path: String? = null,
-        ) : Group(userName, avatar, phone)
+        ) : Group(userName, avatar, phone, nickname, userId)
     }
 
     data class System(

@@ -9,7 +9,6 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.core.R
 import kotlin.math.roundToInt
 
 class ConversationAdapter(
@@ -20,7 +19,6 @@ class ConversationAdapter(
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
-    onImageClicked: (String) -> Unit,
     onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(

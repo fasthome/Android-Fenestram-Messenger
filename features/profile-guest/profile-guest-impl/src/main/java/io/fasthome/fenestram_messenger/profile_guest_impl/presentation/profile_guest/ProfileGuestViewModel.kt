@@ -62,7 +62,7 @@ class ProfileGuestViewModel(
             .onEach {
                 when (it) {
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
-                    is PickFileInterface.ResultEvent.Picked -> {
+                    is PickFileInterface.ResultEvent.PickedImage -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
                         if (bitmap != null) {
                             updateState { state ->

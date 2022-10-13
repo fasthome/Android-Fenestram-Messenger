@@ -318,10 +318,12 @@ class ConversationFragment :
             horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,
+                connect(
+                    R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (isEditMode) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP)
+                    ConstraintSet.TOP
+                )
             }
             root.setConstraintSet(constraintsSet)
             if (!isEditMode || selfMessage == null) return
@@ -342,7 +344,8 @@ class ConversationFragment :
             padding,
             binding.inputMessage.paddingBottom,
             padding,
-            binding.inputMessage.paddingTop)
+            binding.inputMessage.paddingTop
+        )
     }
 
     private fun copyPrintableText(printableText: PrintableText) {

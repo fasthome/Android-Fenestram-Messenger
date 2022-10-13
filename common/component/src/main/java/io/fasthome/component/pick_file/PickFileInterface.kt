@@ -7,7 +7,8 @@ interface PickFileInterface {
 
     sealed interface ResultEvent {
         object PickCancelled : ResultEvent
-        data class Picked(val tempFile: File) : ResultEvent
+        data class PickedImage(val tempFile: File) : ResultEvent
+        data class PickedFile(val tempFile: File) : ResultEvent
     }
 
     fun pickFile(mimeType: PickFileComponentParams.MimeType? = null)
