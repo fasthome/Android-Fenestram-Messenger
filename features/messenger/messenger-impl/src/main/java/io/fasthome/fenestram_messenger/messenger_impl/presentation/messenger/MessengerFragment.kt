@@ -4,11 +4,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -16,7 +17,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessen
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -35,6 +35,10 @@ class MessengerFragment :
 
     private val viewBinderHelper = ViewBinderHelper()
 
+    private var lastScrollPosition = 0
+
+    private lateinit var fabActionListener: () -> Unit
+
     private var messageAdapter = MessengerAdapter(
         environment = environment,
         onChatClicked = {
@@ -47,13 +51,13 @@ class MessengerFragment :
         viewBinderHelper = viewBinderHelper
     )
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        binding.chatList.adapter = messageAdapter
+        chatList.adapter = messageAdapter
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
-        binding.chatsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        chatsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -70,12 +74,29 @@ class MessengerFragment :
         messageAdapter.addOnPagesUpdatedListener {
             binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
         }
+        val linearLayoutManager =
+            LinearLayoutManager(requireContext())
+        chatList.layoutManager = linearLayoutManager
+
+        chatList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                lastScrollPosition = linearLayoutManager.findFirstVisibleItemPosition()
+                if (lastScrollPosition == 0) {
+                    vm.onReadMessages()
+                }
+            }
+        })
 
         vm.items
             .distinctUntilChanged()
-            .collectLatestWhenStarted(this) {
+            .collectLatestWhenStarted(this@MessengerFragment) {
                 messageAdapter.submitData(it)
             }
+
+        fabActionListener = {
+            vm.onCreateChatClicked()
+        }
     }
 
     override fun onResume() {
@@ -83,12 +104,22 @@ class MessengerFragment :
         vm.fetchNewMessages()
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewBinderHelper.closeAll()
-    }
+    override fun renderState(state: MessengerState) {
+        if (state.newMessagesCount == 0) {
+            updateFabIcon(iconRes = null, badgeCount = state.newMessagesCount)
 
-    override fun renderState(state: MessengerState) = nothingToRender()
+            fabActionListener = {
+                vm.onCreateChatClicked()
+            }
+        } else {
+            if (lastScrollPosition != 0) {
+                updateFabIcon(iconRes = R.drawable.ic_arrow_up, badgeCount = state.newMessagesCount)
+                fabActionListener = {
+                    binding.chatList.smoothScrollToPosition(0)
+                }
+            }
+        }
+    }
 
     override fun handleEvent(event: MessengerEvent) {
         when (event) {
@@ -107,8 +138,13 @@ class MessengerFragment :
     }
 
     override fun onFabClicked(): Boolean {
-        vm.onCreateChatClicked()
+        fabActionListener.invoke()
         return super.onFabClicked()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewBinderHelper.closeAll()
     }
 
     override fun onStop() {

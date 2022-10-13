@@ -67,6 +67,10 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateFabIcon(iconRes = null, badgeCount = 0)
+    }
 
     override fun renderState(state: ContactsState) = with(binding) {
         noPermissionContainer.isVisible = false
