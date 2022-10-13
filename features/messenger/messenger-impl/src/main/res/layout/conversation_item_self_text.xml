@@ -17,6 +17,8 @@
         android:paddingTop="5dp"
         android:paddingEnd="12dp"
         android:paddingBottom="5dp"
+        android:minWidth="48dp"
+        android:minHeight="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,9 +31,8 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/geometria"
             android:maxEms="16"
-            android:minWidth="48dp"
-            android:minHeight="24dp"
             android:text="@string/MessageContentCheck"
+            tools:text="й"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:barrierMargin="5dp"
@@ -49,10 +50,7 @@
             android:layout_gravity="end"
             android:text="@string/messenger_edited"
             android:textColor="@color/gray4"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/message_content"
-            app:layout_constraintTop_toBottomOf="@+id/message_content"
-            tools:visibility="visible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
