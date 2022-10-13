@@ -1,9 +1,10 @@
-package io.fasthome.fenestram_messenger
+package io.fasthome.fenestram_messenger.ui.main
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
+import io.fasthome.fenestram_messenger.data.core.CoreRepo
 import io.fasthome.fenestram_messenger.main_api.MainFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -37,7 +38,8 @@ class MainActivityViewModel(
     router: ContractRouter,
     private val features: Features,
     private val deepLinkNavigator: DeepLinkNavigator,
-) : BaseViewModel<MainActivityState, Nothing>(requestParams = REQUEST_PARAMS, router = router) {
+    private val coreRepo: CoreRepo
+) : BaseViewModel<MainActivityState, MainActivityEvent>(requestParams = REQUEST_PARAMS, router = router) {
 
     class Features(
         val authFeature: AuthFeature,
@@ -79,6 +81,8 @@ class MainActivityViewModel(
                 startAuth()
             }
             .launchIn(viewModelScope)
+
+        checkAndOpenSplash()
     }
 
     override fun createInitialState(): MainActivityState {
@@ -186,6 +190,15 @@ class MainActivityViewModel(
             val deepLinkResult = ::deepLinkResult.getAndSet(null) ?: return@launch
 
             deepLinkNavigator.navigateToDeepLink(deepLinkResult)
+        }
+    }
+
+    private fun checkAndOpenSplash() {
+        viewModelScope.launch {
+            if (coreRepo.getAppOpenCount() == 0L) {
+                sendEvent(MainActivityEvent.StartSplashEvent)
+            }
+            coreRepo.plusAppOpenCount()
         }
     }
 
