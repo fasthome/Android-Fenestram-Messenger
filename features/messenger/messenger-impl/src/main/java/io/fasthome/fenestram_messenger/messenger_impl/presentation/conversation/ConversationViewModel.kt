@@ -1,9 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -22,7 +22,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -222,7 +221,7 @@ class ConversationViewModel(
             }
             return
         }
-        if (mess.isNotEmpty()) {
+        if (mess.trim().isNotEmpty()) {
             sendMessage(mess)
         }
     }
