@@ -25,6 +25,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
@@ -296,20 +297,33 @@ class ConversationViewModel(
     private fun editMessage(newText: String) {
         viewModelScope.launch {
             val messageToEdit = currentViewState.messageToEdit ?: return@launch
-            messengerInteractor.editMessage(
+            val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
                 newText = newText
-            ).onSuccess {
-                val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
-                val key = message.keys.firstOrNull() ?: return@launch
-                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText), isEdited = true) else it.value }
-                updateState { state ->
-                    state.copy(
-                        messages = newMessages,
-                        messageToEdit = null,
-                        editMode = false
-                    )
+            )
+
+            when(result) {
+                is CallResult.Error -> {
+                    updateState { state ->
+                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
+                        state.copy(
+                            messageToEdit = null,
+                            editMode = false
+                        )
+                    }
+                }
+                is CallResult.Success -> {
+                    val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
+                    val key = message.keys.firstOrNull() ?: return@launch
+                    val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText), isEdited = true) else it.value }
+                    updateState { state ->
+                        state.copy(
+                            messages = newMessages,
+                            messageToEdit = null,
+                            editMode = false
+                        )
+                    }
                 }
             }
         }
