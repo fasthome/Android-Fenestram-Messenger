@@ -18,6 +18,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
+const val MESSAGE_TYPE_DOCUMENT = "document"
 
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
@@ -70,6 +71,18 @@ fun Message.toConversationViewItem(
                         timeVisible = true
                     )
                 }
+
+                MESSAGE_TYPE_DOCUMENT -> {
+                    ConversationViewItem.Self.Document(
+                        content = profileImageUrlConverter.convert(text),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        localId = UUID.randomUUID().toString()
+                    )
+                }
+
                 MESSAGE_TYPE_SYSTEM -> {
                     ConversationViewItem.System(
                         content = PrintableText.Raw(text),
@@ -117,6 +130,20 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
+
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        ConversationViewItem.Group.Document(
+                            content = profileImageUrlConverter.convert(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            userName = PrintableText.Raw(getName(initiator)),
+                            avatar = initiator?.avatar ?: "",
+                            date = date,
+                            id = id,
+                            phone = initiator?.phone ?: ""
+                        )
+                    }
+
                     MESSAGE_TYPE_SYSTEM -> {
                         ConversationViewItem.System(
                             content = PrintableText.Raw(text),
@@ -153,6 +180,17 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
+
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        ConversationViewItem.Receive.Document(
+                            content = profileImageUrlConverter.convert(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
+                            date = date,
+                            id = id,
+                        )
+                    }
+
                     MESSAGE_TYPE_SYSTEM -> {
                         ConversationViewItem.System(
                             content = PrintableText.Raw(text),
@@ -294,6 +332,16 @@ fun createImageMessage(image: String?, loadableContent: Content) =
         loadableContent = loadableContent,
         timeVisible = true
     )
+
+fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
+    content = document ?: "",
+    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+    sentStatus = SentStatus.Loading,
+    date = ZonedDateTime.now(),
+    id = 0,
+    localId = UUID.randomUUID().toString(),
+    file = file
+)
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     content = getFuzzyDateString(date),

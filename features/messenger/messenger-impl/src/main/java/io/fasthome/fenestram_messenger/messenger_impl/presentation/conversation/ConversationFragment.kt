@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
-import io.fasthome.component.select_from.SelectFromDialog
+import io.fasthome.component.select_from.SelectFromConversation
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -45,13 +45,11 @@ class ConversationFragment :
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
 
-    private val pickImageFragment by registerFragment(
+    private val pickFileFragment by registerFragment(
         componentFragmentContractInterface = PickFileComponentContract,
         paramsProvider = {
             PickFileComponentParams(
-                mimeType = PickFileComponentParams.MimeType.Image(
-                    compressToSize = null
-                )
+                mimeType = PickFileComponentParams.MimeType.Image(compressToSize = null)
             )
         }
     )
@@ -59,7 +57,7 @@ class ConversationFragment :
     override val vm: ConversationViewModel by viewModel(
         getParamsInterface = ConversationNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::pickImageFragment)
+            .register(::pickFileFragment)
     )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
@@ -68,6 +66,8 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
+    }, onDocumentClicked = { content, path, callback ->
+        vm.onDocumentClicked(content, path, callback)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
     }, onReceiveMessageLongClicked = {
@@ -122,13 +122,13 @@ class ConversationFragment :
         })
         attachedList.adapter = attachedAdapter
 
-        sendButton.setOnClickListener() {
+        sendButton.setOnClickListener {
             vm.addMessageToConversation(inputMessage.text.toString())
             inputMessage.text?.clear()
             messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
 
-        backButton.setOnClickListener() {
+        backButton.setOnClickListener {
             vm.exitToMessenger()
         }
         profileToolBar.onClick {
@@ -227,7 +227,7 @@ class ConversationFragment :
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
             ConversationEvent.ShowSelectFromDialog ->
-                SelectFromDialog
+                SelectFromConversation
                     .create(
                         fragment = this,
                         fromCameraClicked = {
@@ -235,6 +235,9 @@ class ConversationFragment :
                         },
                         fromGalleryClicked = {
                             vm.selectFromGallery()
+                        },
+                        attachFileClicked = {
+                            vm.selectAttachFile()
                         })
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->

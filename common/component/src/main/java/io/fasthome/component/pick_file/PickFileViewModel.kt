@@ -1,9 +1,6 @@
 package io.fasthome.component.pick_file
 
 import android.Manifest
-import android.net.Uri
-import android.os.Build
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
@@ -33,22 +30,24 @@ class PickFileViewModel(
     private val tempFile by lazy { File(fileSystemInterface.cacheDir, "temp_file") }
     private val cameraTempFile by lazy { createFile(fileSystemInterface.cacheDir, "picture") }
 
+    private var currentMimeType = params.mimeType
+
     private val pickFileLauncher = registerScreen(PickFileNavigationContract) {
         val uri = it.uri
         if (uri == null) {
             resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickCancelled)
         } else {
             viewModelScope.launch {
-                val file = when (val mimeType = params.mimeType) {
+                val file = when (currentMimeType) {
                     is PickFileComponentParams.MimeType.Image -> {
                         pickImageOperations.processImage(
                             uri = uri,
                             tempFile = tempFile,
-                            compressToSize = mimeType.compressToSize,
+                            compressToSize = (currentMimeType as PickFileComponentParams.MimeType.Image).compressToSize,
                         )
                         tempFile
                     }
-                    is PickFileComponentParams.MimeType.Pdf -> {
+                    is PickFileComponentParams.MimeType.Document -> {
                         pickFileOperations.copyFile(uri, tempFile)
                         pickFileOperations.renameFile(tempFile, uri, fileSystemInterface.cacheDir)
                     }
@@ -83,7 +82,7 @@ class PickFileViewModel(
     override fun resultEvents(): Flow<PickFileInterface.ResultEvent> =
         resultEventsChannel.receiveAsFlow()
 
-    override fun pickFile() {
+    override fun pickFile(mimeType: PickFileComponentParams.MimeType?) {
         viewModelScope.launch {
             val permissionGranted =
                 permissionInterface.request(
@@ -91,7 +90,12 @@ class PickFileViewModel(
                     canOpenSettings = true
                 )
             if (permissionGranted) {
-                pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
+                currentMimeType = if (mimeType != null)
+                    mimeType
+                else
+                    params.mimeType
+
+                pickFileLauncher.launch(PickFileNavigationContract.Params(currentMimeType.value))
             }
         }
     }

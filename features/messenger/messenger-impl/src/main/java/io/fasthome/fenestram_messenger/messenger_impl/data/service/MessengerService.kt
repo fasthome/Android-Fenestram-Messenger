@@ -81,6 +81,17 @@ class MessengerService(
         return UploadImageResult(imagePath = response.pathToFile)
     }
 
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): UploadDocumentResult {
+        val response = client
+            .runSubmitFormWithFile<BaseResponse<UploadDocumentResponse>>(
+                path = "api/v1/files/upload",
+                binaryData = documentBytes,
+                filename = guid,
+            )
+            .requireData()
+        return UploadDocumentResult(documentPath = response.pathToFile)
+    }
+
     suspend fun getMessagesByChat(id: Long, limit: Int, page: Int): MessagesPage {
         val response: GetMessagesResponse = client.runGet(
             path = "chats/$id/messages",

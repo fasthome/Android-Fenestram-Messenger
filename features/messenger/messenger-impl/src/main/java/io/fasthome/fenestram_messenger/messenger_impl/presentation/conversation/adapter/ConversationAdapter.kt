@@ -9,6 +9,8 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.core.R
+import kotlin.math.roundToInt
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
@@ -18,6 +20,8 @@ class ConversationAdapter(
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
+    onImageClicked: (String) -> Unit,
+    onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -28,10 +32,16 @@ class ConversationAdapter(
         AdapterUtil.adapterDelegatesManager(
             createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
             createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked, onSelfImageLongClicked),
+            createConversationSelfDocumentAdapterDelegate(onSelfMessageClicked, onDocumentClicked),
             createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
+            createConversationReceiveDocumentAdapterDelegate(onDocumentClicked),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked, onGroupMessageLongClicked),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
+            createConversationGroupDocumentAdapterDelegate(
+                onGroupProfileItemClicked,
+                onDocumentClicked
+            ),
             createConversationSystemAdapterDelegate()
         )
     )
@@ -89,6 +99,33 @@ fun createConversationSelfImageAdapterDelegate(
         }
     }
 
+fun createConversationSelfDocumentAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
+        ConversationItemSelfDocumentBinding::inflate
+    ) {
+        binding.messageContent.onClick {
+            onDocumentClicked(item.content, item.path) {
+                item.path = it
+            }
+        }
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
+        bindWithBinding {
+            fileName.text = item.file?.name
+            fileSize.text = "${
+                item.file?.let {
+                    (it.length().toFloat() / (1024 * 1024) * 1000).roundToInt() / 1000f
+                }
+            }МБ"
+            sendTimeView.setPrintableText(item.time)
+            status.setImageResource(item.statusIcon)
+        }
+    }
+
 fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
         ConversationItemReceiveTextBinding::inflate,
@@ -117,6 +154,20 @@ fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Un
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
+        }
+    }
+
+fun createConversationReceiveDocumentAdapterDelegate(onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit) =
+    adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
+        ConversationItemReceiveDocumentBinding::inflate
+    ) {
+        binding.messageContent.onClick {
+            onDocumentClicked(item.content, item.path) {
+                item.path = it
+            }
+        }
+        bindWithBinding {
+            sendTimeView.setPrintableText(item.time)
         }
     }
 
@@ -164,6 +215,29 @@ fun createConversationGroupImageAdapterDelegate(
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }
+
+fun createConversationGroupDocumentAdapterDelegate(
+    onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
+    onDocumentClicked: (String, String?, isDownloaded: (String?) -> Unit) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
+        ConversationItemGroupDocumentBinding::inflate
+    ) {
+        binding.avatar.onClick {
+            onGroupProfileItemClicked(item)
+        }
+        binding.messageContent.onClick {
+            onDocumentClicked(item.content, item.path) {
+                item.path = it
+            }
+        }
+        bindWithBinding {
+            username.setPrintableText(item.userName)
+            sendTimeView.setPrintableText(item.time)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+        }
+    }
+
 
 fun createConversationSystemAdapterDelegate() =
     adapterDelegateViewBinding<ConversationViewItem.System, ConversationItemSystemBinding>(

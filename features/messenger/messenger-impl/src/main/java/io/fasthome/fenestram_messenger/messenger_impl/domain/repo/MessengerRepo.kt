@@ -43,6 +43,7 @@ interface MessengerRepo {
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit>
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult>
 
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)

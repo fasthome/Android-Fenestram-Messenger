@@ -8,6 +8,8 @@ import io.fasthome.fenestram_messenger.di.single
 import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.MessengerFeatureImpl
+import io.fasthome.fenestram_messenger.messenger_impl.data.DownloadFileManagerImpl
+import io.fasthome.fenestram_messenger.messenger_impl.data.DownloadFileManager
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.db.CameraFileStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.FilesRepoImpl
@@ -45,6 +47,7 @@ object MessengerModule {
     private fun createDataModule() = module {
         single(::MessengerRepoImpl) bindSafe MessengerRepo::class
         single(::FilesRepoImpl) bindSafe FilesRepo::class
+        single(::DownloadFileManagerImpl) bindSafe DownloadFileManager::class
 
         factory(::GetChatsMapper)
         factory(::GetChatByIdMapper)

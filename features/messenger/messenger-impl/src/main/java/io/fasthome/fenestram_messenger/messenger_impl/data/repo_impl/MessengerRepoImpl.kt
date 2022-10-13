@@ -91,6 +91,10 @@ class MessengerRepoImpl(
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
 
+    override suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult> = callForResult {
+        messengerService.uploadDocument(documentBytes, guid)
+    }
+
     override fun closeSocket() {
         socket.closeClientSocket()
     }
