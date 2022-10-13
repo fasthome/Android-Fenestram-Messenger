@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
@@ -35,6 +36,8 @@ class ProfileGuestViewModel(
     private val pickFileInterface: PickFileInterface,
     private val profileImageUtil: ProfileImageUtil,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
+
+    private val imageViewerLauncher = registerScreen(ImageViewerContract)
 
     private val filesProfileGuestLauncher =
         registerScreen(ProfileGuestFilesNavigationContract) { result ->
@@ -211,5 +214,8 @@ class ProfileGuestViewModel(
     fun onAvatarClicked() {
         if (currentViewState.editMode)
             pickFileInterface.pickFile()
+        if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
+            imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+        }
     }
 }

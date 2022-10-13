@@ -250,6 +250,9 @@ class ConversationFragment :
                             },
                             launchConversationClicked = {
                                 vm.onLaunchConversationClicked(it)
+                            },
+                            onAvatarClicked = { avatarUrl ->
+                                vm.onImageClicked(url = avatarUrl)
                             })
                     latestPersonDetailDialog.show()
                 }

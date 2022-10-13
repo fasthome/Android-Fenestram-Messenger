@@ -161,6 +161,9 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
                             //TODO
                         },
                         launchConversationClicked = {
+                        },
+                        onAvatarClicked = {
+                            // nothing
                         })
                     .show()
             DebugEvent.RebirthApplication -> ProcessPhoenix.triggerRebirth(context)

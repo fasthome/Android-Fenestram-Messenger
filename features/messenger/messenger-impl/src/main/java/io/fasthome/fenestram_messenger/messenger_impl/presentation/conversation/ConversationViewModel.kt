@@ -22,7 +22,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.imageViewer.ImageViewerContract
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter

@@ -117,7 +117,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         }
 
         llButtons.isVisible = state.isEdit
-        ivAvatar.isEnabled = state.isEdit
         ibAdd.isVisible = state.isEdit
         progress.isVisible = state.isLoad
         bCancel.isVisible = !state.isLoad
