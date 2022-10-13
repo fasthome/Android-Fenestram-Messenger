@@ -11,8 +11,6 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.toIntAlpha
-import kotlin.math.roundToInt
 
 class ImageViewerFragment : BaseFragment<ImageViewerState, ImageViewerEvent>(R.layout.fragment_image_viewer) {
 
