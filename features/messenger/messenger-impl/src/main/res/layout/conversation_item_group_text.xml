@@ -53,6 +53,24 @@
             android:textSize="14sp"
             tools:ignore="TouchTargetSizeCheck" />
 
+        <TextView
+            android:id="@+id/tv_edited"
+            style="@style/Text.Gray.10sp"
+            android:paddingStart="12dp"
+            android:textColor="@color/gray4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierMargin="5dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="5dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_gravity="end"
+            android:text="@string/messenger_edited"
+            app:layout_constraintEnd_toEndOf="@+id/message_content"
+            app:layout_constraintTop_toBottomOf="@+id/message_content" />
+
+
     </LinearLayout>
 
     <TextView
