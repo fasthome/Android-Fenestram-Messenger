@@ -11,6 +11,5 @@ data class ConversationState(
     val userOnline: Boolean,
     val isChatEmpty: Boolean,
     val attachedFiles: List<AttachedFile.Image>,
-    val messageToEdit: ConversationViewItem.Self.Text?,
-    val editMode: Boolean
+    val inputMessageMode: InputMessageMode
 )

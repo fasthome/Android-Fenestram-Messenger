@@ -1,9 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -22,7 +22,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -182,17 +181,29 @@ class ConversationViewModel(
             isChatEmpty = false,
             avatar = profileImageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
-            messageToEdit = null,
-            editMode = false
+            inputMessageMode = InputMessageMode.Default
         )
     }
 
-    fun editMessageMode(isEditMode: Boolean, conversationViewItem: ConversationViewItem.Self.Text? = null) {
+    fun editMessageMode(
+        isEditMode: Boolean,
+        conversationViewItem: ConversationViewItem.Self.Text? = null,
+    ) {
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                messageToEdit = conversationViewItem,
-                editMode = isEditMode
+                inputMessageMode = if (isEditMode) InputMessageMode.Edit(conversationViewItem
+                    ?: return@updateState state) else InputMessageMode.Default
+            )
+        }
+    }
+
+    fun replyMessageMode(isReplyMode: Boolean, conversationViewItem: ConversationViewItem? = null) {
+        updateState { state ->
+            state.copy(
+                attachedFiles = emptyList(),
+                inputMessageMode = if (isReplyMode) InputMessageMode.Reply(conversationViewItem
+                    ?: return@updateState state) else InputMessageMode.Default
             )
         }
     }
@@ -215,14 +226,18 @@ class ConversationViewModel(
         if (attachedFiles.isNotEmpty()) {
             sendImages(attachedFiles)
         }
-        if (currentViewState.editMode) {
-            if (mess.isNotEmpty()) {
-                editMessage(mess)
-            }
-            return
-        }
         if (mess.isNotEmpty()) {
-            sendMessage(mess)
+            when (currentViewState.inputMessageMode) {
+                is InputMessageMode.Default -> {
+                    sendMessage(mess)
+                }
+                is InputMessageMode.Edit -> {
+                    editMessage(mess)
+                }
+                is InputMessageMode.Reply -> {
+
+                }
+            }
         }
     }
 
@@ -230,7 +245,7 @@ class ConversationViewModel(
         val messages = currentViewState.messages
 
         val tempMessages = attachedFiles.map {
-            createImageMessage(null, it.content)
+            createImageMessage(null, it.content, getPrintableRawText(currentViewState.userName))
         }
 
         updateState { state ->
@@ -295,20 +310,23 @@ class ConversationViewModel(
 
     private fun editMessage(newText: String) {
         viewModelScope.launch {
-            val messageToEdit = currentViewState.messageToEdit ?: return@launch
+            val mode = currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch
             messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
-                messageId = messageToEdit.id,
+                messageId = mode.messageToEdit.id,
                 newText = newText
             ).onSuccess {
-                val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
+                val message =
+                    currentViewState.messages.filter { it.value.id == mode.messageToEdit.id }
                 val key = message.keys.firstOrNull() ?: return@launch
-                val newMessages = currentViewState.messages.mapValues { if(it.key == key) messageToEdit.copy(content = PrintableText.Raw(newText), isEdited = true) else it.value }
+                val newMessages = currentViewState.messages.mapValues {
+                    if (it.key == key) mode.messageToEdit.copy(content = PrintableText.Raw(newText),
+                        isEdited = true) else it.value
+                }
                 updateState { state ->
                     state.copy(
                         messages = newMessages,
-                        messageToEdit = null,
-                        editMode = false
+                        inputMessageMode = InputMessageMode.Default
                     )
                 }
             }
@@ -317,7 +335,7 @@ class ConversationViewModel(
 
     private fun sendMessage(mess: String) {
         viewModelScope.launch {
-            val tempMessage = createTextMessage(mess)
+            val tempMessage = createTextMessage(mess, getPrintableRawText(currentViewState.userName))
             val messages = currentViewState.messages
 
             updateState { state ->
@@ -409,7 +427,8 @@ class ConversationViewModel(
             .flowOn(Dispatchers.Main)
             .onEach { message ->
                 updateState { state ->
-                    if (message.isEdited && state.messages.filter { it.value.id == message.id }.isNotEmpty()) {
+                    if (message.isEdited && state.messages.filter { it.value.id == message.id }
+                            .isNotEmpty()) {
                         return@updateState state.copy(
                             messages = state.messages.mapValues {
                                 if (it.value.id == message.id)
@@ -458,7 +477,7 @@ class ConversationViewModel(
                     avatar = item.avatar,
                     userName = getPrintableRawText(item.userName),
                     phone = item.phone,
-                    userNickname = item.nickname
+                    userNickname = item.nickname ?: ""
                 )
             )
         )

@@ -198,11 +198,12 @@
             android:id="@+id/iv_close_edit"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_delete"
             app:layout_constraintBottom_toBottomOf="@+id/tv_edit_message_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_edit_message_title"
+            app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/dark2" />
 
         <TextView

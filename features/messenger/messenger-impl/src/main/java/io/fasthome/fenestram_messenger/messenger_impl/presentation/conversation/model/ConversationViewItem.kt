@@ -7,6 +7,13 @@ import java.time.ZonedDateTime
 
 typealias OnStatusChanged = (SentStatus) -> Unit
 
+interface ConversationImageItem {
+    val content: String
+}
+interface ConversationTextItem {
+    val content: PrintableText
+}
+
 sealed interface ConversationViewItem {
 
     val id: Long
@@ -15,6 +22,7 @@ sealed interface ConversationViewItem {
     val date: ZonedDateTime?
     val timeVisible : Boolean
     val sentStatus: SentStatus
+    val nickname: String?
 
     val statusIcon: Int
         get() = getStatusIcon(sentStatus)
@@ -30,8 +38,9 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             override val timeVisible: Boolean,
-            val isEdited: Boolean
-        ) : Self()
+            val isEdited: Boolean,
+            override val nickname: String?
+        ) : Self(), ConversationTextItem
 
         data class Image(
             override val id: Long,
@@ -41,8 +50,9 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             override val timeVisible: Boolean,
-            val loadableContent: Content? = null
-        ) : Self()
+            val loadableContent: Content? = null,
+            override val nickname: String?
+        ) : Self(), ConversationImageItem
     }
 
     sealed class Receive : ConversationViewItem {
@@ -53,8 +63,9 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
             override val timeVisible: Boolean,
-            val isEdited: Boolean
-        ) : Receive()
+            val isEdited: Boolean,
+            override val nickname: String?
+        ) : Receive(), ConversationTextItem
 
         data class Image(
             override val id: Long,
@@ -63,14 +74,14 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
             override val timeVisible: Boolean,
-        ) : Receive()
+            override val nickname: String?
+        ) : Receive(), ConversationImageItem
     }
 
     sealed class Group(
         open val userName: PrintableText,
         open val avatar: String,
         open val phone: String,
-        open val nickname: String,
         open val userId: Long
     ) : ConversationViewItem {
         data class Text(
@@ -82,11 +93,11 @@ sealed interface ConversationViewItem {
             override val userName: PrintableText,
             override val avatar: String,
             override val phone: String,
-            override val nickname: String,
+            override val nickname: String?,
             override val userId: Long,
             override val timeVisible: Boolean,
             val isEdited: Boolean
-        ) : Group(userName, nickname, avatar, phone, userId)
+        ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
         data class Image(
             override val id: Long,
@@ -97,10 +108,10 @@ sealed interface ConversationViewItem {
             override val userName: PrintableText,
             override val avatar: String,
             override val phone: String,
-            override val nickname: String,
+            override val nickname: String?,
             override val userId: Long,
             override val timeVisible: Boolean,
-        ) : Group(userName, avatar, phone, nickname, userId)
+        ) : Group(userName, avatar, phone, userId), ConversationImageItem
     }
 
     data class System(
@@ -110,6 +121,7 @@ sealed interface ConversationViewItem {
         override val date: ZonedDateTime?,
         override val sentStatus: SentStatus,
         override var timeVisible: Boolean,
+        override val nickname: String? = null
     ) : ConversationViewItem
 
 }

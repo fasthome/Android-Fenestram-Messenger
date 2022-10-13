@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isInvisible
@@ -29,6 +30,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.singleSameTime
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -179,7 +182,20 @@ class ConversationFragment :
         username.setPrintableText(state.userName)
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
-        renderStateEditMode(state.editMode, state.messageToEdit)
+        when (state.inputMessageMode) {
+            is InputMessageMode.Default -> {
+                renderStateEditMode(false, null)
+                renderStateReplyMode(false, null)
+            }
+            is InputMessageMode.Edit -> {
+                renderStateReplyMode(false, null)
+                renderStateEditMode(true, state.inputMessageMode.messageToEdit)
+            }
+            is InputMessageMode.Reply -> {
+                renderStateEditMode(false, null)
+                renderStateReplyMode(true, state.inputMessageMode.messageToReply)
+            }
+        }
     }
 
     lateinit var latestPersonDetailDialog: Dialog
@@ -273,13 +289,17 @@ class ConversationFragment :
                 }, onCopy = {
                     copyPrintableText(event.conversationViewItem.content)
                 }, onEdit = {
-                    vm.editMessageMode(true,event.conversationViewItem)
+                    vm.editMessageMode(true, event.conversationViewItem)
+                }, onReply = {
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
             ).show()
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onCopy = {
                     copyPrintableText(event.conversationViewItem.content)
+                }, onReply = {
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
 
             ).show()
@@ -287,6 +307,8 @@ class ConversationFragment :
                 fragment = this,
                 onCopy = {
                     copyPrintableText(event.conversationViewItem.content)
+                }, onReply = {
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
 
             ).show()
@@ -294,24 +316,61 @@ class ConversationFragment :
                 fragment = this,
                 onDelete = {
                     vm.onDeleteMessageClicked(event.conversationViewItem)
+                }, onReply = {
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
+            // TODO: ADD RECEIVE GROUP IMAGES
             ).show()
         }
     }
 
-    private fun renderStateEditMode(isEditMode: Boolean, selfMessage:ConversationViewItem.Self.Text? = null) {
+    private fun renderStateReplyMode(isReplyMode: Boolean, message: ConversationViewItem? = null) {
         with(binding) {
-            clEditMessage.isInvisible = !isEditMode
-            attachButton.isVisible = !isEditMode
-            horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
+            switchInputPlate(isReplyMode)
+            if (isReplyMode && message != null) {
+                tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
+                tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
+                tvEditMessageTitle.text = message.nickname
+                when (message) {
+                    is ConversationTextItem -> {
+                        tvTextToEdit.text = getPrintableRawText(message.content)
+                    }
+                    is ConversationImageItem -> {
+                        tvTextToEdit.text = "Изображение" // TODO: !!!
+                    }
+                }
+            }
+        }
+    }
+
+    private fun switchInputPlate(state: Boolean) {
+        with(binding) {
+            clEditMessage.isInvisible = !state
+            attachButton.isVisible = !state
+            horizontalPaddingInput(if (state) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,ConstraintSet.BOTTOM,if(isEditMode) R.id.cl_edit_message else R.id.input_message,ConstraintSet.TOP)
+                connect(R.id.messages_list,
+                    ConstraintSet.BOTTOM,
+                    if (state) R.id.cl_edit_message else R.id.input_message,
+                    ConstraintSet.TOP)
             }
             root.setConstraintSet(constraintsSet)
+        }
+    }
+
+    private fun renderStateEditMode(
+        isEditMode: Boolean,
+        selfMessage: ConversationViewItem.Self.Text? = null,
+    ) {
+        with(binding) {
+            switchInputPlate(isEditMode)
             if (!isEditMode || selfMessage == null) return
+            tvEditMessageTitle.setText(R.string.edit_message_title)
+            tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
+            tvTextToEdit.setTextAppearance(R.style.Text_Gray_12sp)
             inputMessage.setOnSizeChanged(onHeightChanged = {
-                clEditMessage.setPadding(0, 0, 0, it+10.dp)
+                clEditMessage.setPadding(0, 0, 0, it + 10.dp)
             })
             val textToEdit = getPrintableText(selfMessage.content)
             tvTextToEdit.text = textToEdit
