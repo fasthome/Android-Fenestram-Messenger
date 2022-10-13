@@ -350,20 +350,12 @@ class ConversationFragment :
     }
 
     private fun switchInputPlate(state: Boolean) {
-    private fun renderStateEditMode(
-        isEditMode: Boolean,
-        selfMessage: ConversationViewItem.Self.Text? = null,
-    ) {
         with(binding) {
             clEditMessage.isInvisible = !state
             attachButton.isVisible = !state
             horizontalPaddingInput(if (state) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,
-                    ConstraintSet.BOTTOM,
-                    if (isEditMode) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP)
                 connect(R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (state) R.id.cl_edit_message else R.id.input_message,

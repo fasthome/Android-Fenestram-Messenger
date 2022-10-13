@@ -312,7 +312,7 @@ class ConversationViewModel(
     private fun editMessage(newText: String) {
         viewModelScope.launch {
             val mode = currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch
-            messengerInteractor.editMessage(
+            val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = mode.messageToEdit.id,
                 newText = newText
@@ -323,8 +323,7 @@ class ConversationViewModel(
                     updateState { state ->
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
                         state.copy(
-                            messageToEdit = null,
-                            editMode = false
+                            inputMessageMode = InputMessageMode.Default
                         )
                     }
                 }
