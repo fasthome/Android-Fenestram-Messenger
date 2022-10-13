@@ -36,6 +36,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.util.*
+import java.time.ZonedDateTime
 
 
 class ConversationFragment :
@@ -263,16 +264,21 @@ class ConversationFragment :
                     }
                 ).show()
             }
-            is ConversationEvent.ShowSelfMessageActionDialog -> MessageActionDialog.create(
-                fragment = this,
-                onDelete = {
-                    vm.onDeleteMessageClicked(event.conversationViewItem)
-                }, onCopy = {
-                    copyPrintableText(event.conversationViewItem.content)
-                }, onEdit = {
-                    vm.editMessageMode(true, event.conversationViewItem)
-                }
-            ).show()
+            is ConversationEvent.ShowSelfMessageActionDialog -> {
+                val canEdit =
+                    event.conversationViewItem.date?.plusDays(1)?.isAfter(ZonedDateTime.now())
+                        ?: false
+                MessageActionDialog.create(
+                    fragment = this,
+                    onDelete = {
+                        vm.onDeleteMessageClicked(event.conversationViewItem)
+                    }, onCopy = {
+                        copyPrintableText(event.conversationViewItem.content)
+                    }, onEdit = if (canEdit) {
+                        { vm.editMessageMode(true, event.conversationViewItem) }
+                    } else null
+                ).show()
+            }
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onCopy = {
@@ -298,7 +304,7 @@ class ConversationFragment :
 
     private fun renderStateEditMode(
         isEditMode: Boolean,
-        selfMessage: ConversationViewItem.Self.Text? = null
+        selfMessage: ConversationViewItem.Self.Text? = null,
     ) {
         with(binding) {
             clEditMessage.isInvisible = !isEditMode
@@ -306,12 +312,10 @@ class ConversationFragment :
             horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(
-                    R.id.messages_list,
+                connect(R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (isEditMode) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP
-                )
+                    ConstraintSet.TOP)
             }
             root.setConstraintSet(constraintsSet)
             if (!isEditMode || selfMessage == null) return
@@ -332,8 +336,7 @@ class ConversationFragment :
             padding,
             binding.inputMessage.paddingBottom,
             padding,
-            binding.inputMessage.paddingTop
-        )
+            binding.inputMessage.paddingTop)
     }
 
     private fun copyPrintableText(printableText: PrintableText) {
