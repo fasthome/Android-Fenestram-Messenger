@@ -11,11 +11,14 @@ import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsIntera
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
+import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
@@ -28,10 +31,6 @@ class ContactsViewModel(
     private val contactsInteractor: ContactsInteractor,
     private val messengerFeature: MessengerFeature
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
-
-    init {
-        requestPermissionAndLoadContacts()
-    }
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
@@ -54,23 +53,37 @@ class ContactsViewModel(
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
 
             if (permissionGranted) {
-                contactsInteractor.getContactsAndUploadContacts()
-                    .withErrorHandled(showErrorType = ShowErrorType.Dialog) { contacts ->
-                        updateState { state ->
-                            originalContactsViewItem =
-                                ContactsMapper.contactsListToViewList(contacts).toMutableList()
-                            if (originalContactsViewItem.isEmpty()) {
-                                state.copy(loadingState = LoadingState.Error(error = ErrorInfo.createEmpty()))
-                            } else {
-                                state.copy(loadingState = LoadingState.Success(data = originalContactsViewItem))
-                            }
+                when (val result = contactsInteractor.getContactsAndUploadContacts()) {
+                    is CallResult.Error -> updateState { state ->
+                        state.copy(
+                            loadingState = LoadingState.Error(
+                                error = errorConverter.convert(result.error),
+                                throwable = result.error
+                            )
+                        )
+                    }
+                    is CallResult.Success -> updateState { state ->
+                        originalContactsViewItem =
+                            ContactsMapper.contactsListToViewList(result.data).toMutableList()
+                        if (originalContactsViewItem.isEmpty()) {
+                            state.copy(
+                                loadingState = LoadingState.Error(
+                                    error = ErrorInfo.createEmpty(),
+                                    throwable = EmptyResponseException()
+                                )
+                            )
+                        } else {
+                            state.copy(loadingState = LoadingState.Success(data = originalContactsViewItem))
                         }
                     }
+                }
             } else {
                 updateState {
                     ContactsState(
-                        LoadingState.Error(error = ErrorInfo.createEmpty()),
-                        false
+                        LoadingState.Error(
+                            error = ErrorInfo.createEmpty(),
+                            throwable = PermissionDeniedException()
+                        )
                     )
                 }
             }
@@ -78,7 +91,7 @@ class ContactsViewModel(
     }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(LoadingState.None, true)
+        return ContactsState(LoadingState.None)
     }
 
     fun addContact() {
@@ -115,6 +128,10 @@ class ContactsViewModel(
                 )
             )
         }
+    }
+
+    fun onOtherError(throwable: Throwable) {
+        onError(showErrorType = ShowErrorType.Dialog, throwable = throwable)
     }
 
 }

@@ -13,12 +13,15 @@ import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.ContactsAdapter
+import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
+import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 
@@ -65,6 +68,7 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
                 vm.requestPermissionAndLoadContacts()
             }
         }
+        vm.requestPermissionAndLoadContacts()
     }
 
     override fun onResume() {
@@ -75,32 +79,18 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     override fun renderState(state: ContactsState) = with(binding) {
         noPermissionContainer.isVisible = false
         errorContainer.isVisible = false
-        when (state.permissionGranted) {
-            true -> {
-                noPermissionContainer.isVisible = false
-                renderLoadingState(
-                    loadingState = state.loadingState,
-                    progressContainer = progressContainer,
-                    errorContainer = errorContainer,
-                    contentContainer = null,
-                    renderData = {
-                        contactsAdapter.items = it
-                    }
-                )
+
+        renderLoadingState(
+            loadingState = state.loadingState,
+            progressContainer = progressContainer,
+            contentContainer = null,
+            renderData = {
+                contactsAdapter.items = it
+            },
+            renderError = { errorInfo, throwable ->
+                renderError(errorInfo, throwable)
             }
-            false -> {
-                errorContainer.isVisible = false
-                renderLoadingState(
-                    loadingState = state.loadingState,
-                    progressContainer = progressContainer,
-                    errorContainer = errorContainer,
-                    contentContainer = null,
-                    renderData = {
-                        contactsAdapter.items = it
-                    }
-                )
-            }
-        }
+        )
     }
 
     override fun handleEvent(event: ContactsEvent) {
@@ -116,6 +106,20 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     override fun onFabClicked(): Boolean {
         vm.addContact()
         return super.onFabClicked()
+    }
+
+    private fun renderError(errorInfo: ErrorInfo, throwable: Throwable) = with(binding) {
+        when (throwable) {
+            is PermissionDeniedException -> {
+                noPermissionContainer.isVisible = true
+            }
+            is EmptyResponseException -> {
+                errorContainer.isVisible = true
+            }
+            else -> {
+                vm.onOtherError(throwable)
+            }
+        }
     }
 
 

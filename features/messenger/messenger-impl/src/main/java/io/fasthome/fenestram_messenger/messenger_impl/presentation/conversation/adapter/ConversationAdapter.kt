@@ -95,6 +95,7 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
 
     ) {
         bindWithBinding {
+            tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {
                 onReceiveMessageLongClicked(item)
                 true
@@ -133,6 +134,7 @@ fun createConversationGroupTextAdapterDelegate(
             true
         }
         bindWithBinding {
+            tvEdited.isVisible = item.isEdited
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
