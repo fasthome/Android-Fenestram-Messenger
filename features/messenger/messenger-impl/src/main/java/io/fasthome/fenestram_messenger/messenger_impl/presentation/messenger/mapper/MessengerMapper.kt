@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper
 
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_IMAGE
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 
 private val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-class MessengerMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
+class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter) {
 
     fun toMessengerViewItem(chat: Chat): MessengerViewItem {
         return MessengerViewItem(

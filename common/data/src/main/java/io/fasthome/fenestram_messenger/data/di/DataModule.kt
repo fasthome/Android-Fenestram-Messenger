@@ -49,7 +49,7 @@ object DataModule {
     }
 
     private fun createExt() = module{
-        single(::ProfileImageUrlConverter)
+        single(::StorageUrlConverter)
     }
 
 }

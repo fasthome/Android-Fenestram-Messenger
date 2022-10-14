@@ -1,7 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
@@ -24,7 +24,7 @@ const val MESSAGE_TYPE_DOCUMENT = "document"
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
     isGroup: Boolean,
-    profileImageUrlConverter: ProfileImageUrlConverter
+    profileImageUrlConverter: StorageUrlConverter
 ): Map<String, ConversationViewItem> = this.associateBy({
     UUID.randomUUID().toString()
 }, {
@@ -34,7 +34,7 @@ fun List<Message>.toConversationItems(
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
-    profileImageUrlConverter: ProfileImageUrlConverter
+    profileImageUrlConverter: StorageUrlConverter
 ): ConversationViewItem {
     if (isDate) {
         return ConversationViewItem.System(
@@ -295,6 +295,12 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
                         next.copy(timeVisible = !isInvisible)
                     is ConversationViewItem.Self.Text -> messages[tempPreviousCounter] =
                         next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Group.Document -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Receive.Document -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Self.Document -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
                     is ConversationViewItem.System -> messages[tempPreviousCounter]
                 }
 
@@ -342,7 +348,7 @@ fun createImageMessage(image: String?, loadableContent: Content) =
     )
 
 fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
-    content = document ?: "",
+    content = document ?: file.extension,
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
     date = ZonedDateTime.now(),

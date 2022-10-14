@@ -4,13 +4,13 @@ import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsRequest
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsResponse
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import java.text.Collator
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.Collections.sort
 
-class ContactsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
+class ContactsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
 
     fun contactListToRequest(contacts: List<Contact>): List<ContactsRequest> =
         contacts.mapNotNull {

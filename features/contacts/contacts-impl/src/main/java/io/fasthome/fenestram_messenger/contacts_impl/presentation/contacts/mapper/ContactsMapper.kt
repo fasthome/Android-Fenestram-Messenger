@@ -1,11 +1,11 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
-import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.Country
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.setMaskByCountry
 
 object ContactsMapper{
     fun contactsListToViewList(contacts: List<Contact>) : List<ContactsViewItem>{

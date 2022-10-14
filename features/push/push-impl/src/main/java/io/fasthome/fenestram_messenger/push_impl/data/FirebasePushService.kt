@@ -19,7 +19,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.presentation.base.AppFeature
 import io.fasthome.fenestram_messenger.presentation.base.util.Channel
 import io.fasthome.fenestram_messenger.presentation.base.util.createNotificationChannel
@@ -44,7 +44,7 @@ class FirebasePushService : FirebaseMessagingService() {
     private val remoteMessagesStorage by inject<RemoteMessagesStorage>()
     private val appFeature by inject<AppFeature>()
     private val authFeature by inject<AuthFeature>()
-    private val profileImageUrlConverter by inject<ProfileImageUrlConverter>()
+    private val profileImageUrlConverter by inject<StorageUrlConverter>()
 
     private val scope = CoroutineScope(DispatchersProvider.Default)
     private var initPushesJob by switchJob()

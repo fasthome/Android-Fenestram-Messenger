@@ -9,12 +9,11 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
-import kotlin.math.roundToInt
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked : (String) -> Unit,
+    onImageClicked: (String) -> Unit,
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
@@ -113,14 +112,11 @@ fun createConversationSelfDocumentAdapterDelegate(
             onSelfMessageClicked(item)
         }
         bindWithBinding {
-            fileName.text = item.file?.name
-            fileSize.text = "${
-                item.file?.let {
-                    (it.length().toFloat() / (1024 * 1024) * 1000).roundToInt() / 1000f
-                }
-            }МБ"
+            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
+            sendTimeView.isVisible = item.timeVisible
+            status.isVisible = item.timeVisible
         }
     }
 
@@ -128,7 +124,7 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
     adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
         ConversationItemReceiveTextBinding::inflate,
 
-    ) {
+        ) {
         bindWithBinding {
             tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {
@@ -165,13 +161,16 @@ fun createConversationReceiveDocumentAdapterDelegate(onDocumentClicked: (String,
             }
         }
         bindWithBinding {
+            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
         }
     }
 
 fun createConversationGroupTextAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit) =
+    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit
+) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
     ) {
@@ -232,7 +231,9 @@ fun createConversationGroupDocumentAdapterDelegate(
         bindWithBinding {
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
+            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+            sendTimeView.isVisible = item.timeVisible
         }
     }
 
