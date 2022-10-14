@@ -7,11 +7,10 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
 import io.socket.client.Socket
-import java.net.URISyntaxException
-import java.util.Collections.singletonList
-import java.util.Collections.singletonMap
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.util.Collections.singletonList
+import java.util.Collections.singletonMap
 
 class MessengerSocket(private val baseUrl: String) {
 
@@ -59,7 +58,8 @@ class MessengerSocket(private val baseUrl: String) {
         authorId = message?.authorId,
         access = message?.access ?: emptyList(),
         accessChats = message?.accessChats ?: emptyList(),
-        isEdited = message?.isEdited ?: false
+        isEdited = message?.isEdited ?: false,
+        status = ""
     )
 
     fun closeClientSocket() {
