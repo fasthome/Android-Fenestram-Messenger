@@ -41,7 +41,7 @@ object ContactsMapper {
                 ContactsViewItem.Api(
                     userId = user.id,
                     avatar = user.avatar,
-                    name = PrintableText.Raw(getName(contact, selfUserPhone))
+                    name = getName(contact, selfUserPhone)
                 )
             }
             else -> {
@@ -50,16 +50,18 @@ object ContactsMapper {
         }
     }
 
-    private fun getName(contact: Contact, selfUserPhone: String?): String {
+    private fun getName(contact: Contact, selfUserPhone: String?): PrintableText {
         val user = contact.user!!
-        val nameEnding =
-            if (contact.phone == selfUserPhone || user.phone == selfUserPhone) " (вы)" else ""
 
-        return when {
+        val userName = when {
             contact.userName?.isNotEmpty() == true -> contact.userName!!
             user.name.isNotEmpty() -> user.name
             else -> user.phone.setMaskByCountry(Country.RUSSIA)
-        } + nameEnding
+        }
+
+        return if (contact.phone == selfUserPhone || user.phone == selfUserPhone)
+            PrintableText.StringResource(R.string.self_contact_name, userName)
+        else PrintableText.Raw(userName)
     }
 
 }
