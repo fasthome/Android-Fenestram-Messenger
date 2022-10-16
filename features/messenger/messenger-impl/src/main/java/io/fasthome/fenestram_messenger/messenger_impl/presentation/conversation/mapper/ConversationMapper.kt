@@ -2,7 +2,9 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
@@ -232,7 +234,7 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
                 if (tempPreviousCounter >= messages.lastIndex) break
                 nextInvisibleItem = messages[tempPreviousCounter]
 
-                if(singleSameTimeIsContinue(conversationViewItem, nextInvisibleItem)) break
+                if (singleSameTimeIsContinue(conversationViewItem, nextInvisibleItem)) break
 
                 isInvisible = conversationViewItem.date?.minute == nextInvisibleItem.date?.minute
 
@@ -310,5 +312,18 @@ private fun getName(user: User?): String {
         user.contactName?.isNotEmpty() == true -> user.contactName!!
         user.name.isNotEmpty() -> user.name
         else -> user.phone.setMaskByCountry(Country.RUSSIA)
+    }
+}
+
+fun UserStatus.toPrintableText(userName: String, isGroup: Boolean): PrintableText {
+    return when (this) {
+        UserStatus.Offline -> PrintableText.StringResource(R.string.user_status_offline)
+        UserStatus.Online -> PrintableText.StringResource(R.string.user_status_online)
+        UserStatus.Typing -> {
+            if (isGroup)
+                PrintableText.StringResource(R.string.group_user_status_typing, userName)
+            else
+                PrintableText.StringResource(R.string.user_status_typing)
+        }
     }
 }

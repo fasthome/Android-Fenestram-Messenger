@@ -12,6 +12,7 @@ import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.person_detail.PersonDetailDialog
@@ -150,6 +151,8 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
+        inputMessage.addTextChangedListener { vm.onTypingMessage() }
+
         latestPersonDetailDialog = Dialog(requireContext())
     }
 
@@ -181,6 +184,7 @@ class ConversationFragment :
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
         renderStateEditMode(state.editMode, state.messageToEdit)
+        userStatusView.setPrintableText(state.userStatus)
     }
 
     lateinit var latestPersonDetailDialog: Dialog
@@ -315,10 +319,12 @@ class ConversationFragment :
             horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,
+                connect(
+                    R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (isEditMode) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP)
+                    ConstraintSet.TOP
+                )
             }
             root.setConstraintSet(constraintsSet)
             if (!isEditMode || selfMessage == null) return
@@ -339,7 +345,8 @@ class ConversationFragment :
             padding,
             binding.inputMessage.paddingBottom,
             padding,
-            binding.inputMessage.paddingTop)
+            binding.inputMessage.paddingTop
+        )
     }
 
     private fun copyPrintableText(printableText: PrintableText) {

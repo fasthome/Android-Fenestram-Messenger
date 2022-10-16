@@ -3,11 +3,9 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 import android.util.Log
 import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.FileData
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
@@ -36,9 +34,12 @@ class MessengerInteractor(
             })
     private val _newMessagesChannel =
         Channel<Message>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val _messageActionsChannel =
+        Channel<MessageAction>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val messagesFlow: Flow<Message> = _messagesChannel.receiveAsFlow()
     private val newMessagesFlow: Flow<Message> = _newMessagesChannel.receiveAsFlow()
+    val messageActionsFlow: Flow<MessageAction> = _messageActionsChannel.receiveAsFlow()
 
     suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
         messageRepo.sendMessage(id, text, type, localId, authorId)
@@ -64,9 +65,17 @@ class MessengerInteractor(
                 override fun onNewMessage(message: MessageResponseWithChatId) {
                     _messagesChannel.trySend(chatsMapper.toMessage(message))
                 }
+
+                override fun onNewMessageAction(messageAction: MessageActionResponse) {
+                    _messageActionsChannel.trySend(chatsMapper.toMessageAction(messageAction))
+                }
             })
 
         return messagesFlow
+    }
+
+    fun emitMessageAction(chatId: String, action: String) {
+        messageRepo.emitMessageAction(chatId, action)
     }
 
     suspend fun getNewMessages(): Flow<Message> {
@@ -76,6 +85,10 @@ class MessengerInteractor(
             callback = object : MessengerRepo.SocketMessageCallback {
                 override fun onNewMessage(message: MessageResponseWithChatId) {
                     _newMessagesChannel.trySend(chatsMapper.toMessage(message))
+                }
+
+                override fun onNewMessageAction(messageAction: MessageActionResponse) {
+                    Log.d("messageAction", messageAction.user?.name.toString())
                 }
             },
             selfUserId = null
@@ -103,7 +116,8 @@ class MessengerInteractor(
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
-    suspend fun editMessage(chatId: Long, messageId: Long, newText: String) = messageRepo.editMessage(chatId = chatId,messageId = messageId,newText = newText)
+    suspend fun editMessage(chatId: Long, messageId: Long, newText: String) =
+        messageRepo.editMessage(chatId = chatId, messageId = messageId, newText = newText)
 
     suspend fun getFile(itemId: String): CallResult<FileData?> =
         filesRepo.getFile(itemId)

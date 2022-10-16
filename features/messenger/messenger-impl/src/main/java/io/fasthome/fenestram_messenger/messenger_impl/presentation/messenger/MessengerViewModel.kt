@@ -82,6 +82,7 @@ class MessengerViewModel(
         loadDataHelper.invalidateSource()
         viewModelScope.launch {
             subscribeMessages()
+            subscribeMessageActions()
         }
     }
 
@@ -141,6 +142,16 @@ class MessengerViewModel(
             }
             .launchIn(viewModelScope)
     }
+
+    private fun subscribeMessageActions() {
+        messengerInteractor.messageActionsFlow
+            .collectWhenViewActive()
+            .onEach { messageAction ->
+                //TODO нужен chatId в receiveMessageAction
+            }
+            .launchIn(viewModelScope)
+    }
+
 
     fun unsubscribeMessages() {
         messengerInteractor.closeSocket()
