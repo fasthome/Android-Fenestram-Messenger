@@ -6,8 +6,10 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.network.client.NetworkClientFactory
+import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
+import io.ktor.client.statement.*
 
 class MessengerService(
     clientFactory: NetworkClientFactory,
@@ -79,6 +81,25 @@ class MessengerService(
             )
             .requireData()
         return UploadImageResult(imagePath = response.pathToFile)
+    }
+
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): UploadDocumentResult {
+        val response = client
+            .runSubmitFormWithFile<BaseResponse<UploadDocumentResponse>>(
+                path = "files/upload",
+                binaryData = documentBytes,
+                filename = guid,
+            )
+            .requireData()
+        return UploadDocumentResult(documentPath = response.pathToFile)
+    }
+
+    suspend fun getDocument(url : String, progressListener: ProgressListener): LoadedDocumentData {
+        val httpResponse = client.runGet<HttpResponse>(path = url, useBaseUrl = false){ progress->
+            progressListener(progress)
+        }
+        val byteArray = httpResponse.readBytes()
+        return LoadedDocumentData(byteArray = byteArray)
     }
 
     suspend fun getMessagesByChat(id: Long, limit: Int, page: Int): MessagesPage {

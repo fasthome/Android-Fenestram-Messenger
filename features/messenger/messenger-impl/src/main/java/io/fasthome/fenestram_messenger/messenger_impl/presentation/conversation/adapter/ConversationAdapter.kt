@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
 import android.view.View
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.R
@@ -9,15 +10,20 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.network.client.ProgressListener
+import kotlinx.coroutines.delay
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onImageClicked : (String) -> Unit,
+    onImageClicked: (String) -> Unit,
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
+    onSelfDownloadDocument: (item : ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
+    onRecieveDownloadDocument: (item : ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
+    onGroupDownloadDocument: (item : ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -28,10 +34,19 @@ class ConversationAdapter(
         AdapterUtil.adapterDelegatesManager(
             createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
             createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked, onSelfImageLongClicked),
+            createConversationSelfDocumentAdapterDelegate(
+                onSelfMessageClicked,
+                onSelfDownloadDocument
+            ),
             createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
+            createConversationReceiveDocumentAdapterDelegate(onRecieveDownloadDocument),
             createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked, onGroupMessageLongClicked),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
+            createConversationGroupDocumentAdapterDelegate(
+                onGroupProfileItemClicked,
+                onGroupDownloadDocument
+            ),
             createConversationSystemAdapterDelegate()
         )
     )
@@ -89,11 +104,40 @@ fun createConversationSelfImageAdapterDelegate(
         }
     }
 
+fun createConversationSelfDocumentAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
+        ConversationItemSelfDocumentBinding::inflate
+    ) {
+        binding.messageContent.onClick {
+            binding.progressBar.isInvisible = false
+            onDownloadDocument(item) {
+                binding.progressBar.progress = it
+
+                if(it == 100) delay(400)
+                binding.progressBar.isInvisible = it == 100
+            }
+        }
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
+        bindWithBinding {
+            binding.progressBar.isInvisible = true
+            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            sendTimeView.setPrintableText(item.time)
+            status.setImageResource(item.statusIcon)
+            sendTimeView.isVisible = item.timeVisible
+            status.isVisible = item.timeVisible
+        }
+    }
+
 fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
         ConversationItemReceiveTextBinding::inflate,
 
-    ) {
+        ) {
         bindWithBinding {
             tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {
@@ -120,9 +164,33 @@ fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Un
         }
     }
 
+fun createConversationReceiveDocumentAdapterDelegate(
+    onDownloadDocument: (item: ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
+        ConversationItemReceiveDocumentBinding::inflate
+    ) {
+        binding.messageContent.onClick {
+            binding.progressBar.isInvisible = false
+            onDownloadDocument(item) {
+                binding.progressBar.progress = it
+
+                if(it == 100) delay(400)
+                binding.progressBar.isInvisible = it == 100
+            }
+        }
+        bindWithBinding {
+            binding.progressBar.isInvisible = true
+            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+        }
+    }
+
 fun createConversationGroupTextAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit) =
+    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit
+) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
     ) {
@@ -164,6 +232,36 @@ fun createConversationGroupImageAdapterDelegate(
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
         }
     }
+
+fun createConversationGroupDocumentAdapterDelegate(
+    onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
+        ConversationItemGroupDocumentBinding::inflate
+    ) {
+        binding.avatar.onClick {
+            onGroupProfileItemClicked(item)
+        }
+        binding.messageContent.onClick {
+            binding.progressBar.isInvisible = false
+            onDownloadDocument(item) {
+                binding.progressBar.progress = it
+
+                if(it == 100) delay(400)
+                binding.progressBar.isInvisible = it == 100
+            }
+        }
+        bindWithBinding {
+            binding.progressBar.isInvisible = true
+            username.setPrintableText(item.userName)
+            sendTimeView.setPrintableText(item.time)
+            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+            sendTimeView.isVisible = item.timeVisible
+        }
+    }
+
 
 fun createConversationSystemAdapterDelegate() =
     adapterDelegateViewBinding<ConversationViewItem.System, ConversationItemSystemBinding>(

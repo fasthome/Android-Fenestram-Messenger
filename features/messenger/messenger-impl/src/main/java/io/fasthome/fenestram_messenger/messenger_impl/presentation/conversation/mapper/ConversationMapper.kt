@@ -1,7 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
 import io.ktor.util.reflect.*
+import java.io.File
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -20,11 +21,12 @@ private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
+const val MESSAGE_TYPE_DOCUMENT = "document"
 
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
     isGroup: Boolean,
-    profileImageUrlConverter: ProfileImageUrlConverter
+    profileImageUrlConverter: StorageUrlConverter
 ): Map<String, ConversationViewItem> = this.associateBy({
     UUID.randomUUID().toString()
 }, {
@@ -34,7 +36,7 @@ fun List<Message>.toConversationItems(
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
-    profileImageUrlConverter: ProfileImageUrlConverter
+    profileImageUrlConverter: StorageUrlConverter
 ): ConversationViewItem {
     if (isDate) {
         return ConversationViewItem.System(
@@ -72,6 +74,21 @@ fun Message.toConversationViewItem(
                         timeVisible = true
                     )
                 }
+
+                MESSAGE_TYPE_DOCUMENT -> {
+                    ConversationViewItem.Self.Document(
+                        content = profileImageUrlConverter.convert(text),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        localId = UUID.randomUUID().toString(),
+                        timeVisible = true,
+                        file = null,
+                        path = null
+                    )
+                }
+
                 MESSAGE_TYPE_SYSTEM -> {
                     ConversationViewItem.System(
                         content = PrintableText.Raw(text),
@@ -79,7 +96,7 @@ fun Message.toConversationViewItem(
                         sentStatus = SentStatus.Sent,
                         date = date,
                         id = id,
-                        timeVisible = true
+                        timeVisible = true,
                     )
                 }
                 else -> error("Unknown Message Type! type $messageType")
@@ -119,6 +136,23 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
+
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        ConversationViewItem.Group.Document(
+                            content = profileImageUrlConverter.convert(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            userName = PrintableText.Raw(getName(initiator)),
+                            avatar = initiator?.avatar ?: "",
+                            date = date,
+                            id = id,
+                            phone = initiator?.phone ?: "",
+                            timeVisible = true,
+                            nickname = initiator?.nickname ?: "",
+                            userId = initiator?.id ?: 0,
+                        )
+                    }
+
                     MESSAGE_TYPE_SYSTEM -> {
                         ConversationViewItem.System(
                             content = PrintableText.Raw(text),
@@ -155,6 +189,18 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
+
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        ConversationViewItem.Receive.Document(
+                            content = profileImageUrlConverter.convert(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
+                            date = date,
+                            id = id,
+                            timeVisible = true
+                        )
+                    }
+
                     MESSAGE_TYPE_SYSTEM -> {
                         ConversationViewItem.System(
                             content = PrintableText.Raw(text),
@@ -251,6 +297,12 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
                         next.copy(timeVisible = !isInvisible)
                     is ConversationViewItem.Self.Text -> messages[tempPreviousCounter] =
                         next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Group.Document -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Receive.Document -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Self.Document -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
                     is ConversationViewItem.System -> messages[tempPreviousCounter]
                 }
 
@@ -296,6 +348,25 @@ fun createImageMessage(image: String?, loadableContent: Content) =
         loadableContent = loadableContent,
         timeVisible = true
     )
+
+fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
+    content = document ?: run {
+        //TODO костыль!!! Пока бэк не поддерживает все форматы файлов
+        if(file.extension.equals("pdf", ignoreCase = true)) {
+            file.extension
+        } else {
+            "TXT"
+        }
+    },
+    time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
+    sentStatus = SentStatus.Loading,
+    date = ZonedDateTime.now(),
+    id = 0,
+    localId = UUID.randomUUID().toString(),
+    file = file,
+    timeVisible = true,
+    path = null
+)
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
     content = getFuzzyDateString(date),

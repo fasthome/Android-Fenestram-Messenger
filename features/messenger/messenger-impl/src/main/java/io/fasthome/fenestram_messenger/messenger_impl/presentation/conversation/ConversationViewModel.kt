@@ -1,10 +1,14 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.Manifest
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
+import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.camera_api.CameraFeature
@@ -12,12 +16,13 @@ import io.fasthome.fenestram_messenger.camera_api.CameraParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
@@ -29,6 +34,7 @@ import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenFileNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
@@ -36,6 +42,7 @@ import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
+import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
@@ -45,6 +52,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 
+
 class ConversationViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
@@ -52,7 +60,9 @@ class ConversationViewModel(
     private val features: Features,
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUrlConverter: ProfileImageUrlConverter,
+    private val storageUrlConverter: StorageUrlConverter,
+    private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
+    private val permissionInterface: PermissionInterface
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -81,15 +91,29 @@ class ConversationViewModel(
     private var chatUsers = listOf<User>()
     private var selfUserId: Long? = null
     private var loadItemsJob by switchJob()
+    private var downloadFileJob by switchJob()
     private var lastPage: MessagesPage? = null
+
+    private val openFileLauncher = registerScreen(OpenFileNavigationContract)
 
     init {
         pickFileInterface.resultEvents()
             .onEach {
                 when (it) {
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
-                    is PickFileInterface.ResultEvent.Picked -> {
+                    is PickFileInterface.ResultEvent.PickedImage -> {
                         attachContentFile(Content.FileContent(it.tempFile))
+                    }
+                    is PickFileInterface.ResultEvent.PickedFile -> {
+                        updateState { state ->
+                            state.copy(
+                                attachedFiles = state.attachedFiles.plus(
+                                    AttachedFile.Document(
+                                        file = it.tempFile
+                                    )
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -116,7 +140,7 @@ class ConversationViewModel(
                             it.messages.toConversationItems(
                                 selfUserId = selfUserId!!,
                                 isGroup = params.chat.isGroup,
-                                profileImageUrlConverter = profileImageUrlConverter
+                                profileImageUrlConverter = storageUrlConverter
                             )
                         )
                     )
@@ -145,7 +169,7 @@ class ConversationViewModel(
                                 .successOrSendError() != null
                         )
                             updateState { state ->
-                                state.copy(avatar = profileImageUrlConverter.convert(params.chat.avatar))
+                                state.copy(avatar = storageUrlConverter.convert(params.chat.avatar))
                             }
                 }
             }
@@ -184,7 +208,7 @@ class ConversationViewModel(
             userName = PrintableText.Raw(params.chat.name),
             userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup),
             isChatEmpty = false,
-            avatar = profileImageUrlConverter.convert(params.chat.avatar),
+            avatar = storageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
             messageToEdit = null,
             editMode = false
@@ -220,7 +244,7 @@ class ConversationViewModel(
         val attachedFiles = currentViewState.attachedFiles
 
         if (attachedFiles.isNotEmpty()) {
-            sendImages(attachedFiles)
+            sendFiles(attachedFiles)
         }
         if (currentViewState.editMode) {
             if (mess.isNotEmpty()) {
@@ -229,75 +253,88 @@ class ConversationViewModel(
             return
         }
         if (mess.trim().isNotEmpty()) {
-            sendMessage(mess)
+            sendMessage(text = mess, messageType = MessageType.Text)
         }
     }
 
-    private fun sendImages(attachedFiles: List<AttachedFile.Image>) {
+    private fun sendFiles(attachedFiles: List<AttachedFile>) {
         val messages = currentViewState.messages
 
-        val tempMessages = attachedFiles.map {
-            createImageMessage(null, it.content)
+        val tempFileMessages = attachedFiles.map {
+            when (it) {
+                is AttachedFile.Image -> createImageMessage(null, it.content)
+                is AttachedFile.Document -> createDocumentMessage(null, it.file)
+            }
         }
 
         updateState { state ->
             state.copy(attachedFiles = listOf())
         }
+
         viewModelScope.launch {
             updateState { state ->
                 state.copy(
-                    messages = tempMessages.reversed().associateBy({
+                    messages = tempFileMessages.reversed().associateBy({
                         it.localId
                     }, {
                         it
                     }).plus(messages)
                 )
             }
-            tempMessages.forEach { tempMessage ->
-                var imageUrl: String?
-
-                val byteArray = when (val content = tempMessage.loadableContent) {
-                    is Content.FileContent -> content.file.readBytes()
-                    is Content.LoadableContent -> content.load()?.array
-                    null -> return@launch
-                }
-
-                messengerInteractor.uploadProfileImage(
-                    byteArray ?: return@launch
-                )
-                    .getOrNull()?.imagePath.let {
-                        imageUrl = it
-                        it
+            tempFileMessages.forEach { tempMessage ->
+                when (tempMessage) {
+                    is ConversationViewItem.Self.Image -> {
+                        sendImage(tempMessage)
                     }
-                val sendMessageResponse = messengerInteractor.sendMessage(
-                    id = chatId ?: return@launch,
-                    text = imageUrl ?: return@launch,
-                    type = "image",
-                    localId = tempMessage.localId,
-                    authorId = selfUserId ?: return@launch
-                )
-                when (sendMessageResponse) {
-                    is CallResult.Error -> {
-                        updateStatus(
-                            tempMessage,
-                            SentStatus.Error,
-                            profileImageUrlConverter.convert(imageUrl),
-                        )
+                    is ConversationViewItem.Self.Document -> {
+                        sendDocument(tempMessage)
                     }
-                    is CallResult.Success -> {
-                        updateStatus(
-                            tempMessage,
-                            SentStatus.Sent,
-                            profileImageUrlConverter.convert(imageUrl),
-                            sendMessageResponse.data.id
-                        )
-                    }
+                    is ConversationViewItem.Self.Text -> Unit
                 }
             }
-
         }
         sendEvent(ConversationEvent.MessageSent)
+    }
 
+    private suspend fun sendImage(tempMessage: ConversationViewItem.Self.Image) {
+        var fileStoragePath: String? = null
+        val byteArray = when (val content = tempMessage.loadableContent) {
+            is Content.FileContent -> content.file.readBytes()
+            is Content.LoadableContent -> content.load()?.array
+            null -> return
+        }
+        messengerInteractor.uploadProfileImage(
+            byteArray ?: return
+        ).getOrNull()?.imagePath.let {
+            fileStoragePath = it
+            it
+        }
+        sendMessage(
+            text = fileStoragePath ?: return,
+            messageType = MessageType.Image,
+            existMessage = tempMessage
+        )
+    }
+
+    private suspend fun sendDocument(tempMessage: ConversationViewItem.Self.Document) {
+        var fileStoragePath: String? = null
+        messengerInteractor.uploadDocument(
+            tempMessage.file?.readBytes() ?: return,
+            extension = tempMessage.file.name.let { fileName ->
+                if (fileName.substring(fileName.lastIndexOf('.'), fileName.length) == ".pdf")
+                    ".pdf"
+                else
+                    ".txt"
+            }
+        ).getOrNull()?.documentPath.let {
+            fileStoragePath = it
+            it
+        }
+        sendMessage(
+            text = fileStoragePath ?: return,
+            messageType = MessageType.Document,
+            existMessage = tempMessage
+        )
     }
 
     private fun editMessage(newText: String) {
@@ -320,13 +357,11 @@ class ConversationViewModel(
                     }
                 }
                 is CallResult.Success -> {
-                    val message =
-                        currentViewState.messages.filter { it.value.id == messageToEdit.id }
+                    val message = currentViewState.messages.filter { it.value.id == messageToEdit.id }
                     val key = message.keys.firstOrNull() ?: return@launch
                     val newMessages = currentViewState.messages.mapValues {
                         if (it.key == key) messageToEdit.copy(
-                            content = PrintableText.Raw(newText),
-                            isEdited = true
+                            content = PrintableText.Raw(newText), isEdited = true
                         ) else it.value
                     }
                     updateState { state ->
@@ -341,9 +376,25 @@ class ConversationViewModel(
         }
     }
 
-    private fun sendMessage(mess: String) {
+    private fun sendMessage(
+        text: String,
+        messageType: MessageType,
+        existMessage: ConversationViewItem.Self? = null
+    ) {
         viewModelScope.launch {
-            val tempMessage = createTextMessage(mess)
+            val tempMessage = when (messageType) {
+                MessageType.Text -> {
+                    createTextMessage(text)
+                }
+                MessageType.Image -> {
+                    if ((existMessage as ConversationViewItem.Self.Image).loadableContent == null) return@launch
+                    existMessage
+                }
+                MessageType.Document -> {
+                    if ((existMessage as ConversationViewItem.Self.Document).file == null) return@launch
+                    existMessage
+                }
+            }
             val messages = currentViewState.messages
 
             updateState { state ->
@@ -353,8 +404,8 @@ class ConversationViewModel(
             }
             val sendMessageResponse = messengerInteractor.sendMessage(
                 id = chatId ?: return@launch,
-                text = mess,
-                type = "text",
+                text = text,
+                type = messageType.type,
                 localId = tempMessage.localId,
                 authorId = selfUserId ?: return@launch
             )
@@ -363,7 +414,20 @@ class ConversationViewModel(
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
-                    updateStatus(tempMessage, SentStatus.Sent, id = sendMessageResponse.data.id)
+                    when (messageType) {
+                        MessageType.Text -> {
+                            updateStatus(tempMessage, SentStatus.Sent, id = sendMessageResponse.data.id)
+                        }
+                        MessageType.Image, MessageType.Document -> {
+                            updateStatus(
+                                tempMessage,
+                                SentStatus.Sent,
+                                storageUrlConverter.convert(text),
+                                sendMessageResponse.data.id
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -394,6 +458,10 @@ class ConversationViewModel(
                         } else {
                             tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                         }
+                }
+                is ConversationViewItem.Self.Document -> {
+                    newMessages[tempMessage.localId] =
+                        tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                 }
             }
             state.copy(
@@ -435,15 +503,14 @@ class ConversationViewModel(
             .flowOn(Dispatchers.Main)
             .onEach { message ->
                 updateState { state ->
-                    if (message.isEdited && state.messages.filter { it.value.id == message.id }
-                            .isNotEmpty()) {
+                    if (message.isEdited && state.messages.filter { it.value.id == message.id }.isNotEmpty()) {
                         return@updateState state.copy(
                             messages = state.messages.mapValues {
                                 if (it.value.id == message.id)
                                     message.toConversationViewItem(
                                         selfUserId,
                                         params.chat.isGroup,
-                                        profileImageUrlConverter
+                                        storageUrlConverter
                                     )
                                 else it.value
                             }
@@ -454,7 +521,7 @@ class ConversationViewModel(
                             UUID.randomUUID().toString() to message.toConversationViewItem(
                                 selfUserId = selfUserId,
                                 isGroup = params.chat.isGroup,
-                                profileImageUrlConverter
+                                storageUrlConverter
                             )
                         ).plus(state.messages)
                     )
@@ -529,7 +596,7 @@ class ConversationViewModel(
                     messages = listOf(),
                     time = null,
                     name = personDetail.userName,
-                    avatar = profileImageUrlConverter.extractPath(personDetail.avatar),
+                    avatar = storageUrlConverter.extractPath(personDetail.avatar),
                     isGroup = false
                 )
             )
@@ -580,6 +647,11 @@ class ConversationViewModel(
         pickFileInterface.pickFile()
     }
 
+    fun selectAttachFile() {
+        pickFileInterface.pickFile(PickFileComponentParams.MimeType.Document())
+    }
+
+
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
             state.copy(
@@ -629,15 +701,20 @@ class ConversationViewModel(
         }
         when (selfViewItem) {
             is ConversationViewItem.Self.Text -> {
-                sendMessage(getPrintableRawText(selfViewItem.content))
+                sendMessage(getPrintableRawText(selfViewItem.content), messageType = MessageType.Text)
             }
             is ConversationViewItem.Self.Image -> {
-                sendImages(
+                sendFiles(
                     listOf(
                         AttachedFile.Image(
                             selfViewItem.loadableContent ?: return
                         )
                     )
+                )
+            }
+            is ConversationViewItem.Self.Document -> {
+                sendFiles(
+                    listOf(AttachedFile.Document(selfViewItem.file ?: return))
                 )
             }
         }
@@ -694,4 +771,31 @@ class ConversationViewModel(
         messengerInteractor.emitMessageAction(chatId.toString(), TYPING_MESSAGE_STATUS)
     }
 
+    fun onDownloadDocument(
+        itemSelf: ConversationViewItem.Self.Document? = null,
+        itemReceive: ConversationViewItem.Receive.Document? = null,
+        itemGroup: ConversationViewItem.Group.Document? = null,
+        progressListener: ProgressListener,
+    ) {
+        val item = itemSelf ?: itemReceive ?: itemGroup ?: return
+        val documentLink = item.content.toString()
+        downloadFileJob = viewModelScope.launch {
+            messengerInteractor.getDocument(
+                storagePath = storageUrlConverter.extractPath(documentLink),
+                progressListener = progressListener
+            ).onSuccess { loadedDocument ->
+                val permissionGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        || permissionInterface.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+                if (!permissionGranted) return@launch
+                copyDocumentToDownloadsUseCase.invoke(
+                    loadedDocument.byteArray,
+                    PrintableText.Raw(storageUrlConverter.extractPath(documentLink)),
+                    extension = documentLink.substringAfterLast('.', "")
+                ).onSuccess { uri ->
+                    openFileLauncher.launch(OpenFileNavigationContract.Params(uri))
+                }
+            }
+        }
+    }
 }
