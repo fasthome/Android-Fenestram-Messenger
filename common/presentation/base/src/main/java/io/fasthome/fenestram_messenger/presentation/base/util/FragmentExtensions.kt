@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
@@ -97,6 +98,12 @@ internal fun FragmentManager.onBackPressed(): Boolean =
 
 internal fun FragmentManager.onFabClicked(): Boolean =
     fragments.any { it is FabConsumer && it.onFabClicked() }
+
+internal fun FragmentManager.onFabUpdateIcon(@DrawableRes iconRes : Int? = null, badgeCount : Int) =
+    fragments.any {
+        (it as? FabConsumer)?.updateFabIcon(iconRes, badgeCount)
+        it is FabConsumer
+    }
 
 fun Fragment.showMessage(message: Message): Unit = when (message) {
     is Message.Alert -> {

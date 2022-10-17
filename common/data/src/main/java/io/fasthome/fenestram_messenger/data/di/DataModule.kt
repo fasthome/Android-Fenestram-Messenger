@@ -1,6 +1,8 @@
 package io.fasthome.fenestram_messenger.data.di
 
 import io.fasthome.fenestram_messenger.data.*
+import io.fasthome.fenestram_messenger.data.core.CoreRepo
+import io.fasthome.fenestram_messenger.data.core.CoreRepoImpl
 import io.fasthome.fenestram_messenger.data.file.*
 import io.fasthome.fenestram_messenger.data.prefs.InMemoryKeyValueStorage
 import io.fasthome.fenestram_messenger.data.prefs.PreferenceKeyValueStorage
@@ -37,9 +39,14 @@ object DataModule {
 //            PreferenceKeyValueStorage::SecureFactory,
 //            named(StorageQualifier.Secure)
 //        ) bindSafe KeyValueStorage.Factory::class
+
+        single(
+            ::CoreRepoImpl
+        ) bindSafe CoreRepo::class
+        single { CoreStorage(get(named(StorageQualifier.Simple))) }
     }
 
-    private fun createFile() = module{
+    private fun createFile() = module {
         single(::FileSystemInterfaceImpl) bindSafe FileSystemInterface::class
 
         single(
@@ -50,7 +57,7 @@ object DataModule {
         single(::DownloadFileManagerImpl) bindSafe DownloadFileManager::class
     }
 
-    private fun createExt() = module{
+    private fun createExt() = module {
         single(::StorageUrlConverter)
     }
 

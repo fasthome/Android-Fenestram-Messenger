@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.permission.PermissionInterface
+import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
@@ -247,7 +248,7 @@ class ConversationViewModel(
             }
             return
         }
-        if (mess.isNotEmpty()) {
+        if (mess.trim().isNotEmpty()) {
             sendMessage(text = mess, messageType = MessageType.Text)
         }
     }
