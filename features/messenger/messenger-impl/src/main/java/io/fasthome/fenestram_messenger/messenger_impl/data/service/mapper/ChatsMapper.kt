@@ -54,7 +54,8 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
         }
 
         return MessageAction(
-            id = messageActionResponse.user?.id ?: 1,
+            userId = messageActionResponse.user?.id ?: 0,
+            chatId = messageActionResponse.chatId ?: 0,
             userName = userName ?: "",
             userStatus = userStatus
         )

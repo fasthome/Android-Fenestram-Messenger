@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper
 
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_IMAGE
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
@@ -16,13 +17,11 @@ private val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 class MessengerMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
 
-    fun toMessengerViewItem(chat: Chat): MessengerViewItem {
-        return MessengerViewItem(
-            id = chat.id ?: 0,
-            avatar = 0,
-            name = PrintableText.Raw(chat.name),
-            newMessages = 0,
-            lastMessage = chat.messages.lastOrNull()?.let { message ->
+    fun toMessengerViewItem(chat: Chat, messageActionChatId: Long): MessengerViewItem {
+        val lastMessage = if (chat.id == messageActionChatId) {
+            LastMessage.Status(PrintableText.StringResource(R.string.user_status_typing))
+        } else {
+            chat.messages.lastOrNull()?.let { message ->
                 when (message.messageType) {
                     MESSAGE_TYPE_TEXT -> {
                         LastMessage.Text(PrintableText.Raw(message.text))
@@ -37,7 +36,15 @@ class MessengerMapper(private val profileImageUrlConverter: ProfileImageUrlConve
                         LastMessage.Text(PrintableText.EMPTY)
                     }
                 }
-            } ?: LastMessage.Text(PrintableText.EMPTY),
+            } ?: LastMessage.Text(PrintableText.EMPTY)
+        }
+
+        return MessengerViewItem(
+            id = chat.id ?: 0,
+            avatar = 0,
+            name = PrintableText.Raw(chat.name),
+            newMessages = 0,
+            lastMessage = lastMessage,
             time = getTimeOrFuzzyDate(chat.time),
             profileImageUrl = profileImageUrlConverter.convert(chat.avatar),
             originalChat = chat,

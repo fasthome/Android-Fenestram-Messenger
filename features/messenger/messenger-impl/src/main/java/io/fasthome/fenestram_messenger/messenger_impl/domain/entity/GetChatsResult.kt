@@ -44,7 +44,8 @@ data class Message(
 }
 
 data class MessageAction(
-    val id: Long,
+    val userId: Long,
+    val chatId: Long,
     val userName: String,
     val userStatus: UserStatus
 )

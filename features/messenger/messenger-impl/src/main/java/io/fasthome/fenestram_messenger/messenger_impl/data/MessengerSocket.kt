@@ -50,9 +50,7 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.on("receiveMessageAction") {
                 Log.d(this.javaClass.simpleName, "receiveMessageAction: " + it[0].toString())
                 val messageAction = Json.decodeFromString<SocketMessageAction>(it[0].toString())
-//                if (selfUserId != messageAction.message.user?.id) {
                 messageActionCallback(messageActionToMessageActionResponse(messageAction.message))
-//                }
             }
 
         } catch (e: Exception) {
@@ -80,10 +78,11 @@ class MessengerSocket(private val baseUrl: String) {
         status = ""
     )
 
-    fun messageActionToMessageActionResponse(message: MessageActionResponse?) =
+    fun messageActionToMessageActionResponse(messageAction: MessageActionResponse?) =
         MessageActionResponse(
-            user = message?.user,
-            action = message?.action
+            user = messageAction?.user,
+            action = messageAction?.action,
+            chatId = messageAction?.chatId
         )
 
     fun closeClientSocket() {

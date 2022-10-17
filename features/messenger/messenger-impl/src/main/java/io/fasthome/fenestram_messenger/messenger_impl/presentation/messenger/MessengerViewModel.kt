@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -61,7 +62,6 @@ class MessengerViewModel(
                 else -> {}
             }
         }
-
 
     private var _query = ""
     val items = loadDataHelper.getDataFlow(
@@ -147,7 +147,11 @@ class MessengerViewModel(
         messengerInteractor.messageActionsFlow
             .collectWhenViewActive()
             .onEach { messageAction ->
-                //TODO нужен chatId в receiveMessageAction
+                loadDataHelper.messageActionChatId = messageAction.chatId
+                loadDataHelper.invalidateSource()
+                delay(5000)
+                loadDataHelper.messageActionChatId = -1
+                loadDataHelper.invalidateSource()
             }
             .launchIn(viewModelScope)
     }

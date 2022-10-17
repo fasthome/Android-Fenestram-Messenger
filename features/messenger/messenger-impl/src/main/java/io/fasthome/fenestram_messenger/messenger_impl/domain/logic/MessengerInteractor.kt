@@ -88,7 +88,7 @@ class MessengerInteractor(
                 }
 
                 override fun onNewMessageAction(messageAction: MessageActionResponse) {
-                    Log.d("messageAction", messageAction.user?.name.toString())
+                    _messageActionsChannel.trySend(chatsMapper.toMessageAction(messageAction))
                 }
             },
             selfUserId = null

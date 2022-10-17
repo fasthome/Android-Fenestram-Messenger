@@ -483,22 +483,24 @@ class ConversationViewModel(
         messengerInteractor.messageActionsFlow
             .flowOn(Dispatchers.Main)
             .onEach { messageAction ->
-                updateState { state ->
-                    state.copy(
-                        userStatus = messageAction.userStatus.toPrintableText(
-                            messageAction.userName,
-                            params.chat.isGroup
+                if (chatId == messageAction.chatId) {
+                    updateState { state ->
+                        state.copy(
+                            userStatus = messageAction.userStatus.toPrintableText(
+                                messageAction.userName,
+                                params.chat.isGroup
+                            )
                         )
-                    )
-                }
-                delay(1000)
-                updateState { state ->
-                    state.copy(
-                        userStatus = UserStatus.Online.toPrintableText(
-                            messageAction.userName,
-                            params.chat.isGroup
+                    }
+                    delay(1000)
+                    updateState { state ->
+                        state.copy(
+                            userStatus = UserStatus.Online.toPrintableText(
+                                messageAction.userName,
+                                params.chat.isGroup
+                            )
                         )
-                    )
+                    }
                 }
             }
             .launchIn(viewModelScope)

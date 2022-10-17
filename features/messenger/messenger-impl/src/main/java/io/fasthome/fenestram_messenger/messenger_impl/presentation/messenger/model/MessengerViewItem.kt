@@ -9,16 +9,17 @@ data class MessengerViewItem(
     @DrawableRes val avatar: Int,
     val name: PrintableText,
     val newMessages: Int,
-    val time : PrintableText,
+    val time: PrintableText,
     val lastMessage: LastMessage,
-    val profileImageUrl : String?,
-    val originalChat : Chat,
-    val isGroup : Boolean
+    val profileImageUrl: String?,
+    val originalChat: Chat,
+    val isGroup: Boolean
 )
 
 sealed class LastMessage {
 
-    data class Text(val text : PrintableText) : LastMessage()
-    data class Image(val imageUrl : String) : LastMessage()
+    data class Text(val text: PrintableText) : LastMessage()
+    data class Status(val status: PrintableText) : LastMessage()
+    data class Image(val imageUrl: String) : LastMessage()
 
 }
