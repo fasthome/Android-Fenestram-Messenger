@@ -119,7 +119,7 @@
         android:paddingBottom="40dp"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/cl_edit_message"
+        app:layout_constraintBottom_toTopOf="@+id/cl_input_plate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -184,7 +184,7 @@
         app:layout_constraintStart_toStartOf="@+id/input_message"
         tools:ignore="TouchTargetSizeCheck" />
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_edit_message"
+        android:id="@+id/cl_input_plate"
         android:layout_width="0dp"
         android:visibility="visible"
         android:background="@drawable/shape_edit_message_shape"
@@ -219,20 +219,45 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_text_to_edit"
-            style="@style/Text.Gray.12sp"
+        <LinearLayout
+            android:id="@+id/message_action_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:maxLines="2"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/tv_edit_message_title"
-            app:layout_constraintTop_toBottomOf="@+id/tv_edit_message_title"
-            tools:text="Привет, у кого тут день рождения? Поздравляю и желаю счастья, здоровья, удачных релизов и всё. Дальше" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_edit_message_title">
+
+            <ImageView
+                android:id="@+id/reply_image"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="gone"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintStart_toStartOf="@+id/tv_edit_message_title"
+                app:layout_constraintTop_toBottomOf="@+id/tv_edit_message_title"
+                tools:src="@color/white"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_text_to_edit"
+                style="@style/Text.Gray.12sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:ellipsize="end"
+                android:maxLines="2"
+                app:layout_constraintBottom_toBottomOf="@+id/reply_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/reply_image"
+                app:layout_constraintTop_toTopOf="@+id/reply_image"
+                app:layout_constraintVertical_bias="0.0"
+                tools:text="Фотография" />
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.appcompat.widget.AppCompatEditText

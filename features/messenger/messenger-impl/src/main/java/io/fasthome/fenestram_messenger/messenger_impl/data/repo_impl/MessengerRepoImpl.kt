@@ -14,7 +14,7 @@ import io.fasthome.network.tokens.AccessToken
 
 class MessengerRepoImpl(
     private val messengerService: MessengerService,
-    private val socket: MessengerSocket
+    private val socket: MessengerSocket,
 ) : MessengerRepo {
 
     override suspend fun sendMessage(
@@ -22,7 +22,7 @@ class MessengerRepoImpl(
         text: String,
         type: String,
         localId: String,
-        authorId: Long
+        authorId: Long,
     ): CallResult<SendMessageResult> = callForResult {
         messengerService.sendMessage(id, text, type, localId, authorId)
     }
@@ -41,7 +41,7 @@ class MessengerRepoImpl(
     override suspend fun postChats(
         name: String,
         users: List<Long>,
-        isGroup: Boolean
+        isGroup: Boolean,
     ): CallResult<PostChatsResult> =
         callForResult {
             messengerService.postChats(name, users, isGroup)
@@ -73,7 +73,7 @@ class MessengerRepoImpl(
         chatId: String?,
         token: AccessToken,
         callback: MessengerRepo.SocketMessageCallback,
-        selfUserId: Long?
+        selfUserId: Long?,
     ) {
         socket.setClientSocket(chatId = chatId, token = token, selfUserId = selfUserId) {
             callback.onNewMessage(this)
@@ -82,13 +82,30 @@ class MessengerRepoImpl(
 
     override suspend fun uploadImage(
         photoBytes: ByteArray,
-        guid: String
+        guid: String,
     ): CallResult<UploadImageResult> = callForResult {
         messengerService.uploadImage(photoBytes, guid)
     }
 
-    override suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit> = callForResult {
+    override suspend fun editMessage(
+        chatId: Long,
+        messageId: Long,
+        newText: String,
+    ): CallResult<Unit> = callForResult {
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
+    }
+
+    override suspend fun replyMessage(
+        chatId: Long,
+        messageId: Long,
+        text: String,
+        messageType: String,
+    ) = callForResult {
+        messengerService.replyMessage(
+            messageId = messageId,
+            chatId = chatId,
+            text = text,
+            messageType = messageType)
     }
 
     override fun closeSocket() {

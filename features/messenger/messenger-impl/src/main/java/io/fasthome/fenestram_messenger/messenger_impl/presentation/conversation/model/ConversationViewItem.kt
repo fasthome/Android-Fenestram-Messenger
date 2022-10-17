@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
 import java.time.ZonedDateTime
@@ -23,6 +24,8 @@ sealed interface ConversationViewItem {
     val timeVisible : Boolean
     val sentStatus: SentStatus
     val nickname: String?
+    val messageType: String?
+    val replyMessage: Message?
 
     val statusIcon: Int
         get() = getStatusIcon(sentStatus)
@@ -39,7 +42,9 @@ sealed interface ConversationViewItem {
             override val localId: String,
             override val timeVisible: Boolean,
             val isEdited: Boolean,
-            override val nickname: String?
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: Message?
         ) : Self(), ConversationTextItem
 
         data class Image(
@@ -51,7 +56,9 @@ sealed interface ConversationViewItem {
             override val localId: String,
             override val timeVisible: Boolean,
             val loadableContent: Content? = null,
-            override val nickname: String?
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: Message?
         ) : Self(), ConversationImageItem
     }
 
@@ -64,7 +71,9 @@ sealed interface ConversationViewItem {
             override val sentStatus: SentStatus,
             override val timeVisible: Boolean,
             val isEdited: Boolean,
-            override val nickname: String?
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: Message?
         ) : Receive(), ConversationTextItem
 
         data class Image(
@@ -74,7 +83,9 @@ sealed interface ConversationViewItem {
             override val date: ZonedDateTime?,
             override val sentStatus: SentStatus,
             override val timeVisible: Boolean,
-            override val nickname: String?
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: Message?
         ) : Receive(), ConversationImageItem
     }
 
@@ -82,7 +93,7 @@ sealed interface ConversationViewItem {
         open val userName: PrintableText,
         open val avatar: String,
         open val phone: String,
-        open val userId: Long
+        open val userId: Long,
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
@@ -96,7 +107,9 @@ sealed interface ConversationViewItem {
             override val nickname: String?,
             override val userId: Long,
             override val timeVisible: Boolean,
-            val isEdited: Boolean
+            val isEdited: Boolean,
+            override val messageType: String?,
+            override val replyMessage: Message?
         ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
         data class Image(
@@ -111,6 +124,8 @@ sealed interface ConversationViewItem {
             override val nickname: String?,
             override val userId: Long,
             override val timeVisible: Boolean,
+            override val messageType: String?,
+            override val replyMessage: Message?
         ) : Group(userName, avatar, phone, userId), ConversationImageItem
     }
 
@@ -121,7 +136,9 @@ sealed interface ConversationViewItem {
         override val date: ZonedDateTime?,
         override val sentStatus: SentStatus,
         override var timeVisible: Boolean,
-        override val nickname: String? = null
+        override val nickname: String? = null,
+        override val messageType: String? = null,
+        override val replyMessage: Message? = null
     ) : ConversationViewItem
 
 }

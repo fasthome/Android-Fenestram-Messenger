@@ -57,7 +57,9 @@ fun Message.toConversationViewItem(
                         localId = UUID.randomUUID().toString(),
                         timeVisible = true,
                         isEdited = isEdited,
-                        nickname = initiator?.nickname
+                        nickname = initiator?.nickname,
+                        messageType = messageType,
+                        replyMessage = replyMessage
                     )
                 }
                 MESSAGE_TYPE_IMAGE -> {
@@ -69,7 +71,9 @@ fun Message.toConversationViewItem(
                         id = id,
                         localId = UUID.randomUUID().toString(),
                         timeVisible = true,
-                        nickname = initiator?.nickname
+                        nickname = initiator?.nickname,
+                        messageType = messageType,
+                        replyMessage = replyMessage
                     )
                 }
                 MESSAGE_TYPE_SYSTEM -> {
@@ -101,7 +105,9 @@ fun Message.toConversationViewItem(
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
                             isEdited = isEdited,
-                            timeVisible = true
+                            timeVisible = true,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -116,7 +122,9 @@ fun Message.toConversationViewItem(
                             phone = initiator?.phone ?: "",
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
-                            timeVisible = true
+                            timeVisible = true,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {
@@ -143,7 +151,9 @@ fun Message.toConversationViewItem(
                             id = id,
                             timeVisible = true,
                             isEdited = isEdited,
-                            nickname = initiator?.nickname
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -154,7 +164,9 @@ fun Message.toConversationViewItem(
                             date = date,
                             id = id,
                             timeVisible = true,
-                            nickname = initiator?.nickname
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
                     MESSAGE_TYPE_SYSTEM -> {
@@ -286,7 +298,9 @@ fun createTextMessage(text: String, userName: String?) = ConversationViewItem.Se
     localId = UUID.randomUUID().toString(),
     isEdited = false,
     timeVisible = true,
-    nickname = userName
+    nickname = userName,
+    messageType = "text",
+    replyMessage = null
 )
 
 fun createImageMessage(image: String?, loadableContent: Content, userName: String?) =
@@ -299,7 +313,9 @@ fun createImageMessage(image: String?, loadableContent: Content, userName: Strin
         localId = UUID.randomUUID().toString(),
         loadableContent = loadableContent,
         timeVisible = true,
-        nickname = userName
+        nickname = userName,
+        messageType = "image",
+        replyMessage = null
     )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

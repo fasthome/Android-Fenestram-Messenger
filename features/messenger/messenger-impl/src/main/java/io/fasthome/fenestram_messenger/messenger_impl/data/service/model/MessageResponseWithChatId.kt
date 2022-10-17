@@ -14,6 +14,9 @@ class MessageResponseWithChatId(
     @SerialName("user")
     val initiator: Initiator?,
 
+    @SerialName("replyMessage")
+    val replyMessage: MessageFullResponse?,
+
     @SerialName("reply_message_id")
     val replyMessageId: Long?,
 

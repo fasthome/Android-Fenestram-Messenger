@@ -33,6 +33,7 @@ class ChatsMapper(private val profileImageUrlConverter: ProfileImageUrlConverter
         },
         chatId = messageResponse.chatId,
         isDate = false,
-        isEdited = messageResponse.isEdited
+        isEdited = messageResponse.isEdited,
+        replyMessage = null // TODO: ADD REPLY MESSEGE WHEN YURII FIX SOCKET
     )
 }

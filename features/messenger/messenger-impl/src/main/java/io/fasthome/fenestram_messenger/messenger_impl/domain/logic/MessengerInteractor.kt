@@ -26,7 +26,7 @@ class MessengerInteractor(
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
     private val filesRepo: FilesRepo,
-    private val userStorage: UserStorage
+    private val userStorage: UserStorage,
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -103,7 +103,14 @@ class MessengerInteractor(
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
-    suspend fun editMessage(chatId: Long, messageId: Long, newText: String) = messageRepo.editMessage(chatId = chatId,messageId = messageId,newText = newText)
+    suspend fun editMessage(chatId: Long, messageId: Long, newText: String) =
+        messageRepo.editMessage(chatId = chatId, messageId = messageId, newText = newText)
+
+    suspend fun replyMessage(chatId: Long, messageId: Long, text: String, messageType: String) =
+        messageRepo.replyMessage(chatId = chatId,
+            messageId = messageId,
+            text = text,
+            messageType = messageType)
 
     suspend fun getFile(itemId: String): CallResult<FileData?> =
         filesRepo.getFile(itemId)

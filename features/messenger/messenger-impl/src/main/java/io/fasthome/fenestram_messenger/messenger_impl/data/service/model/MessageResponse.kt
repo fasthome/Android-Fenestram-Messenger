@@ -24,5 +24,8 @@ class MessageResponse(
     val createdDate: String,
 
     @SerialName("is_edited")
-    val isEdited: Boolean
+    val isEdited: Boolean,
+
+    @SerialName("replyMessage")
+    val replyMessage: MessageResponse?,
 )

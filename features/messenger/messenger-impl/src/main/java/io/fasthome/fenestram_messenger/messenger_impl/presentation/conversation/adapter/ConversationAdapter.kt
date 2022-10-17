@@ -57,6 +57,11 @@ fun createConversationSelfTextAdapterDelegate(
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
+            item.replyMessage?.let {
+                clReplyMessage.isVisible = true
+                replyAuthorName.text = it.initiator?.nickname
+                replyContent.text = it.text
+            }
         }
     }
 

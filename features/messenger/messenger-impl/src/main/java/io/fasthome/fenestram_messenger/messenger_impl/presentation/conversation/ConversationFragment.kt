@@ -8,19 +8,20 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
@@ -183,6 +184,9 @@ class ConversationFragment :
         username.setPrintableText(state.userName)
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
+
+
+        replyImage.isVisible = false
         when (state.inputMessageMode) {
             is InputMessageMode.Default -> {
                 renderStateEditMode(false, null)
@@ -342,25 +346,31 @@ class ConversationFragment :
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
-                        tvTextToEdit.text = "Изображение" // TODO: !!!
+                        tvTextToEdit.setText(R.string.image)
+                        replyImage.isVisible = true
+                        replyImage.loadRounded(message.content, radius = 8)
                     }
                 }
+                inputMessage.showKeyboard()
             }
         }
     }
 
     private fun switchInputPlate(state: Boolean) {
         with(binding) {
-            clEditMessage.isInvisible = !state
+            clInputPlate.isInvisible = !state
             attachButton.isVisible = !state
             horizontalPaddingInput(if (state) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
                 connect(R.id.messages_list,
                     ConstraintSet.BOTTOM,
-                    if (state) R.id.cl_edit_message else R.id.input_message,
+                    if (state) R.id.cl_input_plate else R.id.input_message,
                     ConstraintSet.TOP)
             }
+            inputMessage.setOnSizeChanged(onHeightChanged = {
+                clInputPlate.setPadding(0, 0, 0, it + 10.dp)
+            })
             root.setConstraintSet(constraintsSet)
         }
     }
@@ -375,9 +385,6 @@ class ConversationFragment :
             tvEditMessageTitle.setText(R.string.edit_message_title)
             tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
             tvTextToEdit.setTextAppearance(R.style.Text_Gray_12sp)
-            inputMessage.setOnSizeChanged(onHeightChanged = {
-                clEditMessage.setPadding(0, 0, 0, it + 10.dp)
-            })
             val textToEdit = getPrintableText(selfMessage.content)
             tvTextToEdit.text = textToEdit
             inputMessage.setText(textToEdit)

@@ -54,12 +54,13 @@ class MessengerSocket(private val baseUrl: String) {
         date = message?.date ?: "",
         initiator = message?.initiator,
         chatId = message?.chatId,
-        replyMessageId = message?.replyMessageId,
+        replyMessage = message?.replyMessage,
         authorId = message?.authorId,
         access = message?.access ?: emptyList(),
         accessChats = message?.accessChats ?: emptyList(),
         isEdited = message?.isEdited ?: false,
-        status = ""
+        status = "",
+        replyMessageId = message?.replyMessageId
     )
 
     fun closeClientSocket() {

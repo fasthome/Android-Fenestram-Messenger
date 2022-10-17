@@ -15,7 +15,7 @@ class MessageFullResponse(
     val initiator: Initiator?,
 
     @SerialName("replyMessage")
-    val replyMessage: MessageResponse?,
+    val replyMessage: MessageFullResponse?,
 
     @SerialName("is_edited")
     val isEdited: Boolean,

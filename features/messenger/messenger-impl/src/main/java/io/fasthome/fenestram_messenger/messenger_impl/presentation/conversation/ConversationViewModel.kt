@@ -236,7 +236,7 @@ class ConversationViewModel(
                     editMessage(mess)
                 }
                 is InputMessageMode.Reply -> {
-
+                    replyMessage(mess)
                 }
             }
         }
@@ -309,6 +309,35 @@ class ConversationViewModel(
 
     }
 
+    private fun replyMessage(text: String) {
+        viewModelScope.launch {
+            val mode = currentViewState.inputMessageMode as? InputMessageMode.Reply ?: return@launch
+            val result = messengerInteractor.replyMessage(
+                chatId = chatId ?: return@launch,
+                messageId = mode.messageToReply.id,
+                text = text,
+                messageType = mode.messageToReply.messageType ?: return@launch
+            )
+            when (result) {
+                is CallResult.Error -> {
+                    updateState { state ->
+                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
+                        state.copy(
+                            inputMessageMode = InputMessageMode.Default
+                        )
+                    }
+                }
+                is CallResult.Success -> {
+                    updateState { state ->
+                        state.copy(
+                            inputMessageMode = InputMessageMode.Default
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun editMessage(newText: String) {
         viewModelScope.launch {
             val mode = currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch
@@ -318,7 +347,7 @@ class ConversationViewModel(
                 newText = newText
             )
 
-            when(result) {
+            when (result) {
                 is CallResult.Error -> {
                     updateState { state ->
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
@@ -332,7 +361,8 @@ class ConversationViewModel(
                         currentViewState.messages.filter { it.value.id == mode.messageToEdit.id }
                     val key = message.keys.firstOrNull() ?: return@launch
                     val newMessages = currentViewState.messages.mapValues {
-                        if (it.key == key) mode.messageToEdit.copy(content = PrintableText.Raw(newText),
+                        if (it.key == key) mode.messageToEdit.copy(content = PrintableText.Raw(
+                            newText),
                             isEdited = true) else it.value
                     }
                     updateState { state ->
@@ -348,7 +378,8 @@ class ConversationViewModel(
 
     private fun sendMessage(mess: String) {
         viewModelScope.launch {
-            val tempMessage = createTextMessage(mess, getPrintableRawText(currentViewState.userName))
+            val tempMessage =
+                createTextMessage(mess, getPrintableRawText(currentViewState.userName))
             val messages = currentViewState.messages
 
             updateState { state ->
