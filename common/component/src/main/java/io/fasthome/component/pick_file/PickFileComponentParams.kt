@@ -19,6 +19,6 @@ data class PickFileComponentParams(
         ) : MimeType()
 
         @Parcelize
-        data class Pdf(override val value: String = "application/pdf") : MimeType()
+        data class Document(override val value: String = "application/*") : MimeType()
     }
 }

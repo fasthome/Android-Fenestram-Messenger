@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:ignore="MissingDefaultResource">
+
+    <ImageButton
+        android:id="@+id/from_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shape_button_circle"
+        android:padding="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/from_camera"
+        app:layout_constraintStart_toEndOf="@id/attach_file"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_image" />
+
+    <TextView
+        style="@style/Text.White.14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/common_gallery"
+        app:layout_constraintEnd_toEndOf="@+id/from_gallery"
+        app:layout_constraintStart_toStartOf="@+id/from_gallery"
+        app:layout_constraintTop_toBottomOf="@+id/from_gallery" />
+
+    <ImageButton
+        android:id="@+id/from_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shape_button_circle"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/from_gallery"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_photo" />
+
+    <TextView
+        style="@style/Text.White.14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/common_camera"
+        app:layout_constraintEnd_toEndOf="@+id/from_camera"
+        app:layout_constraintStart_toStartOf="@+id/from_camera"
+        app:layout_constraintTop_toBottomOf="@+id/from_camera" />
+
+    <ImageButton
+        android:id="@+id/attach_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/shape_button_circle"
+        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/from_gallery"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add_file" />
+
+    <TextView
+        style="@style/Text.White.14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/common_file"
+        app:layout_constraintEnd_toEndOf="@+id/attach_file"
+        app:layout_constraintStart_toStartOf="@+id/attach_file"
+        app:layout_constraintTop_toBottomOf="@+id/attach_file" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

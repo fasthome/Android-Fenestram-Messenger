@@ -1,8 +1,10 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
@@ -10,11 +12,13 @@ import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
+import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.tokens.AccessToken
 
 class MessengerRepoImpl(
     private val messengerService: MessengerService,
-    private val socket: MessengerSocket
+    private val socket: MessengerSocket,
+    private val storageUrlConverter: StorageUrlConverter
 ) : MessengerRepo {
 
     override suspend fun sendMessage(
@@ -89,6 +93,14 @@ class MessengerRepoImpl(
 
     override suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit> = callForResult {
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
+    }
+
+    override suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult> = callForResult {
+        messengerService.uploadDocument(documentBytes, guid)
+    }
+
+    override suspend fun getDocument(storagePath : String, progressListener: ProgressListener): CallResult<LoadedDocumentData> = callForResult {
+        messengerService.getDocument(storageUrlConverter.convert(storagePath), progressListener)
     }
 
     override fun closeSocket() {

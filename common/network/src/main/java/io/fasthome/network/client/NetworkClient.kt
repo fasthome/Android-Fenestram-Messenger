@@ -1,11 +1,10 @@
 package io.fasthome.network.client
 
 import io.ktor.client.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import kotlin.text.append
-import kotlin.text.get
 
 class NetworkClient(
     @PublishedApi
@@ -40,6 +39,25 @@ class NetworkClient(
         contentType(contentType)
         params.forEach { (t, u) -> parameter(t, u) }
         customHeaders.forEach(headers::append)
+    }
+
+    suspend inline fun <reified Response> runGet(
+        path: String,
+        useBaseUrl: Boolean = true,
+        params: Map<String, Any?> = emptyMap(),
+        customHeaders: Map<String, String> = emptyMap(),
+        contentType: ContentType = ContentType.Application.Json,
+        crossinline progressListener : ProgressListener
+    ): Response = httpClient.get {
+        url(buildUrl(path, useBaseUrl))
+        contentType(contentType)
+        params.forEach { (t, u) -> parameter(t, u) }
+        customHeaders.forEach(headers::append)
+        onDownload { bytesSentTotal, contentLength ->
+            val step = contentLength / 100
+            val currentProgress = bytesSentTotal / step
+            progressListener(currentProgress.toInt())
+        }
     }
 
     suspend inline fun <reified Request, reified Response> runPatch(
@@ -143,3 +161,5 @@ class NetworkClient(
         path
     }
 }
+
+typealias ProgressListener = suspend (progress : Int) -> Unit

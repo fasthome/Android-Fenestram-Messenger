@@ -1,9 +1,6 @@
 package io.fasthome.component.pick_file
 
 import android.Manifest
-import android.net.Uri
-import android.os.Build
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
@@ -14,11 +11,11 @@ import io.fasthome.fenestram_messenger.presentation.base.navigation.CameraNaviga
 import io.fasthome.fenestram_messenger.presentation.base.navigation.PickFileNavigationContract
 import io.fasthome.fenestram_messenger.util.createFile
 import io.fasthome.fenestram_messenger.util.model.Bytes
-import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 class PickFileViewModel(
     requestParams: RequestParams,
@@ -33,28 +30,30 @@ class PickFileViewModel(
     private val tempFile by lazy { File(fileSystemInterface.cacheDir, "temp_file") }
     private val cameraTempFile by lazy { createFile(fileSystemInterface.cacheDir, "picture") }
 
+    private var currentMimeType = params.mimeType
+
     private val pickFileLauncher = registerScreen(PickFileNavigationContract) {
         val uri = it.uri
         if (uri == null) {
             resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickCancelled)
         } else {
             viewModelScope.launch {
-                val file = when (val mimeType = params.mimeType) {
+                when (currentMimeType) {
                     is PickFileComponentParams.MimeType.Image -> {
                         pickImageOperations.processImage(
                             uri = uri,
                             tempFile = tempFile,
-                            compressToSize = mimeType.compressToSize,
+                            compressToSize = (currentMimeType as PickFileComponentParams.MimeType.Image).compressToSize,
                         )
-                        tempFile
+                        val file = tempFile
+                        resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickedImage(file))
                     }
-                    is PickFileComponentParams.MimeType.Pdf -> {
+                    is PickFileComponentParams.MimeType.Document -> {
                         pickFileOperations.copyFile(uri, tempFile)
-                        pickFileOperations.renameFile(tempFile, uri, fileSystemInterface.cacheDir)
+                        val file = pickFileOperations.renameFile(tempFile, uri, fileSystemInterface.cacheDir)
+                        resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickedFile(file))
                     }
                 }
-
-                resultEventsChannel.trySend(PickFileInterface.ResultEvent.Picked(file))
             }
         }
     }
@@ -71,7 +70,7 @@ class PickFileViewModel(
                         Bytes.BYTES_PER_MB
                     ),
                 )
-                resultEventsChannel.trySend(PickFileInterface.ResultEvent.Picked(cameraTempFile))
+                resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickedImage(cameraTempFile))
             }
         }
     }
@@ -83,7 +82,7 @@ class PickFileViewModel(
     override fun resultEvents(): Flow<PickFileInterface.ResultEvent> =
         resultEventsChannel.receiveAsFlow()
 
-    override fun pickFile() {
+    override fun pickFile(mimeType: PickFileComponentParams.MimeType?) {
         viewModelScope.launch {
             val permissionGranted =
                 permissionInterface.request(
@@ -91,7 +90,12 @@ class PickFileViewModel(
                     canOpenSettings = true
                 )
             if (permissionGranted) {
-                pickFileLauncher.launch(PickFileNavigationContract.Params(params.mimeType.value))
+                currentMimeType = if (mimeType != null)
+                    mimeType
+                else
+                    params.mimeType
+
+                pickFileLauncher.launch(PickFileNavigationContract.Params(currentMimeType.value))
             }
         }
     }
