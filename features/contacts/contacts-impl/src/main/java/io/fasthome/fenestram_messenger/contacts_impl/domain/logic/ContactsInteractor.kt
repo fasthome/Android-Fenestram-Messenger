@@ -6,13 +6,17 @@ package io.fasthome.fenestram_messenger.contacts_impl.domain.logic
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
-import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
 import io.fasthome.fenestram_messenger.contacts_impl.data.ContactsLoader
-import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
-import io.fasthome.fenestram_messenger.util.*
-import kotlinx.coroutines.delay
+import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
+import io.fasthome.fenestram_messenger.data.UserStorage
+import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.getOrThrow
 
-class ContactsInteractor(private val contactsRepo: ContactsRepo, private val contactsLoader: ContactsLoader) {
+class ContactsInteractor(
+    private val contactsRepo: ContactsRepo,
+    private val contactsLoader: ContactsLoader,
+    private val userStorage: UserStorage
+) {
 
     /***
      * При каждом получении контактов отправляются локальные контакты с устройства для актуализации,
@@ -39,7 +43,8 @@ class ContactsInteractor(private val contactsRepo: ContactsRepo, private val con
      */
     suspend fun getContacts(): CallResult<List<Contact>> = contactsRepo.loadContacts()
 
-    suspend fun deleteContacts(contactIds: List<Long>): CallResult<Unit> = contactsRepo.deleteContacts(contactIds)
+    suspend fun deleteContacts(contactIds: List<Long>): CallResult<Unit> =
+        contactsRepo.deleteContacts(contactIds)
 
     suspend fun deleteAllContacts(): CallResult<Unit> {
         val contactIds = getContacts()
@@ -47,5 +52,7 @@ class ContactsInteractor(private val contactsRepo: ContactsRepo, private val con
             .map { it.id }
         return deleteContacts(contactIds)
     }
+
+    suspend fun getSelfUserPhone() = userStorage.getUserPhone()
 
 }

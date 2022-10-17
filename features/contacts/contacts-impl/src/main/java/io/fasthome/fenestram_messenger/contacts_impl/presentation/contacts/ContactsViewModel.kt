@@ -51,7 +51,7 @@ class ContactsViewModel(
                 state.copy(loadingState = LoadingState.Loading)
             }
             val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
-
+            val selfUserPhone = contactsInteractor.getSelfUserPhone()
             if (permissionGranted) {
                 when (val result = contactsInteractor.getContactsAndUploadContacts()) {
                     is CallResult.Error -> updateState { state ->
@@ -64,7 +64,8 @@ class ContactsViewModel(
                     }
                     is CallResult.Success -> updateState { state ->
                         originalContactsViewItem =
-                            ContactsMapper.contactsListToViewList(result.data).toMutableList()
+                            ContactsMapper.contactsListToViewList(result.data, selfUserPhone)
+                                .toMutableList()
                         if (originalContactsViewItem.isEmpty()) {
                             state.copy(
                                 loadingState = LoadingState.Error(
