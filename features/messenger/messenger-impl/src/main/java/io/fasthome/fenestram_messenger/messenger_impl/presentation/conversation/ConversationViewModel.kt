@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
@@ -18,7 +17,6 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
-import io.fasthome.fenestram_messenger.data.file.DownloadFileManager
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
@@ -60,7 +58,6 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
     private val storageUrlConverter: StorageUrlConverter,
-    private val downloadFileManager: DownloadFileManager,
     private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
     private val permissionInterface: PermissionInterface
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
