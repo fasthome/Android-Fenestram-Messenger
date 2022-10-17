@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.ma
 
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_DOCUMENT
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_IMAGE
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_TEXT
@@ -32,6 +33,9 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
                     }
                     MESSAGE_TYPE_IMAGE -> {
                         LastMessage.Image(imageUrl = message.text)
+                    }
+                    MESSAGE_TYPE_DOCUMENT -> {
+                        LastMessage.Document
                     }
                     else -> {
                         LastMessage.Text(PrintableText.EMPTY)

@@ -92,6 +92,11 @@ fun createMessengerAdapter(
                         lastMessage.setPrintableText(item.lastMessage.text)
                         image.isVisible = false
                     }
+                    LastMessage.Document -> {
+                        lastMessage.setText(R.string.messenger_document)
+                        image.isVisible = true
+                        image.setImageResource(R.drawable.ic_document)
+                    }
                 }
                 timeView.setPrintableText(item.time)
                 profilePicture.loadCircle(

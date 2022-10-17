@@ -348,7 +348,14 @@ fun createImageMessage(image: String?, loadableContent: Content) =
     )
 
 fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
-    content = document ?: file.extension,
+    content = document ?: run {
+        //TODO костыль!!! Пока бэк не поддерживает все форматы файлов
+        if(file.extension.equals("pdf", ignoreCase = true)) {
+            file.extension
+        } else {
+            "TXT"
+        }
+    },
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
     date = ZonedDateTime.now(),

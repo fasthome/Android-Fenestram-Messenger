@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.onSuccess
+import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.tokens.TokensRepo
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -105,6 +106,9 @@ class MessengerInteractor(
 
     suspend fun uploadDocument(documentBytes: ByteArray, extension: String) =
         messageRepo.uploadDocument(documentBytes, UUID.randomUUID().toString() + extension)
+
+    suspend fun getDocument(storagePath : String, progressListener: ProgressListener) =
+        messageRepo.getDocument(storagePath, progressListener)
 
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String) = messageRepo.editMessage(chatId = chatId,messageId = messageId,newText = newText)
 

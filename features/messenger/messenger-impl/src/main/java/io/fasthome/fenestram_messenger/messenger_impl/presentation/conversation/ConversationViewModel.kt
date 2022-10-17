@@ -1,9 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
+import android.Manifest
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
@@ -14,10 +17,11 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.data.file.DownloadFileManager
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.data.DownloadFileManager
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
@@ -37,6 +41,7 @@ import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
+import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -55,6 +60,8 @@ class ConversationViewModel(
     private val pickFileInterface: PickFileInterface,
     private val storageUrlConverter: StorageUrlConverter,
     private val downloadFileManager: DownloadFileManager,
+    private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
+    private val permissionInterface: PermissionInterface
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -83,6 +90,7 @@ class ConversationViewModel(
     private var chatUsers = listOf<User>()
     private var selfUserId: Long? = null
     private var loadItemsJob by switchJob()
+    private var downloadFileJob by switchJob()
     private var lastPage: MessagesPage? = null
 
     private val openFileLauncher = registerScreen(OpenFileNavigationContract)
@@ -727,20 +735,29 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
     }
 
-    fun onDocumentClicked(
-        content: String,
-        path: String?,
-        callback: (String?) -> Unit
+    fun onDownloadDocument(
+        itemSelf: ConversationViewItem.Self.Document? = null,
+        itemReceive: ConversationViewItem.Receive.Document? = null,
+        itemGroup: ConversationViewItem.Group.Document? = null,
+        progressListener: ProgressListener,
     ) {
-        viewModelScope.launch {
-            if (!path.isNullOrEmpty())
-                openFileLauncher.launch(OpenFileNavigationContract.Params(path))
-            else {
-                downloadFileManager.downloadFile(
-                    content,
-                    content.drop(29)
-                ) {
-                    callback(it)
+        val item = itemSelf ?: itemReceive ?: itemGroup ?: return
+        val documentLink = item.content.toString()
+        downloadFileJob = viewModelScope.launch {
+            messengerInteractor.getDocument(
+                storagePath = storageUrlConverter.extractPath(documentLink),
+                progressListener = progressListener
+            ).onSuccess { loadedDocument ->
+                val permissionGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                        || permissionInterface.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+                if (!permissionGranted) return@launch
+                copyDocumentToDownloadsUseCase.invoke(
+                    loadedDocument.byteArray,
+                    PrintableText.Raw(storageUrlConverter.extractPath(documentLink)),
+                    extension = documentLink.substringAfterLast('.', "")
+                ).onSuccess { uri ->
+                    openFileLauncher.launch(OpenFileNavigationContract.Params(uri))
                 }
             }
         }

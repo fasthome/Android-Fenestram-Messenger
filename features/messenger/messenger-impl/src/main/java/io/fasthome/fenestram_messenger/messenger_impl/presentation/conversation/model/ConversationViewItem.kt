@@ -53,8 +53,8 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             override val timeVisible: Boolean,
-            val file: File? = null,
-            var path: String? = null,
+            val file: File?,
+            val path: String?,
         ) : Self()
     }
 

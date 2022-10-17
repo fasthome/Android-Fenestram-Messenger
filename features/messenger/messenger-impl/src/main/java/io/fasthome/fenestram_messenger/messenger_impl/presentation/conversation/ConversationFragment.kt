@@ -14,6 +14,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -54,10 +55,15 @@ class ConversationFragment :
         }
     )
 
+    private val permissionFragment by registerFragment(
+        componentFragmentContractInterface = PermissionComponentContract
+    )
+
     override val vm: ConversationViewModel by viewModel(
         getParamsInterface = ConversationNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::pickFileFragment)
+            .register(::permissionFragment)
     )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
@@ -66,8 +72,12 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
-    }, onDocumentClicked = { content, path, callback ->
-        vm.onDocumentClicked(content, path, callback)
+    }, onSelfDownloadDocument = { item, progressListener->
+        vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
+    }, onRecieveDownloadDocument = { item, progressListener->
+        vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
+    }, onGroupDownloadDocument = { item, progressListener->
+        vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
     }, onReceiveMessageLongClicked = {

@@ -26,17 +26,19 @@
             android:alpha="0.3"
             android:background="@drawable/bg_image_document"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/file_name"
+            app:layout_constraintEnd_toStartOf="@+id/progress_bar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/imageView"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_margin="10dp"
+            android:layout_marginTop="12dp"
             android:src="@drawable/ic_document_message"
-            app:layout_constraintEnd_toStartOf="@id/file_name"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/document_bg"
+            app:layout_constraintStart_toStartOf="@+id/document_bg"
             app:layout_constraintTop_toTopOf="@id/document_bg" />
 
         <TextView
@@ -44,14 +46,26 @@
             style="@style/Text.White.14sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_marginEnd="15dp"
             android:ellipsize="end"
             android:maxWidth="100dp"
             android:maxLines="1"
             android:text="Файлик.zip"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/progress_bar"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:progressDrawable="@drawable/progress_bar_hooli"
+            app:layout_constraintBottom_toBottomOf="@+id/document_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/file_name"
+            app:layout_constraintWidth_min="80dp" />
 
         <TextView
             android:id="@+id/file_size"
@@ -59,8 +73,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:visibility="gone"
             android:text="10Мб"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/file_name"
             app:layout_constraintTop_toBottomOf="@id/file_name" />

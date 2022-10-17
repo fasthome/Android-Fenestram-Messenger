@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.data
+package io.fasthome.fenestram_messenger.data.file
 
 import android.app.DownloadManager
 import android.content.Context
@@ -22,7 +22,7 @@ class DownloadFileManagerImpl(val context: Context) : DownloadFileManager {
 
                 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
                     .setTitle(fileName)
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                     .setDestinationInExternalFilesDir(
                         context,
                         Environment.DIRECTORY_DOWNLOADS,

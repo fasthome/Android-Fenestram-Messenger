@@ -20,5 +20,6 @@ sealed class LastMessage {
 
     data class Text(val text : PrintableText) : LastMessage()
     data class Image(val imageUrl : String) : LastMessage()
+    object Document : LastMessage()
 
 }
