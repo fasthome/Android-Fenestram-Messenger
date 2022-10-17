@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.map
 
 class PagingDataViewModelHelper {
     private var source: TotalPagingSource<*, *>? = null
-    var messageActionChatId: Long = -1
 
     companion object {
         const val PAGE_SIZE = 50
@@ -18,7 +17,7 @@ class PagingDataViewModelHelper {
         getItems: () -> TotalPagingSource<Int, K>,
         getCachedSelectedId: suspend () -> Long?,
         getItem: suspend (itemId: Long) -> CallResult<K>?,
-        mapDataItem: (K, Long) -> T,
+        mapDataItem: (K) -> T,
         getItemId: (K) -> Long?
     ): Flow<PagingData<T>> =
         Pager(
@@ -55,7 +54,7 @@ class PagingDataViewModelHelper {
             }
             .map { pagingData ->
                 pagingData.map {
-                    mapDataItem(it, messageActionChatId)
+                    mapDataItem(it)
                 }
             }
 

@@ -101,13 +101,13 @@ fun createMessengerAdapter(
                     }
                     is LastMessage.Status -> {
                         lastMessage.setPrintableText(item.lastMessage.status)
-                        image.isVisible = true
                         lastMessage.setTextColor(
                             ContextCompat.getColor(
                                 lastMessage.context,
                                 R.color.blue
                             )
                         )
+                        image.isVisible = false
                     }
                 }
                 timeView.setPrintableText(item.time)

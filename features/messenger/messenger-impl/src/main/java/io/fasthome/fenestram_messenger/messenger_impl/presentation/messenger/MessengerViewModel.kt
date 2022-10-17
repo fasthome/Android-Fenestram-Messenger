@@ -147,10 +147,10 @@ class MessengerViewModel(
         messengerInteractor.messageActionsFlow
             .collectWhenViewActive()
             .onEach { messageAction ->
-                loadDataHelper.messageActionChatId = messageAction.chatId
+                messengerMapper.messageAction = messageAction
                 loadDataHelper.invalidateSource()
-                delay(5000)
-                loadDataHelper.messageActionChatId = -1
+                delay(1000)
+                messengerMapper.messageAction = null
                 loadDataHelper.invalidateSource()
             }
             .launchIn(viewModelScope)

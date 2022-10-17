@@ -1,11 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper
 
 import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
-import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_IMAGE
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_TEXT
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toPrintableText
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -17,9 +18,16 @@ private val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 class MessengerMapper(private val profileImageUrlConverter: ProfileImageUrlConverter) {
 
-    fun toMessengerViewItem(chat: Chat, messageActionChatId: Long): MessengerViewItem {
-        val lastMessage = if (chat.id == messageActionChatId) {
-            LastMessage.Status(PrintableText.StringResource(R.string.user_status_typing))
+    var messageAction: MessageAction? = null
+
+    fun toMessengerViewItem(chat: Chat): MessengerViewItem {
+        val lastMessage = if (messageAction != null && chat.id == messageAction!!.chatId) {
+            LastMessage.Status(
+                messageAction!!.userStatus.toPrintableText(
+                    messageAction!!.userName,
+                    chat.isGroup
+                )
+            )
         } else {
             chat.messages.lastOrNull()?.let { message ->
                 when (message.messageType) {
