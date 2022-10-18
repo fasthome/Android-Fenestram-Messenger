@@ -12,7 +12,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.map
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
@@ -96,7 +95,7 @@ class MessengerViewModel(
     }
 
     override fun createInitialState(): MessengerState {
-        return MessengerState(listOf(), listOf())
+        return MessengerState(listOf(), listOf(), newMessagesCount = 0)
     }
 
     fun onCreateChatClicked() {
@@ -135,6 +134,10 @@ class MessengerViewModel(
             .collectWhenViewActive()
             .onEach { message ->
                 loadDataHelper.invalidateSource()
+
+                updateState { state ->
+                    state.copy(newMessagesCount = state.newMessagesCount + 1)
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -159,6 +162,12 @@ class MessengerViewModel(
                     it.copy(messengerViewItems = chats)
                 }
             loadDataHelper.invalidateSource()
+        }
+    }
+
+    fun onReadMessages() {
+        updateState { state ->
+            state.copy(newMessagesCount = 0)
         }
     }
 }

@@ -43,6 +43,10 @@
         <item name="fontFamily">@font/poppins_semibold</item>
     </style>
 
+    <style name="Text.White.10sp">
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="Text.White.14sp">
         <item name="android:textSize">14sp</item>
     </style>

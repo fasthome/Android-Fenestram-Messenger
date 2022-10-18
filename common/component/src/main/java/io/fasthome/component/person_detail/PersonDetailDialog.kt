@@ -34,7 +34,11 @@ object PersonDetailDialog {
                 nickname.text = "@${personDetail.userNickname}"
             avatar.loadCircle(personDetail.avatar)
             avatar.onClick {
-                onAvatarClicked(personDetail.avatar)
+
+                if (personDetail.avatar.isNotEmpty()) {
+                    onAvatarClicked(personDetail.avatar)
+                    dialog.dismiss()
+                }
             }
 
             launchFacecall.onClick {

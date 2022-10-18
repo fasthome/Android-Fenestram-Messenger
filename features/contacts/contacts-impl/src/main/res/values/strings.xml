@@ -26,4 +26,6 @@
     <string name="contacts_allow">Разрешить</string>
     <string name="contacts_unregister_users">Пока не зарегистрированы в приложении</string>
 
+    <string name="self_contact_name">%s (вы)</string>
+
 </resources>

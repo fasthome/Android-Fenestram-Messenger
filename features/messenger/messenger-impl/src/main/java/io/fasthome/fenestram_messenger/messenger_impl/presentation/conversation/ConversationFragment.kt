@@ -13,10 +13,11 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
-import io.fasthome.component.select_from.SelectFromDialog
+import io.fasthome.component.select_from.SelectFromConversation
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -44,21 +45,24 @@ class ConversationFragment :
 
     private val binding by fragmentViewBinding(FragmentConversationBinding::bind)
 
-    private val pickImageFragment by registerFragment(
+    private val pickFileFragment by registerFragment(
         componentFragmentContractInterface = PickFileComponentContract,
         paramsProvider = {
             PickFileComponentParams(
-                mimeType = PickFileComponentParams.MimeType.Image(
-                    compressToSize = null
-                )
+                mimeType = PickFileComponentParams.MimeType.Image(compressToSize = null)
             )
         }
+    )
+
+    private val permissionFragment by registerFragment(
+        componentFragmentContractInterface = PermissionComponentContract
     )
 
     override val vm: ConversationViewModel by viewModel(
         getParamsInterface = ConversationNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::pickImageFragment)
+            .register(::pickFileFragment)
+            .register(::permissionFragment)
     )
 
     private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
@@ -67,6 +71,12 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
+    }, onSelfDownloadDocument = { item, progressListener->
+        vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
+    }, onRecieveDownloadDocument = { item, progressListener->
+        vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
+    }, onGroupDownloadDocument = { item, progressListener->
+        vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
     }, onReceiveMessageLongClicked = {
@@ -121,13 +131,13 @@ class ConversationFragment :
         })
         attachedList.adapter = attachedAdapter
 
-        sendButton.setOnClickListener() {
+        sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
             inputMessage.text?.clear()
             messagesList.scrollToPosition(conversationAdapter.itemCount)
         }
 
-        backButton.setOnClickListener() {
+        backButton.onClick() {
             vm.exitToMessenger()
         }
         profileToolBar.onClick {
@@ -135,11 +145,11 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
-        dropdownMenu.setOnClickListener {
+        dropdownMenu.onClick {
             vm.onOpenMenu()
         }
 
-        ivCloseEdit.setOnClickListener {
+        ivCloseEdit.onClick {
             vm.editMessageMode(false)
             inputMessage.setText("")
         }
@@ -224,7 +234,7 @@ class ConversationFragment :
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
             ConversationEvent.ShowSelectFromDialog ->
-                SelectFromDialog
+                SelectFromConversation
                     .create(
                         fragment = this,
                         fromCameraClicked = {
@@ -232,6 +242,9 @@ class ConversationFragment :
                         },
                         fromGalleryClicked = {
                             vm.selectFromGallery()
+                        },
+                        attachFileClicked = {
+                            vm.selectAttachFile()
                         })
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->
@@ -312,10 +325,12 @@ class ConversationFragment :
             horizontalPaddingInput(if (isEditMode) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,
+                connect(
+                    R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (isEditMode) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP)
+                    ConstraintSet.TOP
+                )
             }
             root.setConstraintSet(constraintsSet)
             if (!isEditMode || selfMessage == null) return
@@ -336,7 +351,8 @@ class ConversationFragment :
             padding,
             binding.inputMessage.paddingBottom,
             padding,
-            binding.inputMessage.paddingTop)
+            binding.inputMessage.paddingTop
+        )
     }
 
     private fun copyPrintableText(printableText: PrintableText) {

@@ -26,6 +26,12 @@ class MessageResponseWithChatId(
     @SerialName("is_edited")
     val isEdited: Boolean,
 
+    @SerialName("message_status")
+    val status: String,
+
+    @SerialName("replyMessage")
+    val replyMessage: Unit? = null,
+
     @SerialName("text")
     val text: String,
 

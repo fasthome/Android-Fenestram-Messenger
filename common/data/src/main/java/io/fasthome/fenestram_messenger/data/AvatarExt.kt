@@ -5,7 +5,7 @@ package io.fasthome.fenestram_messenger.data
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
 
-class ProfileImageUrlConverter(private val environment: Environment) {
+class StorageUrlConverter(private val environment: Environment) {
 
     fun convert(path: String?) =
         if (path.isNullOrEmpty() || path == "null") {

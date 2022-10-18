@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
-import io.fasthome.fenestram_messenger.data.ProfileImageUrlConverter
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -33,7 +33,7 @@ class ProfileGuestViewModel(
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val messengerFeature: MessengerFeature,
     private val profileGuestInteractor: ProfileGuestInteractor,
-    private val profileImageUrlConverter: ProfileImageUrlConverter,
+    private val profileImageUrlConverter: StorageUrlConverter,
     private val pickFileInterface: PickFileInterface,
     private val profileImageUtil: ProfileImageUtil,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
@@ -63,7 +63,7 @@ class ProfileGuestViewModel(
             .onEach {
                 when (it) {
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
-                    is PickFileInterface.ResultEvent.Picked -> {
+                    is PickFileInterface.ResultEvent.PickedImage -> {
                         val bitmap = profileImageUtil.getPhoto(it.tempFile)
                         if (bitmap != null) {
                             updateState { state ->
@@ -88,7 +88,7 @@ class ProfileGuestViewModel(
     }
 
 
-    override fun createInitialState(): ProfileGuestState = ProfileGuestState(
+    override fun createInitialState() = ProfileGuestState(
         userName = PrintableText.Raw(params.userName),
         userNickname = PrintableText.Raw(params.userNickname),
         userAvatar = params.userAvatar,
@@ -213,15 +213,13 @@ class ProfileGuestViewModel(
     }
 
     fun onAvatarClicked() {
-        if (currentViewState.editMode)
+        if (currentViewState.editMode) {
             pickFileInterface.pickFile()
-        if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
-            imageViewerLauncher.launch(
-                ImageViewerContract.Params(
-                    currentViewState.userAvatar,
-                    currentViewState.avatarBitmap
-                )
-            )
+        }
+        else {
+            if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
+                imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+            }
         }
     }
 }

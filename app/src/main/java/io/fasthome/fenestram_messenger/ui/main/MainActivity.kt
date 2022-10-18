@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger
+package io.fasthome.fenestram_messenger.ui.main
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -6,13 +6,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.terrakok.cicerone.NavigatorHolder
+import io.fasthome.fenestram_messenger.CustomAppNavigator
+import io.fasthome.fenestram_messenger.R
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.databinding.ActivityMainBinding
+import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.ui.splash.SplashActivity
+import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnStartStop
-import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ViewModelOwner
@@ -50,7 +54,23 @@ class MainActivity : AppCompatActivity() {
 
         lifecycle.doOnStartStop(onStart = vm::onViewActive, onStop = vm::onViewInactive)
 
+        vm.viewEvent.collectWhenStarted(this) { event->
+            when(event) {
+                is BaseViewEvent.ScreenEvent -> {
+                    handleEvent(event.event)
+                }
+                is BaseViewEvent.ShowDialog -> Unit
+                is BaseViewEvent.ShowMessage -> Unit
+            }
+        }
+    }
 
+    private fun handleEvent(event: MainActivityEvent) {
+        when(event){
+            is MainActivityEvent.StartSplashEvent-> {
+                startActivity(Intent(this, SplashActivity::class.java))
+            }
+        }
     }
 
     override fun onResumeFragments() {

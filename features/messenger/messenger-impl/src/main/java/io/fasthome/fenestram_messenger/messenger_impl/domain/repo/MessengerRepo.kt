@@ -1,10 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.repo
 
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.tokens.AccessToken
 
 interface MessengerRepo {
@@ -34,6 +36,8 @@ interface MessengerRepo {
 
     fun closeSocket()
 
+    suspend fun getDocument(storagePath : String, progressListener: ProgressListener) : CallResult<LoadedDocumentData>
+
     fun getClientSocket(
         chatId: String?,
         token: AccessToken,
@@ -43,6 +47,7 @@ interface MessengerRepo {
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit>
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult>
 
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)
