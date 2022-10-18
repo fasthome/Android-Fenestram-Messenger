@@ -23,6 +23,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestBinding
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
@@ -143,9 +144,14 @@ class ProfileGuestFragment :
             profileGuestName.background.setTint(
                 ContextCompat.getColor(
                     requireContext(),
-                    state.profileGuestNameBackground
+                    when (state.profileGuestStatus) {
+                        EditTextStatus.Idle -> R.color.dark1
+                        EditTextStatus.Editable -> R.color.white
+                        EditTextStatus.Error -> R.color.red
+                    }
                 )
             )
+
 
             if (state.isGroup) {
                 profileGuestNickname.setTextColor(
@@ -185,6 +191,15 @@ class ProfileGuestFragment :
                         R.drawable.ic_complete_edit
                     )
                 )
+                if (state.profileGuestStatus == EditTextStatus.Idle) {
+                    profileGuestName.setPrintableText(state.userName)
+                    profileGuestName.background.setTint(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.white
+                        )
+                    )
+                }
             } else {
                 profileGuestAvatar.brightness = 1F
                 profileGuestEditGroup.setImageDrawable(
@@ -235,9 +250,6 @@ class ProfileGuestFragment :
                 id = event.id
             )
                 .show()
-            is ProfileGuestEvent.SetProfileName -> {
-                binding.profileGuestName.setPrintableText(event.name)
-            }
         }
     }
 

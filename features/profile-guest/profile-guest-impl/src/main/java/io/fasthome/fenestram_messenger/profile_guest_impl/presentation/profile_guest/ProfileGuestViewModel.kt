@@ -14,6 +14,7 @@ import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.ProfileGuestInteractor
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
@@ -87,23 +88,21 @@ class ProfileGuestViewModel(
     }
 
 
-    override fun createInitialState(): ProfileGuestState {
-        sendEvent(ProfileGuestEvent.SetProfileName(PrintableText.Raw(params.userName)))
-        return ProfileGuestState(
-            userName = PrintableText.Raw(params.userName),
-            userNickname = PrintableText.Raw(params.userNickname),
-            userAvatar = params.userAvatar,
-            recentFiles = listOf(),
-            recentImages = listOf(),
-            isGroup = params.isGroup,
-            userPhone = PrintableText.Raw(params.userPhone),
-            editMode = params.editMode,
-            avatarBitmap = null,
-            chatImageFile = null,
-            participantsQuantity = params.groupParticipantsParams.participants.size,
-            profileGuestNameBackground = R.color.dark1
-        )
-    }
+    override fun createInitialState(): ProfileGuestState = ProfileGuestState(
+        userName = PrintableText.Raw(params.userName),
+        userNickname = PrintableText.Raw(params.userNickname),
+        userAvatar = params.userAvatar,
+        recentFiles = listOf(),
+        recentImages = listOf(),
+        isGroup = params.isGroup,
+        userPhone = PrintableText.Raw(params.userPhone),
+        editMode = params.editMode,
+        avatarBitmap = null,
+        chatImageFile = null,
+        participantsQuantity = params.groupParticipantsParams.participants.size,
+        profileGuestStatus = EditTextStatus.Idle
+    )
+
 
     fun fetchFilesAndPhotos() {
         val files = listOf(
@@ -147,13 +146,13 @@ class ProfileGuestViewModel(
         if (newName.isEmpty()) {
             updateState { state ->
                 state.copy(
-                    profileGuestNameBackground = R.color.red
+                    profileGuestStatus = EditTextStatus.Error
                 )
             }
         } else {
             updateState { state ->
                 state.copy(
-                    profileGuestNameBackground = R.color.white
+                    profileGuestStatus = EditTextStatus.Editable
                 )
             }
         }
@@ -193,7 +192,7 @@ class ProfileGuestViewModel(
                 updateState { state ->
                     state.copy(
                         editMode = false,
-                        profileGuestNameBackground = R.color.dark1
+                        profileGuestStatus = EditTextStatus.Idle
                     )
                 }
             }
@@ -201,7 +200,7 @@ class ProfileGuestViewModel(
             updateState { state ->
                 state.copy(
                     editMode = true,
-                    profileGuestNameBackground = R.color.white
+                    profileGuestStatus = EditTextStatus.Editable
                 )
             }
     }
