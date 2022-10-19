@@ -79,9 +79,17 @@ class MessengerRepoImpl(
         callback: MessengerRepo.SocketMessageCallback,
         selfUserId: Long?
     ) {
-        socket.setClientSocket(chatId = chatId, token = token, selfUserId = selfUserId) {
-            callback.onNewMessage(this)
-        }
+        socket.setClientSocket(
+            chatId = chatId,
+            token = token,
+            selfUserId = selfUserId,
+            messageCallback = { callback.onNewMessage(this) },
+            messageActionCallback = { callback.onNewMessageAction(this) }
+        )
+    }
+
+    override fun emitMessageAction(chatId: String, action: String) {
+        socket.emitMessageAction(chatId, action)
     }
 
     override suspend fun uploadImage(
@@ -91,7 +99,11 @@ class MessengerRepoImpl(
         messengerService.uploadImage(photoBytes, guid)
     }
 
-    override suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit> = callForResult {
+    override suspend fun editMessage(
+        chatId: Long,
+        messageId: Long,
+        newText: String
+    ): CallResult<Unit> = callForResult {
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
 

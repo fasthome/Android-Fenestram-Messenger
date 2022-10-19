@@ -8,7 +8,7 @@ data class ConversationState(
     val messages: Map<String, ConversationViewItem>,
     val userName: PrintableText,
     val avatar: String,
-    val userOnline: Boolean,
+    val userStatus: PrintableText,
     val isChatEmpty: Boolean,
     val attachedFiles: List<AttachedFile>,
     val messageToEdit: ConversationViewItem.Self.Text?,

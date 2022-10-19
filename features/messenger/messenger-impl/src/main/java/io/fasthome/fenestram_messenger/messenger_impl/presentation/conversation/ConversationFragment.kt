@@ -12,6 +12,7 @@ import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
@@ -160,6 +161,8 @@ class ConversationFragment :
         }
         backButton.increaseHitArea(16.dp)
 
+        inputMessage.addTextChangedListener { vm.onTypingMessage() }
+
         latestPersonDetailDialog = Dialog(requireContext())
     }
 
@@ -191,6 +194,7 @@ class ConversationFragment :
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
         renderStateEditMode(state.editMode, state.messageToEdit)
+        userStatusView.setPrintableText(state.userStatus)
     }
 
     lateinit var latestPersonDetailDialog: Dialog

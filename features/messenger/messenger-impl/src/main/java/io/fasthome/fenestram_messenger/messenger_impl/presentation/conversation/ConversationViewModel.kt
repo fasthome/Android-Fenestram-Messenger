@@ -18,8 +18,10 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
@@ -42,6 +44,7 @@ import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
 import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -175,6 +178,7 @@ class ConversationViewModel(
                 chatId ?: params.chat.id ?: return@launch,
                 selfUserId ?: return@launch
             )
+            subscribeMessageActions()
         }
     }
 
@@ -202,7 +206,7 @@ class ConversationViewModel(
         return ConversationState(
             messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userOnline = false,
+            userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup),
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
@@ -211,7 +215,10 @@ class ConversationViewModel(
         )
     }
 
-    fun editMessageMode(isEditMode: Boolean, conversationViewItem: ConversationViewItem.Self.Text? = null) {
+    fun editMessageMode(
+        isEditMode: Boolean,
+        conversationViewItem: ConversationViewItem.Self.Text? = null
+    ) {
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
@@ -539,6 +546,33 @@ class ConversationViewModel(
         }
     }
 
+    private fun subscribeMessageActions() {
+        messengerInteractor.messageActionsFlow
+            .flowOn(Dispatchers.Main)
+            .onEach { messageAction ->
+                if (chatId == messageAction.chatId) {
+                    updateState { state ->
+                        state.copy(
+                            userStatus = messageAction.userStatus.toPrintableText(
+                                messageAction.userName,
+                                params.chat.isGroup
+                            )
+                        )
+                    }
+                    delay(1000)
+                    updateState { state ->
+                        state.copy(
+                            userStatus = UserStatus.Online.toPrintableText(
+                                messageAction.userName,
+                                params.chat.isGroup
+                            )
+                        )
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
         sendEvent(
             ConversationEvent.ShowPersonDetailDialog(
@@ -731,6 +765,10 @@ class ConversationViewModel(
 
     fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
         sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
+    }
+
+    fun onTypingMessage() {
+        messengerInteractor.emitMessageAction(chatId.toString(), TYPING_MESSAGE_STATUS)
     }
 
     fun onDownloadDocument(

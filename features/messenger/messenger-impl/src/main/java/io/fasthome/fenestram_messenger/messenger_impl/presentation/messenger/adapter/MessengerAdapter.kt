@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.ad
 
 import android.annotation.SuppressLint
 import android.view.MotionEvent
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -56,7 +57,7 @@ fun createMessengerAdapter(
 
                 itemChatLayout.setOnTouchListener { _, event ->
                     if (event.action == MotionEvent.ACTION_MOVE) {
-                        viewBinderHelper.closeOpened(item.id.toString(),root)
+                        viewBinderHelper.closeOpened(item.id.toString(), root)
                         return@setOnTouchListener true
                     }
                     return@setOnTouchListener false
@@ -90,6 +91,22 @@ fun createMessengerAdapter(
                     }
                     is LastMessage.Text -> {
                         lastMessage.setPrintableText(item.lastMessage.text)
+                        lastMessage.setTextColor(
+                            ContextCompat.getColor(
+                                lastMessage.context,
+                                R.color.gray2
+                            )
+                        )
+                        image.isVisible = false
+                    }
+                    is LastMessage.Status -> {
+                        lastMessage.setPrintableText(item.lastMessage.status)
+                        lastMessage.setTextColor(
+                            ContextCompat.getColor(
+                                lastMessage.context,
+                                R.color.blue
+                            )
+                        )
                         image.isVisible = false
                     }
                     LastMessage.Document -> {

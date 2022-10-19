@@ -9,7 +9,6 @@
     <string name="MessageContentCheck">Blade Runner 2049 is a 2017 American neo-noir science fiction film directed by Denis Villeneuve</string>
     <string name="timeviewcheck">22:22</string>
     <string name="name">Username</string>
-    <string name="statusonline">Online</string>
     <string name="messenger_creating_chat">Создание чата</string>
     <string name="messenger_chat_participants">Участники чата</string>
     <string name="messenger_input_chat_name">Введите имя чата</string>
@@ -36,4 +35,9 @@
     <string name="conversation_delete_message">Удалить сообщение</string>
     <string name="conversation_edit_message">Редактировать сообщение</string>
     <string name="messenger_document">Документ</string>
+
+    <string name="user_status_online">Online</string>
+    <string name="user_status_offline">Offline</string>
+    <string name="user_status_typing">Печатает…</string>
+    <string name="group_user_status_typing">%s печатает…</string>
 </resources>
