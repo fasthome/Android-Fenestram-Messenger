@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -197,7 +196,6 @@ class ConversationFragment :
         userStatusView.setPrintableText(state.userStatus)
     }
 
-    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
@@ -255,8 +253,8 @@ class ConversationFragment :
                         })
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->
-                if (!latestPersonDetailDialog.isShowing) {
-                    latestPersonDetailDialog = PersonDetailDialog
+                if (!PersonDetailDialog.isShowing()) {
+                    PersonDetailDialog
                         .create(
                             fragment = this,
                             personDetail = event.selectedPerson,
@@ -272,7 +270,7 @@ class ConversationFragment :
                             onAvatarClicked = { avatarUrl ->
                                 vm.onImageClicked(url = avatarUrl)
                             })
-                    latestPersonDetailDialog.show()
+                        .show()
                 }
             is ConversationEvent.ShowErrorSentDialog -> {
                 ErrorSentDialog.create(
