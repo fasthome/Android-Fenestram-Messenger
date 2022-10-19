@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -62,7 +63,6 @@ class MessengerViewModel(
             }
         }
 
-
     private var _query = ""
     val items = loadDataHelper.getDataFlow(
         getItems = {
@@ -82,6 +82,7 @@ class MessengerViewModel(
         loadDataHelper.invalidateSource()
         viewModelScope.launch {
             subscribeMessages()
+            subscribeMessageActions()
         }
     }
 
@@ -141,6 +142,20 @@ class MessengerViewModel(
             }
             .launchIn(viewModelScope)
     }
+
+    private fun subscribeMessageActions() {
+        messengerInteractor.messageActionsFlow
+            .collectWhenViewActive()
+            .onEach { messageAction ->
+                messengerMapper.messageAction = messageAction
+                loadDataHelper.invalidateSource()
+                delay(1000)
+                messengerMapper.messageAction = null
+                loadDataHelper.invalidateSource()
+            }
+            .launchIn(viewModelScope)
+    }
+
 
     fun unsubscribeMessages() {
         messengerInteractor.closeSocket()

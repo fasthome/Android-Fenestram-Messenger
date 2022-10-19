@@ -18,7 +18,7 @@ class PagingDataViewModelHelper {
         getCachedSelectedId: suspend () -> Long?,
         getItem: suspend (itemId: Long) -> CallResult<K>?,
         mapDataItem: (K) -> T,
-        getItemId: (K) -> Long?,
+        getItemId: (K) -> Long?
     ): Flow<PagingData<T>> =
         Pager(
             config = PagingConfig(pageSize = PAGE_SIZE),
@@ -59,4 +59,5 @@ class PagingDataViewModelHelper {
             }
 
     fun invalidateSource() = source?.pagingSource?.invalidate()
+
 }

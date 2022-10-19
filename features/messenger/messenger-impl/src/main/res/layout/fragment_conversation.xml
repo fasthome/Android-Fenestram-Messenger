@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
             android:layout_marginBottom="5dp"
-            android:text="@string/statusonline"
+            android:text="@string/user_status_offline"
             android:textColor="@color/gray2"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -183,6 +183,7 @@
         app:layout_constraintBottom_toBottomOf="@id/input_message"
         app:layout_constraintStart_toStartOf="@+id/input_message"
         tools:ignore="TouchTargetSizeCheck" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_edit_message"
         android:layout_width="0dp"
@@ -234,6 +235,7 @@
             tools:text="Привет, у кого тут день рождения? Поздравляю и желаю счастья, здоровья, удачных релизов и всё. Дальше" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/input_message"
         android:layout_width="0dp"
@@ -270,7 +272,6 @@
         tools:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/input_message" />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

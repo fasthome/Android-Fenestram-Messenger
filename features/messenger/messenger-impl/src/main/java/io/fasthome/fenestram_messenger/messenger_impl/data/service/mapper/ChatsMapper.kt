@@ -1,9 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -35,4 +38,30 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
         isDate = false,
         isEdited = messageResponse.isEdited
     )
+
+    fun toMessageAction(messageActionResponse: MessageActionResponse): MessageAction {
+        val userName = when {
+            !messageActionResponse.user?.contactName.isNullOrEmpty() -> messageActionResponse.user?.contactName
+            !messageActionResponse.user?.name.isNullOrEmpty() -> messageActionResponse.user?.name
+            !messageActionResponse.user?.nickname.isNullOrEmpty() -> messageActionResponse.user?.nickname
+            else -> ""
+        }
+
+        val userStatus = when {
+            messageActionResponse.action == TYPING_MESSAGE_STATUS -> UserStatus.Typing
+            messageActionResponse.user?.isOnline == true -> UserStatus.Online
+            else -> UserStatus.Offline
+        }
+
+        return MessageAction(
+            userId = messageActionResponse.user?.id ?: 0,
+            chatId = messageActionResponse.chatId ?: 0,
+            userName = userName ?: "",
+            userStatus = userStatus
+        )
+    }
+
+    companion object {
+        const val TYPING_MESSAGE_STATUS = "typingMessage"
+    }
 }
