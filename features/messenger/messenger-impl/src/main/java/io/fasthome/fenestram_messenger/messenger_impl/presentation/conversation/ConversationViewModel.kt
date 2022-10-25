@@ -490,16 +490,17 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
+                    val selfUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
                             id = chatId,
                             userName = chat.chatName,
-                            userNickname = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.nickname
+                            userNickname = chat.chatUsers.firstOrNull { it.id != selfUserId }?.nickname
                                 ?: "",
                             userAvatar = chat.avatar,
                             chatParticipants = chatUsers,
                             isGroup = params.chat.isGroup,
-                            userPhone = chat.chatUsers.firstOrNull { it.id != messengerInteractor.getUserId() }?.phone
+                            userPhone = chat.chatUsers.firstOrNull { it.id != selfUserId }?.phone
                                 ?: "",
                             editMode = editMode && params.chat.isGroup
                         )

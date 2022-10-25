@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
-import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -169,7 +168,7 @@ class ConversationFragment :
 
         inputMessage.addTextChangedListener { vm.onTypingMessage() }
 
-        latestPersonDetailDialog = Dialog(requireContext())
+        backButton.increaseHitArea(16.dp)
 
         val smoothScroller: RecyclerView.SmoothScroller = object : LinearSmoothScroller(context) {
             override fun getVerticalSnapPreference(): Int {
@@ -226,7 +225,6 @@ class ConversationFragment :
         }
     }
 
-    lateinit var latestPersonDetailDialog: Dialog
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
@@ -284,8 +282,8 @@ class ConversationFragment :
                         })
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->
-                if (!latestPersonDetailDialog.isShowing) {
-                    latestPersonDetailDialog = PersonDetailDialog
+                if (!PersonDetailDialog.isShowing()) {
+                    PersonDetailDialog
                         .create(
                             fragment = this,
                             personDetail = event.selectedPerson,
@@ -301,7 +299,7 @@ class ConversationFragment :
                             onAvatarClicked = { avatarUrl ->
                                 vm.onImageClicked(url = avatarUrl)
                             })
-                    latestPersonDetailDialog.show()
+                        .show()
                 }
             is ConversationEvent.ShowErrorSentDialog -> {
                 ErrorSentDialog.create(
