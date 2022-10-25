@@ -438,6 +438,13 @@ fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): Con
                 )
             )
         }
+        MESSAGE_TYPE_SYSTEM -> {
+            (oldViewItem as ConversationViewItem.System).copy(
+                sentStatus = getSentStatus(
+                    messageStatus
+                )
+            )
+        }
         else -> error("Unknown Message Type! type $messageType")
     }
 }
