@@ -77,10 +77,6 @@ class MessengerInteractor(
                 }
 
                 override fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse) {
-                    Log.d(
-                        "messageStatusResponse",
-                        chatsMapper.toMessageStatus(messageStatusResponse).toString()
-                    )
                     if (selfUserId == messageStatusResponse.initiatorId && id == messageStatusResponse.chatId) {
                         onNewMessageStatusCallback(chatsMapper.toMessageStatus(messageStatusResponse))
                     }
@@ -100,7 +96,7 @@ class MessengerInteractor(
         }
     }
 
-    suspend fun getNewMessages(): Flow<Message> {
+    suspend fun getNewMessages(onNewMessageStatusCallback: (MessageStatus) -> Unit): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = null,
             token = tokensRepo.getAccessToken(),
@@ -114,6 +110,7 @@ class MessengerInteractor(
                 }
 
                 override fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse) {
+                    onNewMessageStatusCallback(chatsMapper.toMessageStatus(messageStatusResponse))
                 }
             },
             selfUserId = null

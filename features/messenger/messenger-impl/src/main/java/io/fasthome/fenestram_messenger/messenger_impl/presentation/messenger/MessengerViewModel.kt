@@ -5,8 +5,11 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.getSentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
@@ -132,7 +135,7 @@ class MessengerViewModel(
     }
 
     private suspend fun subscribeMessages() {
-        messengerInteractor.getNewMessages()
+        messengerInteractor.getNewMessages { onNewMessageStatus(it) }
             .collectWhenViewActive()
             .onEach { message ->
                 loadDataHelper.invalidateSource()
@@ -142,6 +145,19 @@ class MessengerViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun onNewMessageStatus(messageStatus: MessageStatus) {
+        updateState { state ->
+            loadDataHelper.invalidateSource()
+            state.copy(
+                messengerViewItems = currentViewState.messengerViewItems.map {
+                    if (it.id == messageStatus.messageId)
+                        it.copy(statusIcon = getStatusIcon(getSentStatus(messageStatus.messageStatus)))
+                    else it
+                }
+            )
+        }
     }
 
     private fun subscribeMessageActions() {
