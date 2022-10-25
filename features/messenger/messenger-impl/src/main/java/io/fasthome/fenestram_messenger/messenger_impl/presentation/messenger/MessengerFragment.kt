@@ -4,6 +4,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
@@ -48,7 +50,8 @@ class MessengerFragment :
             vm.onProfileClicked(it)
         },
         onDeleteChat = { vm.onChatDelete(it) },
-        viewBinderHelper = viewBinderHelper
+        viewBinderHelper = viewBinderHelper,
+        handler = Handler(Looper.getMainLooper())
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {

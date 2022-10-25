@@ -84,12 +84,17 @@ class MessengerRepoImpl(
             token = token,
             selfUserId = selfUserId,
             messageCallback = { callback.onNewMessage(this) },
-            messageActionCallback = { callback.onNewMessageAction(this) }
+            messageActionCallback = { callback.onNewMessageAction(this) },
+            messageStatusCallback = { callback.onNewMessageStatus(this) }
         )
     }
 
     override fun emitMessageAction(chatId: String, action: String) {
         socket.emitMessageAction(chatId, action)
+    }
+
+    override fun emitMessageRead(chatId: Long, messages: List<Long>) {
+        socket.emitMessageRead(chatId, messages)
     }
 
     override suspend fun uploadImage(
@@ -107,11 +112,17 @@ class MessengerRepoImpl(
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
 
-    override suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult> = callForResult {
+    override suspend fun uploadDocument(
+        documentBytes: ByteArray,
+        guid: String
+    ): CallResult<UploadDocumentResult> = callForResult {
         messengerService.uploadDocument(documentBytes, guid)
     }
 
-    override suspend fun getDocument(storagePath : String, progressListener: ProgressListener): CallResult<LoadedDocumentData> = callForResult {
+    override suspend fun getDocument(
+        storagePath: String,
+        progressListener: ProgressListener
+    ): CallResult<LoadedDocumentData> = callForResult {
         messengerService.getDocument(storageUrlConverter.convert(storagePath), progressListener)
     }
 

@@ -96,6 +96,7 @@ class CreateGroupChatViewModel(
                         messages = listOf(),
                         avatar = contacts[0].user!!.avatar,
                         id = null,
+                        pendingMessages = 0
                     )
                 )
             )

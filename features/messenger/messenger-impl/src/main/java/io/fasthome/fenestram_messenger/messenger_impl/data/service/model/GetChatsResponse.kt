@@ -38,9 +38,12 @@ class GetChatsResponse(
         val users: List<Long>,
 
         @SerialName("message")
-        val message: MessageResponseWithoutInitiator?,
+        val message: List<MessageResponseWithoutInitiator>?,
 
         @SerialName("is_group")
-        val isGroup : Boolean
+        val isGroup: Boolean,
+
+        @SerialName("pending_messages")
+        val pendingMessages: Long,
     )
 }

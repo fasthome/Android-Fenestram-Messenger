@@ -82,7 +82,8 @@ class CreateInfoViewModel(
                         messages = listOf(),
                         time = null,
                         avatar = imageUrl,
-                        isGroup = true
+                        isGroup = true,
+                        pendingMessages = 0
                     )
                 )
             )

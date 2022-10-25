@@ -1,13 +1,11 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper
 
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_DOCUMENT
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_IMAGE
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_TEXT
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toPrintableText
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -19,37 +17,36 @@ private val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter) {
 
-    var messageAction: MessageAction? = null
+    var messageActions = mutableListOf<MessageAction>()
 
     fun toMessengerViewItem(chat: Chat): MessengerViewItem {
-        val lastMessage = if (messageAction != null && chat.id == messageAction!!.chatId) {
-            LastMessage.Status(
-                messageAction!!.userStatus.toPrintableText(
-                    messageAction!!.userName,
+        val lastMessage = messageActions.find { chat.id == it.chatId }?.let {
+            LastMessage.UserStatus(
+                it.userStatus.toPrintableText(
+                    it.userName,
                     chat.isGroup
                 )
             )
-        } else {
-            chat.messages.lastOrNull()?.let { message ->
-                when (message.messageType) {
-                    MESSAGE_TYPE_TEXT -> {
-                        LastMessage.Text(PrintableText.Raw(message.text))
-                    }
-                    MESSAGE_TYPE_SYSTEM -> {
-                        LastMessage.Text(PrintableText.Raw(message.text))
-                    }
-                    MESSAGE_TYPE_IMAGE -> {
-                        LastMessage.Image(imageUrl = message.text)
-                    }
-                    MESSAGE_TYPE_DOCUMENT -> {
-                        LastMessage.Document
-                    }
-                    else -> {
-                        LastMessage.Text(PrintableText.EMPTY)
-                    }
+        } ?: chat.messages.lastOrNull()?.let { message ->
+            when (message.messageType) {
+                MESSAGE_TYPE_TEXT -> {
+                    LastMessage.Text(PrintableText.Raw(message.text))
                 }
-            } ?: LastMessage.Text(PrintableText.EMPTY)
-        }
+                MESSAGE_TYPE_SYSTEM -> {
+                    LastMessage.Text(PrintableText.Raw(message.text))
+                }
+                MESSAGE_TYPE_IMAGE -> {
+                    LastMessage.Image(imageUrl = message.text)
+                }
+                MESSAGE_TYPE_DOCUMENT -> {
+                    LastMessage.Document
+                }
+                else -> {
+                    LastMessage.Text(PrintableText.EMPTY)
+                }
+            }
+        } ?: LastMessage.Text(PrintableText.EMPTY)
+
 
         return MessengerViewItem(
             id = chat.id ?: 0,
@@ -60,7 +57,15 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
             time = getTimeOrFuzzyDate(chat.time),
             profileImageUrl = profileImageUrlConverter.convert(chat.avatar),
             originalChat = chat,
-            isGroup = chat.isGroup
+            isGroup = chat.isGroup,
+            statusIcon = if (chat.pendingMessages == 0L) {
+                chat.messages.lastOrNull()
+                    ?.let { message -> getStatusIcon(getSentStatus(message.messageStatus)) } ?: 0
+            } else {
+                R.drawable.bg_not_read
+            },
+            pendingAmount = if (chat.pendingMessages == 0L) PrintableText.EMPTY
+            else PrintableText.Raw(chat.pendingMessages.toString())
         )
     }
 

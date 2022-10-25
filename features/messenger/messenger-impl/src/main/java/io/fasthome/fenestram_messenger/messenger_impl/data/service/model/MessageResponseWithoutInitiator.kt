@@ -22,4 +22,7 @@ class MessageResponseWithoutInitiator(
 
     @SerialName("is_edited")
     val isEdited: Boolean,
+
+    @SerialName("message_status")
+    val messageStatus: String,
 )

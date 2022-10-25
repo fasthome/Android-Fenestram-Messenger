@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -147,11 +148,15 @@ class MessengerViewModel(
         messengerInteractor.messageActionsFlow
             .collectWhenViewActive()
             .onEach { messageAction ->
-                messengerMapper.messageAction = messageAction
-                loadDataHelper.invalidateSource()
-                delay(1000)
-                messengerMapper.messageAction = null
-                loadDataHelper.invalidateSource()
+                viewModelScope.launch(context = NonCancellable) {
+                    if (!messengerMapper.messageActions.contains(messageAction)) {
+                        messengerMapper.messageActions.add(messageAction)
+                        loadDataHelper.invalidateSource()
+                        delay(1500)
+                        messengerMapper.messageActions.remove(messageAction)
+                        loadDataHelper.invalidateSource()
+                    }
+                }
             }
             .launchIn(viewModelScope)
     }

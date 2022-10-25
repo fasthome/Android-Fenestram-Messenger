@@ -14,6 +14,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.person_detail.PersonDetailDialog
@@ -73,11 +74,11 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
-    }, onSelfDownloadDocument = { item, progressListener->
+    }, onSelfDownloadDocument = { item, progressListener ->
         vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
-    }, onRecieveDownloadDocument = { item, progressListener->
+    }, onRecieveDownloadDocument = { item, progressListener ->
         vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
-    }, onGroupDownloadDocument = { item, progressListener->
+    }, onGroupDownloadDocument = { item, progressListener ->
         vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
@@ -111,8 +112,13 @@ class ConversationFragment :
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
+                vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems(isResumed)
+                }
+                val newMessagesCount = vm.getNewMessagesCount()
+                if (vm.firstVisibleItemPosition <= newMessagesCount && newMessagesCount != 0) {
+                    vm.onScrolledToLastPendingMessage()
                 }
             }
         })
@@ -164,6 +170,16 @@ class ConversationFragment :
         inputMessage.addTextChangedListener { vm.onTypingMessage() }
 
         latestPersonDetailDialog = Dialog(requireContext())
+
+        val smoothScroller: RecyclerView.SmoothScroller = object : LinearSmoothScroller(context) {
+            override fun getVerticalSnapPreference(): Int {
+                return SNAP_TO_START
+            }
+        }
+        pendingMessagesButton.onClick {
+            smoothScroller.targetPosition = vm.getNewMessagesCount()
+            linearLayoutManager.startSmoothScroll(smoothScroller)
+        }
     }
 
     override fun onResume() {
@@ -195,6 +211,19 @@ class ConversationFragment :
         attachedAdapter.items = state.attachedFiles
         renderStateEditMode(state.editMode, state.messageToEdit)
         userStatusView.setPrintableText(state.userStatus)
+        userStatusDots.setPrintableText(state.userStatusDots)
+        if (state.newMessagesCount == 0) {
+            pendingMessagesButton.isVisible = false
+            pendingAmount.isVisible = false
+            pendingMessagesStatus.isVisible = false
+            pendingMessagesArrow.isVisible = false
+        } else {
+            pendingMessagesButton.isVisible = true
+            pendingAmount.isVisible = true
+            pendingMessagesStatus.isVisible = true
+            pendingMessagesArrow.isVisible = true
+            pendingAmount.text = state.newMessagesCount.toString()
+        }
     }
 
     lateinit var latestPersonDetailDialog: Dialog
