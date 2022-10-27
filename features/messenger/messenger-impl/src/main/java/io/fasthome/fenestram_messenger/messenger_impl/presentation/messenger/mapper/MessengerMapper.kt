@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
@@ -47,6 +48,12 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
             }
         } ?: LastMessage.Text(PrintableText.EMPTY)
 
+        val sentStatus = if (chat.pendingMessages == 0L) {
+            chat.messages.lastOrNull()
+                ?.let { message -> getSentStatus(message.messageStatus) } ?: SentStatus.None
+        } else {
+            SentStatus.None
+        }
 
         return MessengerViewItem(
             id = chat.id ?: 0,
@@ -58,9 +65,9 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
             profileImageUrl = profileImageUrlConverter.convert(chat.avatar),
             originalChat = chat,
             isGroup = chat.isGroup,
-            statusIcon = if (chat.pendingMessages == 0L) {
-                chat.messages.lastOrNull()
-                    ?.let { message -> getStatusIcon(getSentStatus(message.messageStatus)) } ?: 0
+            sentStatus = sentStatus,
+            statusIcon = if (sentStatus != SentStatus.None) {
+                getStatusIcon(sentStatus)
             } else {
                 R.drawable.bg_not_read
             },

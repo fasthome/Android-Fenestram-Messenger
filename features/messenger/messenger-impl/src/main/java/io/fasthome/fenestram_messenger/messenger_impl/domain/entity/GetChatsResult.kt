@@ -55,7 +55,6 @@ data class MessageAction(
 
 data class MessageStatus(
     val messageId: Long,
-    val chatId: Long,
     val messageStatus: String,
     val messageType: String
 )

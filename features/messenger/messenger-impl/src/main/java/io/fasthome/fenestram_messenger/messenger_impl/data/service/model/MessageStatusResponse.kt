@@ -9,7 +9,7 @@ class MessageStatusResponse(
     val id: Long,
 
     @SerialName("chatId")
-    val chatId: Long,
+    val chatId: Long?,
 
     @SerialName("initiator_id")
     val initiatorId: Long,
@@ -40,4 +40,7 @@ class MessageStatusResponse(
 
     @SerialName("accessChats")
     val accessChats: List<Long>,
+
+    @SerialName("forwarded_messages")
+    val forwardedMessages: List<Long>?
 )

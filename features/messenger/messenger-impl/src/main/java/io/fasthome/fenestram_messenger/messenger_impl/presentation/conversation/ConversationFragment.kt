@@ -13,7 +13,6 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.person_detail.PersonDetailDialog
@@ -111,13 +110,12 @@ class ConversationFragment :
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
-                vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
+                if (vm.firstVisibleItemPosition != linearLayoutManager.findFirstVisibleItemPosition()) {
+                    vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
+                    vm.onScrolledToLastPendingMessage()
+                }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems(isResumed)
-                }
-                val newMessagesCount = vm.getNewMessagesCount()
-                if (vm.firstVisibleItemPosition <= newMessagesCount && newMessagesCount != 0) {
-                    vm.onScrolledToLastPendingMessage()
                 }
             }
         })
@@ -168,16 +166,8 @@ class ConversationFragment :
 
         inputMessage.addTextChangedListener { vm.onTypingMessage() }
 
-        backButton.increaseHitArea(16.dp)
-
-        val smoothScroller: RecyclerView.SmoothScroller = object : LinearSmoothScroller(context) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
-            }
-        }
         pendingMessagesButton.onClick {
-            smoothScroller.targetPosition = vm.getNewMessagesCount()
-            linearLayoutManager.startSmoothScroll(smoothScroller)
+            messagesList.smoothScrollToPosition(0)
         }
     }
 
@@ -263,8 +253,13 @@ class ConversationFragment :
                 id = event.id
             ).show()
 
-            ConversationEvent.MessageSent -> binding.messagesList.post {
-                binding.messagesList.scrollToPosition(0)
+            is ConversationEvent.UpdateScrollPosition -> {
+                binding.messagesList.post {
+                    (binding.messagesList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                        event.scrollPosition,
+                        binding.messagesList.height - 48.dp
+                    )
+                }
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
             ConversationEvent.ShowSelectFromDialog ->

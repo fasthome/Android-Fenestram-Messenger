@@ -4,7 +4,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class SocketMessageStatus(
-    @SerialName("messages")
-    val messages: List<MessageStatusResponse?>?
+class PendingMessagesResponse(
+    @SerialName("chat_id")
+    val chatId: Long,
+
+    @SerialName("pending_messages")
+    val pendingMessages: Int
 )

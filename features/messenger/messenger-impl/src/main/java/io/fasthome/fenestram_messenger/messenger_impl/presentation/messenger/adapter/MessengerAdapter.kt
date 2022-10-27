@@ -56,6 +56,7 @@ fun createMessengerAdapter(
     createAdapterDelegate<MessengerViewItem, MessangerChatItemBinding>(
         inflate = MessangerChatItemBinding::inflate,
         bind = { item, binding ->
+            handler.removeCallbacksAndMessages(null)
             with(binding) {
                 viewBinderHelper.bind(root, item.id.toString())
                 viewBinderHelper.setOpenOnlyOne(true)
@@ -107,7 +108,6 @@ fun createMessengerAdapter(
                         statusDots.setPrintableText(PrintableText.EMPTY)
                     }
                     is LastMessage.UserStatus -> {
-                        handler.removeCallbacksAndMessages(null)
                         val runnable = object : Runnable {
                             override fun run() {
                                 val newDotCount = statusDots.text.count() % 3 + 1
@@ -115,6 +115,7 @@ fun createMessengerAdapter(
                                 handler.postDelayed(this, 300)
                             }
                         }
+
                         lastMessage.setPrintableText(item.lastMessage.status)
                         lastMessage.setTextColor(
                             ContextCompat.getColor(

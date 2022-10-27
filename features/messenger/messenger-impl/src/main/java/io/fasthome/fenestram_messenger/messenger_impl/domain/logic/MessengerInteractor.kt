@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsM
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.PendingMessagesResponse
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -61,7 +62,8 @@ class MessengerInteractor(
     suspend fun getMessagesFromChat(
         id: Long,
         selfUserId: Long,
-        onNewMessageStatusCallback: (MessageStatus) -> Unit
+        onNewMessageStatusCallback: (MessageStatus) -> Unit,
+        onNewPendingMessagesCallback: (Int) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -79,6 +81,12 @@ class MessengerInteractor(
                 override fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse) {
                     if (selfUserId == messageStatusResponse.initiatorId && id == messageStatusResponse.chatId) {
                         onNewMessageStatusCallback(chatsMapper.toMessageStatus(messageStatusResponse))
+                    }
+                }
+
+                override fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse) {
+                    if (pendingMessagesResponse.chatId == id) {
+                        onNewPendingMessagesCallback(pendingMessagesResponse.pendingMessages)
                     }
                 }
             })
@@ -112,6 +120,9 @@ class MessengerInteractor(
                 override fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse) {
                     onNewMessageStatusCallback(chatsMapper.toMessageStatus(messageStatusResponse))
                 }
+
+                override fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse) {
+                }
             },
             selfUserId = null
         )
@@ -129,7 +140,10 @@ class MessengerInteractor(
 
     private var page = 0
 
-    suspend fun getChatPageItems(isResumed: Boolean, id: Long): CallResult<MessagesPage> {
+    suspend fun getChatPageItems(
+        isResumed: Boolean,
+        id: Long
+    ): CallResult<MessagesPage> {
         //todo isResumed оставить, возможно вернется баг с загрузкой из onResume
         page++
         return messageRepo.getMessagesFromChat(id, page)

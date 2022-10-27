@@ -9,7 +9,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatu
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.getSentStatus
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
@@ -153,7 +152,7 @@ class MessengerViewModel(
             state.copy(
                 messengerViewItems = currentViewState.messengerViewItems.map {
                     if (it.id == messageStatus.messageId)
-                        it.copy(statusIcon = getStatusIcon(getSentStatus(messageStatus.messageStatus)))
+                        it.copy(sentStatus = getSentStatus(messageStatus.messageStatus))
                     else it
                 }
             )

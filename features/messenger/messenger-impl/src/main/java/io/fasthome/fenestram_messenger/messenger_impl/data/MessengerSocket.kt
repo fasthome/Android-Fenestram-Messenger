@@ -26,7 +26,8 @@ class MessengerSocket(private val baseUrl: String) {
         selfUserId: Long?,
         messageCallback: MessageResponseWithChatId.() -> Unit,
         messageActionCallback: MessageActionResponse.() -> Unit,
-        messageStatusCallback: MessageStatusResponse.() -> Unit
+        messageStatusCallback: MessageStatusResponse.() -> Unit,
+        pendingMessagesCallback: PendingMessagesResponse.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -58,7 +59,7 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.on("receiveMessageStatus") {
                 Log.d(this.javaClass.simpleName, "receiveMessageStatus: " + it[0].toString())
                 val messageStatuses = json.decodeFromString<SocketMessageStatus>(it[0].toString())
-                messageStatuses.messages.forEach { messageStatus ->
+                messageStatuses.messages?.forEach { messageStatus ->
                     if (messageStatus != null) {
                         messageStatusCallback(messageStatus)
                     }
@@ -67,6 +68,9 @@ class MessengerSocket(private val baseUrl: String) {
 
             socket?.on("chatPendingMessages") {
                 Log.d(this.javaClass.simpleName, "chatPendingMessages: " + it[0].toString())
+                val pendingMessages =
+                    json.decodeFromString<PendingMessagesResponse>(it[0].toString())
+                pendingMessagesCallback(pendingMessages)
             }
 
         } catch (e: Exception) {
@@ -75,11 +79,13 @@ class MessengerSocket(private val baseUrl: String) {
 
     fun emitMessageAction(chatId: String, action: String) {
         val messageActionRequest = JSONObject("{chat_id:$chatId,action:$action}")
+        Log.d("emitMessageAction", messageActionRequest.toString())
         socket?.emit("messageAction", messageActionRequest)
     }
 
     fun emitMessageRead(chatId: Long, messages: List<Long>) {
         val messageReadRequest = JSONObject("{chat_id:$chatId,messages:$messages}")
+        Log.d("emitMessageRead", messages.toString())
         socket?.emit("messageRead", messageReadRequest)
     }
 

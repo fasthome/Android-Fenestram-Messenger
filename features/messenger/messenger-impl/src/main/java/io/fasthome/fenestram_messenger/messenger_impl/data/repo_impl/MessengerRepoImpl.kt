@@ -85,7 +85,8 @@ class MessengerRepoImpl(
             selfUserId = selfUserId,
             messageCallback = { callback.onNewMessage(this) },
             messageActionCallback = { callback.onNewMessageAction(this) },
-            messageStatusCallback = { callback.onNewMessageStatus(this) }
+            messageStatusCallback = { callback.onNewMessageStatus(this) },
+            pendingMessagesCallback = { callback.onNewPendingMessages(this) }
         )
     }
 
