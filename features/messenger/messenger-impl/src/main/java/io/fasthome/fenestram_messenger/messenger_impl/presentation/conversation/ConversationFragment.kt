@@ -162,7 +162,6 @@ class ConversationFragment :
         attachButton.onClick {
             vm.onAttachClicked()
         }
-        backButton.increaseHitArea(16.dp)
 
         inputMessage.addTextChangedListener { vm.onTypingMessage() }
 
