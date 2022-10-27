@@ -94,7 +94,7 @@ class ConversationViewModel(
     private var loadItemsJob by switchJob()
     private var downloadFileJob by switchJob()
     private var lastPage: MessagesPage? = null
-    var firstVisibleItemPosition: Int = 0
+    var firstVisibleItemPosition: Int = -1
 
     private val openFileLauncher = registerScreen(OpenFileNavigationContract)
 
@@ -128,14 +128,16 @@ class ConversationViewModel(
 
     fun loadItems(isResumed: Boolean) {
         loadItemsJob = viewModelScope.launch {
-            lastPage?.let {
+            val firstNewMessageCount = lastPage?.let {
                 if (it.total <= PAGE_SIZE) {
                     return@launch
                 }
-            }
+                0
+            } ?: params.chat.pendingMessages
 
             messengerInteractor.getChatPageItems(
                 isResumed,
+                firstNewMessageCount.toInt(),
                 chatId ?: return@launch
             ).onSuccess {
                 lastPage = it
@@ -151,7 +153,9 @@ class ConversationViewModel(
                         )
                     )
                 }
-                updateScrollPosition()
+                if (firstNewMessageCount != 0L) {
+                    updateScrollPosition()
+                }
             }
         }
     }
@@ -870,8 +874,9 @@ class ConversationViewModel(
         }
     }
 
-    fun updateScrollPosition() =
+    fun updateScrollPosition() {
         sendEvent(ConversationEvent.UpdateScrollPosition(currentViewState.newMessagesCount))
+    }
 
     fun onScrolledToLastPendingMessage() {
         if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0) {

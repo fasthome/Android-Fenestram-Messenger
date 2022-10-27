@@ -60,9 +60,13 @@ class MessengerRepoImpl(
         messengerService.getChatById(id)
     }
 
-    override suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage> =
+    override suspend fun getMessagesFromChat(
+        id: Long,
+        limit: Int,
+        page: Int
+    ): CallResult<MessagesPage> =
         callForResult {
-            messengerService.getMessagesByChat(id = id, limit = PAGE_SIZE, page = page)
+            messengerService.getMessagesByChat(id = id, limit = limit, page = page)
         }
 
     override suspend fun deleteChat(id: Long) = callForResult {

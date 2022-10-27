@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.Pending
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.onSuccess
@@ -142,11 +143,17 @@ class MessengerInteractor(
 
     suspend fun getChatPageItems(
         isResumed: Boolean,
+        newMessagesCount: Int,
         id: Long
     ): CallResult<MessagesPage> {
         //todo isResumed оставить, возможно вернется баг с загрузкой из onResume
         page++
-        return messageRepo.getMessagesFromChat(id, page)
+        return if (newMessagesCount != 0) {
+            while (page * PAGE_SIZE < newMessagesCount) page++
+            messageRepo.getMessagesFromChat(id, page * PAGE_SIZE, 1)
+        } else {
+            messageRepo.getMessagesFromChat(id, PAGE_SIZE, page)
+        }
     }
 
     suspend fun uploadProfileImage(photoBytes: ByteArray) =

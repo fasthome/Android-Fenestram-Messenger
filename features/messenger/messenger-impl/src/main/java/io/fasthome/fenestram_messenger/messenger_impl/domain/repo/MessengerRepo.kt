@@ -29,7 +29,7 @@ interface MessengerRepo {
     suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
-    suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage>
+    suspend fun getMessagesFromChat(id: Long, limit: Int, page: Int): CallResult<MessagesPage>
     suspend fun deleteChat(id: Long): CallResult<Unit>
     suspend fun deleteMessage(messageId: Long, chatId: Long): CallResult<Unit>
 
