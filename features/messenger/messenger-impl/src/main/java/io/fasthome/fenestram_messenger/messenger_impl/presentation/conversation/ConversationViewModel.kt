@@ -245,7 +245,8 @@ class ConversationViewModel(
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-            )
+                inputMessageMode = if (isReplyMode) InputMessageMode.Reply(conversationViewItem
+                    ?: return@updateState state) else InputMessageMode.Default)
         }
     }
 

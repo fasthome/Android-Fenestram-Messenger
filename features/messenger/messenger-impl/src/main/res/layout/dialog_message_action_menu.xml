@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        app:icon="@drawable/ic_action_trash"
+        app:icon="@drawable/ic_action_reply"
         android:paddingVertical="15dp"
         android:text="@string/conversation_reply_message"
         app:iconGravity="textStart"
