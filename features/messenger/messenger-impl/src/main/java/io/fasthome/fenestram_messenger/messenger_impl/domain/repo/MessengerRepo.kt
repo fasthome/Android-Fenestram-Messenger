@@ -62,5 +62,6 @@ interface MessengerRepo {
         fun onNewMessageAction(messageAction: MessageActionResponse)
         fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse)
         fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse)
+        fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage)
     }
 }

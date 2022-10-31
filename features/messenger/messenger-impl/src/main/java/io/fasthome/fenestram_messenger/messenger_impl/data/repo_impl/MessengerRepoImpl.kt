@@ -90,7 +90,8 @@ class MessengerRepoImpl(
             messageCallback = { callback.onNewMessage(this) },
             messageActionCallback = { callback.onNewMessageAction(this) },
             messageStatusCallback = { callback.onNewMessageStatus(this) },
-            pendingMessagesCallback = { callback.onNewPendingMessages(this) }
+            pendingMessagesCallback = { callback.onNewPendingMessages(this) },
+            messageDeletedCallback = { callback.onMessageDeleted(this) }
         )
     }
 
