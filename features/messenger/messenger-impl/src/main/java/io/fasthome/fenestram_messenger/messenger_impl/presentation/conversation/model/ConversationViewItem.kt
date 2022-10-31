@@ -25,6 +25,7 @@ sealed interface ConversationViewItem {
     val timeVisible: Boolean
     val sentStatus: SentStatus
     val nickname: String?
+    val userName: PrintableText?
     val messageType: String?
     val replyMessage: Message?
 
@@ -45,7 +46,8 @@ sealed interface ConversationViewItem {
             val isEdited: Boolean,
             override val nickname: String?,
             override val messageType: String?,
-            override val replyMessage: Message?
+            override val replyMessage: Message?,
+            override val userName: PrintableText?
         ) : Self(), ConversationTextItem
 
         data class Image(
@@ -59,7 +61,8 @@ sealed interface ConversationViewItem {
             val loadableContent: Content? = null,
             override val nickname: String?,
             override val messageType: String?,
-            override val replyMessage: Message?
+            override val replyMessage: Message?,
+            override val userName: PrintableText?
         ) : Self(), ConversationImageItem
 
         data class Document(
@@ -75,6 +78,7 @@ sealed interface ConversationViewItem {
             override val nickname: String? = null,
             override val messageType: String? = null,
             override val replyMessage: Message? = null,
+            override val userName: PrintableText?
         ) : Self()
     }
 
@@ -89,7 +93,8 @@ sealed interface ConversationViewItem {
             val isEdited: Boolean,
             override val nickname: String?,
             override val messageType: String?,
-            override val replyMessage: Message?
+            override val replyMessage: Message?,
+            override val userName: PrintableText?
         ) : Receive(), ConversationTextItem
 
         data class Image(
@@ -102,6 +107,7 @@ sealed interface ConversationViewItem {
             override val nickname: String?,
             override val messageType: String?,
             override val replyMessage: Message?,
+            override val userName: PrintableText?
         ) : Receive(), ConversationImageItem
 
         data class Document(
@@ -115,11 +121,12 @@ sealed interface ConversationViewItem {
             override val nickname: String? = null,
             override val messageType: String? = null,
             override val replyMessage: Message? = null,
+            override val userName: PrintableText?
         ) : Receive()
     }
 
     sealed class Group(
-        open val userName: PrintableText,
+        override val userName: PrintableText?,
         open val avatar: String,
         open val phone: String,
         open val userId: Long
@@ -185,6 +192,7 @@ sealed interface ConversationViewItem {
         override val nickname: String? = null,
         override val messageType: String? = null,
         override val replyMessage: Message? = null,
+        override val userName: PrintableText? = null,
     ) : ConversationViewItem
 
 }

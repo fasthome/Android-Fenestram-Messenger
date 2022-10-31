@@ -69,7 +69,8 @@ fun Message.toConversationViewItem(
                         isEdited = isEdited,
                         nickname = initiator?.nickname,
                         messageType = messageType,
-                        replyMessage = replyMessage
+                        replyMessage = replyMessage,
+                        userName = PrintableText.Raw(getName(initiator))
                     )
                 }
                 MESSAGE_TYPE_IMAGE -> {
@@ -83,7 +84,8 @@ fun Message.toConversationViewItem(
                         timeVisible = true,
                         nickname = initiator?.nickname,
                         messageType = messageType,
-                        replyMessage = replyMessage
+                        replyMessage = replyMessage,
+                        userName =  PrintableText.Raw(getName(initiator))
                     )
                 }
 
@@ -97,7 +99,8 @@ fun Message.toConversationViewItem(
                         localId = UUID.randomUUID().toString(),
                         timeVisible = true,
                         file = null,
-                        path = null
+                        path = null,
+                        userName = PrintableText.Raw(getName(initiator))
                     )
                 }
 
@@ -195,7 +198,8 @@ fun Message.toConversationViewItem(
                             isEdited = isEdited,
                             nickname = initiator?.nickname,
                             messageType = messageType,
-                            replyMessage = replyMessage
+                            replyMessage = replyMessage,
+                            userName = PrintableText.Raw(getName(initiator))
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -208,7 +212,8 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname,
                             messageType = messageType,
-                            replyMessage = replyMessage
+                            replyMessage = replyMessage,
+                            userName = PrintableText.Raw(getName(initiator))
                         )
                     }
 
@@ -219,7 +224,8 @@ fun Message.toConversationViewItem(
                             sentStatus = SentStatus.Sent,
                             date = date,
                             id = id,
-                            timeVisible = true
+                            timeVisible = true,
+                            userName = PrintableText.Raw(getName(initiator))
                         )
                     }
 
@@ -359,7 +365,8 @@ fun createTextMessage(text: String, userName: String?) = ConversationViewItem.Se
     timeVisible = true,
     nickname = userName,
     messageType = "text",
-    replyMessage = null
+    replyMessage = null,
+    userName = PrintableText.Raw(userName ?: "")
 )
 
 fun createImageMessage(image: String?, loadableContent: Content, userName: String?) =
@@ -374,7 +381,8 @@ fun createImageMessage(image: String?, loadableContent: Content, userName: Strin
         timeVisible = true,
         nickname = userName,
         messageType = "image",
-        replyMessage = null
+        replyMessage = null,
+        userName = PrintableText.Raw(userName ?: "")
     )
 
 fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
@@ -393,7 +401,8 @@ fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.
     localId = UUID.randomUUID().toString(),
     file = file,
     timeVisible = true,
-    path = null
+    path = null,
+    userName = PrintableText.EMPTY
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

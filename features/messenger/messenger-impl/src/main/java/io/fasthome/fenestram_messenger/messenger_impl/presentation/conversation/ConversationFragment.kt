@@ -369,7 +369,7 @@ class ConversationFragment :
             if (isReplyMode && message != null) {
                 tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
                 tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
-                tvEditMessageTitle.text = message.nickname
+                tvEditMessageTitle.text = getPrintableRawText(message.userName)
                 when (message) {
                     is ConversationTextItem -> {
                         tvTextToEdit.text = getPrintableRawText(message.content)
