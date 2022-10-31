@@ -13,7 +13,8 @@ data class Chat(
     val messages: List<Message>,
     val time: ZonedDateTime?,
     val avatar: String?,
-    val isGroup: Boolean
+    val isGroup: Boolean,
+    val pendingMessages: Long
 ) : Parcelable
 
 @Parcelize
@@ -27,6 +28,7 @@ data class Message(
     val chatId: String? = null,
     val isDate: Boolean,
     val isEdited: Boolean,
+    val messageStatus: String,
     val replyMessage: Message?
 ) : Parcelable {
     companion object {
@@ -40,6 +42,7 @@ data class Message(
             chatId = null,
             isDate = true,
             isEdited = false,
+            messageStatus = "",
             replyMessage = null
         )
     }
@@ -50,4 +53,10 @@ data class MessageAction(
     val chatId: Long,
     val userName: String,
     val userStatus: UserStatus
+)
+
+data class MessageStatus(
+    val messageId: Long,
+    val messageStatus: String,
+    val messageType: String
 )

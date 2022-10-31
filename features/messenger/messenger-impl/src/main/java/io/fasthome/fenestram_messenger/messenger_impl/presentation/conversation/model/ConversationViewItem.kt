@@ -22,7 +22,7 @@ sealed interface ConversationViewItem {
     val content: Any
     val time: PrintableText
     val date: ZonedDateTime?
-    val timeVisible : Boolean
+    val timeVisible: Boolean
     val sentStatus: SentStatus
     val nickname: String?
     val messageType: String?
@@ -195,9 +195,10 @@ fun getStatusIcon(sentStatus: SentStatus) =
         SentStatus.Sent -> R.drawable.ic_status_message_sent
         SentStatus.Error -> R.drawable.ic_status_message_error
         SentStatus.Read -> R.drawable.ic_status_message_read
+        SentStatus.Received -> R.drawable.ic_status_message_received
         SentStatus.None -> 0
     }
 
 enum class SentStatus {
-    Sent, Error, Read, Loading, None
+    Sent, Error, Read, Loading, Received, None
 }

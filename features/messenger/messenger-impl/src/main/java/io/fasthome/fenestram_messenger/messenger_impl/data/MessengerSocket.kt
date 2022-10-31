@@ -1,10 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data
 
 import android.util.Log
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessage
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketMessageAction
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
@@ -19,12 +16,18 @@ class MessengerSocket(private val baseUrl: String) {
 
     private var socket: Socket? = null
 
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
+
     fun setClientSocket(
         chatId: String?,
         token: AccessToken,
         selfUserId: Long?,
         messageCallback: MessageResponseWithChatId.() -> Unit,
-        messageActionCallback: MessageActionResponse.() -> Unit
+        messageActionCallback: MessageActionResponse.() -> Unit,
+        messageStatusCallback: MessageStatusResponse.() -> Unit,
+        pendingMessagesCallback: PendingMessagesResponse.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -35,7 +38,7 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.connect()
             socket?.on("receiveMessage") {
                 Log.d(this.javaClass.simpleName, "receiveMessage: " + it[0].toString())
-                val message = Json.decodeFromString<SocketMessage>(it[0].toString())
+                val message = json.decodeFromString<SocketMessage>(it[0].toString())
                 if (message.message?.type == MESSAGE_TYPE_SYSTEM) {
                     messageCallback(messageToMessageResponse(message.message))
                     return@on
@@ -49,8 +52,25 @@ class MessengerSocket(private val baseUrl: String) {
 
             socket?.on("receiveMessageAction") {
                 Log.d(this.javaClass.simpleName, "receiveMessageAction: " + it[0].toString())
-                val messageAction = Json.decodeFromString<SocketMessageAction>(it[0].toString())
+                val messageAction = json.decodeFromString<SocketMessageAction>(it[0].toString())
                 messageActionCallback(messageActionToMessageActionResponse(messageAction.message))
+            }
+
+            socket?.on("receiveMessageStatus") {
+                Log.d(this.javaClass.simpleName, "receiveMessageStatus: " + it[0].toString())
+                val messageStatuses = json.decodeFromString<SocketMessageStatus>(it[0].toString())
+                messageStatuses.messages?.forEach { messageStatus ->
+                    if (messageStatus != null) {
+                        messageStatusCallback(messageStatus)
+                    }
+                }
+            }
+
+            socket?.on("chatPendingMessages") {
+                Log.d(this.javaClass.simpleName, "chatPendingMessages: " + it[0].toString())
+                val pendingMessages =
+                    json.decodeFromString<PendingMessagesResponse>(it[0].toString())
+                pendingMessagesCallback(pendingMessages)
             }
 
         } catch (e: Exception) {
@@ -59,7 +79,14 @@ class MessengerSocket(private val baseUrl: String) {
 
     fun emitMessageAction(chatId: String, action: String) {
         val messageActionRequest = JSONObject("{chat_id:$chatId,action:$action}")
+        Log.d("emitMessageAction", messageActionRequest.toString())
         socket?.emit("messageAction", messageActionRequest)
+    }
+
+    fun emitMessageRead(chatId: Long, messages: List<Long>) {
+        val messageReadRequest = JSONObject("{chat_id:$chatId,messages:$messages}")
+        Log.d("emitMessageRead", messages.toString())
+        socket?.emit("messageRead", messageReadRequest)
     }
 
     fun messageToMessageResponse(message: MessageResponseWithChatId?) = MessageResponseWithChatId(

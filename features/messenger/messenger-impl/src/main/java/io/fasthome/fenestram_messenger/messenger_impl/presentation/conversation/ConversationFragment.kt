@@ -74,11 +74,11 @@ class ConversationFragment :
         vm.onSelfMessageClicked(it)
     }, onImageClicked = {
         vm.onImageClicked(it)
-    }, onSelfDownloadDocument = { item, progressListener->
+    }, onSelfDownloadDocument = { item, progressListener ->
         vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
-    }, onRecieveDownloadDocument = { item, progressListener->
+    }, onRecieveDownloadDocument = { item, progressListener ->
         vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
-    }, onGroupDownloadDocument = { item, progressListener->
+    }, onGroupDownloadDocument = { item, progressListener ->
         vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
     }, onSelfMessageLongClicked = {
         vm.onSelfMessageLongClicked(it)
@@ -112,6 +112,10 @@ class ConversationFragment :
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
+                if (vm.firstVisibleItemPosition != linearLayoutManager.findFirstVisibleItemPosition()) {
+                    vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
+                    vm.onScrolledToLastPendingMessage()
+                }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems(isResumed)
                 }
@@ -160,9 +164,12 @@ class ConversationFragment :
         attachButton.onClick {
             vm.onAttachClicked()
         }
+
         inputMessage.addTextChangedListener { vm.onTypingMessage() }
 
-        backButton.increaseHitArea(16.dp)
+        pendingMessagesButton.onClick {
+            messagesList.smoothScrollToPosition(0)
+        }
     }
 
     override fun onResume() {
@@ -193,6 +200,19 @@ class ConversationFragment :
         attachedList.isVisible = state.attachedFiles.isNotEmpty()
         attachedAdapter.items = state.attachedFiles
         userStatusView.setPrintableText(state.userStatus)
+        userStatusDots.setPrintableText(state.userStatusDots)
+        if (state.newMessagesCount == 0) {
+            pendingMessagesButton.isVisible = false
+            pendingAmount.isVisible = false
+            pendingMessagesStatus.isVisible = false
+            pendingMessagesArrow.isVisible = false
+        } else {
+            pendingMessagesButton.isVisible = true
+            pendingAmount.isVisible = true
+            pendingMessagesStatus.isVisible = true
+            pendingMessagesArrow.isVisible = true
+            pendingAmount.text = state.newMessagesCount.toString()
+        }
 
         when (state.inputMessageMode) {
             is InputMessageMode.Default -> {
@@ -249,8 +269,13 @@ class ConversationFragment :
                 id = event.id
             ).show()
 
-            ConversationEvent.MessageSent -> binding.messagesList.post {
-                binding.messagesList.scrollToPosition(0)
+            is ConversationEvent.UpdateScrollPosition -> {
+                binding.messagesList.post {
+                    (binding.messagesList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                        event.scrollPosition,
+                        binding.messagesList.height - 48.dp
+                    )
+                }
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
             ConversationEvent.ShowSelectFromDialog ->

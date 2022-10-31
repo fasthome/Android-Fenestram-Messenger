@@ -2,6 +2,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mo
 
 import androidx.annotation.DrawableRes
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class MessengerViewItem(
@@ -13,13 +15,16 @@ data class MessengerViewItem(
     val lastMessage: LastMessage,
     val profileImageUrl: String?,
     val originalChat: Chat,
-    val isGroup: Boolean
+    val isGroup: Boolean,
+    val sentStatus: SentStatus,
+    @DrawableRes val statusIcon: Int = getStatusIcon(sentStatus),
+    val pendingAmount: PrintableText
 )
 
 sealed class LastMessage {
 
     data class Text(val text: PrintableText) : LastMessage()
-    data class Status(val status: PrintableText) : LastMessage()
+    data class UserStatus(val status: PrintableText) : LastMessage()
     data class Image(val imageUrl: String) : LastMessage()
     object Document : LastMessage()
 

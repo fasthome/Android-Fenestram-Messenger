@@ -4,6 +4,7 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
@@ -22,6 +23,10 @@ const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
 const val MESSAGE_TYPE_DOCUMENT = "document"
+
+const val MESSAGE_STATUS_SENT = "sent"
+const val MESSAGE_STATUS_RECEIVED = "pending"
+const val MESSAGE_STATUS_READ = "read"
 
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
@@ -48,6 +53,7 @@ fun Message.toConversationViewItem(
             timeVisible = true
         )
     }
+    val sentStatus = getSentStatus(messageStatus)
     return when (selfUserId) {
         userSenderId -> {
             when (messageType) {
@@ -55,7 +61,7 @@ fun Message.toConversationViewItem(
                     ConversationViewItem.Self.Text(
                         content = PrintableText.Raw(text),
                         time = PrintableText.Raw(timeFormatter.format(date)),
-                        sentStatus = SentStatus.Sent,
+                        sentStatus = sentStatus,
                         date = date,
                         id = id,
                         localId = UUID.randomUUID().toString(),
@@ -70,7 +76,7 @@ fun Message.toConversationViewItem(
                     ConversationViewItem.Self.Image(
                         content = profileImageUrlConverter.convert(text),
                         time = PrintableText.Raw(timeFormatter.format(date)),
-                        sentStatus = SentStatus.Sent,
+                        sentStatus = sentStatus,
                         date = date,
                         id = id,
                         localId = UUID.randomUUID().toString(),
@@ -85,7 +91,7 @@ fun Message.toConversationViewItem(
                     ConversationViewItem.Self.Document(
                         content = profileImageUrlConverter.convert(text),
                         time = PrintableText.Raw(timeFormatter.format(date)),
-                        sentStatus = SentStatus.Sent,
+                        sentStatus = sentStatus,
                         date = date,
                         id = id,
                         localId = UUID.randomUUID().toString(),
@@ -99,7 +105,7 @@ fun Message.toConversationViewItem(
                     ConversationViewItem.System(
                         content = PrintableText.Raw(text),
                         time = PrintableText.Raw(timeFormatter.format(date)),
-                        sentStatus = SentStatus.Sent,
+                        sentStatus = sentStatus,
                         date = date,
                         id = id,
                         timeVisible = true,
@@ -374,7 +380,7 @@ fun createImageMessage(image: String?, loadableContent: Content, userName: Strin
 fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
     content = document ?: run {
         //TODO костыль!!! Пока бэк не поддерживает все форматы файлов
-        if(file.extension.equals("pdf", ignoreCase = true)) {
+        if (file.extension.equals("pdf", ignoreCase = true)) {
             file.extension
         } else {
             "TXT"
@@ -418,5 +424,49 @@ fun UserStatus.toPrintableText(userName: String, isGroup: Boolean): PrintableTex
             else
                 PrintableText.StringResource(R.string.user_status_typing)
         }
+    }
+}
+
+fun getSentStatus(messageStatus: String): SentStatus {
+    return when (messageStatus) {
+        MESSAGE_STATUS_SENT -> SentStatus.Sent
+        MESSAGE_STATUS_RECEIVED -> SentStatus.Received
+        MESSAGE_STATUS_READ -> SentStatus.Read
+        else -> SentStatus.None
+    }
+}
+
+fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): ConversationViewItem {
+    return when (messageType) {
+        MESSAGE_TYPE_TEXT -> {
+            (oldViewItem as ConversationViewItem.Self.Text).copy(
+                sentStatus = getSentStatus(
+                    messageStatus
+                )
+            )
+        }
+        MESSAGE_TYPE_IMAGE -> {
+            (oldViewItem as ConversationViewItem.Self.Image).copy(
+                sentStatus = getSentStatus(
+                    messageStatus
+                )
+            )
+        }
+
+        MESSAGE_TYPE_DOCUMENT -> {
+            (oldViewItem as ConversationViewItem.Self.Document).copy(
+                sentStatus = getSentStatus(
+                    messageStatus
+                )
+            )
+        }
+        MESSAGE_TYPE_SYSTEM -> {
+            (oldViewItem as ConversationViewItem.System).copy(
+                sentStatus = getSentStatus(
+                    messageStatus
+                )
+            )
+        }
+        else -> error("Unknown Message Type! type $messageType")
     }
 }

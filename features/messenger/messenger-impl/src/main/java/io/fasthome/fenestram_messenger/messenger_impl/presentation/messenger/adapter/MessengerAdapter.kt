@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter
 
 import android.annotation.SuppressLint
+import android.os.Handler
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -15,6 +16,7 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.uikit.paging.PagerDelegateAdapter
 import io.fasthome.fenestram_messenger.uikit.paging.createAdapterDelegate
 import io.fasthome.fenestram_messenger.util.AdapterUtil
+import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
@@ -23,7 +25,8 @@ class MessengerAdapter(
     onChatClicked: (MessengerViewItem) -> Unit,
     onProfileClicked: (MessengerViewItem) -> Unit,
     onDeleteChat: (id: Long) -> Unit,
-    viewBinderHelper: ViewBinderHelper
+    viewBinderHelper: ViewBinderHelper,
+    handler: Handler
 ) :
     PagerDelegateAdapter<MessengerViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -35,7 +38,8 @@ class MessengerAdapter(
                 onChatClicked,
                 onProfileClicked,
                 onDeleteChat,
-                viewBinderHelper
+                viewBinderHelper,
+                handler
             )
         )
     )
@@ -46,11 +50,13 @@ fun createMessengerAdapter(
     chatClicked: (MessengerViewItem) -> Unit,
     onProfileClicked: (MessengerViewItem) -> Unit,
     onDeleteChat: (id: Long) -> Unit,
-    viewBinderHelper: ViewBinderHelper
+    viewBinderHelper: ViewBinderHelper,
+    handler: Handler
 ) =
     createAdapterDelegate<MessengerViewItem, MessangerChatItemBinding>(
         inflate = MessangerChatItemBinding::inflate,
         bind = { item, binding ->
+            handler.removeCallbacksAndMessages(null)
             with(binding) {
                 viewBinderHelper.bind(root, item.id.toString())
                 viewBinderHelper.setOpenOnlyOne(true)
@@ -88,6 +94,7 @@ fun createMessengerAdapter(
                         lastMessage.setText(R.string.messenger_image)
                         image.loadRounded(environment.endpoints.baseUrl.dropLast(1) + item.lastMessage.imageUrl)
                         image.isVisible = true
+                        statusDots.setPrintableText(PrintableText.EMPTY)
                     }
                     is LastMessage.Text -> {
                         lastMessage.setPrintableText(item.lastMessage.text)
@@ -98,8 +105,17 @@ fun createMessengerAdapter(
                             )
                         )
                         image.isVisible = false
+                        statusDots.setPrintableText(PrintableText.EMPTY)
                     }
-                    is LastMessage.Status -> {
+                    is LastMessage.UserStatus -> {
+                        val runnable = object : Runnable {
+                            override fun run() {
+                                val newDotCount = statusDots.text.count() % 3 + 1
+                                statusDots.text = ".".repeat(newDotCount)
+                                handler.postDelayed(this, 300)
+                            }
+                        }
+
                         lastMessage.setPrintableText(item.lastMessage.status)
                         lastMessage.setTextColor(
                             ContextCompat.getColor(
@@ -107,12 +123,15 @@ fun createMessengerAdapter(
                                 R.color.blue
                             )
                         )
+                        statusDots.setPrintableText(PrintableText.Raw("."))
+                        handler.postDelayed(runnable, 300)
                         image.isVisible = false
                     }
-                    LastMessage.Document -> {
+                    is LastMessage.Document -> {
                         lastMessage.setText(R.string.messenger_document)
                         image.isVisible = true
                         image.setImageResource(R.drawable.ic_document)
+                        statusDots.setPrintableText(PrintableText.EMPTY)
                     }
                 }
                 timeView.setPrintableText(item.time)
@@ -120,6 +139,8 @@ fun createMessengerAdapter(
                     url = item.profileImageUrl,
                     placeholderRes = R.drawable.ic_baseline_account_circle_24
                 )
+                status.setImageResource(item.statusIcon)
+                pendingAmount.setPrintableText(item.pendingAmount)
             }
         }
     )

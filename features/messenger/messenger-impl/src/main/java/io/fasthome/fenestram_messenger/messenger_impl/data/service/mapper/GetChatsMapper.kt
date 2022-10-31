@@ -22,21 +22,23 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                     name = chat.name ?: "",
                     messages = listOfNotNull(lastMessage?.let {
                         Message(
-                            id = lastMessage.id,
-                            text = lastMessage.text,
-                            userSenderId = lastMessage.initiatorId,
-                            messageType = lastMessage.type,
-                            date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
+                            id = lastMessage[0].id,
+                            text = lastMessage[0].text,
+                            userSenderId = lastMessage[0].initiatorId,
+                            messageType = lastMessage[0].type,
+                            date = lastMessage[0].date.let(NetworkMapperUtil::parseZonedDateTime),
                             initiator = null,
                             isDate = false,
-                            isEdited = lastMessage.isEdited,
-                            replyMessage = null
+                            replyMessage = null,
+                            isEdited = lastMessage[0].isEdited,
+                            messageStatus = lastMessage[0].messageStatus
                         )
                     }
                     ),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
                     avatar = chat.avatar,
-                    isGroup = chat.isGroup
+                    isGroup = chat.isGroup,
+                    pendingMessages = chat.pendingMessages
                 )
             }
         }
@@ -67,7 +69,9 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                 },
                 isDate = false,
                 isEdited = it.isEdited,
-                replyMessage = null)
+                messageStatus = it.messageStatus,
+                replyMessage = null
+            )
         }
     }
 

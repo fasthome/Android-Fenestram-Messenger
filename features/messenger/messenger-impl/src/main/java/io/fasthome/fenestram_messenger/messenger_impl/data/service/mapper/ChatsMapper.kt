@@ -1,11 +1,13 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
@@ -37,6 +39,7 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
         chatId = messageResponse.chatId,
         isDate = false,
         isEdited = messageResponse.isEdited,
+        messageStatus = messageResponse.status,
         replyMessage = null // TODO: K add
     )
 
@@ -61,6 +64,12 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
             userStatus = userStatus
         )
     }
+
+    fun toMessageStatus(messageStatusResponse: MessageStatusResponse) = MessageStatus(
+        messageId = messageStatusResponse.id,
+        messageStatus = messageStatusResponse.messageStatus,
+        messageType = messageStatusResponse.type
+    )
 
     companion object {
         const val TYPING_MESSAGE_STATUS = "typingMessage"

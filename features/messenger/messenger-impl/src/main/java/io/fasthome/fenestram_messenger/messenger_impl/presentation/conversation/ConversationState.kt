@@ -9,8 +9,10 @@ data class ConversationState(
     val userName: PrintableText,
     val avatar: String,
     val userStatus: PrintableText,
+    val userStatusDots: PrintableText,
     val isChatEmpty: Boolean,
     val attachedFiles: List<AttachedFile>,
     val messageToEdit: ConversationViewItem.Self.Text?,
-    val inputMessageMode: InputMessageMode
+    val inputMessageMode: InputMessageMode,
+    val newMessagesCount: Int
 )

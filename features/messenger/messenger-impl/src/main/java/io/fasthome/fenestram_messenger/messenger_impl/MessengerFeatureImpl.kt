@@ -27,7 +27,8 @@ class MessengerFeatureImpl(
                     time = null,
                     name = it.chatName,
                     avatar = it.avatar,
-                    isGroup = it.isGroup
+                    isGroup = it.isGroup,
+                    pendingMessages = 0
                 )
             )
         },
@@ -41,7 +42,13 @@ class MessengerFeatureImpl(
 
     override suspend fun deleteChat(id: Long) = messengerInteractor.deleteChat(id)
 
-    override suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
+    override suspend fun sendMessage(
+        id: Long,
+        text: String,
+        type: String,
+        localId: String,
+        authorId: Long
+    ) =
         messengerInteractor.sendMessage(id, text, type, localId, authorId)
 
 

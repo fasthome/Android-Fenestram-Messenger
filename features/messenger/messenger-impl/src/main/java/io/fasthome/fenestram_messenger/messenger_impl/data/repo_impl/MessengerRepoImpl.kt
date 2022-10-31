@@ -73,9 +73,13 @@ class MessengerRepoImpl(
         messengerService.getChatById(id)
     }
 
-    override suspend fun getMessagesFromChat(id: Long, page: Int): CallResult<MessagesPage> =
+    override suspend fun getMessagesFromChat(
+        id: Long,
+        limit: Int,
+        page: Int
+    ): CallResult<MessagesPage> =
         callForResult {
-            messengerService.getMessagesByChat(id = id, limit = PAGE_SIZE, page = page)
+            messengerService.getMessagesByChat(id = id, limit = limit, page = page)
         }
 
     override suspend fun deleteChat(id: Long) = callForResult {
@@ -97,12 +101,18 @@ class MessengerRepoImpl(
             token = token,
             selfUserId = selfUserId,
             messageCallback = { callback.onNewMessage(this) },
-            messageActionCallback = { callback.onNewMessageAction(this) }
+            messageActionCallback = { callback.onNewMessageAction(this) },
+            messageStatusCallback = { callback.onNewMessageStatus(this) },
+            pendingMessagesCallback = { callback.onNewPendingMessages(this) }
         )
     }
 
     override fun emitMessageAction(chatId: String, action: String) {
         socket.emitMessageAction(chatId, action)
+    }
+
+    override fun emitMessageRead(chatId: Long, messages: List<Long>) {
+        socket.emitMessageRead(chatId, messages)
     }
 
     override suspend fun uploadImage(
@@ -120,13 +130,17 @@ class MessengerRepoImpl(
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
 
-
-
-    override suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult> = callForResult {
+    override suspend fun uploadDocument(
+        documentBytes: ByteArray,
+        guid: String
+    ): CallResult<UploadDocumentResult> = callForResult {
         messengerService.uploadDocument(documentBytes, guid)
     }
 
-    override suspend fun getDocument(storagePath : String, progressListener: ProgressListener): CallResult<LoadedDocumentData> = callForResult {
+    override suspend fun getDocument(
+        storagePath: String,
+        progressListener: ProgressListener
+    ): CallResult<LoadedDocumentData> = callForResult {
         messengerService.getDocument(storageUrlConverter.convert(storagePath), progressListener)
     }
 
