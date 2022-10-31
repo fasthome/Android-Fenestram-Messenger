@@ -31,6 +31,19 @@ class MessengerRepoImpl(
         messengerService.sendMessage(id, text, type, localId, authorId)
     }
 
+    override suspend fun replyMessage(
+        chatId: Long,
+        messageId: Long,
+        text: String,
+        messageType: String,
+    ) = callForResult {
+        messengerService.replyMessage(
+            messageId = messageId,
+            chatId = chatId,
+            text = text,
+            messageType = messageType)
+    }
+
     override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(
         maxPageSize = PAGE_SIZE,
         loadPageService = { pageNumber, pageSize ->
@@ -106,6 +119,8 @@ class MessengerRepoImpl(
     ): CallResult<Unit> = callForResult {
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
+
+
 
     override suspend fun uploadDocument(documentBytes: ByteArray, guid: String): CallResult<UploadDocumentResult> = callForResult {
         messengerService.uploadDocument(documentBytes, guid)

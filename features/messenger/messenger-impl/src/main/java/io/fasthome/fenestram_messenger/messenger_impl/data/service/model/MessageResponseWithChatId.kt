@@ -30,7 +30,7 @@ class MessageResponseWithChatId(
     val status: String,
 
     @SerialName("replyMessage")
-    val replyMessage: Unit? = null,
+    val replyMessage: MessageFullResponse? = null,
 
     @SerialName("text")
     val text: String,

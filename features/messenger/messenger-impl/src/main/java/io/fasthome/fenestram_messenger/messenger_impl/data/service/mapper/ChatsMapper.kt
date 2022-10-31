@@ -36,7 +36,8 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
         },
         chatId = messageResponse.chatId,
         isDate = false,
-        isEdited = messageResponse.isEdited
+        isEdited = messageResponse.isEdited,
+        replyMessage = null // TODO: K add
     )
 
     fun toMessageAction(messageActionResponse: MessageActionResponse): MessageAction {

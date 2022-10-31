@@ -14,6 +14,7 @@ object MessageActionDialog {
         onDelete: (() -> Unit)? = null,
         onEdit: (() -> Unit)? = null,
         onCopy: (() -> Unit)? = null,
+        onReply: (() -> Unit)? = null
     ): Dialog {
         val binding = DialogMessageActionMenuBinding.inflate(fragment.layoutInflater)
 
@@ -21,6 +22,7 @@ object MessageActionDialog {
             deleteMessage.isVisible = onDelete != null
             editMessageText.isVisible = onEdit != null
             copyMessageText.isVisible = onCopy != null
+            replyMessage.isVisible = onReply != null
 
             val dialog = BottomSheetDialogBuilder(fragment)
                 .addCustomView(root)
@@ -36,6 +38,10 @@ object MessageActionDialog {
             }
             copyMessageText.setOnClickListener {
                 onCopy?.invoke()
+                dialog.dismiss()
+            }
+            replyMessage.setOnClickListener {
+                onReply?.invoke()
                 dialog.dismiss()
             }
 

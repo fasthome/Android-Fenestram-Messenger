@@ -211,20 +211,57 @@ class ConversationViewModel(
             avatar = storageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
             messageToEdit = null,
-            editMode = false
+            inputMessageMode = InputMessageMode.Default
         )
     }
 
     fun editMessageMode(
         isEditMode: Boolean,
-        conversationViewItem: ConversationViewItem.Self.Text? = null
+        conversationViewItem: ConversationViewItem.Self.Text? = null,
     ) {
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                messageToEdit = conversationViewItem,
-                editMode = isEditMode
+                inputMessageMode = if (isEditMode) InputMessageMode.Edit(conversationViewItem
+                    ?: return@updateState state) else InputMessageMode.Default
             )
+        }
+    }
+
+    fun replyMessageMode(isReplyMode: Boolean, conversationViewItem: ConversationViewItem? = null) {
+        updateState { state ->
+            state.copy(
+                attachedFiles = emptyList(),
+            )
+        }
+    }
+
+    private fun replyMessage(text: String) {
+        viewModelScope.launch {
+            val mode = currentViewState.inputMessageMode as? InputMessageMode.Reply ?: return@launch
+            val result = messengerInteractor.replyMessage(
+                chatId = chatId ?: return@launch,
+                messageId = mode.messageToReply.id,
+                text = text,
+                messageType = mode.messageToReply.messageType ?: return@launch
+            )
+            when (result) {
+                is CallResult.Error -> {
+                    updateState { state ->
+                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
+                        state.copy(
+                            inputMessageMode = InputMessageMode.Default
+                        )
+                    }
+                }
+                is CallResult.Success -> {
+                    updateState { state ->
+                        state.copy(
+                            inputMessageMode = InputMessageMode.Default
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -246,14 +283,19 @@ class ConversationViewModel(
         if (attachedFiles.isNotEmpty()) {
             sendFiles(attachedFiles)
         }
-        if (currentViewState.editMode) {
-            if (mess.isNotEmpty()) {
-                editMessage(mess)
-            }
-            return
-        }
+
         if (mess.trim().isNotEmpty()) {
-            sendMessage(text = mess, messageType = MessageType.Text)
+            when (currentViewState.inputMessageMode) {
+                is InputMessageMode.Default -> {
+                    sendMessage(text = mess, messageType = MessageType.Text)
+                }
+                is InputMessageMode.Edit -> {
+                    editMessage(mess)
+                }
+                is InputMessageMode.Reply -> {
+                    replyMessage(mess)
+                }
+            }
         }
     }
 
@@ -262,7 +304,7 @@ class ConversationViewModel(
 
         val tempFileMessages = attachedFiles.map {
             when (it) {
-                is AttachedFile.Image -> createImageMessage(null, it.content)
+                is AttachedFile.Image -> createImageMessage(null, it.content, getPrintableRawText(currentViewState.userName))
                 is AttachedFile.Document -> createDocumentMessage(null, it.file)
             }
         }
@@ -352,7 +394,7 @@ class ConversationViewModel(
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
                         state.copy(
                             messageToEdit = null,
-                            editMode = false
+                            inputMessageMode = InputMessageMode.Default
                         )
                     }
                 }
@@ -368,7 +410,7 @@ class ConversationViewModel(
                         state.copy(
                             messages = newMessages,
                             messageToEdit = null,
-                            editMode = false
+                            inputMessageMode = InputMessageMode.Default
                         )
                     }
                 }
@@ -384,7 +426,7 @@ class ConversationViewModel(
         viewModelScope.launch {
             val tempMessage = when (messageType) {
                 MessageType.Text -> {
-                    createTextMessage(text)
+                    createTextMessage(text, getPrintableRawText(currentViewState.userName))
                 }
                 MessageType.Image -> {
                     if ((existMessage as ConversationViewItem.Self.Image).loadableContent == null) return@launch
@@ -582,7 +624,7 @@ class ConversationViewModel(
                     avatar = item.avatar,
                     userName = getPrintableRawText(item.userName),
                     phone = item.phone,
-                    userNickname = item.nickname
+                    userNickname = item.nickname ?: ""
                 )
             )
         )

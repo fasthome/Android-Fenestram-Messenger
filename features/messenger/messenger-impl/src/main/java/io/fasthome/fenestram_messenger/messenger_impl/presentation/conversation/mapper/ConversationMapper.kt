@@ -60,7 +60,10 @@ fun Message.toConversationViewItem(
                         id = id,
                         localId = UUID.randomUUID().toString(),
                         timeVisible = true,
-                        isEdited = isEdited
+                        isEdited = isEdited,
+                        nickname = initiator?.nickname,
+                        messageType = messageType,
+                        replyMessage = replyMessage
                     )
                 }
                 MESSAGE_TYPE_IMAGE -> {
@@ -71,7 +74,10 @@ fun Message.toConversationViewItem(
                         date = date,
                         id = id,
                         localId = UUID.randomUUID().toString(),
-                        timeVisible = true
+                        timeVisible = true,
+                        nickname = initiator?.nickname,
+                        messageType = messageType,
+                        replyMessage = replyMessage
                     )
                 }
 
@@ -118,7 +124,9 @@ fun Message.toConversationViewItem(
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
                             isEdited = isEdited,
-                            timeVisible = true
+                            timeVisible = true,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -133,7 +141,9 @@ fun Message.toConversationViewItem(
                             phone = initiator?.phone ?: "",
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
-                            timeVisible = true
+                            timeVisible = true,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
 
@@ -176,7 +186,10 @@ fun Message.toConversationViewItem(
                             date = date,
                             id = id,
                             timeVisible = true,
-                            isEdited = isEdited
+                            isEdited = isEdited,
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -186,7 +199,10 @@ fun Message.toConversationViewItem(
                             sentStatus = SentStatus.None,
                             date = date,
                             id = id,
-                            timeVisible = true
+                            timeVisible = true,
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage
                         )
                     }
 
@@ -326,7 +342,7 @@ private fun singleSameTimeIsContinue(
     }
 }
 
-fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
+fun createTextMessage(text: String, userName: String?) = ConversationViewItem.Self.Text(
     content = PrintableText.Raw(text),
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
@@ -334,10 +350,13 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     id = 0,
     localId = UUID.randomUUID().toString(),
     isEdited = false,
-    timeVisible = true
+    timeVisible = true,
+    nickname = userName,
+    messageType = "text",
+    replyMessage = null
 )
 
-fun createImageMessage(image: String?, loadableContent: Content) =
+fun createImageMessage(image: String?, loadableContent: Content, userName: String?) =
     ConversationViewItem.Self.Image(
         content = image ?: "",
         time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
@@ -346,7 +365,10 @@ fun createImageMessage(image: String?, loadableContent: Content) =
         id = 0,
         localId = UUID.randomUUID().toString(),
         loadableContent = loadableContent,
-        timeVisible = true
+        timeVisible = true,
+        nickname = userName,
+        messageType = "image",
+        replyMessage = null
     )
 
 fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
