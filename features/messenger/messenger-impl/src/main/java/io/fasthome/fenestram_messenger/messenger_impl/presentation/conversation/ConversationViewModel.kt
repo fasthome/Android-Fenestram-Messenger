@@ -257,7 +257,7 @@ class ConversationViewModel(
                 chatId = chatId ?: return@launch,
                 messageId = mode.messageToReply.id,
                 text = text,
-                messageType = mode.messageToReply.messageType ?: return@launch
+                messageType = MESSAGE_TYPE_TEXT//mode.messageToReply.messageType ?: return@launch
             )
             when (result) {
                 is CallResult.Error -> {

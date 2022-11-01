@@ -31,7 +31,7 @@ const val MESSAGE_STATUS_READ = "read"
 fun List<Message>.toConversationItems(
     selfUserId: Long?,
     isGroup: Boolean,
-    profileImageUrlConverter: StorageUrlConverter
+    profileImageUrlConverter: StorageUrlConverter,
 ): Map<String, ConversationViewItem> = this.associateBy({
     UUID.randomUUID().toString()
 }, {
@@ -41,7 +41,7 @@ fun List<Message>.toConversationItems(
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
-    profileImageUrlConverter: StorageUrlConverter
+    profileImageUrlConverter: StorageUrlConverter,
 ): ConversationViewItem {
     if (isDate) {
         return ConversationViewItem.System(
@@ -58,20 +58,36 @@ fun Message.toConversationViewItem(
         userSenderId -> {
             when (messageType) {
                 MESSAGE_TYPE_TEXT -> {
-                    ConversationViewItem.Self.Text(
-                        content = PrintableText.Raw(text),
-                        time = PrintableText.Raw(timeFormatter.format(date)),
-                        sentStatus = sentStatus,
-                        date = date,
-                        id = id,
-                        localId = UUID.randomUUID().toString(),
-                        timeVisible = true,
-                        isEdited = isEdited,
-                        nickname = initiator?.nickname,
-                        messageType = messageType,
-                        replyMessage = replyMessage,
-                        userName = PrintableText.Raw(getName(initiator))
-                    )
+                    if (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null)
+                        return ConversationViewItem.Self.Text(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = sentStatus,
+                            date = date,
+                            id = id,
+                            localId = UUID.randomUUID().toString(),
+                            timeVisible = true,
+                            isEdited = isEdited,
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
+                            userName = PrintableText.Raw(getName(initiator))
+                        )
+                    else
+                        return ConversationViewItem.Self.TextReplyOnImage(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = sentStatus,
+                            date = date,
+                            id = id,
+                            localId = UUID.randomUUID().toString(),
+                            timeVisible = true,
+                            isEdited = isEdited,
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
+                            userName = PrintableText.Raw(getName(initiator))
+                        )
                 }
                 MESSAGE_TYPE_IMAGE -> {
                     ConversationViewItem.Self.Image(
@@ -84,8 +100,8 @@ fun Message.toConversationViewItem(
                         timeVisible = true,
                         nickname = initiator?.nickname,
                         messageType = messageType,
-                        replyMessage = replyMessage,
-                        userName =  PrintableText.Raw(getName(initiator))
+                        replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
+                        userName = PrintableText.Raw(getName(initiator))
                     )
                 }
 
@@ -135,7 +151,7 @@ fun Message.toConversationViewItem(
                             isEdited = isEdited,
                             timeVisible = true,
                             messageType = messageType,
-                            replyMessage = replyMessage
+                            replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter)
                         )
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -152,7 +168,7 @@ fun Message.toConversationViewItem(
                             userId = initiator?.id ?: 0,
                             timeVisible = true,
                             messageType = messageType,
-                            replyMessage = replyMessage
+                            replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter)
                         )
                     }
 
@@ -198,7 +214,7 @@ fun Message.toConversationViewItem(
                             isEdited = isEdited,
                             nickname = initiator?.nickname,
                             messageType = messageType,
-                            replyMessage = replyMessage,
+                            replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
                             userName = PrintableText.Raw(getName(initiator))
                         )
                     }
@@ -212,7 +228,7 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname,
                             messageType = messageType,
-                            replyMessage = replyMessage,
+                            replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
                             userName = PrintableText.Raw(getName(initiator))
                         )
                     }
@@ -343,7 +359,7 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
 
 private fun singleSameTimeIsContinue(
     conversationViewItem: ConversationViewItem,
-    otherConversationViewItem: ConversationViewItem
+    otherConversationViewItem: ConversationViewItem,
 ): Boolean {
     return when {
         conversationViewItem is ConversationViewItem.Self && otherConversationViewItem is ConversationViewItem.Self -> false

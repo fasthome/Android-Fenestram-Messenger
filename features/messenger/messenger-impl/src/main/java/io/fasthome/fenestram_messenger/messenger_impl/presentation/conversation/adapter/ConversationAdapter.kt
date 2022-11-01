@@ -4,10 +4,12 @@ import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
+import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.network.client.ProgressListener
@@ -47,9 +49,46 @@ class ConversationAdapter(
                 onGroupProfileItemClicked,
                 onGroupDownloadDocument
             ),
-            createConversationSystemAdapterDelegate()
+            createConversationSystemAdapterDelegate(),
+            createConversationTextReplyImageAdapterDelegate(
+                onSelfMessageClicked,
+                onSelfMessageLongClicked,
+                onImageClicked
+            )
         )
     )
+
+fun createConversationTextReplyImageAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
+    onImageClicked: (String) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
+        ConversationItemSelfTextReplyImageBinding::inflate
+    ) {
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
+        binding.root.setOnLongClickListener {
+            //onSelfMessageLongClicked(item) // TODO: K
+            true
+        }
+        bindWithBinding {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
+                replyImage.loadRounded(it.content, radius = 8)
+                replyImage.onClick {
+                    onImageClicked(it.content)
+                }
+            }
+            tvEdited.isVisible = item.isEdited
+            messageContent.setPrintableText(item.content)
+            sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+            status.isVisible = item.timeVisible
+            status.setImageResource(item.statusIcon)
+        }
+    }
 
 fun createConversationSelfTextAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
@@ -66,10 +105,10 @@ fun createConversationSelfTextAdapterDelegate(
             true
         }
         bindWithBinding {
-            item.replyMessage?.let {
+            (item.replyMessage as? ConversationTextItem)?.let {
             clReplyMessage.isVisible = true
-            replyAuthorName.text = it.initiator?.name
-            replyContent.text = it.text
+            replyAuthorName.text = getPrintableRawText(it?.userName)
+            replyContent.text = getPrintableRawText(it?.content)
         }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
@@ -144,10 +183,10 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
 
         ) {
         bindWithBinding {
-            item.replyMessage?.let {
+            (item.replyMessage as? ConversationTextItem)?.let {
             clReplyMessage.isVisible = true
-            replyAuthorName.text = it.initiator?.name
-            replyContent.text = it.text
+            replyAuthorName.text = getPrintableRawText(it.userName)
+            replyContent.text = getPrintableRawText(it.content)
         }
             tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {

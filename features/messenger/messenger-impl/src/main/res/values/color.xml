@@ -4,7 +4,7 @@
     <color name="send_message_background_color">#332E42</color>
     <color name="hint_text_color">#8E86A5</color>
     <color name="blue">#076ED1</color>
-    <color name="blue_87">#B2076ED1</color>
+    <color name="blue_self_bg">#B20959A6</color>
     <color name="manatee">#8E86A5</color>
     <color name="almost_white">#F2F2F2</color>
     <color name="toolbar_background">#2E283B</color>

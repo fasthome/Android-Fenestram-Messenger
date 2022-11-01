@@ -9,7 +9,7 @@
         android:topRightRadius="10dp"
     />
     <solid
-        android:color="@color/blue_87"
+        android:color="@color/blue_self_bg"
     />
 
 
