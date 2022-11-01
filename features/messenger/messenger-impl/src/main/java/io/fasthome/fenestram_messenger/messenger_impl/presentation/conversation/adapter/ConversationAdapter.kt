@@ -66,6 +66,11 @@ fun createConversationSelfTextAdapterDelegate(
             true
         }
         bindWithBinding {
+            item.replyMessage?.let {
+            clReplyMessage.isVisible = true
+            replyAuthorName.text = it.initiator?.name
+            replyContent.text = it.text
+        }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -139,6 +144,11 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
 
         ) {
         bindWithBinding {
+            item.replyMessage?.let {
+            clReplyMessage.isVisible = true
+            replyAuthorName.text = it.initiator?.name
+            replyContent.text = it.text
+        }
             tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {
                 onReceiveMessageLongClicked(item)

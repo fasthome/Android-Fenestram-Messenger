@@ -31,6 +31,7 @@
     <string name="messenger_create_chat_cancel">Отмена</string>
     <string name="messenger_search_contacts">Поиск контакта</string>
     <string name="messenger_edited">изменено</string>
+    <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
 
     <string name="conversation_copy_message">Скопировать текст</string>
     <string name="conversation_delete_message">Удалить сообщение</string>

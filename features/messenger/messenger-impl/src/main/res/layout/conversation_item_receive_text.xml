@@ -26,7 +26,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_reply_message"
             android:visibility="gone"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:minWidth="200dp"
             tools:visibility="visible"
             android:paddingBottom="6dp"
@@ -76,6 +76,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/geometria"
             android:maxEms="16"
+            tools:text="123"
             android:text="@string/MessageContentCheck"
             android:textColor="@color/white"
             android:textSize="14sp"

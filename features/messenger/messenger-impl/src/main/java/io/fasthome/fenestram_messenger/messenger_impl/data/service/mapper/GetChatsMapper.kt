@@ -45,35 +45,38 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
         throw Exception()
     }
 
-    fun responseToGetMessagesByChat(response: List<MessageResponse>): List<Message> {
-        return response.map {
-            Message(
-                id = it.id,
-                text = it.text,
-                userSenderId = it.initiatorId,
-                messageType = it.type,
-                date = getZonedTime(it.createdDate),
-                initiator = it.initiator?.let { user ->
-                    User(
-                        id = user.id,
-                        phone = user.phone ?: "",
-                        name = user.name ?: "",
-                        nickname = user.nickname ?: "",
-                        contactName = user.contactName,
-                        email = user.email ?: "",
-                        birth = user.birth ?: "",
-                        avatar = profileImageUrlConverter.convert(user.avatar),
-                        isOnline = user.isOnline,
-                        lastActive = ZonedDateTime.now()
-                    )
-                },
-                isDate = false,
-                isEdited = it.isEdited,
-                messageStatus = it.messageStatus,
-                replyMessage = null
-            )
+    fun responseToGetMessagesByChat(response: List<MessageResponse>) = response.map {
+            it.toMessage()
         }
+
+    fun MessageResponse.toMessage(): Message {
+        return Message(
+            id = id,
+            text = text,
+            userSenderId = initiatorId,
+            messageType = type,
+            date = getZonedTime(createdDate),
+            initiator = initiator?.let { user ->
+                User(
+                    id = user.id,
+                    phone = user.phone ?: "",
+                    name = user.name ?: "",
+                    nickname = user.nickname ?: "",
+                    contactName = user.contactName,
+                    email = user.email ?: "",
+                    birth = user.birth ?: "",
+                    avatar = profileImageUrlConverter.convert(user.avatar),
+                    isOnline = user.isOnline,
+                    lastActive = ZonedDateTime.now()
+                )
+            },
+            isDate = false,
+            isEdited = isEdited,
+            messageStatus = messageStatus,
+            replyMessage = replyMessage?.toMessage()
+        )
     }
+
 
     fun getZonedTime(date: String?): ZonedDateTime? {
         return date?.let(NetworkMapperUtil::parseZonedDateTime)

@@ -25,6 +25,53 @@
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="TouchTargetSizeCheck">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_reply_message"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:minWidth="200dp"
+            tools:visibility="visible"
+            android:paddingBottom="6dp"
+            android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/blue_line"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:viewBindingIgnore="true" />
+
+            <TextView
+                android:id="@+id/reply_author_name"
+                style="@style/Text.White.12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/blue_line"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Мария Сергеева" />
+
+            <TextView
+                android:id="@+id/reply_content"
+                style="@style/Text.White.12sp"
+                android:layout_width="0dp"
+                tools:text="@string/MessageContentCheckBig"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/reply_author_name"
+                app:layout_constraintTop_toBottomOf="@id/reply_author_name" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         <TextView
             android:id="@+id/message_content"
             android:layout_width="wrap_content"
@@ -32,7 +79,6 @@
             android:fontFamily="@font/geometria"
             android:maxEms="16"
             android:text="@string/MessageContentCheck"
-            tools:text="й"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:barrierMargin="5dp"

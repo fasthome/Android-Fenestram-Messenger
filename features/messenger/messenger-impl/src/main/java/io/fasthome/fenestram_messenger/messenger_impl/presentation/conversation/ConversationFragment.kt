@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -21,6 +22,7 @@ import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromConversation
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
@@ -334,7 +336,10 @@ class ConversationFragment :
                         copyPrintableText(event.conversationViewItem.content)
                     }, onEdit = if (canEdit) {
                         { vm.editMessageMode(true, event.conversationViewItem) }
-                    } else null
+                    } else null,
+                    onReply = {
+                        vm.replyMessageMode(true, event.conversationViewItem)
+                    }
                 ).show()
             }
             is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
@@ -343,7 +348,7 @@ class ConversationFragment :
                     copyPrintableText(event.conversationViewItem.content)
                 },
                 onReply = {
-                     vm.replyMessageMode(true, event.conversationViewItem)
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
 
             ).show()
@@ -351,13 +356,18 @@ class ConversationFragment :
                 fragment = this,
                 onCopy = {
                     copyPrintableText(event.conversationViewItem.content)
+                },
+                onReply = {
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
-
             ).show()
             is ConversationEvent.ShowSelfImageActionDialog -> MessageActionDialog.create(
                 fragment = this,
                 onDelete = {
                     vm.onDeleteMessageClicked(event.conversationViewItem)
+                },
+                onReply = {
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
             ).show()
         }
@@ -367,15 +377,22 @@ class ConversationFragment :
         with(binding) {
             switchInputPlate(isReplyMode)
             if (isReplyMode && message != null) {
-                tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
-                tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
-                tvEditMessageTitle.text = getPrintableRawText(message.userName)
                 when (message) {
                     is ConversationTextItem -> {
+                        tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
+                        tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
+                        tvEditMessageTitle.text = getPrintableRawText(message.userName)
+                        tvEditMessageTitle.isVisible = true
+                        replyImage.isVisible = false
+                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
-                        tvTextToEdit.text = "Изображение"
+                        replyImage.isVisible = true
+                        tvEditMessageTitle.isVisible = false
+                        replyImage.loadRounded(message.content, radius = 8)
+                        tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
+                        tvTextToEdit.text = getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
                     }
                 }
             }
@@ -410,7 +427,7 @@ class ConversationFragment :
             tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
             tvTextToEdit.setTextAppearance(R.style.Text_Gray_12sp)
             inputMessage.setOnSizeChanged(onHeightChanged = {
-                clEditMessage.setPadding(0, 0, 0, it+10.dp)
+                clEditMessage.setPadding(0, 0, 0, it + 10.dp)
                 clEditMessage.setPadding(0, 0, 0, it + 10.dp)
             })
             val textToEdit = getPrintableText(selfMessage.content)
