@@ -384,7 +384,7 @@ private fun singleSameTimeIsContinue(
     }
 }
 
-fun createTextMessage(text: String, userName: String?) = ConversationViewItem.Self.Text(
+fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     content = PrintableText.Raw(text),
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
@@ -393,10 +393,10 @@ fun createTextMessage(text: String, userName: String?) = ConversationViewItem.Se
     localId = UUID.randomUUID().toString(),
     isEdited = false,
     timeVisible = true,
-    nickname = userName,
+    nickname = null,
     messageType = "text",
     replyMessage = null,
-    userName = PrintableText.Raw(userName ?: "")
+    userName = PrintableText.EMPTY
 )
 
 fun createImageMessage(image: String?, loadableContent: Content, userName: String?) =

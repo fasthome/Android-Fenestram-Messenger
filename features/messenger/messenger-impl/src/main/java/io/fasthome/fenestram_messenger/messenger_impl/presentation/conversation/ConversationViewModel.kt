@@ -444,9 +444,9 @@ class ConversationViewModel(
         existMessage: ConversationViewItem.Self? = null,
     ) {
         viewModelScope.launch {
-            val tempMessage = when (messageType) {
+            var tempMessage = when (messageType) {
                 MessageType.Text -> {
-                    createTextMessage(text, getPrintableRawText(currentViewState.userName))
+                    createTextMessage(text)
                 }
                 MessageType.Image -> {
                     if ((existMessage as ConversationViewItem.Self.Image).loadableContent == null) return@launch
@@ -476,6 +476,7 @@ class ConversationViewModel(
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
+                    tempMessage.userName = PrintableText.Raw(sendMessageResponse.data.userName ?: "")
                     when (messageType) {
                         MessageType.Text -> {
                             updateStatus(
