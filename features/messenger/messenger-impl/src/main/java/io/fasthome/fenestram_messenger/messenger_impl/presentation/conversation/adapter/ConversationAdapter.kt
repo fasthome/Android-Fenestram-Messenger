@@ -10,8 +10,10 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.links.addCommonLinks
 import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.delay
+
 
 class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
@@ -21,9 +23,9 @@ class ConversationAdapter(
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
-    onSelfDownloadDocument: (item : ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
-    onRecieveDownloadDocument: (item : ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
-    onGroupDownloadDocument: (item : ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
+    onSelfDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
+    onRecieveDownloadDocument: (item: ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
+    onGroupDownloadDocument: (item: ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -32,8 +34,15 @@ class ConversationAdapter(
             ConversationViewItem::timeVisible,
         ),
         AdapterUtil.adapterDelegatesManager(
-            createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
-            createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked, onSelfImageLongClicked),
+            createConversationSelfTextAdapterDelegate(
+                onSelfMessageClicked,
+                onSelfMessageLongClicked
+            ),
+            createConversationSelfImageAdapterDelegate(
+                onSelfMessageClicked,
+                onImageClicked,
+                onSelfImageLongClicked
+            ),
             createConversationSelfDocumentAdapterDelegate(
                 onSelfMessageClicked,
                 onSelfDownloadDocument
@@ -41,7 +50,10 @@ class ConversationAdapter(
             createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
             createConversationReceiveDocumentAdapterDelegate(onRecieveDownloadDocument),
-            createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked, onGroupMessageLongClicked),
+            createConversationGroupTextAdapterDelegate(
+                onGroupProfileItemClicked,
+                onGroupMessageLongClicked
+            ),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
             createConversationGroupDocumentAdapterDelegate(
                 onGroupProfileItemClicked,
@@ -68,12 +80,20 @@ fun createConversationSelfTextAdapterDelegate(
         bindWithBinding {
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
+            messageContent.setOnLongClickListener {
+                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                    onSelfMessageLongClicked(item)
+                }
+                true
+            }
+            messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
         }
     }
+
 
 fun createConversationSelfImageAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
@@ -116,7 +136,7 @@ fun createConversationSelfDocumentAdapterDelegate(
             onDownloadDocument(item) {
                 binding.progressBar.progress = it
 
-                if(it == 100) delay(400)
+                if (it == 100) delay(400)
                 binding.progressBar.isInvisible = it == 100
             }
         }
@@ -125,7 +145,8 @@ fun createConversationSelfDocumentAdapterDelegate(
         }
         bindWithBinding {
             binding.progressBar.isInvisible = true
-            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            fileName.text =
+                item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
             sendTimeView.isVisible = item.timeVisible
@@ -145,6 +166,13 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
                 true
             }
             messageContent.setPrintableText(item.content)
+            messageContent.setOnLongClickListener {
+                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                    onReceiveMessageLongClicked(item)
+                }
+                true
+            }
+            messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
         }
@@ -175,13 +203,14 @@ fun createConversationReceiveDocumentAdapterDelegate(
             onDownloadDocument(item) {
                 binding.progressBar.progress = it
 
-                if(it == 100) delay(400)
+                if (it == 100) delay(400)
                 binding.progressBar.isInvisible = it == 100
             }
         }
         bindWithBinding {
             binding.progressBar.isInvisible = true
-            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            fileName.text =
+                item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
         }
@@ -205,6 +234,13 @@ fun createConversationGroupTextAdapterDelegate(
             tvEdited.isVisible = item.isEdited
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
+            messageContent.setOnLongClickListener {
+                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                    onGroupMessageLongClicked(item)
+                }
+                true
+            }
+            messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
@@ -248,7 +284,7 @@ fun createConversationGroupDocumentAdapterDelegate(
             onDownloadDocument(item) {
                 binding.progressBar.progress = it
 
-                if(it == 100) delay(400)
+                if (it == 100) delay(400)
                 binding.progressBar.isInvisible = it == 100
             }
         }
@@ -256,7 +292,8 @@ fun createConversationGroupDocumentAdapterDelegate(
             binding.progressBar.isInvisible = true
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
-            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            fileName.text =
+                item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
             sendTimeView.isVisible = item.timeVisible
         }
