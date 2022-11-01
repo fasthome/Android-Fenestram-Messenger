@@ -63,7 +63,7 @@ class ConversationViewModel(
     private val pickFileInterface: PickFileInterface,
     private val storageUrlConverter: StorageUrlConverter,
     private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
-    private val permissionInterface: PermissionInterface
+    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
@@ -436,7 +436,7 @@ class ConversationViewModel(
     private fun sendMessage(
         text: String,
         messageType: MessageType,
-        existMessage: ConversationViewItem.Self? = null
+        existMessage: ConversationViewItem.Self? = null,
     ) {
         viewModelScope.launch {
             val tempMessage = when (messageType) {
@@ -571,7 +571,8 @@ class ConversationViewModel(
             chatId,
             selfUserId,
             { onNewMessageStatus(it) },
-            { onNewPendingMessagesCallback(it) }
+            { onNewPendingMessagesCallback(it) },
+            { onMessagesDeletedCallback(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -672,6 +673,17 @@ class ConversationViewModel(
                     else it.value
                 }
             )
+        }
+    }
+
+    private fun onMessagesDeletedCallback(deletedMessages: List<Long>) {
+        updateState {
+            val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
+            currentViewState.messages.entries.forEach { item ->
+                if (!deletedMessages.contains(item.value.id))
+                    messages[item.key] = item.value
+            }
+            it.copy(messages = messages)
         }
     }
 

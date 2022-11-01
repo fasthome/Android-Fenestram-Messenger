@@ -3,10 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 import android.util.Log
 import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.PendingMessagesResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -70,7 +67,8 @@ class MessengerInteractor(
         id: Long,
         selfUserId: Long,
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
-        onNewPendingMessagesCallback: (Int) -> Unit
+        onNewPendingMessagesCallback: (Int) -> Unit,
+        onMessageDeletedCallback:(List<Long>) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -95,6 +93,10 @@ class MessengerInteractor(
                     if (pendingMessagesResponse.chatId == id) {
                         onNewPendingMessagesCallback(pendingMessagesResponse.pendingMessages)
                     }
+                }
+
+                override fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage) {
+                    onMessageDeletedCallback(socketDeleteMessage.message.map { it.id })
                 }
             })
 
@@ -129,6 +131,9 @@ class MessengerInteractor(
                 }
 
                 override fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse) {
+                }
+
+                override fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage) {
                 }
             },
             selfUserId = null
