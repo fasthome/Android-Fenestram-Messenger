@@ -46,35 +46,37 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
     }
 
     fun responseToGetMessagesByChat(response: List<MessageResponse>) = response.map {
-            it.toMessage()
+            responseToMessage(it)
         }
 
-    fun MessageResponse.toMessage(): Message {
-        return Message(
-            id = id,
-            text = text,
-            userSenderId = initiatorId,
-            messageType = type,
-            date = getZonedTime(createdDate),
-            initiator = initiator?.let { user ->
-                User(
-                    id = user.id,
-                    phone = user.phone ?: "",
-                    name = user.name ?: "",
-                    nickname = user.nickname ?: "",
-                    contactName = user.contactName,
-                    email = user.email ?: "",
-                    birth = user.birth ?: "",
-                    avatar = profileImageUrlConverter.convert(user.avatar),
-                    isOnline = user.isOnline,
-                    lastActive = ZonedDateTime.now()
-                )
-            },
-            isDate = false,
-            isEdited = isEdited,
-            messageStatus = messageStatus,
-            replyMessage = replyMessage?.toMessage()
-        )
+    fun responseToMessage(mess : MessageResponse): Message {
+        with(mess) {
+            return Message(
+                id = id,
+                text = text,
+                userSenderId = initiatorId,
+                messageType = type,
+                date = getZonedTime(createdDate),
+                initiator = initiator?.let { user ->
+                    User(
+                        id = user.id,
+                        phone = user.phone ?: "",
+                        name = user.name ?: "",
+                        nickname = user.nickname ?: "",
+                        contactName = user.contactName,
+                        email = user.email ?: "",
+                        birth = user.birth ?: "",
+                        avatar = profileImageUrlConverter.convert(user.avatar),
+                        isOnline = user.isOnline,
+                        lastActive = ZonedDateTime.now()
+                    )
+                },
+                isDate = false,
+                isEdited = isEdited,
+                messageStatus = messageStatus,
+                replyMessage = if(replyMessage!= null) responseToMessage(replyMessage) else null
+            )
+        }
     }
 
 

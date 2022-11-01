@@ -19,6 +19,7 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
@@ -257,7 +258,7 @@ class ConversationViewModel(
                 chatId = chatId ?: return@launch,
                 messageId = mode.messageToReply.id,
                 text = text,
-                messageType = MESSAGE_TYPE_TEXT//mode.messageToReply.messageType ?: return@launch
+                messageType = MESSAGE_TYPE_TEXT
             )
             when (result) {
                 is CallResult.Error -> {
@@ -270,8 +271,12 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
+                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(selfUserId, params.chat.isGroup, storageUrlConverter) as ConversationViewItem.Self
+                        var messages = state.messages
+                        messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
-                            inputMessageMode = InputMessageMode.Default
+                            inputMessageMode = InputMessageMode.Default,
+                            messages = messages
                         )
                     }
                 }

@@ -50,15 +50,19 @@ class ConversationAdapter(
                 onGroupDownloadDocument
             ),
             createConversationSystemAdapterDelegate(),
-            createConversationTextReplyImageAdapterDelegate(
+            createConversationSelfTextReplyImageAdapterDelegate(
                 onSelfMessageClicked,
                 onSelfMessageLongClicked,
+                onImageClicked
+            ),
+            createConversationReceiveTextReplyImageAdapterDelegate(
+                onReceiveMessageLongClicked,
                 onImageClicked
             )
         )
     )
 
-fun createConversationTextReplyImageAdapterDelegate(
+fun createConversationSelfTextReplyImageAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     onImageClicked: (String) -> Unit
@@ -192,6 +196,31 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
             root.setOnLongClickListener {
                 onReceiveMessageLongClicked(item)
                 true
+            }
+            messageContent.setPrintableText(item.content)
+            sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+        }
+    }
+
+fun createConversationReceiveTextReplyImageAdapterDelegate(
+    onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
+    onImageClicked: (String) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
+        ConversationItemReceiveTextReplyImageBinding::inflate
+    ) {
+        binding.root.setOnLongClickListener {
+            //onReceiveMessageLongClicked(item) // TODO: K
+            true
+        }
+        bindWithBinding {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
+                replyImage.loadRounded(it.content, radius = 8)
+                replyImage.onClick {
+                    onImageClicked(it.content)
+                }
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)

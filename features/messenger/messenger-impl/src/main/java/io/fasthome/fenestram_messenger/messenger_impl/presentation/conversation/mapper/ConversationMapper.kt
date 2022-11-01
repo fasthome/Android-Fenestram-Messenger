@@ -204,7 +204,8 @@ fun Message.toConversationViewItem(
 
                 when (messageType) {
                     MESSAGE_TYPE_TEXT -> {
-                        ConversationViewItem.Receive.Text(
+                        if (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null)
+                        return ConversationViewItem.Receive.Text(
                             content = PrintableText.Raw(text),
                             time = PrintableText.Raw(timeFormatter.format(date)),
                             sentStatus = SentStatus.None,
@@ -215,6 +216,19 @@ fun Message.toConversationViewItem(
                             nickname = initiator?.nickname,
                             messageType = messageType,
                             replyMessage = replyMessage?.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
+                            userName = PrintableText.Raw(getName(initiator))
+                        )
+                        else return ConversationViewItem.Receive.TextReplyOnImage(
+                            content = PrintableText.Raw(text),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.None,
+                            date = date,
+                            id = id,
+                            timeVisible = true,
+                            isEdited = isEdited,
+                            nickname = initiator?.nickname,
+                            messageType = messageType,
+                            replyMessage = replyMessage.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter),
                             userName = PrintableText.Raw(getName(initiator))
                         )
                     }
