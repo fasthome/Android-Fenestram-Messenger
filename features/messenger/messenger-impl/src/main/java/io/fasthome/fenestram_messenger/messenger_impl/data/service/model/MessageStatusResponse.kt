@@ -4,15 +4,21 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class MessageResponse(
+class MessageStatusResponse(
     @SerialName("id")
     val id: Long,
+
+    @SerialName("chatId")
+    val chatId: Long?,
 
     @SerialName("initiator_id")
     val initiatorId: Long,
 
-    @SerialName("user")
-    val initiator: Initiator?,
+    @SerialName("author_id")
+    val authorId: Long?,
+
+    @SerialName("reply_message_id")
+    val replyMessageId: Long?,
 
     @SerialName("text")
     val text: String,
@@ -27,5 +33,14 @@ class MessageResponse(
     val isEdited: Boolean,
 
     @SerialName("message_status")
-    val messageStatus: String
+    val messageStatus: String,
+
+    @SerialName("access")
+    val access: List<Long>,
+
+    @SerialName("accessChats")
+    val accessChats: List<Long>,
+
+    @SerialName("forwarded_messages")
+    val forwardedMessages: List<Long>?
 )

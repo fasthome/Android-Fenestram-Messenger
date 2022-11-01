@@ -38,6 +38,6 @@
 
     <string name="user_status_online">Online</string>
     <string name="user_status_offline">Offline</string>
-    <string name="user_status_typing">Печатает…</string>
-    <string name="group_user_status_typing">%s печатает…</string>
+    <string name="user_status_typing">Печатает</string>
+    <string name="group_user_status_typing">%s печатает</string>
 </resources>

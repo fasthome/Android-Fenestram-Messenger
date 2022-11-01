@@ -94,6 +94,15 @@
             app:layout_constraintStart_toEndOf="@+id/avatar_image"
             app:layout_constraintTop_toBottomOf="@+id/username" />
 
+        <TextView
+            android:id="@+id/user_status_dots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray2"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/user_status_view"
+            app:layout_constraintStart_toEndOf="@+id/user_status_view" />
+
         <ImageButton
             android:id="@+id/facecall_button"
             android:layout_width="wrap_content"
@@ -183,6 +192,56 @@
         app:layout_constraintBottom_toBottomOf="@id/input_message"
         app:layout_constraintStart_toStartOf="@+id/input_message"
         tools:ignore="TouchTargetSizeCheck" />
+
+
+    <RelativeLayout
+        android:id="@+id/pending_messages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintBottom_toTopOf="@id/input_message"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/pending_messages_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bg_conversation_not_read" />
+
+        <ImageView
+            android:id="@+id/pending_messages_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_down"
+            android:layout_marginTop="10dp"
+            android:layout_alignLeft="@+id/pending_messages_button"
+            android:layout_alignTop="@+id/pending_messages_button"
+            android:layout_alignRight="@+id/pending_messages_button"
+            android:layout_alignBottom="@+id/pending_messages_button" />
+
+        <ImageView
+            android:id="@+id/pending_messages_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/bg_not_read"
+            android:layout_alignLeft="@+id/pending_messages_button"
+            android:layout_alignRight="@+id/pending_messages_button"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/pending_amount"
+            style="@style/Text.White.10sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/pending_messages_status"
+            android:layout_alignTop="@+id/pending_messages_status"
+            android:layout_alignRight="@+id/pending_messages_status"
+            android:layout_alignBottom="@+id/pending_messages_status"
+            android:gravity="center" />
+    </RelativeLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_edit_message"

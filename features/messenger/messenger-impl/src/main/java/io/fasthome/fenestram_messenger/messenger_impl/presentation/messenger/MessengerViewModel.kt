@@ -5,8 +5,10 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.getSentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerViewItem
@@ -16,6 +18,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -131,7 +134,7 @@ class MessengerViewModel(
     }
 
     private suspend fun subscribeMessages() {
-        messengerInteractor.getNewMessages()
+        messengerInteractor.getNewMessages { onNewMessageStatus(it) }
             .collectWhenViewActive()
             .onEach { message ->
                 loadDataHelper.invalidateSource()
@@ -143,15 +146,32 @@ class MessengerViewModel(
             .launchIn(viewModelScope)
     }
 
+    private fun onNewMessageStatus(messageStatus: MessageStatus) {
+        updateState { state ->
+            loadDataHelper.invalidateSource()
+            state.copy(
+                messengerViewItems = currentViewState.messengerViewItems.map {
+                    if (it.id == messageStatus.messageId)
+                        it.copy(sentStatus = getSentStatus(messageStatus.messageStatus))
+                    else it
+                }
+            )
+        }
+    }
+
     private fun subscribeMessageActions() {
         messengerInteractor.messageActionsFlow
             .collectWhenViewActive()
             .onEach { messageAction ->
-                messengerMapper.messageAction = messageAction
-                loadDataHelper.invalidateSource()
-                delay(1000)
-                messengerMapper.messageAction = null
-                loadDataHelper.invalidateSource()
+                viewModelScope.launch(context = NonCancellable) {
+                    if (!messengerMapper.messageActions.contains(messageAction)) {
+                        messengerMapper.messageActions.add(messageAction)
+                        loadDataHelper.invalidateSource()
+                        delay(1500)
+                        messengerMapper.messageActions.remove(messageAction)
+                        loadDataHelper.invalidateSource()
+                    }
+                }
             }
             .launchIn(viewModelScope)
     }

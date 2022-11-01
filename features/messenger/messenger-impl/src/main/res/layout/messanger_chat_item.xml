@@ -61,16 +61,26 @@
 
             <TextView
                 android:id="@+id/last_message"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="4dp"
+                app:layout_constrainedWidth="true"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/gray2"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintEnd_toEndOf="@+id/name_view"
                 app:layout_constraintStart_toEndOf="@+id/image"
                 app:layout_constraintTop_toBottomOf="@+id/name_view" />
+
+            <TextView
+                android:id="@+id/status_dots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blue"
+                app:layout_constraintStart_toEndOf="@+id/last_message"
+                app:layout_constraintBottom_toBottomOf="@+id/last_message" />
 
             <ImageView
                 android:id="@+id/profile_picture"
@@ -107,15 +117,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/status"
-                android:layout_width="9dp"
-                android:layout_height="22dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+
+            <RelativeLayout
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/time_view"
-                app:srcCompat="@drawable/ic_approve_send" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp">
+
+                <ImageView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_status_message_sent" />
+
+                <TextView
+                    android:id="@+id/pending_amount"
+                    style="@style/Text.White.10sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/status"
+                    android:layout_alignTop="@+id/status"
+                    android:layout_alignRight="@+id/status"
+                    android:layout_alignBottom="@+id/status"
+                    android:gravity="center" />
+            </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
