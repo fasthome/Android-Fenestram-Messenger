@@ -7,6 +7,7 @@ import android.text.TextPaint
 import android.util.TypedValue
 import android.view.View
 import io.fasthome.fenestram_messenger.util.R
+import io.fasthome.fenestram_messenger.util.links.Link.Companion.DEFAULT_ALPHA
 import kotlin.math.roundToInt
 
 class TouchableSpan(context: Context, private val link: Link) : TouchableBaseSpan() {
@@ -15,21 +16,13 @@ class TouchableSpan(context: Context, private val link: Link) : TouchableBaseSpa
     private var textColorOfHighlightedLink: Int = 0
 
     init {
-        if (link.textColor == 0) {
-            this.textColor = getDefaultColor(context, R.styleable.LinkBuilder_defaultLinkColor)
-        } else {
-            this.textColor = link.textColor
-        }
+        this.textColor = getDefaultColor(context, R.styleable.LinkBuilder_defaultLinkColor)
 
-        if (link.textColorOfHighlightedLink == 0) {
-            this.textColorOfHighlightedLink =
-                getDefaultColor(context, R.styleable.LinkBuilder_defaultTextColorOfHighlightedLink)
+        this.textColorOfHighlightedLink =
+            getDefaultColor(context, R.styleable.LinkBuilder_defaultTextColorOfHighlightedLink)
 
-            if (this.textColorOfHighlightedLink == Link.DEFAULT_COLOR) {
-                this.textColorOfHighlightedLink = textColor
-            }
-        } else {
-            this.textColorOfHighlightedLink = link.textColorOfHighlightedLink
+        if (this.textColorOfHighlightedLink == Link.DEFAULT_COLOR) {
+            this.textColorOfHighlightedLink = textColor
         }
     }
 
@@ -47,7 +40,7 @@ class TouchableSpan(context: Context, private val link: Link) : TouchableBaseSpa
 
     override fun onClick(widget: View) {
         if (link.text != null) {
-            link.clickListener?.onClick(link.text!!)
+            link.clickListener?.invoke(link.text!!)
         }
 
         super.onClick(widget)
@@ -55,14 +48,14 @@ class TouchableSpan(context: Context, private val link: Link) : TouchableBaseSpa
 
     override fun onLongClick(widget: View) {
         if (link.text != null) {
-            link.longClickListener?.onLongClick(link.text!!)
+            link.longClickListener?.invoke(link.text!!)
         }
 
         super.onLongClick(widget)
     }
 
-    private fun adjustAlpha(color: Int, factor: Float): Int {
-        val alpha = (Color.alpha(color) * factor).roundToInt()
+    private fun adjustAlpha(color: Int): Int {
+        val alpha = (Color.alpha(color) * DEFAULT_ALPHA).roundToInt()
         val red = Color.red(color)
         val green = Color.green(color)
         val blue = Color.blue(color)
@@ -74,14 +67,8 @@ class TouchableSpan(context: Context, private val link: Link) : TouchableBaseSpa
         super.updateDrawState(ds)
 
         ds.isUnderlineText = link.underlined
-        ds.isFakeBoldText = link.bold
         ds.color = if (isTouched) textColorOfHighlightedLink else textColor
-        ds.bgColor =
-            if (isTouched) adjustAlpha(textColor, link.highlightAlpha) else Color.TRANSPARENT
-
-        if (link.typeface != null) {
-            ds.typeface = link.typeface
-        }
+        ds.bgColor = if (isTouched) adjustAlpha(textColor) else Color.TRANSPARENT
     }
 
     companion object {

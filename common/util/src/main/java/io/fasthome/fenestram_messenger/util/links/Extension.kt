@@ -5,6 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.TextView
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.R
+import io.fasthome.fenestram_messenger.util.getPrintableText
 
 fun TextView.applyLinks(vararg links: Link) {
     val builder = LinkBuilder.on(this)
@@ -22,33 +25,33 @@ fun TextView.applyLinks(links: List<Link>) {
 fun TextView.addCommonLinks() {
 
     val webLinks: Link = Link(WEB_URL_PATTERN)
-        .setOnLongClickListener(Link.OnLongClickListener {
+        .setOnLongClickListener {
             //TODO
-        })
-        .setOnClickListener(Link.OnClickListener { clickedText ->
+        }
+        .setOnClickListener { clickedText ->
             val url = if (!clickedText.startsWith("http://") && !clickedText.startsWith("https://"))
                 "http://$clickedText" else clickedText
             val uri = Uri.parse(url)
             startCommonLinkIntent(context, uri)
-        })
+        }
 
     val emailLinks: Link = Link(EMAIL_ADDRESS_PATTERN)
-        .setOnLongClickListener(Link.OnLongClickListener {
+        .setOnLongClickListener {
             //TODO
-        })
-        .setOnClickListener(Link.OnClickListener { clickedText ->
+        }
+        .setOnClickListener { clickedText ->
             val uri = Uri.parse("mailto:$clickedText")
             startCommonLinkIntent(context, uri)
-        })
+        }
 
     val phoneLinks: Link = Link(PHONE_PATTERN)
-        .setOnLongClickListener(Link.OnLongClickListener {
+        .setOnLongClickListener {
             //TODO
-        })
-        .setOnClickListener(Link.OnClickListener { clickedText ->
+        }
+        .setOnClickListener { clickedText ->
             val uri = Uri.parse("tel:$clickedText")
             startCommonLinkIntent(context, uri)
-        })
+        }
 
     applyLinks(webLinks, emailLinks, phoneLinks)
 }
@@ -56,7 +59,11 @@ fun TextView.addCommonLinks() {
 private fun startCommonLinkIntent(context: Context, uri: Uri) {
     val intent = Intent(Intent.ACTION_VIEW, uri)
     try {
-        context.startActivity(Intent.createChooser(intent, "Open with"))
+        context.startActivity(
+            Intent.createChooser(
+                intent, context.getPrintableText(PrintableText.StringResource(R.string.open_with))
+            )
+        )
     } catch (e: Exception) {
         Log.d("Links Extension", e.toString())
     }

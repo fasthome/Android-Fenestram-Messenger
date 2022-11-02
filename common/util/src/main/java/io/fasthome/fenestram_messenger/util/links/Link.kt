@@ -1,10 +1,8 @@
 package io.fasthome.fenestram_messenger.util.links
 
 import android.graphics.Color
-import android.graphics.Typeface
 import java.util.regex.Pattern
 
-@Suppress("MemberVisibilityCanBePrivate")
 class Link {
 
     @JvmField
@@ -14,40 +12,20 @@ class Link {
     var pattern: Pattern? = null
 
     @JvmField
-    var textColor = 0
-
-    @JvmField
-    var textColorOfHighlightedLink = 0
-
-    @JvmField
-    var highlightAlpha = DEFAULT_ALPHA
-
-    @JvmField
     var underlined = true
 
     @JvmField
-    var bold = false
+    var clickListener: ((clickedText: String) -> Unit)? = null
 
     @JvmField
-    var typeface: Typeface? = null
-
-    @JvmField
-    var clickListener: OnClickListener? = null
-
-    @JvmField
-    var longClickListener: OnLongClickListener? = null
+    var longClickListener: ((clickedText: String) -> Unit)? = null
 
     constructor(link: Link) {
         this.text = link.text
         this.pattern = link.pattern
         this.clickListener = link.clickListener
         this.longClickListener = link.longClickListener
-        this.textColor = link.textColor
-        this.textColorOfHighlightedLink = link.textColorOfHighlightedLink
-        this.highlightAlpha = link.highlightAlpha
         this.underlined = link.underlined
-        this.bold = link.bold
-        this.typeface = link.typeface
     }
 
     constructor(text: String) {
@@ -72,41 +50,13 @@ class Link {
         return this
     }
 
-    fun setOnClickListener(clickListener: OnClickListener): Link {
+    fun setOnClickListener(clickListener: (clickedText: String) -> Unit): Link {
         this.clickListener = clickListener
         return this
     }
 
-    fun setOnClickListener(listener: (String) -> Unit): Link {
-        this.clickListener = object : OnClickListener {
-            override fun onClick(clickedText: String) {
-                listener(clickedText)
-            }
-        }
-        return this
-    }
-
-    fun setOnLongClickListener(longClickListener: OnLongClickListener): Link {
+    fun setOnLongClickListener(longClickListener: (clickedText: String) -> Unit): Link {
         this.longClickListener = longClickListener
-        return this
-    }
-
-    fun setOnLongClickListener(listener: (String) -> Unit): Link {
-        this.longClickListener = object : OnLongClickListener {
-            override fun onLongClick(clickedText: String) {
-                listener(clickedText)
-            }
-        }
-        return this
-    }
-
-    fun setTextColor(color: Int): Link {
-        this.textColor = color
-        return this
-    }
-
-    fun setTextColorOfHighlightedLink(colorOfHighlightedLink: Int): Link {
-        this.textColorOfHighlightedLink = colorOfHighlightedLink
         return this
     }
 
@@ -115,31 +65,8 @@ class Link {
         return this
     }
 
-    fun setBold(bold: Boolean): Link {
-        this.bold = bold
-        return this
-    }
-
-    fun setHighlightAlpha(alpha: Float): Link {
-        this.highlightAlpha = alpha
-        return this
-    }
-
-    fun setTypeface(typeface: Typeface): Link {
-        this.typeface = typeface
-        return this
-    }
-
-    fun interface OnClickListener {
-        fun onClick(clickedText: String)
-    }
-
-    fun interface OnLongClickListener {
-        fun onLongClick(clickedText: String)
-    }
-
     companion object {
         val DEFAULT_COLOR = Color.parseColor("#5EA4FF")
-        private const val DEFAULT_ALPHA = .15f
+        const val DEFAULT_ALPHA = .15f
     }
 }
