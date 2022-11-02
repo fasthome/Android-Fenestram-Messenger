@@ -90,6 +90,10 @@ class ConversationFragment :
         vm.onGroupMessageLongClicked(it)
     }, onSelfImageLongClicked = {
         vm.onSelfImageLongClicked(it)
+    }, onSelfTextReplyImageLongClicked =  {
+        vm.onSelfTextReplyImageLongClicked(it)
+    }, onReceiveTextReplyImageLongClicked = {
+        vm.onReceiveTextReplyImageLongClicked(it)
     })
 
     private val attachedAdapter = AttachedAdapter(
@@ -370,6 +374,24 @@ class ConversationFragment :
                     vm.replyMessageMode(true, event.conversationViewItem)
                 }
             ).show()
+            is ConversationEvent.ShowSelfTextReplyImageDialog -> MessageActionDialog.create(
+                fragment = this,
+                onDelete = {
+                    vm.onDeleteMessageClicked(event.conversationViewItem)
+                },
+                onReply = {
+                    vm.replyMessageMode(true,event.conversationViewItem)
+                },
+                onEdit = {
+                    vm.editMessageMode(true,event.conversationViewItem)
+                }
+            ).show()
+            is ConversationEvent.ShowReceiveTextReplyImageDialog -> MessageActionDialog.create(
+                fragment = this,
+                onReply = {
+                    vm.replyMessageMode(true,event.conversationViewItem)
+                }
+            ).show()
         }
     }
 
@@ -418,7 +440,7 @@ class ConversationFragment :
 
     private fun renderStateEditMode(
         isEditMode: Boolean,
-        selfMessage: ConversationViewItem.Self.Text? = null,
+        selfMessage: ConversationViewItem.Self? = null,
     ) {
         with(binding) {
             switchInputPlate(isEditMode)
@@ -430,7 +452,7 @@ class ConversationFragment :
                 clEditMessage.setPadding(0, 0, 0, it + 10.dp)
                 clEditMessage.setPadding(0, 0, 0, it + 10.dp)
             })
-            val textToEdit = getPrintableText(selfMessage.content)
+            val textToEdit = getPrintableText((selfMessage as ConversationTextItem).content)
             tvTextToEdit.text = textToEdit
             inputMessage.setText(textToEdit)
             inputMessage.lastCharFocus()

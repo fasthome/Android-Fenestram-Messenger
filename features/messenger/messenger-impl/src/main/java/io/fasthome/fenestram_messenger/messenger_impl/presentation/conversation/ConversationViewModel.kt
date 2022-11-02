@@ -223,7 +223,6 @@ class ConversationViewModel(
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
-            messageToEdit = null,
             inputMessageMode = InputMessageMode.Default,
             newMessagesCount = params.chat.pendingMessages.toInt()
         )
@@ -231,7 +230,7 @@ class ConversationViewModel(
 
     fun editMessageMode(
         isEditMode: Boolean,
-        conversationViewItem: ConversationViewItem.Self.Text? = null,
+        conversationViewItem: ConversationViewItem.Self? = null,
     ) {
         updateState { state ->
             state.copy(
@@ -400,7 +399,7 @@ class ConversationViewModel(
 
     private fun editMessage(newText: String) {
         viewModelScope.launch {
-            val messageToEdit = currentViewState.messageToEdit ?: return@launch
+            val messageToEdit = (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -412,7 +411,6 @@ class ConversationViewModel(
                     updateState { state ->
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
                         state.copy(
-                            messageToEdit = null,
                             inputMessageMode = InputMessageMode.Default
                         )
                     }
@@ -422,14 +420,28 @@ class ConversationViewModel(
                         currentViewState.messages.filter { it.value.id == messageToEdit.id }
                     val key = message.keys.firstOrNull() ?: return@launch
                     val newMessages = currentViewState.messages.mapValues {
-                        if (it.key == key) messageToEdit.copy(
-                            content = PrintableText.Raw(newText), isEdited = true
-                        ) else it.value
+                        if (it.key == key) {
+                            when(messageToEdit) {
+                                is ConversationViewItem.Self.Text -> {
+                                    messageToEdit.copy(
+                                        content = PrintableText.Raw(newText), isEdited = true
+                                    )
+                                }
+                                is ConversationViewItem.Self.TextReplyOnImage -> {
+                                    messageToEdit.copy(
+                                        content = PrintableText.Raw(newText), isEdited = true
+                                    )
+                                }
+                                else -> {
+                                    it.value
+                                }
+                            }
+
+                        } else it.value
                     }
                     updateState { state ->
                         state.copy(
                             messages = newMessages,
-                            messageToEdit = null,
                             inputMessageMode = InputMessageMode.Default
                         )
                     }
@@ -901,6 +913,14 @@ class ConversationViewModel(
 
     fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
         sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
+    }
+
+    fun onSelfTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) {
+        sendEvent(ConversationEvent.ShowSelfTextReplyImageDialog(conversationViewItem))
+    }
+
+    fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
+        sendEvent(ConversationEvent.ShowReceiveTextReplyImageDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {

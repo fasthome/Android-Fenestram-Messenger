@@ -26,6 +26,8 @@ class ConversationAdapter(
     onSelfDownloadDocument: (item : ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
     onRecieveDownloadDocument: (item : ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
     onGroupDownloadDocument: (item : ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
+    onSelfTextReplyImageLongClicked:(item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
+    onReceiveTextReplyImageLongClicked:(item:ConversationViewItem.Receive.TextReplyOnImage) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -52,11 +54,11 @@ class ConversationAdapter(
             createConversationSystemAdapterDelegate(),
             createConversationSelfTextReplyImageAdapterDelegate(
                 onSelfMessageClicked,
-                onSelfMessageLongClicked,
+                onSelfTextReplyImageLongClicked,
                 onImageClicked
             ),
             createConversationReceiveTextReplyImageAdapterDelegate(
-                onReceiveMessageLongClicked,
+                onReceiveTextReplyImageLongClicked,
                 onImageClicked
             )
         )
@@ -64,7 +66,7 @@ class ConversationAdapter(
 
 fun createConversationSelfTextReplyImageAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
+    onSelfTextReplyImageLongClicked: (ConversationViewItem.Self.TextReplyOnImage) -> Unit,
     onImageClicked: (String) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
@@ -74,7 +76,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
             onSelfMessageClicked(item)
         }
         binding.root.setOnLongClickListener {
-            //onSelfMessageLongClicked(item) // TODO: K
+            onSelfTextReplyImageLongClicked(item)
             true
         }
         bindWithBinding {
@@ -109,11 +111,14 @@ fun createConversationSelfTextAdapterDelegate(
             true
         }
         bindWithBinding {
-            (item.replyMessage as? ConversationTextItem)?.let {
-            clReplyMessage.isVisible = true
-            replyAuthorName.text = getPrintableRawText(it?.userName)
-            replyContent.text = getPrintableRawText(it?.content)
-        }
+            val replyMessage = item.replyMessage as? ConversationTextItem
+            if(replyMessage != null) {
+                clReplyMessage.isVisible = true
+                replyAuthorName.text = getPrintableRawText(replyMessage.userName)
+                replyContent.text = getPrintableRawText(replyMessage.content)
+            } else {
+                clReplyMessage.isVisible = false
+            }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -204,14 +209,14 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
     }
 
 fun createConversationReceiveTextReplyImageAdapterDelegate(
-    onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
+    onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
     onImageClicked: (String) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
         ConversationItemReceiveTextReplyImageBinding::inflate
     ) {
         binding.root.setOnLongClickListener {
-            //onReceiveMessageLongClicked(item) // TODO: K
+            onReceiveTextReplyImageLongClicked(item)
             true
         }
         bindWithBinding {

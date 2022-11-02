@@ -12,7 +12,6 @@ data class ConversationState(
     val userStatusDots: PrintableText,
     val isChatEmpty: Boolean,
     val attachedFiles: List<AttachedFile>,
-    val messageToEdit: ConversationViewItem.Self.Text?,
     val inputMessageMode: InputMessageMode,
     val newMessagesCount: Int
 )
