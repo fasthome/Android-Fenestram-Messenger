@@ -4,14 +4,12 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import io.fasthome.component.personality_data.PersonalityComponentContract
 import io.fasthome.component.personality_data.PersonalityParams
-import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -23,12 +21,8 @@ import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.databinding.FragmentProfileBinding
-import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileState.EditTextKey
-import io.fasthome.fenestram_messenger.uikit.custom_view.HooliDatePicker
-import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragment_profile) {
 
@@ -103,16 +97,16 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             ivAvatar.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_baseline_account_circle_24
+                    R.drawable.ic_avatar_placeholder
                 )
             )
         } else {
             state.avatarUrl?.let { url ->
-                ivAvatar.loadCircle(url, placeholderRes = R.drawable.common_avatar)
+                ivAvatar.loadCircle(url, placeholderRes = R.drawable.ic_avatar_placeholder)
             }
 
             state.avatarBitmap?.let { bitmap ->
-                ivAvatar.loadCircle(bitmap, placeholderRes = R.drawable.common_avatar)
+                ivAvatar.loadCircle(bitmap, placeholderRes = R.drawable.ic_avatar_placeholder)
             }
         }
 

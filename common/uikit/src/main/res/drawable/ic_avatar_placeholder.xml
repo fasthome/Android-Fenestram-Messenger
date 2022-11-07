@@ -3,7 +3,7 @@
     android:width="32dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <group>
         <path
-            android:fillColor="#8E86A5"
+            android:fillColor="@color/gray2"
             android:pathData="M16,0L16,0A16,16 0,0 1,32 16L32,16A16,16 0,0 1,16 32L16,32A16,16 0,0 1,0 16L0,16A16,16 0,0 1,16 0z" />
         <path
             android:fillColor="#F2F2F2"
