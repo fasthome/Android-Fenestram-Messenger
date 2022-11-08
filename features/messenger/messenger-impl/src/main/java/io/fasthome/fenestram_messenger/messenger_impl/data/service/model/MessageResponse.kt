@@ -30,5 +30,17 @@ class MessageResponse(
     val messageStatus: String,
 
     @SerialName("replyMessage")
-    val replyMessage: MessageResponse?
+    val replyMessage: MessageResponse?,
+
+    @SerialName("totalMessages")
+    val totalMessages: Long,
+
+    @SerialName("users_have_read")
+    val usersHaveRead: List<Long>,
+
+    @SerialName("forwarded_messages")
+    val forwardedMessages: List<MessageResponse>,
+
+    @SerialName("author")
+    val author: Initiator?
 )

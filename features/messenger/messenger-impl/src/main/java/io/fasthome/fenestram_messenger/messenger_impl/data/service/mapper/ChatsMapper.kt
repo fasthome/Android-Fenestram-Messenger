@@ -40,7 +40,9 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
         isDate = false,
         isEdited = messageResponse.isEdited,
         messageStatus = messageResponse.status,
-        replyMessage = null
+        replyMessage = messageResponse.replyMessage?.let {
+            GetChatsMapper(profileImageUrlConverter).responseToMessage(it)
+        }
     )
 
     fun toMessageAction(messageActionResponse: MessageActionResponse): MessageAction {

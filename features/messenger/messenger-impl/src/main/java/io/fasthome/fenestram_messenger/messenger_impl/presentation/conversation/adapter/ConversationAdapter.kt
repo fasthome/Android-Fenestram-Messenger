@@ -192,11 +192,15 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
 
         ) {
         bindWithBinding {
-            (item.replyMessage as? ConversationTextItem)?.let {
-            clReplyMessage.isVisible = true
-            replyAuthorName.text = getPrintableRawText(it.userName)
-            replyContent.text = getPrintableRawText(it.content)
-        }
+
+            val replyMessage = item.replyMessage as? ConversationTextItem
+            if(replyMessage != null) {
+                clReplyMessage.isVisible = true
+                replyAuthorName.text = getPrintableRawText(replyMessage.userName)
+                replyContent.text = getPrintableRawText(replyMessage.content)
+            } else {
+                clReplyMessage.isVisible = false
+            }
             tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {
                 onReceiveMessageLongClicked(item)
