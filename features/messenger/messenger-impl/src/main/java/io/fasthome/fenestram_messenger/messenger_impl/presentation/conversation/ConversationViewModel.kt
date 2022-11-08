@@ -280,6 +280,7 @@ class ConversationViewModel(
                     }
                 }
             }
+            sendEvent(ConversationEvent.UpdateScrollPosition(0))
         }
     }
 

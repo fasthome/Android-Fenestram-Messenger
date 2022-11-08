@@ -279,7 +279,7 @@ class ConversationFragment :
                 binding.messagesList.post {
                     (binding.messagesList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
                         event.scrollPosition,
-                        binding.messagesList.height - 48.dp // TODO: K
+                        binding.messagesList.height - 48.dp
                     )
                 }
             }
