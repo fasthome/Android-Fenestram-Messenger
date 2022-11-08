@@ -109,7 +109,8 @@ class MessengerSocket(private val baseUrl: String) {
         access = message?.access ?: emptyList(),
         accessChats = message?.accessChats ?: emptyList(),
         isEdited = message?.isEdited ?: false,
-        status = ""
+        status = "",
+        replyMessage = message?.replyMessage
     )
 
     fun messageActionToMessageActionResponse(messageAction: MessageActionResponse?) =
