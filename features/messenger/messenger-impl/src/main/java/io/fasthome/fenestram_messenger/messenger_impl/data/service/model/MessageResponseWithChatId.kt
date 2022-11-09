@@ -30,7 +30,7 @@ class MessageResponseWithChatId(
     val status: String,
 
     @SerialName("replyMessage")
-    val replyMessage: Unit? = null,
+    val replyMessage: MessageResponse? = null,
 
     @SerialName("text")
     val text: String,
@@ -45,5 +45,8 @@ class MessageResponseWithChatId(
     val type: String,
 
     @SerialName("created_at")
-    val date: String
+    val date: String,
+
+    @SerialName("reactions")
+    val reactions: MessageReactions? = null
 )

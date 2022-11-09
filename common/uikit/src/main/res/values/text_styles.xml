@@ -47,6 +47,10 @@
         <item name="android:textSize">10sp</item>
     </style>
 
+    <style name="Text.White.12sp">
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="Text.White.14sp">
         <item name="android:textSize">14sp</item>
     </style>

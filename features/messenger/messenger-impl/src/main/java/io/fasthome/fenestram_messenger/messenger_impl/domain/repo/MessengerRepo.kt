@@ -18,6 +18,8 @@ interface MessengerRepo {
         authorId: Long
     ): CallResult<SendMessageResult>
 
+    suspend fun replyMessage(chatId: Long, messageId: Long, text: String, messageType: String): CallResult<Message?>
+
     fun getPageChats(query: String): TotalPagingSource<Int, Chat>
 
     suspend fun postChats(

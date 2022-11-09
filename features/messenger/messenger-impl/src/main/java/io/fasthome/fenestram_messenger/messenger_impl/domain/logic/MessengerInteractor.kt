@@ -57,6 +57,12 @@ class MessengerInteractor(
         messageRepo.closeSocket()
     }
 
+    suspend fun replyMessage(chatId: Long, messageId: Long, text: String, messageType: String) =
+        messageRepo.replyMessage(chatId = chatId,
+            messageId = messageId,
+            text = text,
+            messageType = messageType)
+
     suspend fun getMessagesFromChat(
         id: Long,
         selfUserId: Long,

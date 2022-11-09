@@ -29,6 +29,7 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                             date = lastMessage[0].date.let(NetworkMapperUtil::parseZonedDateTime),
                             initiator = null,
                             isDate = false,
+                            replyMessage = null,
                             isEdited = lastMessage[0].isEdited,
                             messageStatus = lastMessage[0].messageStatus
                         )
@@ -44,15 +45,19 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
         throw Exception()
     }
 
-    fun responseToGetMessagesByChat(response: List<MessageResponse>): List<Message> {
-        return response.map {
-            Message(
-                id = it.id,
-                text = it.text,
-                userSenderId = it.initiatorId,
-                messageType = it.type,
-                date = getZonedTime(it.createdDate),
-                initiator = it.initiator?.let { user ->
+    fun responseToGetMessagesByChat(response: List<MessageResponse>) = response.map {
+            responseToMessage(it)
+        }
+
+    fun responseToMessage(mess : MessageResponse): Message {
+        with(mess) {
+            return Message(
+                id = id,
+                text = text,
+                userSenderId = initiatorId,
+                messageType = type,
+                date = getZonedTime(createdDate),
+                initiator = initiator?.let { user ->
                     User(
                         id = user.id,
                         phone = user.phone ?: "",
@@ -67,11 +72,13 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                     )
                 },
                 isDate = false,
-                isEdited = it.isEdited,
-                messageStatus = it.messageStatus
+                isEdited = isEdited,
+                messageStatus = messageStatus,
+                replyMessage = if(replyMessage!= null) responseToMessage(replyMessage) else null
             )
         }
     }
+
 
     fun getZonedTime(date: String?): ZonedDateTime? {
         return date?.let(NetworkMapperUtil::parseZonedDateTime)

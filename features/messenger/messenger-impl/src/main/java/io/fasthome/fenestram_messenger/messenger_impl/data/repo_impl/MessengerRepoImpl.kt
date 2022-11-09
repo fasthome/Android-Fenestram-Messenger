@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ReplyMessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
@@ -29,6 +30,19 @@ class MessengerRepoImpl(
         authorId: Long
     ): CallResult<SendMessageResult> = callForResult {
         messengerService.sendMessage(id, text, type, localId, authorId)
+    }
+
+    override suspend fun replyMessage(
+        chatId: Long,
+        messageId: Long,
+        text: String,
+        messageType: String,
+    ): CallResult<Message?> = callForResult {
+        messengerService.replyMessage(
+            messageId = messageId,
+            chatId = chatId,
+            text = text,
+            messageType = messageType)
     }
 
     override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(

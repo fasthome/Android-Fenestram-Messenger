@@ -27,5 +27,20 @@ class MessageResponse(
     val isEdited: Boolean,
 
     @SerialName("message_status")
-    val messageStatus: String
+    val messageStatus: String,
+
+    @SerialName("replyMessage")
+    val replyMessage: MessageResponse?,
+
+    @SerialName("totalMessages")
+    val totalMessages: Long,
+
+    @SerialName("users_have_read")
+    val usersHaveRead: List<Long>,
+
+    @SerialName("forwarded_messages")
+    val forwardedMessages: List<MessageResponse>,
+
+    @SerialName("author")
+    val author: Initiator?
 )

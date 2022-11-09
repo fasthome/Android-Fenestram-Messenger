@@ -4,10 +4,12 @@ import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
+import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.network.client.ProgressListener
@@ -24,6 +26,8 @@ class ConversationAdapter(
     onSelfDownloadDocument: (item : ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
     onRecieveDownloadDocument: (item : ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
     onGroupDownloadDocument: (item : ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
+    onSelfTextReplyImageLongClicked:(item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
+    onReceiveTextReplyImageLongClicked:(item:ConversationViewItem.Receive.TextReplyOnImage) -> Unit
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -47,9 +51,50 @@ class ConversationAdapter(
                 onGroupProfileItemClicked,
                 onGroupDownloadDocument
             ),
-            createConversationSystemAdapterDelegate()
+            createConversationSystemAdapterDelegate(),
+            createConversationSelfTextReplyImageAdapterDelegate(
+                onSelfMessageClicked,
+                onSelfTextReplyImageLongClicked,
+                onImageClicked
+            ),
+            createConversationReceiveTextReplyImageAdapterDelegate(
+                onReceiveTextReplyImageLongClicked,
+                onImageClicked
+            )
         )
     )
+
+fun createConversationSelfTextReplyImageAdapterDelegate(
+    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+    onSelfTextReplyImageLongClicked: (ConversationViewItem.Self.TextReplyOnImage) -> Unit,
+    onImageClicked: (String) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
+        ConversationItemSelfTextReplyImageBinding::inflate
+    ) {
+        binding.root.onClick {
+            onSelfMessageClicked(item)
+        }
+        binding.root.setOnLongClickListener {
+            onSelfTextReplyImageLongClicked(item)
+            true
+        }
+        bindWithBinding {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
+                replyImage.loadRounded(it.content, radius = 8)
+                replyImage.onClick {
+                    onImageClicked(it.content)
+                }
+            }
+            tvEdited.isVisible = item.isEdited
+            messageContent.setPrintableText(item.content)
+            sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+            status.isVisible = item.timeVisible
+            status.setImageResource(item.statusIcon)
+        }
+    }
 
 fun createConversationSelfTextAdapterDelegate(
     onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
@@ -66,6 +111,14 @@ fun createConversationSelfTextAdapterDelegate(
             true
         }
         bindWithBinding {
+            val replyMessage = item.replyMessage as? ConversationTextItem
+            if(replyMessage != null) {
+                clReplyMessage.isVisible = true
+                replyAuthorName.text = getPrintableRawText(replyMessage.userName)
+                replyContent.text = getPrintableRawText(replyMessage.content)
+            } else {
+                clReplyMessage.isVisible = false
+            }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -139,10 +192,44 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
 
         ) {
         bindWithBinding {
+
+            val replyMessage = item.replyMessage as? ConversationTextItem
+            if(replyMessage != null) {
+                clReplyMessage.isVisible = true
+                replyAuthorName.text = getPrintableRawText(replyMessage.userName)
+                replyContent.text = getPrintableRawText(replyMessage.content)
+            } else {
+                clReplyMessage.isVisible = false
+            }
             tvEdited.isVisible = item.isEdited
             root.setOnLongClickListener {
                 onReceiveMessageLongClicked(item)
                 true
+            }
+            messageContent.setPrintableText(item.content)
+            sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+        }
+    }
+
+fun createConversationReceiveTextReplyImageAdapterDelegate(
+    onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
+    onImageClicked: (String) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
+        ConversationItemReceiveTextReplyImageBinding::inflate
+    ) {
+        binding.root.setOnLongClickListener {
+            onReceiveTextReplyImageLongClicked(item)
+            true
+        }
+        bindWithBinding {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
+                replyImage.loadRounded(it.content, radius = 8)
+                replyImage.onClick {
+                    onImageClicked(it.content)
+                }
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
