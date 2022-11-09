@@ -15,7 +15,20 @@ class MessengerFeatureImpl(
     private val messengerInteractor: MessengerInteractor
 ) : MessengerFeature {
 
-    override val messengerNavigationContract = MessengerNavigationContract
+    override val messengerNavigationContract: NavigationContractApi<MessengerFeature.MessengerParams, MessengerFeature.MessengerNavResult> = MessengerNavigationContract.map(
+        {
+            MessengerNavigationContract.Params(
+                chatSelectionMode = it.chatSelectionMode
+            )
+        },
+        resultMapper = {
+            if (it is MessengerNavigationContract.Result.ChatSelected) {
+                MessengerFeature.MessengerNavResult.ChatSelected(it.id)
+            } else {
+                MessengerFeature.MessengerNavResult.Canceled
+            }
+        }
+    )
 
     override val conversationNavigationContract: NavigationContractApi<MessengerFeature.Params, MessengerFeature.MessengerResult> =
         ConversationNavigationContract.map({

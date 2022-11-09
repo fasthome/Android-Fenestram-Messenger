@@ -343,6 +343,9 @@ class ConversationFragment :
                     } else null,
                     onReply = {
                         vm.replyMessageMode(true, event.conversationViewItem)
+                    },
+                    onForward = {
+                        vm.forwardMessage()
                     }
                 ).show()
             }
@@ -353,6 +356,9 @@ class ConversationFragment :
                 },
                 onReply = {
                     vm.replyMessageMode(true, event.conversationViewItem)
+                },
+                onForward = {
+                    vm.forwardMessage()
                 }
 
             ).show()

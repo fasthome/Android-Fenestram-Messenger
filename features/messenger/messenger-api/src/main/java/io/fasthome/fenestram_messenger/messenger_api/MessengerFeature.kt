@@ -13,7 +13,7 @@ import kotlinx.parcelize.Parcelize
 
 interface MessengerFeature {
 
-    val messengerNavigationContract: NavigationContractApi<NoParams, NoResult>
+    val messengerNavigationContract: NavigationContractApi<MessengerParams, MessengerNavResult>
 
     val conversationNavigationContract: NavigationContractApi<Params, MessengerResult>
 
@@ -26,6 +26,21 @@ interface MessengerFeature {
         localId: String,
         authorId: Long
     ): CallResult<SendMessageResult>
+
+    @Parcelize
+    data class MessengerParams(
+        val chatSelectionMode: Boolean = false
+    ) : Parcelable
+
+    sealed class MessengerNavResult : Parcelable {
+        @Parcelize
+        class ChatSelected(val id: Long) : MessengerNavResult()
+
+        @Parcelize
+        object Canceled : MessengerNavResult()
+    }
+
+
 
     @Parcelize
     data class Params(

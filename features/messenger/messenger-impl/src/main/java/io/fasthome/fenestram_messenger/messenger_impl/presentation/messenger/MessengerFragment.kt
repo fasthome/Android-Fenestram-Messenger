@@ -8,12 +8,15 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
@@ -23,13 +26,17 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
+import io.fasthome.fenestram_messenger.util.onClick
+import io.ktor.network.sockets.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.android.ext.android.inject
 
 class MessengerFragment :
     BaseFragment<MessengerState, MessengerEvent>(R.layout.fragment_messenger) {
 
-    override val vm: MessengerViewModel by viewModel()
+    override val vm: MessengerViewModel by viewModel(
+        getParamsInterface = MessengerNavigationContract.getParams
+    )
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
 
@@ -91,6 +98,10 @@ class MessengerFragment :
             }
         })
 
+        backButton.onClick {
+            vm.exitToConversation()
+        }
+
         vm.items
             .distinctUntilChanged()
             .collectLatestWhenStarted(this@MessengerFragment) {
@@ -108,17 +119,22 @@ class MessengerFragment :
     }
 
     override fun renderState(state: MessengerState) {
-        if (state.newMessagesCount == 0) {
-            updateFabIcon(iconRes = null, badgeCount = state.newMessagesCount)
-
-            fabActionListener = {
-                vm.onCreateChatClicked()
-            }
+        if(state.isSelectMode) {
+            toggleToolbar(true, R.string.forward)
         } else {
-            if (lastScrollPosition != 0) {
-                updateFabIcon(iconRes = R.drawable.ic_arrow_up, badgeCount = state.newMessagesCount)
+            toggleToolbar(false)
+            if (state.newMessagesCount == 0) {
+                updateFabIcon(iconRes = null, badgeCount = state.newMessagesCount)
+
                 fabActionListener = {
-                    binding.chatList.smoothScrollToPosition(0)
+                    vm.onCreateChatClicked()
+                }
+            } else {
+                if (lastScrollPosition != 0) {
+                    updateFabIcon(iconRes = R.drawable.ic_arrow_up, badgeCount = state.newMessagesCount)
+                    fabActionListener = {
+                        binding.chatList.smoothScrollToPosition(0)
+                    }
                 }
             }
         }
@@ -153,6 +169,19 @@ class MessengerFragment :
     override fun onStop() {
         super.onStop()
         vm.unsubscribeMessages()
+    }
+
+    private fun toggleToolbar(visible: Boolean, @StringRes text: Int? = null) {
+        with(binding) {
+            toolbar.isVisible = visible
+            text?.let { toolbarTitle.setText(it) }
+            appNameHeader.isVisible = !visible
+            val constraints = ConstraintSet().apply {
+                clone(root)
+                connect(chatsSv.id,ConstraintSet.TOP,if(visible) toolbar.id else appNameHeader.id, ConstraintSet.BOTTOM)
+            }
+                root.setConstraintSet(constraints)
+        }
     }
 
 }

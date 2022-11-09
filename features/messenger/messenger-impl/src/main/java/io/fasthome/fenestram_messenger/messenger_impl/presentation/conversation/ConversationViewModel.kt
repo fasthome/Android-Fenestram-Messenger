@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.Manifest
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
@@ -17,9 +18,9 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
@@ -31,6 +32,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -68,6 +70,15 @@ class ConversationViewModel(
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
+
+
+        private val messengerLauncher = registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
+            when (result) {
+                is MessengerFeature.MessengerNavResult.ChatSelected -> {
+                    Log.d("ConversationViewModel", "Select chat for forward, chatId:${result.id}")
+                }
+            }
+        }
 
     private val cameraLauncher =
         registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
@@ -198,6 +209,7 @@ class ConversationViewModel(
         val profileGuestFeature: ProfileGuestFeature,
         val authFeature: AuthFeature,
         val cameraFeature: CameraFeature,
+        val messengerFeature: MessengerFeature,
     )
 
     private val profileGuestLauncher =
@@ -225,6 +237,12 @@ class ConversationViewModel(
             attachedFiles = listOf(),
             inputMessageMode = InputMessageMode.Default,
             newMessagesCount = params.chat.pendingMessages.toInt()
+        )
+    }
+
+    fun forwardMessage() {
+        messengerLauncher.launch(
+            MessengerFeature.MessengerParams(true)
         )
     }
 
@@ -270,7 +288,11 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
-                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(selfUserId, params.chat.isGroup, storageUrlConverter) as ConversationViewItem.Self
+                        val tempMessage =
+                            (result.data ?: return@updateState state).toConversationViewItem(
+                                selfUserId,
+                                params.chat.isGroup,
+                                storageUrlConverter) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
@@ -323,7 +345,9 @@ class ConversationViewModel(
 
         val tempFileMessages = attachedFiles.map {
             when (it) {
-                is AttachedFile.Image -> createImageMessage(null, it.content, getPrintableRawText(currentViewState.userName))
+                is AttachedFile.Image -> createImageMessage(null,
+                    it.content,
+                    getPrintableRawText(currentViewState.userName))
                 is AttachedFile.Document -> createDocumentMessage(null, it.file)
             }
         }
@@ -400,7 +424,8 @@ class ConversationViewModel(
 
     private fun editMessage(newText: String) {
         viewModelScope.launch {
-            val messageToEdit = (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
+            val messageToEdit = (currentViewState.inputMessageMode as? InputMessageMode.Edit
+                ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -422,7 +447,7 @@ class ConversationViewModel(
                     val key = message.keys.firstOrNull() ?: return@launch
                     val newMessages = currentViewState.messages.mapValues {
                         if (it.key == key) {
-                            when(messageToEdit) {
+                            when (messageToEdit) {
                                 is ConversationViewItem.Self.Text -> {
                                     messageToEdit.copy(
                                         content = PrintableText.Raw(newText), isEdited = true
@@ -489,7 +514,8 @@ class ConversationViewModel(
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
-                    tempMessage.userName = PrintableText.Raw(sendMessageResponse.data.userName ?: "")
+                    tempMessage.userName =
+                        PrintableText.Raw(sendMessageResponse.data.userName ?: "")
                     when (messageType) {
                         MessageType.Text -> {
                             updateStatus(
