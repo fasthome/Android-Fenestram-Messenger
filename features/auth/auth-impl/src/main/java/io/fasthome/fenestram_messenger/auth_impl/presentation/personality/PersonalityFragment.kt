@@ -11,7 +11,6 @@ import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentPersonalityBinding
-import io.fasthome.fenestram_messenger.auth_impl.domain.entity.User
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -95,15 +94,15 @@ class PersonalityFragment :
             userPhoto.setImageDrawable(
                 ContextCompat.getDrawable(
                     requireContext(),
-                    R.drawable.ic_baseline_account_circle_24
+                    R.drawable.ic_avatar_placeholder
                 )
             )
         } else {
             state.profileImageUrl?.let { url ->
-                userPhoto.loadCircle(url, R.drawable.ic_baseline_account_circle_24)
+                userPhoto.loadCircle(url, R.drawable.ic_avatar_placeholder)
             }
             state.avatarBitmap?.let { bitmap ->
-                userPhoto.loadCircle(bitmap, R.drawable.ic_baseline_account_circle_24)
+                userPhoto.loadCircle(bitmap, R.drawable.ic_avatar_placeholder)
             }
         }
     }

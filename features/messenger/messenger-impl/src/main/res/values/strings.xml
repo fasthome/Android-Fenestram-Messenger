@@ -7,6 +7,7 @@
     <string name="SendMessegeTextViewPresentText">Поле ввода сообщения</string>
     <string name="AppName">hoolichat</string>
     <string name="MessageContentCheck">Blade Runner 2049 is a 2017 American neo-noir science fiction film directed by Denis Villeneuve</string>
+    <string name="MessageContentCheckBig">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</string>
     <string name="timeviewcheck">22:22</string>
     <string name="name">Username</string>
     <string name="messenger_creating_chat">Создание чата</string>
@@ -30,10 +31,13 @@
     <string name="messenger_create_chat_cancel">Отмена</string>
     <string name="messenger_search_contacts">Поиск контакта</string>
     <string name="messenger_edited">изменено</string>
+    <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
+    <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
 
     <string name="conversation_copy_message">Скопировать текст</string>
     <string name="conversation_delete_message">Удалить сообщение</string>
     <string name="conversation_edit_message">Редактировать сообщение</string>
+    <string name="conversation_reply_message">Ответить на сообщение</string>
     <string name="messenger_document">Документ</string>
 
     <string name="user_status_online">Online</string>

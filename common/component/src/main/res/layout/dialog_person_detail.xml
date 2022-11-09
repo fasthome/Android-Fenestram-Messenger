@@ -10,7 +10,7 @@
         android:layout_height="80dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="10dp"
-        android:src="@drawable/common_avatar"
+        android:src="@drawable/ic_avatar_placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -17,7 +17,7 @@
             android:id="@+id/contact_avatar"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:background="@drawable/common_avatar"
+            android:background="@drawable/ic_avatar_placeholder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/contact_name"
             app:layout_constraintStart_toStartOf="parent"
