@@ -36,7 +36,7 @@ class MessageResponse(
     val totalMessages: Long,
 
     @SerialName("users_have_read")
-    val usersHaveRead: List<Long>,
+    val usersHaveRead: List<Long>?,
 
     @SerialName("forwarded_messages")
     val forwardedMessages: List<MessageResponse>,
