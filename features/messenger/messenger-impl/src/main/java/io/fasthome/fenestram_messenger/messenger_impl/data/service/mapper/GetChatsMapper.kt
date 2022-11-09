@@ -31,7 +31,8 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                             isDate = false,
                             replyMessage = null,
                             isEdited = lastMessage[0].isEdited,
-                            messageStatus = lastMessage[0].messageStatus
+                            messageStatus = lastMessage[0].messageStatus,
+                            forwardedMessages = null
                         )
                     }
                     ),
@@ -74,7 +75,8 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                 isDate = false,
                 isEdited = isEdited,
                 messageStatus = messageStatus,
-                replyMessage = if(replyMessage!= null) responseToMessage(replyMessage) else null
+                replyMessage = if(replyMessage!= null) responseToMessage(replyMessage) else null,
+                forwardedMessages = forwardedMessages.map { responseToMessage(it) }
             )
         }
     }

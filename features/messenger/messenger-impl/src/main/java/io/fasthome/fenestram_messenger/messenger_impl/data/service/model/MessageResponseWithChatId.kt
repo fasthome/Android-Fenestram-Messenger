@@ -48,5 +48,9 @@ class MessageResponseWithChatId(
     val date: String,
 
     @SerialName("reactions")
-    val reactions: MessageReactions? = null
-)
+    val reactions: MessageReactions? = null,
+
+    @SerialName("forwarded_messages")
+    val forwardedMessages: List<MessageResponse>?,
+
+    )

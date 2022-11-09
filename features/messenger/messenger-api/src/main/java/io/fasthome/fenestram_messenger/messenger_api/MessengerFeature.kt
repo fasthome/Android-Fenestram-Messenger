@@ -6,9 +6,8 @@ package io.fasthome.fenestram_messenger.messenger_api
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 interface MessengerFeature {
@@ -24,22 +23,27 @@ interface MessengerFeature {
         text: String,
         type: String,
         localId: String,
-        authorId: Long
+        authorId: Long,
     ): CallResult<SendMessageResult>
 
     @Parcelize
     data class MessengerParams(
-        val chatSelectionMode: Boolean = false
+        val chatSelectionMode: Boolean = false,
     ) : Parcelable
 
     sealed class MessengerNavResult : Parcelable {
         @Parcelize
-        class ChatSelected(val id: Long) : MessengerNavResult()
+        class ChatSelected(
+            val chatId: Long?,
+            val chatName: PrintableText,
+            val avatar: String?,
+            val isGroup: Boolean,
+            val pendingMessages: PrintableText?,
+        ) : MessengerNavResult()
 
         @Parcelize
         object Canceled : MessengerNavResult()
     }
-
 
 
     @Parcelize
@@ -48,7 +52,7 @@ interface MessengerFeature {
         val userIds: List<Long>,
         val chatName: String,
         val avatar: String,
-        val isGroup: Boolean
+        val isGroup: Boolean,
     ) : Parcelable
 
     sealed class MessengerResult : Parcelable {

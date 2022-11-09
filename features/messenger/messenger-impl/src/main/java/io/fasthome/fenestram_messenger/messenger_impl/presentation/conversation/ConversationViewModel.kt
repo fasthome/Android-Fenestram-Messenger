@@ -32,7 +32,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -71,11 +70,26 @@ class ConversationViewModel(
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
 
-
-        private val messengerLauncher = registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
+    private val messengerLauncher =
+        registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
             when (result) {
                 is MessengerFeature.MessengerNavResult.ChatSelected -> {
-                    Log.d("ConversationViewModel", "Select chat for forward, chatId:${result.id}")
+                    chatId = result.chatId ?: return@registerScreen
+                    lastPage = null
+                    updateState {
+                        ConversationState(
+                            messages = mapOf(),
+                            userName = result.chatName,
+                            userStatus = UserStatus.Offline.toPrintableText("", result.isGroup),
+                            userStatusDots = PrintableText.EMPTY,
+                            isChatEmpty = false,
+                            avatar = storageUrlConverter.convert(result.avatar),
+                            attachedFiles = listOf(),
+                            inputMessageMode = InputMessageMode.Default,
+                            newMessagesCount = getPrintableRawText(result.pendingMessages).toInt(),
+                        )
+                    }
+                    forwardMessage()
                 }
             }
         }
@@ -106,6 +120,7 @@ class ConversationViewModel(
     private var loadItemsJob by switchJob()
     private var downloadFileJob by switchJob()
     private var lastPage: MessagesPage? = null
+    private var messagesToForward: Long? = null
     var firstVisibleItemPosition: Int = -1
 
     private val openFileLauncher = registerScreen(OpenFileNavigationContract)
@@ -240,10 +255,21 @@ class ConversationViewModel(
         )
     }
 
-    fun forwardMessage() {
+    fun openChatSelectorForForward(messageId: Long) {
+        messagesToForward = messageId
         messengerLauncher.launch(
             MessengerFeature.MessengerParams(true)
         )
+    }
+
+    private fun forwardMessage() {
+        viewModelScope.launch {
+            if(chatId != null && messagesToForward != null) {
+                messengerInteractor.forwardMessage(chatId!!,messagesToForward!!).onSuccess {
+                    Log.d("forwardMessage", "onSuccess ${it?.forwardedMessages}")
+                }
+            }
+        }
     }
 
     fun editMessageMode(
@@ -987,7 +1013,7 @@ class ConversationViewModel(
     }
 
     fun onScrolledToLastPendingMessage() {
-        if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0) {
+        if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0 || currentViewState.messages.isEmpty()) {
             return
         }
         chatId?.let {

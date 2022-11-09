@@ -3,10 +3,8 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import io.fasthome.fenestram_messenger.camera_api.CameraResult
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -33,7 +31,7 @@ class MessengerViewModel(
     profileGuestFeature: ProfileGuestFeature,
     private val loadDataHelper: PagingDataViewModelHelper,
     private val messengerMapper: MessengerMapper,
-    private val params : MessengerNavigationContract.Params
+    private val params: MessengerNavigationContract.Params,
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
     private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
@@ -93,10 +91,14 @@ class MessengerViewModel(
     }
 
     fun launchConversation(messangerViewItem: MessengerViewItem) {
-        if(params.chatSelectionMode) {
+        if (params.chatSelectionMode) {
             exitWithResult(
                 MessengerNavigationContract.createResult(
-                    MessengerNavigationContract.Result.ChatSelected(messangerViewItem.id)
+                    MessengerNavigationContract.Result.ChatSelected(chatName = messangerViewItem.name,
+                        chatId = messangerViewItem.id,
+                        isGroup = messangerViewItem.isGroup,
+                        avatar = messangerViewItem.profileImageUrl,
+                        pendingMessages = messangerViewItem.pendingAmount)
                 )
             )
         } else {

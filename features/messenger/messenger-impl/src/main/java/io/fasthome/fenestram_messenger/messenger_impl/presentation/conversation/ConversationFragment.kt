@@ -345,7 +345,7 @@ class ConversationFragment :
                         vm.replyMessageMode(true, event.conversationViewItem)
                     },
                     onForward = {
-                        vm.forwardMessage()
+                        vm.openChatSelectorForForward(event.conversationViewItem.id)
                     }
                 ).show()
             }
@@ -358,7 +358,7 @@ class ConversationFragment :
                     vm.replyMessageMode(true, event.conversationViewItem)
                 },
                 onForward = {
-                    vm.forwardMessage()
+                    vm.openChatSelectorForForward(event.conversationViewItem.id)
                 }
 
             ).show()
