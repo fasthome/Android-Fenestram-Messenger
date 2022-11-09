@@ -90,7 +90,6 @@ class MessengerRepoImpl(
             messageCallback = { callback.onNewMessage(this) },
             messageActionCallback = { callback.onNewMessageAction(this) },
             messageStatusCallback = { callback.onNewMessageStatus(this) },
-            pendingMessagesCallback = { callback.onNewPendingMessages(this) },
             messageDeletedCallback = { callback.onMessageDeleted(this) }
         )
     }
@@ -101,6 +100,10 @@ class MessengerRepoImpl(
 
     override fun emitMessageRead(chatId: Long, messages: List<Long>) {
         socket.emitMessageRead(chatId, messages)
+    }
+
+    override fun emitChatListeners(subChatId: Long?, unsubChatId: Long?) {
+        socket.emitChatListeners(subChatId, unsubChatId)
     }
 
     override suspend fun uploadImage(

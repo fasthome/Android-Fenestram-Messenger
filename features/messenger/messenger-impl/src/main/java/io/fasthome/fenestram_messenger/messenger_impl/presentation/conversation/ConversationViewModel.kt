@@ -528,7 +528,6 @@ class ConversationViewModel(
             chatId,
             selfUserId,
             { onNewMessageStatus(it) },
-            { onNewPendingMessagesCallback(it) },
             { onMessagesDeletedCallback(it) }
         )
             .flowOn(Dispatchers.Main)
@@ -645,15 +644,15 @@ class ConversationViewModel(
     }
 
     private fun onNewPendingMessagesCallback(pendingMessages: Int) {
-        chatId?.let {
-            if (firstVisibleItemPosition == 0 && pendingMessages > 0) {
-                val unreadMessages = currentViewState.messages.values.toList().subList(
-                    0,
-                    currentViewState.messages.size
-                ).map { message -> message.id }
-                messengerInteractor.emitMessageRead(it, unreadMessages)
-            }
-        }
+//        chatId?.let {
+//            if (firstVisibleItemPosition == 0 && pendingMessages > 0) {
+//                val unreadMessages = currentViewState.messages.values.toList().subList(
+//                    0,
+//                    currentViewState.messages.size
+//                ).map { message -> message.id }
+//                messengerInteractor.emitMessageRead(it, unreadMessages)
+//            }
+//        }
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {

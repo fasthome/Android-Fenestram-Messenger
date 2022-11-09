@@ -49,6 +49,7 @@ interface MessengerRepo {
 
     fun emitMessageAction(chatId: String, action: String)
     fun emitMessageRead(chatId: Long, messages: List<Long>)
+    fun emitChatListeners(subChatId: Long?, unsubChatId: Long?)
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit>
@@ -61,7 +62,6 @@ interface MessengerRepo {
         fun onNewMessage(message: MessageResponseWithChatId)
         fun onNewMessageAction(messageAction: MessageActionResponse)
         fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse)
-        fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse)
         fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage)
     }
 }
