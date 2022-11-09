@@ -32,7 +32,7 @@ object ContactsMapper {
         return when {
             contact.user == null -> {
                 ContactsViewItem.Local(
-                    avatar = R.drawable.ic_baseline_account_circle_24,
+                    avatar = R.drawable.ic_avatar_placeholder,
                     name = PrintableText.Raw(contact.userName ?: contact.phone)
                 )
             }

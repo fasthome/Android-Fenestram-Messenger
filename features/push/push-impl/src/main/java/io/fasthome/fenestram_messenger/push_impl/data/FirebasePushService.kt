@@ -157,14 +157,14 @@ class FirebasePushService : FirebaseMessagingService() {
             Glide.with(this)
                 .asBitmap()
                 .load(profileImageUrlConverter.convert(url))
-                .error(R.drawable.common_avatar)
+                .error(R.drawable.ic_avatar_placeholder)
                 .transform(CircleCrop())
                 .submit(100, 100)
                 .get()
         } catch (e: Exception) {
             Glide.with(this)
                 .asBitmap()
-                .load(R.drawable.common_avatar)
+                .load(R.drawable.ic_avatar_placeholder)
                 .submit(100, 100)
                 .get()
         }

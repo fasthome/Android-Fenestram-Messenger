@@ -59,7 +59,7 @@
             android:layout_height="32dp"
             android:layout_marginVertical="5dp"
             android:layout_marginStart="10dp"
-            android:background="@drawable/common_avatar"
+            android:background="@drawable/ic_avatar_placeholder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/back_button"
             app:layout_constraintTop_toTopOf="parent" />
@@ -258,11 +258,11 @@
             android:id="@+id/iv_close_edit"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_delete"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_edit_message_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_edit_message_title"
+            app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/dark2" />
 
         <TextView
@@ -271,26 +271,38 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
             android:text="@string/edit_message_title"
             app:layout_constraintEnd_toStartOf="@+id/iv_close_edit"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/iv_close_edit" />
+
+        <ImageView
+            android:id="@+id/reply_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:visibility="gone"
+            app:layout_constraintDimensionRatio="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_close_edit"
+            tools:src="@color/white"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_text_to_edit"
             style="@style/Text.Gray.12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:maxLines="2"
+            android:paddingStart="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/tv_edit_message_title"
-            app:layout_constraintTop_toBottomOf="@+id/tv_edit_message_title"
+            app:layout_constraintStart_toEndOf="@+id/reply_image"
+            app:layout_constraintTop_toBottomOf="@+id/iv_close_edit"
             tools:text="Привет, у кого тут день рождения? Поздравляю и желаю счастья, здоровья, удачных релизов и всё. Дальше" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

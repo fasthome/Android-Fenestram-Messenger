@@ -10,7 +10,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="10dp"
-        android:background="@drawable/common_avatar"
+        android:background="@drawable/ic_avatar_placeholder"
         app:layout_constraintBottom_toBottomOf="@+id/message_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -137,7 +137,7 @@ fun createMessengerAdapter(
                 timeView.setPrintableText(item.time)
                 profilePicture.loadCircle(
                     url = item.profileImageUrl,
-                    placeholderRes = R.drawable.ic_baseline_account_circle_24
+                    placeholderRes = R.drawable.ic_avatar_placeholder
                 )
                 status.setImageResource(item.statusIcon)
                 pendingAmount.setPrintableText(item.pendingAmount)

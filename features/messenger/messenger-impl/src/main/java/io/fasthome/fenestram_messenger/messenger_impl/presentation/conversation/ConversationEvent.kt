@@ -24,4 +24,10 @@ sealed interface ConversationEvent {
 
     class ShowSelfImageActionDialog(val conversationViewItem: ConversationViewItem.Self.Image) :
         ConversationEvent
+
+    class ShowSelfTextReplyImageDialog(val conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) :
+            ConversationEvent
+
+    class ShowReceiveTextReplyImageDialog(val conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) :
+            ConversationEvent
 }

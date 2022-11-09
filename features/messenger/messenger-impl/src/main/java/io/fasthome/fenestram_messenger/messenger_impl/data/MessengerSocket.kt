@@ -27,7 +27,8 @@ class MessengerSocket(private val baseUrl: String) {
         messageCallback: MessageResponseWithChatId.() -> Unit,
         messageActionCallback: MessageActionResponse.() -> Unit,
         messageStatusCallback: MessageStatusResponse.() -> Unit,
-        pendingMessagesCallback: PendingMessagesResponse.() -> Unit
+        pendingMessagesCallback: PendingMessagesResponse.() -> Unit,
+        messageDeletedCallback: SocketDeleteMessage.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -54,6 +55,12 @@ class MessengerSocket(private val baseUrl: String) {
                 Log.d(this.javaClass.simpleName, "receiveMessageAction: " + it[0].toString())
                 val messageAction = json.decodeFromString<SocketMessageAction>(it[0].toString())
                 messageActionCallback(messageActionToMessageActionResponse(messageAction.message))
+            }
+
+            socket?.on("receiveDeleteMessage") {
+                Log.d(this.javaClass.simpleName, "receiveDeleteMessage: " + it[0].toString())
+                val messageAction = json.decodeFromString<SocketDeleteMessage>(it[0].toString())
+                messageDeletedCallback(messageAction)
             }
 
             socket?.on("receiveMessageStatus") {
@@ -102,7 +109,8 @@ class MessengerSocket(private val baseUrl: String) {
         access = message?.access ?: emptyList(),
         accessChats = message?.accessChats ?: emptyList(),
         isEdited = message?.isEdited ?: false,
-        status = ""
+        status = "",
+        replyMessage = message?.replyMessage
     )
 
     fun messageActionToMessageActionResponse(messageAction: MessageActionResponse?) =
