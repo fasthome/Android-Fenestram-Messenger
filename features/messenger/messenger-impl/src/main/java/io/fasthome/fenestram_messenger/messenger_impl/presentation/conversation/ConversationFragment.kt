@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
@@ -41,6 +42,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
+import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
 import java.time.ZonedDateTime
 
@@ -70,31 +72,41 @@ class ConversationFragment :
             .register(::permissionFragment)
     )
 
-    private val conversationAdapter = ConversationAdapter(onGroupProfileItemClicked = {
-        vm.onGroupProfileClicked(it)
-    }, onSelfMessageClicked = {
-        vm.onSelfMessageClicked(it)
-    }, onImageClicked = {
-        vm.onImageClicked(it)
-    }, onSelfDownloadDocument = { item, progressListener ->
-        vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
-    }, onRecieveDownloadDocument = { item, progressListener ->
-        vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
-    }, onGroupDownloadDocument = { item, progressListener ->
-        vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
-    }, onSelfMessageLongClicked = {
-        vm.onSelfMessageLongClicked(it)
-    }, onReceiveMessageLongClicked = {
-        vm.onReceiveMessageLongClicked(it)
-    }, onGroupMessageLongClicked = {
-        vm.onGroupMessageLongClicked(it)
-    }, onSelfImageLongClicked = {
-        vm.onSelfImageLongClicked(it)
-    }, onSelfTextReplyImageLongClicked =  {
-        vm.onSelfTextReplyImageLongClicked(it)
-    }, onReceiveTextReplyImageLongClicked = {
-        vm.onReceiveTextReplyImageLongClicked(it)
-    })
+    private val conversationAdapter = ConversationAdapter(
+        viewBinderHelper = ViewBinderHelper(),
+        onGroupProfileItemClicked = {
+            vm.onGroupProfileClicked(it)
+        }, onImageClicked = {
+            vm.onImageClicked(it)
+        }, onSelfDownloadDocument = { item, progressListener ->
+            vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
+        }, onRecieveDownloadDocument = { item, progressListener ->
+            vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
+        }, onGroupDownloadDocument = { item, progressListener ->
+            vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
+        }, onSelfMessageLongClicked = {
+            vm.onSelfMessageLongClicked(it)
+        }, onReceiveMessageLongClicked = {
+            vm.onReceiveMessageLongClicked(it)
+        }, onGroupMessageLongClicked = {
+            vm.onGroupMessageLongClicked(it)
+        }, onSelfImageLongClicked = {
+            vm.onSelfMessageLongClicked(it)
+        }, onSelfTextReplyImageLongClicked = {
+            vm.onSelfMessageLongClicked(it)
+        }, onReceiveTextReplyImageLongClicked = {
+            vm.onReceiveTextReplyImageLongClicked(it)
+        }, onReplyMessageText = {
+            vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
+        }, onGroupImageLongClicked = {
+            vm.onGroupMessageLongClicked(it)
+        }, onReceiveImageLongClicked = {
+            vm.onReceiveMessageLongClicked(it)
+        }, onReplyMessageImage = {
+            vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
+        }, onGroupTextReplyImageLongClicked = {
+            vm.onGroupMessageLongClicked(it)
+        })
 
     private val attachedAdapter = AttachedAdapter(
         onRemoveClicked = {
@@ -161,7 +173,7 @@ class ConversationFragment :
         dropdownMenu.onClick {
             vm.onOpenMenu()
         }
-
+        ivCloseEdit.increaseHitArea(16.dp)
         ivCloseEdit.onClick {
             vm.editMessageMode(false)
             inputMessage.setText("")
@@ -328,71 +340,65 @@ class ConversationFragment :
                     }
                 ).show()
             }
-            is ConversationEvent.ShowSelfMessageActionDialog -> {
-                val canEdit =
-                    event.conversationViewItem.date?.plusDays(1)?.isAfter(ZonedDateTime.now())
-                        ?: false
-                MessageActionDialog.create(
-                    fragment = this,
-                    onDelete = {
-                        vm.onDeleteMessageClicked(event.conversationViewItem)
-                    }, onCopy = {
-                        copyPrintableText(event.conversationViewItem.content)
-                    }, onEdit = if (canEdit) {
-                        { vm.editMessageMode(true, event.conversationViewItem) }
-                    } else null,
-                    onReply = {
-                        vm.replyMessageMode(true, event.conversationViewItem)
-                    }
-                ).show()
-            }
-            is ConversationEvent.ShowReceiveMessageActionDialog -> MessageActionDialog.create(
-                fragment = this,
-                onCopy = {
-                    copyPrintableText(event.conversationViewItem.content)
-                },
-                onReply = {
-                    vm.replyMessageMode(true, event.conversationViewItem)
-                }
 
-            ).show()
-            is ConversationEvent.ShowGroupMessageActionDialog -> MessageActionDialog.create(
-                fragment = this,
-                onCopy = {
-                    copyPrintableText(event.conversationViewItem.content)
-                },
-                onReply = {
-                    vm.replyMessageMode(true, event.conversationViewItem)
-                }
-            ).show()
-            is ConversationEvent.ShowSelfImageActionDialog -> MessageActionDialog.create(
-                fragment = this,
-                onDelete = {
-                    vm.onDeleteMessageClicked(event.conversationViewItem)
-                },
-                onReply = {
-                    vm.replyMessageMode(true, event.conversationViewItem)
-                }
-            ).show()
-            is ConversationEvent.ShowSelfTextReplyImageDialog -> MessageActionDialog.create(
-                fragment = this,
-                onDelete = {
-                    vm.onDeleteMessageClicked(event.conversationViewItem)
-                },
-                onReply = {
-                    vm.replyMessageMode(true,event.conversationViewItem)
-                },
-                onEdit = {
-                    vm.editMessageMode(true,event.conversationViewItem)
-                }
-            ).show()
-            is ConversationEvent.ShowReceiveTextReplyImageDialog -> MessageActionDialog.create(
-                fragment = this,
-                onReply = {
-                    vm.replyMessageMode(true,event.conversationViewItem)
-                }
-            ).show()
+            is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
+                is ConversationViewItem.Self.Text -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Self.Image -> replyImageDialog(event.conversationViewItem)
+                is ConversationViewItem.Self.Document -> Unit
+            }
+
+            is ConversationEvent.ShowReceiveMessageActionDialog -> when (event.conversationViewItem) {
+                is ConversationViewItem.Receive.Text -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Receive.Image -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Receive.Document -> Unit
+            }
+            is ConversationEvent.ShowGroupMessageActionDialog -> when (event.conversationViewItem) {
+                is ConversationViewItem.Group.Text -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
+                is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
+                is ConversationViewItem.Group.Document -> Unit
+            }
         }
+    }
+
+    private fun replyImageDialog(conversationViewItem: ConversationViewItem) = MessageActionDialog.create(
+        fragment = this,
+        onDelete = {
+            if (conversationViewItem is ConversationViewItem.Self) {
+                vm.onDeleteMessageClicked(conversationViewItem)
+            } else null
+        },
+        onReply = {
+            vm.replyMessageMode(true, conversationViewItem)
+        }
+    ).show()
+
+    private fun replyTextDialog(conversationViewItem: ConversationViewItem) {
+
+        val canEdit =
+            conversationViewItem.date?.plusDays(1)?.isAfter(ZonedDateTime.now())
+                ?: false
+
+        MessageActionDialog.create(
+            fragment = this,
+            onDelete = {
+                if (conversationViewItem is ConversationViewItem.Self) {
+                    vm.onDeleteMessageClicked(conversationViewItem)
+                } else null
+            },
+            onCopy = {
+                copyPrintableText(conversationViewItem.content as PrintableText)
+            }, onEdit = if (conversationViewItem is ConversationViewItem.Self) {
+                if (canEdit) {
+                    { vm.editMessageMode(true, conversationViewItem) }
+                } else null
+            } else null,
+            onReply = {
+                vm.replyMessageMode(true, conversationViewItem)
+            }
+        ).show()
     }
 
     private fun renderStateReplyMode(isReplyMode: Boolean, message: ConversationViewItem? = null) {
@@ -406,7 +412,7 @@ class ConversationFragment :
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
@@ -414,7 +420,8 @@ class ConversationFragment :
                         tvEditMessageTitle.isVisible = false
                         replyImage.loadRounded(message.content, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
-                        tvTextToEdit.text = getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
+                        tvTextToEdit.text =
+                            getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
                     }
                 }
             }
@@ -423,15 +430,29 @@ class ConversationFragment :
 
     private fun switchInputPlate(state: Boolean) {
         with(binding) {
-            clEditMessage.isInvisible = !state
+            if (state) {
+                clEditMessage.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        requireContext(),
+                        R.anim.slide_bottom_to_top
+                    )
+                )
+                clEditMessage.isInvisible = false
+                inputMessage.showKeyboard()
+            } else {
+                clEditMessage.isInvisible = true
+            }
+
             attachButton.isVisible = !state
             horizontalPaddingInput(if (state) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,
+                connect(
+                    R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (state) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP)
+                    ConstraintSet.TOP
+                )
             }
             root.setConstraintSet(constraintsSet)
         }

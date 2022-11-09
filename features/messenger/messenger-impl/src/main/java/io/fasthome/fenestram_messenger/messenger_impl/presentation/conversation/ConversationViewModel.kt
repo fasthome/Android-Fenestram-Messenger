@@ -19,7 +19,6 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
@@ -881,7 +880,7 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self.Text) {
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
         sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
     }
 
@@ -904,24 +903,16 @@ class ConversationViewModel(
         }
     }
 
-    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive.Text) {
+    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
-    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group.Text) {
+    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
-    fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
-        sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
-    }
-
-    fun onSelfTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowSelfTextReplyImageDialog(conversationViewItem))
-    }
-
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveTextReplyImageDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {

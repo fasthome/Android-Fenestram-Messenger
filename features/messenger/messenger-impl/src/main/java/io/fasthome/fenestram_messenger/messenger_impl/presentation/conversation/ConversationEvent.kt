@@ -13,21 +13,12 @@ sealed interface ConversationEvent {
     class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) :
         ConversationEvent
 
-    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self.Text) :
+    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self) :
         ConversationEvent
 
-    class ShowReceiveMessageActionDialog(val conversationViewItem: ConversationViewItem.Receive.Text) :
+    class ShowReceiveMessageActionDialog(val conversationViewItem: ConversationViewItem.Receive) :
         ConversationEvent
 
-    class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group.Text) :
+    class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group) :
         ConversationEvent
-
-    class ShowSelfImageActionDialog(val conversationViewItem: ConversationViewItem.Self.Image) :
-        ConversationEvent
-
-    class ShowSelfTextReplyImageDialog(val conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) :
-            ConversationEvent
-
-    class ShowReceiveTextReplyImageDialog(val conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) :
-            ConversationEvent
 }

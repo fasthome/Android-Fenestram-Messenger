@@ -179,6 +179,23 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
         ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
+        data class TextReplyOnImage(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override val sentStatus: SentStatus,
+            override var userName: PrintableText,
+            override val avatar: String,
+            override val phone: String,
+            override val nickname: String,
+            override val userId: Long,
+            override val timeVisible: Boolean,
+            val isEdited: Boolean,
+            override val messageType: String?,
+            override val replyMessage: ConversationViewItem?,
+        ) : Group(userName, avatar, phone, userId), ConversationTextItem
+
         data class Image(
             override val id: Long,
             override val content: String,
