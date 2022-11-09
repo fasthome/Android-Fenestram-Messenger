@@ -160,7 +160,7 @@ class MessengerInteractor(
         //todo isResumed оставить, возможно вернется баг с загрузкой из onResume
         page++
         return if (newMessagesCount != 0) {
-            while (page * PAGE_SIZE < newMessagesCount) page++
+            page += newMessagesCount / (page * PAGE_SIZE)
             messageRepo.getMessagesFromChat(id, page * PAGE_SIZE, 1)
         } else {
             messageRepo.getMessagesFromChat(id, PAGE_SIZE, page)

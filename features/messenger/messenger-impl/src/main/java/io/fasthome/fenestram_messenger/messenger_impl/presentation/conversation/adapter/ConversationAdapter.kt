@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.links.addCommonLinks
 import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.delay
 
@@ -36,8 +37,15 @@ class ConversationAdapter(
             ConversationViewItem::timeVisible,
         ),
         AdapterUtil.adapterDelegatesManager(
-            createConversationSelfTextAdapterDelegate(onSelfMessageClicked, onSelfMessageLongClicked),
-            createConversationSelfImageAdapterDelegate(onSelfMessageClicked, onImageClicked, onSelfImageLongClicked),
+            createConversationSelfTextAdapterDelegate(
+                onSelfMessageClicked,
+                onSelfMessageLongClicked
+            ),
+            createConversationSelfImageAdapterDelegate(
+                onSelfMessageClicked,
+                onImageClicked,
+                onSelfImageLongClicked
+            ),
             createConversationSelfDocumentAdapterDelegate(
                 onSelfMessageClicked,
                 onSelfDownloadDocument
@@ -45,7 +53,10 @@ class ConversationAdapter(
             createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
             createConversationReceiveImageAdapterDelegate(onImageClicked),
             createConversationReceiveDocumentAdapterDelegate(onRecieveDownloadDocument),
-            createConversationGroupTextAdapterDelegate(onGroupProfileItemClicked, onGroupMessageLongClicked),
+            createConversationGroupTextAdapterDelegate(
+                onGroupProfileItemClicked,
+                onGroupMessageLongClicked
+            ),
             createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
             createConversationGroupDocumentAdapterDelegate(
                 onGroupProfileItemClicked,
@@ -121,6 +132,13 @@ fun createConversationSelfTextAdapterDelegate(
             }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
+            messageContent.setOnLongClickListener {
+                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                    onSelfMessageLongClicked(item)
+                }
+                true
+            }
+            messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
@@ -169,7 +187,7 @@ fun createConversationSelfDocumentAdapterDelegate(
             onDownloadDocument(item) {
                 binding.progressBar.progress = it
 
-                if(it == 100) delay(400)
+                if (it == 100) delay(400)
                 binding.progressBar.isInvisible = it == 100
             }
         }
@@ -207,6 +225,13 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
                 true
             }
             messageContent.setPrintableText(item.content)
+            messageContent.setOnLongClickListener {
+                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                    onReceiveMessageLongClicked(item)
+                }
+                true
+            }
+            messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
         }
@@ -292,6 +317,13 @@ fun createConversationGroupTextAdapterDelegate(
             tvEdited.isVisible = item.isEdited
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
+            messageContent.setOnLongClickListener {
+                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                    onGroupMessageLongClicked(item)
+                }
+                true
+            }
+            messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)

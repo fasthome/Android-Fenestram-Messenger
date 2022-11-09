@@ -33,7 +33,7 @@
             android:fontFamily="@font/geometria"
             android:maxEms="16"
             style="@style/Text.Blue.12sp"
-            android:textColor="@color/blue_2"
+            android:textColor="@color/blue3"
             app:barrierMargin="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
