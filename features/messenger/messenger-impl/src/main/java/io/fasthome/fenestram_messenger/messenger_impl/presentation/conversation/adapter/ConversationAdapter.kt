@@ -207,7 +207,7 @@ fun createConversationGroupTextAdapterDelegate(
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
         }
     }
 
@@ -229,7 +229,7 @@ fun createConversationGroupImageAdapterDelegate(
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
         }
     }
 
@@ -257,7 +257,7 @@ fun createConversationGroupDocumentAdapterDelegate(
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
             fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.common_avatar)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             sendTimeView.isVisible = item.timeVisible
         }
     }
