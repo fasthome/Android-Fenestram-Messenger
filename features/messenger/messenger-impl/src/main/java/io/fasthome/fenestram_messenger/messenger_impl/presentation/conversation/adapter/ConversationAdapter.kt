@@ -570,6 +570,7 @@ private fun SwipeRevealLayout.setTouchListener(
     onClick: () -> Unit,
     onChildClickView: ((view: View) -> Unit?)? = null
 ) {
+    setNeedCloseOnActionPoinerUp(true)
     setSwipeListener(ignoreViews, object : SwipeRevealLayout.SimpleSwipeListener() {
         override fun onOpened(view: SwipeRevealLayout?) {
             context.vibrate()

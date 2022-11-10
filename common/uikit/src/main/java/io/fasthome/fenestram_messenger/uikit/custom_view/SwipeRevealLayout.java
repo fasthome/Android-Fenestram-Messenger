@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -85,6 +86,7 @@ public class SwipeRevealLayout extends ViewGroup {
      */
     private int mMinDistRequestDisallowParent = 0;
 
+    private boolean needCloseOnActionPoinerUp = false;
     private boolean mIsOpenBeforeInit = false;
     private volatile boolean mAborted = false;
     private volatile boolean mIsScrolling = false;
@@ -112,6 +114,12 @@ public class SwipeRevealLayout extends ViewGroup {
     private int mOnLayoutCount = 0;
 
     private List<View> childViews;
+
+    private Handler returnSwipeHandler = new Handler();
+
+    public void setNeedCloseOnActionPoinerUp(boolean needCloseOnActionPoinerUp) {
+        this.needCloseOnActionPoinerUp = needCloseOnActionPoinerUp;
+    }
 
     interface DragStateChangeListener {
         void onDragStateChanged(int state);
@@ -201,21 +209,33 @@ public class SwipeRevealLayout extends ViewGroup {
     private long touchDownTime = 0L;
     private boolean shouldLetGo = false;
 
+    private Runnable closeAction = () -> close(true);
+
+    private void updateCallback() {
+        if (needCloseOnActionPoinerUp) {
+            returnSwipeHandler.removeCallbacks(closeAction);
+            returnSwipeHandler.postDelayed(closeAction, 1000L);
+        }
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (isDragLocked()) {
             return super.onInterceptTouchEvent(ev);
         }
-        Log.d("SwipeLayout", "onInterceptTouchEvent: " + ev);
+        Log.d("SwipeLayout", "needClose " + needCloseOnActionPoinerUp + " onInterceptTouchEvent: " + ev);
 
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 PointF downPointF = new PointF(ev.getX(), ev.getY());
                 touchDownTime = now();
                 actionDownPoint = downPointF;
+                updateCallback();
                 break;
             case MotionEvent.ACTION_UP:
-                close(true);
+                if (needCloseOnActionPoinerUp) {
+                    close(true);
+                }
                 if (mSwipeListener != null) {
                     PointF upPointF = new PointF(ev.getX(), ev.getY());
                     int touchTimeFactor = 200;
@@ -240,12 +260,23 @@ public class SwipeRevealLayout extends ViewGroup {
                     } else {
                         if (shouldLetGo) {
                             mSwipeListener.onLetGo();
+                        } else {
+                            close(true);
                         }
                     }
                     return true;
                 }
                 break;
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_CANCEL:
+                if (needCloseOnActionPoinerUp) {
+                    close(true);
+                    return true;
+                }
+                break;
             case MotionEvent.ACTION_MOVE:
+                updateCallback();
                 break;
         }
         mDragHelper.processTouchEvent(ev);
