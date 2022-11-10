@@ -264,26 +264,29 @@ class ConversationViewModel(
 
     private fun forwardMessage() {
         viewModelScope.launch {
-            if(chatId != null && messagesToForward != null) {
-               val result = messengerInteractor.forwardMessage(chatId!!,messagesToForward!!)
+            if (chatId != null && messagesToForward != null) {
+                val result = messengerInteractor.forwardMessage(chatId!!, messagesToForward!!)
                 when (result) {
                     is CallResult.Error -> {
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
                         messagesToForward = null
                     }
                     is CallResult.Success -> {
+                        if (lastPage == null) return@launch
                         updateState { state ->
                             val tempMessages =
-                                (result.data?.forwardedMessages ?: return@updateState state).map { it.toConversationViewItem(
-                                    selfUserId,
-                                    params.chat.isGroup,
-                                    storageUrlConverter)
+                                (result.data?.forwardedMessages ?: return@updateState state).map {
+                                    it.toConversationViewItem(
+                                        selfUserId,
+                                        params.chat.isGroup,
+                                        storageUrlConverter,
+                                        true)
                                 }
-                            var messages = state.messages
+                            val messages = state.messages.toMutableMap()
                             tempMessages.forEach {
-                                when(it) {
+                                when (it) {
                                     is ConversationViewItem.Self.ForwardText -> {
-                                        messages = mapOf(it.localId to it).plus(messages)
+                                        messages += mapOf(it.localId to it)
                                     }
                                 }
                             }
@@ -345,11 +348,12 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
-                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(
-                            selfUserId,
-                            params.chat.isGroup,
-                            storageUrlConverter
-                        ) as ConversationViewItem.Self
+                        val tempMessage =
+                            (result.data ?: return@updateState state).toConversationViewItem(
+                                selfUserId,
+                                params.chat.isGroup,
+                                storageUrlConverter
+                            ) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
@@ -484,7 +488,8 @@ class ConversationViewModel(
     private fun editMessage(newText: String) {
         viewModelScope.launch {
             val messageToEdit =
-                (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
+                (currentViewState.inputMessageMode as? InputMessageMode.Edit
+                    ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -959,7 +964,8 @@ class ConversationViewModel(
             SentStatus.Error -> sendEvent(ConversationEvent.ShowErrorSentDialog(conversationViewItem))
             SentStatus.Sent,
             SentStatus.Received,
-            SentStatus.Read -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            SentStatus.Read,
+            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
             SentStatus.Loading -> Unit
             SentStatus.None -> Unit
         }
@@ -1043,14 +1049,18 @@ class ConversationViewModel(
         chatId?.let {
             val selfMessageOffset =
                 if (currentViewState.messages.toList().first().second.id == 0L) 1 else 0
-            val readMessages = currentViewState.messages
-                .toList().subList(
-                    firstVisibleItemPosition + selfMessageOffset,
-                    currentViewState.newMessagesCount + selfMessageOffset
-                )
-                .map { messageViewItem -> messageViewItem.second.id }
-            messengerInteractor.emitMessageRead(it, readMessages)
-            updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
+            try {
+                val readMessages = currentViewState.messages
+                    .toList().subList(
+                        firstVisibleItemPosition + selfMessageOffset,
+                        currentViewState.newMessagesCount + selfMessageOffset
+                    )
+                    .map { messageViewItem -> messageViewItem.second.id }
+                messengerInteractor.emitMessageRead(it, readMessages)
+                updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
+            } catch (e: Exception) {
+                Log.e("ConversationViewModel onScrolledToLastPendingMessage:", e.message.toString())
+            }
         }
     }
 }

@@ -188,8 +188,7 @@ fun createConversationSelfReplyTextAdapterDelegate(
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-        val replyMessage = item.replyMessage as? ConversationTextItem
-            replyAuthorName.text = getPrintableRawText(replyMessage?.userName)
+            replyAuthorName.text = getPrintableRawText(item.userName)
         messageContent.setPrintableText(item.content)
         messageContent.setOnLongClickListener {
             if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {

@@ -67,7 +67,7 @@ fun Message.toConversationViewItem(
             when (messageType) {
                 MESSAGE_TYPE_TEXT -> {
                     when {
-                        (replyMessage?.messageType == MESSAGE_TYPE_TEXT || (replyMessage == null && forwardedMessages.isNullOrEmpty())) -> {
+                        (replyMessage?.messageType == MESSAGE_TYPE_TEXT || (replyMessage == null &&  !isForwardedMessage)) -> {
                             ConversationViewItem.Self.Text(
                                 content = PrintableText.Raw(text),
                                 time = PrintableText.Raw(timeFormatter.format(date)),
