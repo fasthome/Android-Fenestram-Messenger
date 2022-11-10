@@ -215,6 +215,7 @@ public class SwipeRevealLayout extends ViewGroup {
                 actionDownPoint = downPointF;
                 break;
             case MotionEvent.ACTION_UP:
+                close(true);
                 if (mSwipeListener != null) {
                     PointF upPointF = new PointF(ev.getX(), ev.getY());
                     int touchTimeFactor = 200;
@@ -239,8 +240,6 @@ public class SwipeRevealLayout extends ViewGroup {
                     } else {
                         if (shouldLetGo) {
                             mSwipeListener.onLetGo();
-                        } else {
-                            close(true);
                         }
                     }
                     return true;

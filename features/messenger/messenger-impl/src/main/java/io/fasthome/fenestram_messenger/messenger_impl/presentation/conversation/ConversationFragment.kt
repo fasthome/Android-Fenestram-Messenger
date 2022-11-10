@@ -367,11 +367,9 @@ class ConversationFragment :
 
     private fun replyImageDialog(conversationViewItem: ConversationViewItem) = MessageActionDialog.create(
         fragment = this,
-        onDelete = {
-            if (conversationViewItem is ConversationViewItem.Self) {
-                vm.onDeleteMessageClicked(conversationViewItem)
-            } else null
-        },
+        onDelete = if (conversationViewItem is ConversationViewItem.Self) {
+            { vm.onDeleteMessageClicked(conversationViewItem) }
+        } else null,
         onReply = {
             vm.replyMessageMode(true, conversationViewItem)
         }
@@ -385,11 +383,9 @@ class ConversationFragment :
 
         MessageActionDialog.create(
             fragment = this,
-            onDelete = {
-                if (conversationViewItem is ConversationViewItem.Self) {
-                    vm.onDeleteMessageClicked(conversationViewItem)
-                } else null
-            },
+            onDelete = if (conversationViewItem is ConversationViewItem.Self) {
+                { vm.onDeleteMessageClicked(conversationViewItem) }
+            } else null,
             onCopy = {
                 copyPrintableText(conversationViewItem.content as PrintableText)
             }, onEdit = if (conversationViewItem is ConversationViewItem.Self) {
