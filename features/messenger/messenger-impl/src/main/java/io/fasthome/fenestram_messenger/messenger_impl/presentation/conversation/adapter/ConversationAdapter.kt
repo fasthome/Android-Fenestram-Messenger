@@ -43,7 +43,10 @@ class ConversationAdapter(
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
 
-    //---Клики по пересланным сообщениям---//
+    //---Клики по пересланным сообщениям
+    onSelfForwardLongClicked: (ConversationViewItem.Self.ForwardText) -> Unit,
+
+    //---Клики по ответам на сообщения---//
     onSelfTextReplyImageLongClicked: (item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
     onReceiveTextReplyImageLongClicked: (item: ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
     onGroupTextReplyImageLongClicked: (item: ConversationViewItem.Group.TextReplyOnImage) -> Unit,
@@ -78,6 +81,11 @@ class ConversationAdapter(
                 onImageClicked = onImageClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageImage
+            ),
+            createConversationSelfReplyTextAdapterDelegate(
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageText,
+                onSelfForwardLongClicked = onSelfForwardLongClicked
             ),
 
             createConversationReceiveTextAdapterDelegate(
@@ -169,6 +177,33 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
             status.setImageResource(item.statusIcon)
         }
     }
+
+fun createConversationSelfReplyTextAdapterDelegate(
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessage: (ConversationViewItem) -> Unit,
+    onSelfForwardLongClicked: (ConversationViewItem.Self.ForwardText) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Self.ForwardText, ConversationItemSelfForwardTextBinding>(
+    ConversationItemSelfForwardTextBinding::inflate
+) {
+    bindWithBinding {
+        viewBinderHelper.bind(root, item.id.toString())
+        viewBinderHelper.setOpenOnlyOne(true)
+        val replyMessage = item.replyMessage as? ConversationTextItem
+            replyAuthorName.text = getPrintableRawText(replyMessage?.userName)
+        messageContent.setPrintableText(item.content)
+        messageContent.setOnLongClickListener {
+            if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                onSelfForwardLongClicked(item)
+            }
+            true
+        }
+        messageContent.addCommonLinks()
+        sendTimeView.setPrintableText(item.time)
+        sendTimeView.isVisible = item.timeVisible
+        status.isVisible = item.timeVisible
+        status.setImageResource(item.statusIcon)
+    }
+}
 
 fun createConversationSelfTextAdapterDelegate(
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,

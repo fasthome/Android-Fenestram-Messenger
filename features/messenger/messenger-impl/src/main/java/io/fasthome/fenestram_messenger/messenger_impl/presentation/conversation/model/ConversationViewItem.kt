@@ -67,6 +67,20 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
         ) : Self(), ConversationTextItem
 
+        data class ForwardText(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override var sentStatus: SentStatus,
+            override val localId: String,
+            override val timeVisible: Boolean,
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: ConversationViewItem?,
+            override var userName: PrintableText,
+        ) : Self(), ConversationTextItem
+
         data class Image(
             override val id: Long,
             override val content: String,

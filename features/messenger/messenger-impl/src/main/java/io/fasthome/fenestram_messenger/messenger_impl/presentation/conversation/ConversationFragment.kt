@@ -106,6 +106,8 @@ class ConversationFragment :
             vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
         }, onGroupTextReplyImageLongClicked = {
             vm.onGroupMessageLongClicked(it)
+        }, onSelfForwardLongClicked = {
+            vm.onSelfForwardLongClicked(it)
         })
 
     private val attachedAdapter = AttachedAdapter(
@@ -397,6 +399,9 @@ class ConversationFragment :
             } else null,
             onReply = {
                 vm.replyMessageMode(true, conversationViewItem)
+            },
+            onForward = {
+                vm.openChatSelectorForForward(conversationViewItem.id)
             }
         ).show()
     }

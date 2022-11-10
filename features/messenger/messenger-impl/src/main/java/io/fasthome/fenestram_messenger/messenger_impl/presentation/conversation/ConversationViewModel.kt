@@ -265,8 +265,34 @@ class ConversationViewModel(
     private fun forwardMessage() {
         viewModelScope.launch {
             if(chatId != null && messagesToForward != null) {
-                messengerInteractor.forwardMessage(chatId!!,messagesToForward!!).onSuccess {
-                    Log.d("forwardMessage", "onSuccess ${it?.forwardedMessages}")
+               val result = messengerInteractor.forwardMessage(chatId!!,messagesToForward!!)
+                when (result) {
+                    is CallResult.Error -> {
+                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
+                        messagesToForward = null
+                    }
+                    is CallResult.Success -> {
+                        updateState { state ->
+                            val tempMessages =
+                                (result.data?.forwardedMessages ?: return@updateState state).map { it.toConversationViewItem(
+                                    selfUserId,
+                                    params.chat.isGroup,
+                                    storageUrlConverter)
+                                }
+                            var messages = state.messages
+                            tempMessages.forEach {
+                                when(it) {
+                                    is ConversationViewItem.Self.ForwardText -> {
+                                        messages = mapOf(it.localId to it).plus(messages)
+                                    }
+                                }
+                            }
+                            state.copy(
+                                inputMessageMode = InputMessageMode.Default,
+                                messages = messages
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -966,6 +992,10 @@ class ConversationViewModel(
 
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
+    fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.ForwardText) {
+        //
     }
 
     fun onTypingMessage() {

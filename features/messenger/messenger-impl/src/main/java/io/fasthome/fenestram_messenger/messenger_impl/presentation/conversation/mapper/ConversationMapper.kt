@@ -32,16 +32,24 @@ fun List<Message>.toConversationItems(
     selfUserId: Long?,
     isGroup: Boolean,
     profileImageUrlConverter: StorageUrlConverter,
-): Map<String, ConversationViewItem> = this.associateBy({
-    UUID.randomUUID().toString()
-}, {
-    it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter)
-})
+    isForwardedMessage: Boolean = false
+): Map<String, ConversationViewItem> {
+    val resultMap: MutableMap<String, ConversationViewItem> = mutableMapOf()
+    this.forEach {
+        if(it.forwardedMessages.isNullOrEmpty() || isForwardedMessage) {
+            resultMap[UUID.randomUUID().toString()] = it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter, isForwardedMessage)
+        } else {
+            resultMap += it.forwardedMessages.toConversationItems(selfUserId, isGroup, profileImageUrlConverter, true)
+        }
+    }
+    return resultMap
+}
 
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
     profileImageUrlConverter: StorageUrlConverter,
+    isForwardedMessage: Boolean = false
 ): ConversationViewItem {
     if (isDate) {
         return ConversationViewItem.System(
@@ -58,44 +66,65 @@ fun Message.toConversationViewItem(
         userSenderId -> {
             when (messageType) {
                 MESSAGE_TYPE_TEXT -> {
-                    if (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null)
-                        return ConversationViewItem.Self.Text(
-                            content = PrintableText.Raw(text),
-                            time = PrintableText.Raw(timeFormatter.format(date)),
-                            sentStatus = sentStatus,
-                            date = date,
-                            id = id,
-                            localId = UUID.randomUUID().toString(),
-                            timeVisible = true,
-                            isEdited = isEdited,
-                            nickname = initiator?.nickname,
-                            messageType = messageType,
-                            replyMessage = replyMessage?.toConversationViewItem(
-                                selfUserId,
-                                isGroup,
-                                profileImageUrlConverter
-                            ),
-                            userName = PrintableText.Raw(getName(initiator))
-                        )
-                    else
-                        return ConversationViewItem.Self.TextReplyOnImage(
-                            content = PrintableText.Raw(text),
-                            time = PrintableText.Raw(timeFormatter.format(date)),
-                            sentStatus = sentStatus,
-                            date = date,
-                            id = id,
-                            localId = UUID.randomUUID().toString(),
-                            timeVisible = true,
-                            isEdited = isEdited,
-                            nickname = initiator?.nickname,
-                            messageType = messageType,
-                            replyMessage = replyMessage.toConversationViewItem(
-                                selfUserId,
-                                isGroup,
-                                profileImageUrlConverter
-                            ),
-                            userName = PrintableText.Raw(getName(initiator))
-                        )
+                    when {
+                        (replyMessage?.messageType == MESSAGE_TYPE_TEXT || (replyMessage == null && forwardedMessages.isNullOrEmpty())) -> {
+                            ConversationViewItem.Self.Text(
+                                content = PrintableText.Raw(text),
+                                time = PrintableText.Raw(timeFormatter.format(date)),
+                                sentStatus = sentStatus,
+                                date = date,
+                                id = id,
+                                localId = UUID.randomUUID().toString(),
+                                timeVisible = true,
+                                isEdited = isEdited,
+                                nickname = initiator?.nickname,
+                                messageType = messageType,
+                                replyMessage = replyMessage?.toConversationViewItem(
+                                    selfUserId,
+                                    isGroup,
+                                    profileImageUrlConverter
+                                ),
+                                userName = PrintableText.Raw(getName(initiator))
+                            )
+                        }
+                        isForwardedMessage -> {
+                            ConversationViewItem.Self.ForwardText(content = PrintableText.Raw(text),
+                                time = PrintableText.Raw(timeFormatter.format(date)),
+                                sentStatus = sentStatus,
+                                date = date,
+                                id = id,
+                                localId = UUID.randomUUID().toString(),
+                                timeVisible = true,
+                                nickname = initiator?.nickname,
+                                messageType = messageType,
+                                replyMessage = replyMessage?.toConversationViewItem(
+                                    selfUserId,
+                                    isGroup,
+                                    profileImageUrlConverter
+                                ),
+                                userName = PrintableText.Raw(getName(initiator)))
+                        }
+                        else -> {
+                            ConversationViewItem.Self.TextReplyOnImage(
+                                content = PrintableText.Raw(text),
+                                time = PrintableText.Raw(timeFormatter.format(date)),
+                                sentStatus = sentStatus,
+                                date = date,
+                                id = id,
+                                localId = UUID.randomUUID().toString(),
+                                timeVisible = true,
+                                isEdited = isEdited,
+                                nickname = initiator?.nickname,
+                                messageType = messageType,
+                                replyMessage = replyMessage!!.toConversationViewItem(
+                                    selfUserId,
+                                    isGroup,
+                                    profileImageUrlConverter
+                                ),
+                                userName = PrintableText.Raw(getName(initiator))
+                            )
+                        }
+                    }
                 }
                 MESSAGE_TYPE_IMAGE -> {
                     ConversationViewItem.Self.Image(
@@ -543,7 +572,7 @@ fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): Con
                     sentStatus = getSentStatus(
                         messageStatus
                     )
-                ) ?: error("Unknown View Item $oldViewItem !")
+                ) ?: (oldViewItem as? ConversationViewItem.Self.ForwardText) ?: error("Unknown View Item $oldViewItem !")
         }
         MESSAGE_TYPE_IMAGE -> {
             (oldViewItem as ConversationViewItem.Self.Image).copy(
