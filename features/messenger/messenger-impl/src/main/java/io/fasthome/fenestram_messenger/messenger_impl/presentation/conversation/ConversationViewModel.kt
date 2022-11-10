@@ -234,8 +234,10 @@ class ConversationViewModel(
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                inputMessageMode = if (isEditMode) InputMessageMode.Edit(conversationViewItem
-                    ?: return@updateState state) else InputMessageMode.Default
+                inputMessageMode = if (isEditMode) InputMessageMode.Edit(
+                    conversationViewItem
+                        ?: return@updateState state
+                ) else InputMessageMode.Default
             )
         }
     }
@@ -244,8 +246,11 @@ class ConversationViewModel(
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                inputMessageMode = if (isReplyMode) InputMessageMode.Reply(conversationViewItem
-                    ?: return@updateState state) else InputMessageMode.Default)
+                inputMessageMode = if (isReplyMode) InputMessageMode.Reply(
+                    conversationViewItem
+                        ?: return@updateState state
+                ) else InputMessageMode.Default
+            )
         }
     }
 
@@ -269,7 +274,11 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
-                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(selfUserId, params.chat.isGroup, storageUrlConverter) as ConversationViewItem.Self
+                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(
+                            selfUserId,
+                            params.chat.isGroup,
+                            storageUrlConverter
+                        ) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
@@ -322,7 +331,11 @@ class ConversationViewModel(
 
         val tempFileMessages = attachedFiles.map {
             when (it) {
-                is AttachedFile.Image -> createImageMessage(null, it.content, getPrintableRawText(currentViewState.userName))
+                is AttachedFile.Image -> createImageMessage(
+                    null,
+                    it.content,
+                    getPrintableRawText(currentViewState.userName)
+                )
                 is AttachedFile.Document -> createDocumentMessage(null, it.file)
             }
         }
@@ -399,7 +412,8 @@ class ConversationViewModel(
 
     private fun editMessage(newText: String) {
         viewModelScope.launch {
-            val messageToEdit = (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
+            val messageToEdit =
+                (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -421,7 +435,7 @@ class ConversationViewModel(
                     val key = message.keys.firstOrNull() ?: return@launch
                     val newMessages = currentViewState.messages.mapValues {
                         if (it.key == key) {
-                            when(messageToEdit) {
+                            when (messageToEdit) {
                                 is ConversationViewItem.Self.Text -> {
                                     messageToEdit.copy(
                                         content = PrintableText.Raw(newText), isEdited = true
@@ -826,18 +840,6 @@ class ConversationViewModel(
         }
     }
 
-    fun onSelfMessageClicked(selfViewItem: ConversationViewItem.Self) {
-        when (selfViewItem.sentStatus) {
-            SentStatus.Sent -> Unit
-            SentStatus.Error -> {
-                sendEvent(ConversationEvent.ShowErrorSentDialog(selfViewItem))
-            }
-            SentStatus.Read -> Unit
-            SentStatus.Loading -> Unit
-            SentStatus.None -> Unit
-        }
-    }
-
     fun onRetrySentClicked(selfViewItem: ConversationViewItem.Self) {
         updateState { state ->
             state.copy(
@@ -881,7 +883,14 @@ class ConversationViewModel(
     }
 
     fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        when (conversationViewItem.sentStatus) {
+            SentStatus.Error -> sendEvent(ConversationEvent.ShowErrorSentDialog(conversationViewItem))
+            SentStatus.Sent,
+            SentStatus.Received,
+            SentStatus.Read -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            SentStatus.Loading -> Unit
+            SentStatus.None -> Unit
+        }
     }
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
