@@ -933,7 +933,7 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self.Text) {
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
         sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
     }
 
@@ -956,24 +956,16 @@ class ConversationViewModel(
         }
     }
 
-    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive.Text) {
+    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
-    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group.Text) {
+    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
-    fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
-        sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
-    }
-
-    fun onSelfTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowSelfTextReplyImageDialog(conversationViewItem))
-    }
-
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveTextReplyImageDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {
