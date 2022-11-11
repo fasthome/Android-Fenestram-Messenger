@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
-import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
@@ -139,19 +138,17 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
         ConversationItemSelfTextReplyImageBinding::inflate
     ) {
-
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessage(item) },
-            onClick = {
-                onSelfTextReplyImageLongClicked(item)
-            },
-            ignoreViews = listOf(binding.clMessage),
-            onChildClickView = {
-                (item.replyMessage as? ConversationImageItem)?.let {
-                    onImageClicked(it.content)
-                }
-            }
         )
+        binding.contentLayout.onClick {
+            onSelfTextReplyImageLongClicked(item)
+        }
+        binding.replyImage.onClick {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                onImageClicked(it.content)
+            }
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -180,10 +177,10 @@ fun createConversationSelfTextAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessage(item) },
-            onClick = {
-                onSelfMessageLongClicked(item)
-            }
         )
+        binding.contentLayout.onClick {
+            onSelfMessageLongClicked(item)
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -219,12 +216,13 @@ fun createConversationSelfImageAdapterDelegate(
 ) {
     binding.root.setTouchListener(
         onReplyMessage = { onReplyMessageImage(item) },
-        onClick = { onSelfImageLongClicked(item) },
-        ignoreViews = listOf(binding.messageContent),
-        onChildClickView = {
-            onImageClicked(item.content)
-        }
     )
+    binding.contentLayout.onClick {
+        onSelfImageLongClicked(item)
+    }
+    binding.messageContent.onClick {
+        onImageClicked(item.content)
+    }
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
@@ -275,8 +273,10 @@ fun createConversationReceiveTextAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessage(item) },
-            onClick = { onReceiveMessageLongClicked(item) }
         )
+        binding.contentLayout.onClick {
+            onReceiveMessageLongClicked(item)
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -318,16 +318,15 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessage(item) },
-            onClick = {
-                onReceiveTextReplyImageLongClicked(item)
-            },
-            ignoreViews = listOf(binding.clMessageContent),
-            onChildClickView = {
-                (item.replyMessage as? ConversationImageItem)?.let {
-                    onImageClicked(it.content)
-                }
-            }
         )
+        binding.contentLayout.onClick {
+            onReceiveTextReplyImageLongClicked(item)
+        }
+        binding.replyImage.onClick {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                onImageClicked(it.content)
+            }
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -335,9 +334,6 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
             (item.replyMessage as? ConversationImageItem)?.let {
                 replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
-                replyImage.onClick {
-                    onImageClicked(it.content)
-                }
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -359,8 +355,10 @@ fun createConversationReceiveImageAdapterDelegate(
     }
     binding.root.setTouchListener(
         onReplyMessage = { onReplyMessageImage(item) },
-        onClick = { onReceiveImageLongClicked(item) }
     )
+    binding.contentLayout.onClick {
+        onReceiveImageLongClicked(item)
+    }
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
@@ -409,24 +407,18 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessage(item) },
-            onClick = {
-                onGroupTextReplyImageLongClicked(item)
-            },
-            ignoreViews = listOf(binding.textContainer, binding.avatar),
-            onChildClickView = { view ->
-                when (view.id) {
-                    binding.textContainer.id -> {
-                        (item.replyMessage as? ConversationImageItem)?.let {
-                            onImageClicked(it.content)
-                        }
-                    }
-                    binding.avatar.id -> {
-                        onProfileClicked(item)
-                    }
-                    else -> error("Unknown child view! $view")
-                }
-            }
         )
+        binding.contentLayout.onClick {
+            onGroupTextReplyImageLongClicked(item)
+        }
+        binding.replyImage.onClick {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                onImageClicked(it.content)
+            }
+        }
+        binding.avatar.onClick {
+            onProfileClicked(item)
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -455,14 +447,13 @@ fun createConversationGroupTextAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessage(item) },
-            onClick = {
-                onGroupMessageLongClicked(item)
-            },
-            ignoreViews = listOf(binding.avatar),
-            onChildClickView = {
-                onGroupProfileItemClicked(item)
-            }
         )
+        binding.contentLayout.onClick {
+            onGroupMessageLongClicked(item)
+        }
+        binding.avatar.onClick {
+            onGroupProfileItemClicked(item)
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -510,8 +501,10 @@ fun createConversationGroupImageAdapterDelegate(
         }
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessageImage(item) },
-            onClick = { onGroupImageLongClicked(item) }
         )
+        binding.contentLayout.onClick {
+            onGroupImageLongClicked(item)
+        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -565,13 +558,11 @@ fun createConversationSystemAdapterDelegate() =
     }
 
 private fun SwipeRevealLayout.setTouchListener(
-    ignoreViews: List<View>? = null,
     onReplyMessage: () -> Unit,
-    onClick: () -> Unit,
-    onChildClickView: ((view: View) -> Unit?)? = null
+    onClick: (() -> Unit?)? = null,
 ) {
     setNeedCloseOnActionPoinerUp(true)
-    setSwipeListener(ignoreViews, object : SwipeRevealLayout.SimpleSwipeListener() {
+    setSwipeListener(object : SwipeRevealLayout.SimpleSwipeListener() {
         override fun onOpened(view: SwipeRevealLayout?) {
             context.vibrate()
         }
@@ -582,12 +573,7 @@ private fun SwipeRevealLayout.setTouchListener(
         }
 
         override fun onClick() {
-            onClick()
+            onClick?.invoke()
         }
-
-        override fun onChildViewClick(view: View) {
-            onChildClickView?.invoke(view)
-        }
-
     })
 }
