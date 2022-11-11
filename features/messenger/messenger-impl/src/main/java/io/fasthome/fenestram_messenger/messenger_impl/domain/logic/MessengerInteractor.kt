@@ -61,10 +61,12 @@ class MessengerInteractor(
     }
 
     suspend fun replyMessage(chatId: Long, messageId: Long, text: String, messageType: String) =
-        messageRepo.replyMessage(chatId = chatId,
+        messageRepo.replyMessage(
+            chatId = chatId,
             messageId = messageId,
             text = text,
-            messageType = messageType)
+            messageType = messageType
+        )
 
     suspend fun getMessagesFromChat(
         id: Long,

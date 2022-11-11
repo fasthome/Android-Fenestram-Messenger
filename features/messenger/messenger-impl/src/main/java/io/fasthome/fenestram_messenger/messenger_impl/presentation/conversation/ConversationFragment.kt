@@ -90,7 +90,7 @@ class ConversationFragment :
         vm.onGroupMessageLongClicked(it)
     }, onSelfImageLongClicked = {
         vm.onSelfImageLongClicked(it)
-    }, onSelfTextReplyImageLongClicked =  {
+    }, onSelfTextReplyImageLongClicked = {
         vm.onSelfTextReplyImageLongClicked(it)
     }, onReceiveTextReplyImageLongClicked = {
         vm.onReceiveTextReplyImageLongClicked(it)
@@ -119,8 +119,7 @@ class ConversationFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 if (vm.firstVisibleItemPosition != linearLayoutManager.findFirstVisibleItemPosition()) {
-                    vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
-                    vm.onScrolledToLastPendingMessage()
+                    vm.onScrolledToLastPendingMessage(linearLayoutManager.findFirstVisibleItemPosition())
                 }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems(isResumed)
@@ -184,7 +183,10 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.loadCircle(
+            url = state.avatar,
+            placeholderRes = R.drawable.ic_avatar_placeholder
+        )
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
@@ -380,16 +382,16 @@ class ConversationFragment :
                     vm.onDeleteMessageClicked(event.conversationViewItem)
                 },
                 onReply = {
-                    vm.replyMessageMode(true,event.conversationViewItem)
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 },
                 onEdit = {
-                    vm.editMessageMode(true,event.conversationViewItem)
+                    vm.editMessageMode(true, event.conversationViewItem)
                 }
             ).show()
             is ConversationEvent.ShowReceiveTextReplyImageDialog -> MessageActionDialog.create(
                 fragment = this,
                 onReply = {
-                    vm.replyMessageMode(true,event.conversationViewItem)
+                    vm.replyMessageMode(true, event.conversationViewItem)
                 }
             ).show()
         }
@@ -406,7 +408,12 @@ class ConversationFragment :
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+                        tvTextToEdit.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.white
+                            )
+                        )
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
@@ -414,7 +421,10 @@ class ConversationFragment :
                         tvEditMessageTitle.isVisible = false
                         replyImage.loadRounded(message.content, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
-                        tvTextToEdit.text = getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
+                        tvTextToEdit.text = getString(
+                            R.string.reply_image_from_ph,
+                            getPrintableRawText(message.userName)
+                        )
                     }
                 }
             }
@@ -428,10 +438,12 @@ class ConversationFragment :
             horizontalPaddingInput(if (state) R.dimen.input_message_edit_mode_padding else R.dimen.input_message_default_padding)
             val constraintsSet = ConstraintSet().apply {
                 clone(root)
-                connect(R.id.messages_list,
+                connect(
+                    R.id.messages_list,
                     ConstraintSet.BOTTOM,
                     if (state) R.id.cl_edit_message else R.id.input_message,
-                    ConstraintSet.TOP)
+                    ConstraintSet.TOP
+                )
             }
             root.setConstraintSet(constraintsSet)
         }
