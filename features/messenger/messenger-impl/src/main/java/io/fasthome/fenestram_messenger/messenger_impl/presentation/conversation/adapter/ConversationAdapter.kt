@@ -426,9 +426,6 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
             (item.replyMessage as? ConversationImageItem)?.let {
                 replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
-                replyImage.onClick {
-                    onImageClicked(it.content)
-                }
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
