@@ -51,5 +51,5 @@ class MessageResponseWithChatId(
     val usersHaveRead: List<Long>?,
 
     @SerialName("reactions")
-    val reactions: MessageReactions? = null
+    val reactions: MessageReactions? = null,
 )

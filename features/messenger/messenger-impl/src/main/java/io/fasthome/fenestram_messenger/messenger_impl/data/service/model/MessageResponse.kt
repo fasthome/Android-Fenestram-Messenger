@@ -42,5 +42,11 @@ class MessageResponse(
     val forwardedMessages: List<MessageResponse>,
 
     @SerialName("author")
-    val author: Initiator?
+    val author: Initiator?,
+
+    @SerialName("content")
+    val content: List<String?>? = null,
+
+    @SerialName("reactions")
+    val reactions: MessageReactions? = null,
 )

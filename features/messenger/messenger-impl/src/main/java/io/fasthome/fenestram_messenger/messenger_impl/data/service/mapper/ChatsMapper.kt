@@ -43,7 +43,7 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
         replyMessage = messageResponse.replyMessage?.let {
             GetChatsMapper(profileImageUrlConverter).responseToMessage(it)
         },
-        usersHaveRead = messageResponse.usersHaveRead
+        usersHaveRead = messageResponse.usersHaveRead?.filterNotNull()
     )
 
     fun toMessageAction(messageActionResponse: MessageActionResponse): MessageAction {
