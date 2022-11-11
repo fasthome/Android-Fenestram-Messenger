@@ -108,6 +108,10 @@ class ConversationFragment :
             vm.onGroupMessageLongClicked(it)
         }, onSelfForwardLongClicked = {
             vm.onSelfForwardLongClicked(it)
+        }, onReceiveForwardLongClicked = {
+            // TODO: K
+        }, onGroupForwardLongClicked = {
+            // TODO: K
         })
 
     private val attachedAdapter = AttachedAdapter(

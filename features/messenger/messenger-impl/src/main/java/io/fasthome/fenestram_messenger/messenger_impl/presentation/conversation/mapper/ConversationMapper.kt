@@ -32,14 +32,15 @@ fun List<Message>.toConversationItems(
     selfUserId: Long?,
     isGroup: Boolean,
     profileImageUrlConverter: StorageUrlConverter,
-    isForwardedMessage: Boolean = false
+    isForwardedMessage: Boolean = false,
+    isReceiveForwarded: Boolean = false
 ): Map<String, ConversationViewItem> {
     val resultMap: MutableMap<String, ConversationViewItem> = mutableMapOf()
     this.forEach {
         if(it.forwardedMessages.isNullOrEmpty() || isForwardedMessage) {
-            resultMap[UUID.randomUUID().toString()] = it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter, isForwardedMessage)
+            resultMap[UUID.randomUUID().toString()] = it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter, isForwardedMessage, isReceiveForwarded)
         } else {
-            resultMap += it.forwardedMessages.toConversationItems(selfUserId, isGroup, profileImageUrlConverter, true)
+            resultMap += it.forwardedMessages.toConversationItems(selfUserId, isGroup, profileImageUrlConverter, true, it.initiator?.id != selfUserId)
         }
     }
     return resultMap
@@ -49,7 +50,8 @@ fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
     profileImageUrlConverter: StorageUrlConverter,
-    isForwardedMessage: Boolean = false
+    isForwardedMessage: Boolean = false,
+    isReceiveForwarded: Boolean = false
 ): ConversationViewItem {
     if (isDate) {
         return ConversationViewItem.System(
@@ -62,8 +64,8 @@ fun Message.toConversationViewItem(
         )
     }
     val sentStatus = getSentStatus(messageStatus)
-    return when (selfUserId) {
-        userSenderId -> {
+    return when {
+        (selfUserId == userSenderId || (isForwardedMessage && !isReceiveForwarded)) -> {
             when (messageType) {
                 MESSAGE_TYPE_TEXT -> {
                     when {
@@ -178,7 +180,9 @@ fun Message.toConversationViewItem(
             if (isGroup == true) {
                 when (messageType) {
                     MESSAGE_TYPE_TEXT -> {
-                        if (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null) {
+                        when
+                        {
+                            (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null) -> {
                             ConversationViewItem.Group.Text(
                                 content = PrintableText.Raw(text),
                                 time = PrintableText.Raw(timeFormatter.format(date)),
@@ -199,7 +203,29 @@ fun Message.toConversationViewItem(
                                     profileImageUrlConverter
                                 )
                             )
-                        } else {
+                        }
+                            isForwardedMessage -> {
+                                ConversationViewItem.Group.ForwardText(
+                                    content = PrintableText.Raw(text),
+                                    time = PrintableText.Raw(timeFormatter.format(date)),
+                                    sentStatus = SentStatus.None,
+                                    userName = PrintableText.Raw(getName(initiator)),
+                                    avatar = initiator?.avatar ?: "",
+                                    date = date,
+                                    id = id,
+                                    phone = initiator?.phone ?: "",
+                                    nickname = initiator?.nickname ?: "",
+                                    userId = initiator?.id ?: 0,
+                                    timeVisible = true,
+                                    messageType = messageType,
+                                    replyMessage = replyMessage?.toConversationViewItem(
+                                        selfUserId,
+                                        isGroup,
+                                        profileImageUrlConverter
+                                    )
+                                )
+                            }
+                            else -> {
                             ConversationViewItem.Group.TextReplyOnImage(
                                 content = PrintableText.Raw(text),
                                 time = PrintableText.Raw(timeFormatter.format(date)),
@@ -220,6 +246,7 @@ fun Message.toConversationViewItem(
                                     profileImageUrlConverter
                                 )
                             )
+                        }
                         }
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -275,42 +302,64 @@ fun Message.toConversationViewItem(
             } else {
                 when (messageType) {
                     MESSAGE_TYPE_TEXT -> {
-                        if (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null)
-                            return ConversationViewItem.Receive.Text(
-                                content = PrintableText.Raw(text),
-                                time = PrintableText.Raw(timeFormatter.format(date)),
-                                sentStatus = SentStatus.None,
-                                date = date,
-                                id = id,
-                                timeVisible = true,
-                                isEdited = isEdited,
-                                nickname = initiator?.nickname,
-                                messageType = messageType,
-                                replyMessage = replyMessage?.toConversationViewItem(
-                                    selfUserId,
-                                    isGroup,
-                                    profileImageUrlConverter
-                                ),
-                                userName = PrintableText.Raw(getName(initiator))
-                            )
-                        else return ConversationViewItem.Receive.TextReplyOnImage(
-                            content = PrintableText.Raw(text),
-                            time = PrintableText.Raw(timeFormatter.format(date)),
-                            sentStatus = SentStatus.None,
-                            date = date,
-                            id = id,
-                            timeVisible = true,
-                            isEdited = isEdited,
-                            nickname = initiator?.nickname,
-                            messageType = messageType,
-                            replyMessage = replyMessage.toConversationViewItem(
-                                selfUserId,
-                                isGroup,
-                                profileImageUrlConverter
-                            ),
-                            userName = PrintableText.Raw(getName(initiator))
-                        )
-                    }
+                        when {
+                            (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null && !isForwardedMessage) -> {
+                                ConversationViewItem.Receive.Text(
+                                    content = PrintableText.Raw(text),
+                                    time = PrintableText.Raw(timeFormatter.format(date)),
+                                    sentStatus = SentStatus.None,
+                                    date = date,
+                                    id = id,
+                                    timeVisible = true,
+                                    isEdited = isEdited,
+                                    nickname = initiator?.nickname,
+                                    messageType = messageType,
+                                    replyMessage = replyMessage?.toConversationViewItem(
+                                        selfUserId,
+                                        isGroup,
+                                        profileImageUrlConverter
+                                    ),
+                                    userName = PrintableText.Raw(getName(initiator))
+                                )
+                            }
+                            isForwardedMessage -> {
+                                ConversationViewItem.Receive.ForwardText(content = PrintableText.Raw(
+                                    text),
+                                    time = PrintableText.Raw(timeFormatter.format(date)),
+                                    sentStatus = sentStatus,
+                                    date = date,
+                                    id = id,
+                                    timeVisible = true,
+                                    nickname = initiator?.nickname,
+                                    messageType = messageType,
+                                    replyMessage = replyMessage?.toConversationViewItem(
+                                        selfUserId,
+                                        isGroup,
+                                        profileImageUrlConverter
+                                    ),
+                                    userName = PrintableText.Raw(getName(initiator)))
+                            }
+                            else -> {
+                                ConversationViewItem.Receive.TextReplyOnImage(
+                                    content = PrintableText.Raw(text),
+                                    time = PrintableText.Raw(timeFormatter.format(date)),
+                                    sentStatus = SentStatus.None,
+                                    date = date,
+                                    id = id,
+                                    timeVisible = true,
+                                    isEdited = isEdited,
+                                    nickname = initiator?.nickname,
+                                    messageType = messageType,
+                                    replyMessage = replyMessage?.toConversationViewItem(
+                                        selfUserId,
+                                        isGroup,
+                                        profileImageUrlConverter
+                                    ),
+                                    userName = PrintableText.Raw(getName(initiator))
+                                )
+                            }
+                        }
+                }
                     MESSAGE_TYPE_IMAGE -> {
                         ConversationViewItem.Receive.Image(
                             content = profileImageUrlConverter.convert(text),

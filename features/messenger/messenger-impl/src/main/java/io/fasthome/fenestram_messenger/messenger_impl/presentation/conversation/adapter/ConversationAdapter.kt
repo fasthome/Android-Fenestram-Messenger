@@ -45,6 +45,8 @@ class ConversationAdapter(
 
     //---Клики по пересланным сообщениям
     onSelfForwardLongClicked: (ConversationViewItem.Self.ForwardText) -> Unit,
+    onReceiveForwardLongClicked: (ConversationViewItem.Receive.ForwardText) -> Unit,
+    onGroupForwardLongClicked: (ConversationViewItem.Group.ForwardText) -> Unit,
 
     //---Клики по ответам на сообщения---//
     onSelfTextReplyImageLongClicked: (item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
@@ -94,6 +96,11 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper
             ),
             createConversationReceiveDocumentAdapterDelegate(onDownloadDocument = onRecieveDownloadDocument),
+            createConversationReceiveReplyTextAdapterDelegate(
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageText,
+                onReceiveForwardLongClicked = onReceiveForwardLongClicked
+            ),
             createConversationReceiveTextReplyImageAdapterDelegate(
                 onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
                 onImageClicked = onImageClicked,
@@ -123,6 +130,11 @@ class ConversationAdapter(
             createConversationGroupDocumentAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
                 onDownloadDocument = onGroupDownloadDocument
+            ),
+            createConversationGroupForwardTextAdapterDelegate(
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageText,
+                onGroupForwardLongClicked = onGroupForwardLongClicked
             ),
             createConversationGroupTextReplyImageAdapterDelegate(
                 onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
@@ -341,6 +353,30 @@ fun createConversationReceiveTextAdapterDelegate(
         }
     }
 
+fun createConversationReceiveReplyTextAdapterDelegate(
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessage: (ConversationViewItem) -> Unit,
+    onReceiveForwardLongClicked: (ConversationViewItem.Receive.ForwardText) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Receive.ForwardText, ConversationItemReceiveForwardTextBinding>(
+    ConversationItemReceiveForwardTextBinding::inflate
+) {
+    bindWithBinding {
+        viewBinderHelper.bind(root, item.id.toString())
+        viewBinderHelper.setOpenOnlyOne(true)
+        replyAuthorName.text = getPrintableRawText(item.userName)
+        messageContent.setPrintableText(item.content)
+        messageContent.setOnLongClickListener {
+            if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                onReceiveForwardLongClicked(item)
+            }
+            true
+        }
+        messageContent.addCommonLinks()
+        sendTimeView.setPrintableText(item.time)
+        sendTimeView.isVisible = item.timeVisible
+    }
+}
+
 fun createConversationReceiveTextReplyImageAdapterDelegate(
     onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
     onImageClicked: (String) -> Unit,
@@ -525,6 +561,31 @@ fun createConversationGroupTextAdapterDelegate(
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
         }
     }
+
+
+fun createConversationGroupForwardTextAdapterDelegate(
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessage: (ConversationViewItem) -> Unit,
+    onGroupForwardLongClicked: (ConversationViewItem.Group.ForwardText) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Group.ForwardText, ConversationItemGroupForwardTextBinding>(
+    ConversationItemGroupForwardTextBinding::inflate
+) {
+    bindWithBinding {
+        viewBinderHelper.bind(root, item.id.toString())
+        viewBinderHelper.setOpenOnlyOne(true)
+        replyAuthorName.text = getPrintableRawText(item.userName)
+        messageContent.setPrintableText(item.content)
+        messageContent.setOnLongClickListener {
+            if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
+                onGroupForwardLongClicked(item)
+            }
+            true
+        }
+        messageContent.addCommonLinks()
+        sendTimeView.setPrintableText(item.time)
+        sendTimeView.isVisible = item.timeVisible
+    }
+}
 
 fun createConversationGroupImageAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
