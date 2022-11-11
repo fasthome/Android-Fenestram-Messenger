@@ -26,7 +26,6 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-
         <ImageView
             android:id="@+id/avatar"
             android:layout_width="32dp"
@@ -36,17 +35,20 @@
             app:layout_constraintBottom_toBottomOf="@+id/text_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/text_container"
             app:layout_constraintVertical_bias="1.0" />
 
         <LinearLayout
             android:id="@+id/text_container"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:layout_marginEnd="180dp"
             android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/avatar"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/message_rectangle_receive">
 
             <TextView
                 android:id="@+id/username"
@@ -57,53 +59,42 @@
                 android:paddingTop="5dp"
                 android:text="Мария Сергеевна"
                 tools:ignore="HardcodedText" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_reply_message"
+            <TextView
+                android:id="@+id/reply_message_name"
+                style="@style/Text.Blue.12sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="200dp"
-                android:paddingBottom="6dp"
-                android:visibility="gone"
-                android:layout_marginStart="12dp"
-                tools:visibility="visible">
+                android:layout_marginBottom="5dp"
+                android:fontFamily="@font/geometria"
+                android:maxEms="16"
+                android:textColor="@color/blue3"
+                app:barrierMargin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                android:paddingHorizontal="12dp"
 
-                <View
-                    android:id="@+id/blue_line"
-                    android:layout_width="1dp"
-                    android:layout_height="0dp"
-                    android:background="@color/blue"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:viewBindingIgnore="true" />
+                tools:text="Ответ на фото\nдля Мария Сергеева" />
 
-                <TextView
-                    android:id="@+id/reply_author_name"
-                    style="@style/Text.Gray.12sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="11dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@id/blue_line"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Мария Сергеева" />
-
-                <TextView
-                    android:id="@+id/reply_content"
-                    style="@style/Text.White.12sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@id/reply_author_name"
-                    app:layout_constraintTop_toBottomOf="@id/reply_author_name"
-                    tools:text="@string/MessageContentCheckBig" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/reply_image"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/geometria"
+                android:maxEms="16"
+                android:minWidth="48dp"
+                android:minHeight="24dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                app:barrierMargin="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
 
             <TextView
                 android:id="@+id/message_content"
@@ -121,24 +112,6 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 tools:ignore="TouchTargetSizeCheck" />
-
-            <TextView
-                android:id="@+id/tv_edited"
-                style="@style/Text.Gray.10sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="5dp"
-                android:text="@string/messenger_edited"
-                android:textColor="@color/gray4"
-                android:visibility="gone"
-                app:barrierMargin="5dp"
-                app:layout_constraintEnd_toEndOf="@+id/message_content"
-                app:layout_constraintTop_toBottomOf="@+id/message_content"
-                tools:visibility="visible" />
-
 
         </LinearLayout>
 

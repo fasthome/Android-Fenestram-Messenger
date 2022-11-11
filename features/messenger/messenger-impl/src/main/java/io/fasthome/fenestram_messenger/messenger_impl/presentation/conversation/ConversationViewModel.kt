@@ -277,12 +277,11 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
-                        val tempMessage =
-                            (result.data ?: return@updateState state).toConversationViewItem(
-                                selfUserId,
-                                params.chat.isGroup,
-                                storageUrlConverter
-                            ) as ConversationViewItem.Self
+                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(
+                            selfUserId,
+                            params.chat.isGroup,
+                            storageUrlConverter
+                        ) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
@@ -416,8 +415,8 @@ class ConversationViewModel(
 
     private fun editMessage(newText: String) {
         viewModelScope.launch {
-            val messageToEdit = (currentViewState.inputMessageMode as? InputMessageMode.Edit
-                ?: return@launch).messageToEdit
+            val messageToEdit =
+                (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -506,8 +505,7 @@ class ConversationViewModel(
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
-                    tempMessage.userName =
-                        PrintableText.Raw(sendMessageResponse.data.userName ?: "")
+                    tempMessage.userName = PrintableText.Raw(sendMessageResponse.data.userName ?: "")
                     when (messageType) {
                         MessageType.Text -> {
                             updateStatus(
@@ -833,18 +831,6 @@ class ConversationViewModel(
         }
     }
 
-    fun onSelfMessageClicked(selfViewItem: ConversationViewItem.Self) {
-        when (selfViewItem.sentStatus) {
-            SentStatus.Sent -> Unit
-            SentStatus.Error -> {
-                sendEvent(ConversationEvent.ShowErrorSentDialog(selfViewItem))
-            }
-            SentStatus.Read -> Unit
-            SentStatus.Loading -> Unit
-            SentStatus.None -> Unit
-        }
-    }
-
     fun onRetrySentClicked(selfViewItem: ConversationViewItem.Self) {
         updateState { state ->
             state.copy(
@@ -887,8 +873,15 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self.Text) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
+        when (conversationViewItem.sentStatus) {
+            SentStatus.Error -> sendEvent(ConversationEvent.ShowErrorSentDialog(conversationViewItem))
+            SentStatus.Sent,
+            SentStatus.Received,
+            SentStatus.Read -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            SentStatus.Loading -> Unit
+            SentStatus.None -> Unit
+        }
     }
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
@@ -910,24 +903,16 @@ class ConversationViewModel(
         }
     }
 
-    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive.Text) {
+    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
-    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group.Text) {
+    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
-    fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
-        sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
-    }
-
-    fun onSelfTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowSelfTextReplyImageDialog(conversationViewItem))
-    }
-
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveTextReplyImageDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {
