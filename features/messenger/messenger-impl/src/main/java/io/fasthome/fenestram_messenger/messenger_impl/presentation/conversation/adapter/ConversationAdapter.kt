@@ -192,12 +192,6 @@ fun createConversationSelfTextAdapterDelegate(
             }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
-            messageContent.setOnLongClickListener {
-                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
-                    onSelfMessageLongClicked(item)
-                }
-                true
-            }
             messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
@@ -290,17 +284,7 @@ fun createConversationReceiveTextAdapterDelegate(
                 clReplyMessage.isVisible = false
             }
             tvEdited.isVisible = item.isEdited
-            root.setOnLongClickListener {
-                onReceiveMessageLongClicked(item)
-                true
-            }
             messageContent.setPrintableText(item.content)
-            messageContent.setOnLongClickListener {
-                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
-                    onReceiveMessageLongClicked(item)
-                }
-                true
-            }
             messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
@@ -467,12 +451,6 @@ fun createConversationGroupTextAdapterDelegate(
             tvEdited.isVisible = item.isEdited
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
-            messageContent.setOnLongClickListener {
-                if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
-                    onGroupMessageLongClicked(item)
-                }
-                true
-            }
             messageContent.addCommonLinks()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible

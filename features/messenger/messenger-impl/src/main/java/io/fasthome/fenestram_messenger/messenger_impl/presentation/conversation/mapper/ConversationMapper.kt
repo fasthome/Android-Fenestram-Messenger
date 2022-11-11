@@ -23,6 +23,10 @@ const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
 const val MESSAGE_TYPE_DOCUMENT = "document"
+const val MESSAGE_TYPE_VOICE = "voices"
+const val MESSAGE_TYPE_IMAGES = "images"
+const val MESSAGE_TYPE_VIDEOS = "videos"
+const val MESSAGE_TYPE_AUDIOS = "audios"
 
 const val MESSAGE_STATUS_SENT = "sent"
 const val MESSAGE_STATUS_RECEIVED = "pending"
@@ -142,7 +146,16 @@ fun Message.toConversationViewItem(
                         timeVisible = true,
                     )
                 }
-                else -> error("Unknown Message Type! type $messageType")
+                else -> {
+                    ConversationViewItem.System(
+                        content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        timeVisible = true
+                    )
+                }
             }
         }
         else -> {
@@ -241,7 +254,16 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
-                    else -> error("Unknown Message Type! type $messageType")
+                    else -> {
+                        ConversationViewItem.System(
+                            content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
+                            date = date,
+                            id = id,
+                            timeVisible = true
+                        )
+                    }
                 }
             } else {
                 when (messageType) {
@@ -323,7 +345,14 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
-                    else -> error("Unknown Message Type! type $messageType")
+                    else ->  ConversationViewItem.System(
+                        content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        timeVisible = true
+                    )
                 }
             }
         }
