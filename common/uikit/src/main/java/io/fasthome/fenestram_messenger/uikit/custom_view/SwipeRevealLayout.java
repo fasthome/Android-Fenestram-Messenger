@@ -249,8 +249,8 @@ public class SwipeRevealLayout extends ViewGroup {
                         } else {
                             close(true);
                         }
+                        return true;
                     }
-                    return false;
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
