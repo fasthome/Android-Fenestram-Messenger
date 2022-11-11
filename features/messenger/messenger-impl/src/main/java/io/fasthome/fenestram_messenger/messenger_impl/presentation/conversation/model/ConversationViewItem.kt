@@ -67,7 +67,7 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
         ) : Self(), ConversationTextItem
 
-        data class ForwardText(
+        data class Forward(
             override val id: Long,
             override val content: PrintableText,
             override val time: PrintableText,
@@ -79,7 +79,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-        ) : Self(), ConversationTextItem
+            val forwardMessage: Self
+        ) : Self()
 
         data class Image(
             override val id: Long,
@@ -128,7 +129,7 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
         ) : Receive(), ConversationTextItem
 
-        data class ForwardText(
+        data class Forward(
             override val id: Long,
             override val content: PrintableText,
             override val time: PrintableText,
@@ -139,7 +140,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-        ) : Receive(), ConversationTextItem
+            val forwardMessage: Receive
+        ) : Receive()
 
         data class TextReplyOnImage(
             override val id: Long,
@@ -206,7 +208,7 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
         ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
-        data class ForwardText(
+        data class Forward(
             override val id: Long,
             override val content: PrintableText,
             override val time: PrintableText,
@@ -220,7 +222,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-        ) : Group(userName, avatar, phone, userId), ConversationTextItem
+            val forwardMessage: Group
+        ) : Group(userName, avatar, phone, userId)
 
         data class TextReplyOnImage(
             override val id: Long,

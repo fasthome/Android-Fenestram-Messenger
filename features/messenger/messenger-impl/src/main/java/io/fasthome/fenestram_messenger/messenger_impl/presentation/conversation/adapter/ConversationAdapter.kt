@@ -43,9 +43,9 @@ class ConversationAdapter(
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
 
     //---Клики по пересланным сообщениям
-    onSelfForwardLongClicked: (ConversationViewItem.Self.ForwardText) -> Unit,
-    onReceiveForwardLongClicked: (ConversationViewItem.Receive.ForwardText) -> Unit,
-    onGroupForwardLongClicked: (ConversationViewItem.Group.ForwardText) -> Unit,
+    onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
+    onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
+    onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
 
     //---Клики по ответам на сообщения---//
     onSelfTextReplyImageLongClicked: (item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
@@ -83,7 +83,7 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageImage
             ),
-            createConversationSelfReplyTextAdapterDelegate(
+            createConversationSelfForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
                 onSelfForwardLongClicked = onSelfForwardLongClicked
@@ -95,7 +95,7 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper
             ),
             createConversationReceiveDocumentAdapterDelegate(onDownloadDocument = onRecieveDownloadDocument),
-            createConversationReceiveReplyTextAdapterDelegate(
+            createConversationReceiveForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
                 onReceiveForwardLongClicked = onReceiveForwardLongClicked
@@ -130,7 +130,7 @@ class ConversationAdapter(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
                 onDownloadDocument = onGroupDownloadDocument
             ),
-            createConversationGroupForwardTextAdapterDelegate(
+            createConversationGroupForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
                 onGroupForwardLongClicked = onGroupForwardLongClicked
@@ -187,25 +187,35 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
         }
     }
 
-fun createConversationSelfReplyTextAdapterDelegate(
+fun createConversationSelfForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
-    onSelfForwardLongClicked: (ConversationViewItem.Self.ForwardText) -> Unit
-) = adapterDelegateViewBinding<ConversationViewItem.Self.ForwardText, ConversationItemSelfForwardTextBinding>(
+    onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
     ConversationItemSelfForwardTextBinding::inflate
 ) {
     bindWithBinding {
+        when(item.forwardMessage) {
+            is ConversationTextItem -> {
+                messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
+                messageContent.addCommonLinks()
+            }
+            is ConversationImageItem -> {
+                blueLine.isInvisible = true
+                ivArrow.isVisible = false
+                messageContent.isVisible = false
+                forwardImage.isVisible = true
+                forwardImage.loadRounded(item.forwardMessage.content as String)
+            }
+        }
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-            replyAuthorName.text = getPrintableRawText(item.userName)
-        messageContent.setPrintableText(item.content)
         messageContent.setOnLongClickListener {
             if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
                 onSelfForwardLongClicked(item)
             }
             true
         }
-        messageContent.addCommonLinks()
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
         status.isVisible = item.timeVisible
@@ -353,25 +363,36 @@ fun createConversationReceiveTextAdapterDelegate(
         }
     }
 
-fun createConversationReceiveReplyTextAdapterDelegate(
+fun createConversationReceiveForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
-    onReceiveForwardLongClicked: (ConversationViewItem.Receive.ForwardText) -> Unit
-) = adapterDelegateViewBinding<ConversationViewItem.Receive.ForwardText, ConversationItemReceiveForwardTextBinding>(
+    onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
     ConversationItemReceiveForwardTextBinding::inflate
 ) {
     bindWithBinding {
+        when(item.forwardMessage) {
+            is ConversationTextItem -> {
+                messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
+                messageContent.addCommonLinks()
+            }
+            is ConversationImageItem -> {
+                blueLine.isInvisible = true
+                ivArrow.isVisible = false
+                messageContent.isVisible = false
+                forwardImage.isVisible = true
+                forwardImage.loadRounded(item.forwardMessage.content as String)
+            }
+        }
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-        replyAuthorName.text = getPrintableRawText(item.userName)
-        messageContent.setPrintableText(item.content)
+        username.text = getPrintableRawText(item.userName)
         messageContent.setOnLongClickListener {
             if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
                 onReceiveForwardLongClicked(item)
             }
             true
         }
-        messageContent.addCommonLinks()
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
     }
@@ -551,25 +572,39 @@ fun createConversationGroupTextAdapterDelegate(
     }
 
 
-fun createConversationGroupForwardTextAdapterDelegate(
+fun createConversationGroupForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
-    onGroupForwardLongClicked: (ConversationViewItem.Group.ForwardText) -> Unit
-) = adapterDelegateViewBinding<ConversationViewItem.Group.ForwardText, ConversationItemGroupForwardTextBinding>(
+    onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
     ConversationItemGroupForwardTextBinding::inflate
 ) {
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-        replyAuthorName.text = getPrintableRawText(item.userName)
-        messageContent.setPrintableText(item.content)
+
+        when(item.forwardMessage) {
+            is ConversationTextItem -> {
+                forwardAuthorName.setPrintableText(item.forwardMessage.userName)
+                messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
+                messageContent.addCommonLinks()
+            }
+            is ConversationImageItem -> {
+                blueLine.isInvisible = true
+                ivArrow.isVisible = false
+                messageContent.isVisible = false
+                forwardImage.isVisible = true
+                forwardImage.loadRounded(item.forwardMessage.content as String)
+            }
+        }
+
+        username.setPrintableText(item.userName)
         messageContent.setOnLongClickListener {
             if (messageContent.selectionStart == -1 && messageContent.selectionEnd == -1) {
                 onGroupForwardLongClicked(item)
             }
             true
         }
-        messageContent.addCommonLinks()
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
     }

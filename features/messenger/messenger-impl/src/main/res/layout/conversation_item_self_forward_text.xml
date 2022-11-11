@@ -46,7 +46,7 @@
             tools:ignore="TouchTargetSizeCheck">
 
             <TextView
-                android:id="@+id/reply_author_name"
+                android:id="@+id/forward_author_name"
                 style="@style/Text.Blue.14sp"
                 android:layout_marginStart="8dp"
                 android:layout_width="wrap_content"
@@ -58,7 +58,7 @@
                 tools:text="Мария Сергеева" />
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/iv_arrow"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_action_forward"
@@ -74,7 +74,7 @@
                 android:background="@color/blue"
                 android:layout_marginStart="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView3"
+                app:layout_constraintStart_toEndOf="@+id/iv_arrow"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:viewBindingIgnore="true" />
 
@@ -89,12 +89,28 @@
                 android:textSize="14sp"
                 app:barrierMargin="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/reply_author_name"
+                app:layout_constraintEnd_toEndOf="@+id/forward_author_name"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/reply_author_name"
-                app:layout_constraintTop_toBottomOf="@+id/reply_author_name"
+                app:layout_constraintStart_toStartOf="@+id/forward_author_name"
+                app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="@string/MessageContentCheckBig" />
+
+            <ImageView
+                android:id="@+id/forward_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:maxWidth="300dp"
+                android:minWidth="200dp"
+                android:minHeight="175dp"
+                android:visibility="gone"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/forward_author_name"
+                app:layout_constraintTop_toBottomOf="@+id/forward_author_name" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

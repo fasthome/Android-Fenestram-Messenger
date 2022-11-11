@@ -279,13 +279,12 @@ class ConversationViewModel(
                                     it.toConversationViewItem(
                                         selfUserId,
                                         params.chat.isGroup,
-                                        storageUrlConverter,
-                                        true)
+                                        storageUrlConverter)
                                 }
                             val messages = state.messages.toMutableMap()
                             tempMessages.forEach {
                                 when (it) {
-                                    is ConversationViewItem.Self.ForwardText -> {
+                                    is ConversationViewItem.Self.Forward -> {
                                         messages += mapOf(it.localId to it)
                                     }
                                 }
@@ -1002,7 +1001,7 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
-    fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.ForwardText) {
+    fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
         //
     }
 
