@@ -150,8 +150,6 @@ public class SwipeRevealLayout extends ViewGroup {
         void onLetGo();
 
         void onClick();
-
-        void onChildViewClick(View view);
     }
 
     /**
@@ -177,10 +175,6 @@ public class SwipeRevealLayout extends ViewGroup {
 
         @Override
         public void onClick() {
-        }
-
-        @Override
-        public void onChildViewClick(View view) {
         }
     }
 
@@ -225,6 +219,7 @@ public class SwipeRevealLayout extends ViewGroup {
         }
         Log.d("SwipeLayout", "needClose " + needCloseOnActionPoinerUp + " onInterceptTouchEvent: " + ev);
 
+
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 PointF downPointF = new PointF(ev.getX(), ev.getY());
@@ -246,25 +241,16 @@ public class SwipeRevealLayout extends ViewGroup {
 
                     boolean shouldClick = isTouchLength && isTouchDuration;
                     if (shouldClick) {
-                        if (childViews != null) {
-                            for (View view : childViews) {
-                                if (ev.getX() > view.getLeft()
-                                        && ev.getX() < view.getRight()) {
-                                    mSwipeListener.onChildViewClick(view);
-                                    return true;
-                                }
-                            }
-                        }
                         mSwipeListener.onClick();
-                        return true;
+                        return false;
                     } else {
                         if (shouldLetGo) {
                             mSwipeListener.onLetGo();
                         } else {
                             close(true);
                         }
+                        return true;
                     }
-                    return true;
                 }
                 break;
             case MotionEvent.ACTION_POINTER_UP:
@@ -272,7 +258,7 @@ public class SwipeRevealLayout extends ViewGroup {
             case MotionEvent.ACTION_CANCEL:
                 if (needCloseOnActionPoinerUp) {
                     close(true);
-                    return true;
+                    return false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -642,9 +628,8 @@ public class SwipeRevealLayout extends ViewGroup {
         return mDragEdge;
     }
 
-    public void setSwipeListener(List<View> childViews, SwipeListener listener) {
+    public void setSwipeListener(SwipeListener listener) {
         mSwipeListener = listener;
-        this.childViews = childViews;
     }
 
     /**
