@@ -359,6 +359,10 @@ class ConversationFragment :
                 is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Document -> Unit
             }
+            is ConversationEvent.DotsEvent -> {
+                binding.userStatusView.setPrintableText(event.userStatus)
+                binding.userStatusDots.setPrintableText(event.userStatusDots)
+            }
         }
     }
 

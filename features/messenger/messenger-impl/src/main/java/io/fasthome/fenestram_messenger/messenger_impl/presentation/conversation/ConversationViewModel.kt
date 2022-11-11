@@ -661,39 +661,46 @@ class ConversationViewModel(
         }
     }
 
+    private var lastDotsStatus = PrintableText.Raw(".")
+
     private fun subscribeMessageActions() {
         messengerInteractor.messageActionsFlow
             .flowOn(Dispatchers.Main)
             .onEach { messageAction ->
                 if (chatId == messageAction.chatId) {
-                    updateState { state ->
-                        state.copy(
+                    sendEvent(
+                        ConversationEvent.DotsEvent(
                             userStatus = messageAction.userStatus.toPrintableText(
                                 messageAction.userName,
                                 params.chat.isGroup
                             ),
                             userStatusDots = PrintableText.Raw(".")
                         )
-                    }
+                    )
                     repeat(7) {
                         delay(300)
-                        updateState { state ->
-                            val userStatusDots = getPrintableRawText(state.userStatusDots)
-                            val newDotCount = userStatusDots.count() % 3 + 1
-                            state.copy(
-                                userStatusDots = PrintableText.Raw(".".repeat(newDotCount))
+                        val userStatusDots = getPrintableRawText(lastDotsStatus)
+                        val newDotCount = userStatusDots.count() % 3 + 1
+                        lastDotsStatus = PrintableText.Raw(".".repeat(newDotCount))
+                        sendEvent(
+                            ConversationEvent.DotsEvent(
+                                userStatus = messageAction.userStatus.toPrintableText(
+                                    messageAction.userName,
+                                    params.chat.isGroup
+                                ),
+                                userStatusDots = lastDotsStatus
                             )
-                        }
+                        )
                     }
-                    updateState { state ->
-                        state.copy(
+                    sendEvent(
+                        ConversationEvent.DotsEvent(
                             userStatus = UserStatus.Online.toPrintableText(
                                 messageAction.userName,
                                 params.chat.isGroup
                             ),
                             userStatusDots = PrintableText.EMPTY
                         )
-                    }
+                    )
                 }
             }
             .launchIn(viewModelScope)

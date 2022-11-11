@@ -58,7 +58,7 @@ fun Message.toConversationViewItem(
         )
     }
     val sentStatus =
-        if (userSenderId == selfUserId && usersHaveRead!!.isNotEmpty()) SentStatus.Read else SentStatus.Received
+        if (userSenderId == selfUserId && usersHaveRead?.isNotEmpty() == true) SentStatus.Read else SentStatus.Received
     return when (selfUserId) {
         userSenderId -> {
             when (messageType) {

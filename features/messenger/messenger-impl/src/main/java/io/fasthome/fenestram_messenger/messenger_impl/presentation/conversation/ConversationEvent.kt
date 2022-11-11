@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.util.PrintableText
 
 sealed interface ConversationEvent {
     object OpenMenuEvent : ConversationEvent
@@ -21,4 +22,6 @@ sealed interface ConversationEvent {
 
     class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group) :
         ConversationEvent
+
+    class DotsEvent(val userStatus : PrintableText, val userStatusDots : PrintableText) : ConversationEvent
 }
