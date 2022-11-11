@@ -401,6 +401,10 @@ class ConversationFragment :
         with(binding) {
             switchInputPlate(isReplyMode)
             if (isReplyMode && message != null) {
+                inputMessage.setOnSizeChanged(onHeightChanged = {
+                    clEditMessage.setPadding(0, 0, 0, it + 10.dp)
+                    clEditMessage.setPadding(0, 0, 0, it + 10.dp)
+                })
                 when (message) {
                     is ConversationTextItem -> {
                         tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)

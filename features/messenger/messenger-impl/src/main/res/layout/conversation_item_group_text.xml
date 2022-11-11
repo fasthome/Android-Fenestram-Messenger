@@ -62,6 +62,7 @@
                 android:id="@+id/cl_reply_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
                 android:minWidth="200dp"
                 android:paddingBottom="6dp"
                 android:visibility="gone"
