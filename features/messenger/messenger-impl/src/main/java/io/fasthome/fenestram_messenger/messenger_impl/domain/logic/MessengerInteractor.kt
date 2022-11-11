@@ -3,7 +3,10 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 import android.util.Log
 import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketDeleteMessage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -58,17 +61,18 @@ class MessengerInteractor(
     }
 
     suspend fun replyMessage(chatId: Long, messageId: Long, text: String, messageType: String) =
-        messageRepo.replyMessage(chatId = chatId,
+        messageRepo.replyMessage(
+            chatId = chatId,
             messageId = messageId,
             text = text,
-            messageType = messageType)
+            messageType = messageType
+        )
 
     suspend fun getMessagesFromChat(
         id: Long,
         selfUserId: Long,
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
-        onNewPendingMessagesCallback: (Int) -> Unit,
-        onMessageDeletedCallback:(List<Long>) -> Unit
+        onMessageDeletedCallback: (List<Long>) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -86,12 +90,6 @@ class MessengerInteractor(
                 override fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse) {
                     if (selfUserId == messageStatusResponse.initiatorId && id == messageStatusResponse.chatId) {
                         onNewMessageStatusCallback(chatsMapper.toMessageStatus(messageStatusResponse))
-                    }
-                }
-
-                override fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse) {
-                    if (pendingMessagesResponse.chatId == id) {
-                        onNewPendingMessagesCallback(pendingMessagesResponse.pendingMessages)
                     }
                 }
 
@@ -113,6 +111,10 @@ class MessengerInteractor(
         }
     }
 
+    fun emitChatListeners(subChatId: Long?, unsubChatId: Long?) {
+        messageRepo.emitChatListeners(subChatId, unsubChatId)
+    }
+
     suspend fun getNewMessages(onNewMessageStatusCallback: (MessageStatus) -> Unit): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = null,
@@ -128,9 +130,6 @@ class MessengerInteractor(
 
                 override fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse) {
                     onNewMessageStatusCallback(chatsMapper.toMessageStatus(messageStatusResponse))
-                }
-
-                override fun onNewPendingMessages(pendingMessagesResponse: PendingMessagesResponse) {
                 }
 
                 override fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage) {

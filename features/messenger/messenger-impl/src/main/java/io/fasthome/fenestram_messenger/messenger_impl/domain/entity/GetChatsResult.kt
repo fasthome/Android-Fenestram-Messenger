@@ -29,7 +29,8 @@ data class Message(
     val isDate: Boolean,
     val isEdited: Boolean,
     val messageStatus: String,
-    val replyMessage: Message?
+    val replyMessage: Message?,
+    val usersHaveRead: List<Long>?
 ) : Parcelable {
     companion object {
         fun onlyDate(date: ZonedDateTime) = Message(
@@ -43,7 +44,8 @@ data class Message(
             isDate = true,
             isEdited = false,
             messageStatus = "",
-            replyMessage = null
+            replyMessage = null,
+            usersHaveRead = null
         )
     }
 }

@@ -1,34 +1,55 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
-import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout
+import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.links.addCommonLinks
 import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.delay
 
 class ConversationAdapter(
+    //---[ViewBinderHelper] Для ответа на сообщение по свайпу---//
+    viewBinderHelper: ViewBinderHelper,
+
+    //---Клик для открытия профиля собеседника в группе---//
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
+
+    //---Клик для открытия картинки---//
     onImageClicked: (String) -> Unit,
+
+    //---Клики по сообщениям с документами---//
+    onSelfDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
+    onRecieveDownloadDocument: (item: ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
+    onGroupDownloadDocument: (item: ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
+
+    //---Клики по сообщениям с изображениями---//
+    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
+    onReceiveImageLongClicked: (ConversationViewItem.Receive.Image) -> Unit,
+    onGroupImageLongClicked: (ConversationViewItem.Group.Image) -> Unit,
+
+    //---Клики по текстовым сообщениям---//
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
-    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
-    onSelfDownloadDocument: (item : ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
-    onRecieveDownloadDocument: (item : ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
-    onGroupDownloadDocument: (item : ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
-    onSelfTextReplyImageLongClicked:(item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
-    onReceiveTextReplyImageLongClicked:(item:ConversationViewItem.Receive.TextReplyOnImage) -> Unit
+
+    //---Клики по пересланным сообщениям---//
+    onSelfTextReplyImageLongClicked: (item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
+    onReceiveTextReplyImageLongClicked: (item: ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
+    onGroupTextReplyImageLongClicked: (item: ConversationViewItem.Group.TextReplyOnImage) -> Unit,
+
+    //---Ответы---//
+    onReplyMessageText: (item: ConversationViewItem) -> Unit,
+    onReplyMessageImage: (item: ConversationViewItem) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -38,66 +59,105 @@ class ConversationAdapter(
         ),
         AdapterUtil.adapterDelegatesManager(
             createConversationSelfTextAdapterDelegate(
-                onSelfMessageClicked,
-                onSelfMessageLongClicked
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageText,
+                onSelfMessageLongClicked = onSelfMessageLongClicked
             ),
             createConversationSelfImageAdapterDelegate(
-                onSelfMessageClicked,
-                onImageClicked,
-                onSelfImageLongClicked
+                onImageClicked = onImageClicked,
+                onSelfImageLongClicked = onSelfImageLongClicked,
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessageImage = onReplyMessageImage
             ),
             createConversationSelfDocumentAdapterDelegate(
-                onSelfMessageClicked,
-                onSelfDownloadDocument
+                onDownloadDocument = onSelfDownloadDocument
             ),
-            createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked),
-            createConversationReceiveImageAdapterDelegate(onImageClicked),
-            createConversationReceiveDocumentAdapterDelegate(onRecieveDownloadDocument),
-            createConversationGroupTextAdapterDelegate(
-                onGroupProfileItemClicked,
-                onGroupMessageLongClicked
-            ),
-            createConversationGroupImageAdapterDelegate(onGroupProfileItemClicked, onImageClicked),
-            createConversationGroupDocumentAdapterDelegate(
-                onGroupProfileItemClicked,
-                onGroupDownloadDocument
-            ),
-            createConversationSystemAdapterDelegate(),
             createConversationSelfTextReplyImageAdapterDelegate(
-                onSelfMessageClicked,
-                onSelfTextReplyImageLongClicked,
-                onImageClicked
+                onSelfTextReplyImageLongClicked = onSelfTextReplyImageLongClicked,
+                onImageClicked = onImageClicked,
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageImage
             ),
+
+            createConversationReceiveTextAdapterDelegate(
+                onReceiveMessageLongClicked = onReceiveMessageLongClicked,
+                onReplyMessage = onReplyMessageText,
+                viewBinderHelper = viewBinderHelper
+            ),
+            createConversationReceiveDocumentAdapterDelegate(onDownloadDocument = onRecieveDownloadDocument),
             createConversationReceiveTextReplyImageAdapterDelegate(
-                onReceiveTextReplyImageLongClicked,
-                onImageClicked
-            )
+                onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
+                onImageClicked = onImageClicked,
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageImage
+            ),
+            createConversationReceiveImageAdapterDelegate(
+                onImageClicked = onImageClicked,
+                viewBinderHelper = viewBinderHelper,
+                onReceiveImageLongClicked = onReceiveImageLongClicked,
+                onReplyMessageImage = onReplyMessageImage
+            ),
+
+            createConversationGroupTextAdapterDelegate(
+                onGroupProfileItemClicked = onGroupProfileItemClicked,
+                onGroupMessageLongClicked = onGroupMessageLongClicked,
+                onReplyMessage = onReplyMessageText,
+                viewBinderHelper = viewBinderHelper
+            ),
+            createConversationGroupImageAdapterDelegate(
+                onGroupProfileItemClicked = onGroupProfileItemClicked,
+                onImageClicked = onImageClicked,
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessageImage = onReplyMessageImage,
+                onGroupImageLongClicked = onGroupImageLongClicked
+            ),
+            createConversationGroupDocumentAdapterDelegate(
+                onGroupProfileItemClicked = onGroupProfileItemClicked,
+                onDownloadDocument = onGroupDownloadDocument
+            ),
+            createConversationGroupTextReplyImageAdapterDelegate(
+                onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
+                onImageClicked = onImageClicked,
+                viewBinderHelper = viewBinderHelper,
+                onReplyMessage = onReplyMessageImage,
+                onProfileClicked = onGroupProfileItemClicked
+            ),
+
+            createConversationSystemAdapterDelegate(),
         )
     )
 
+//---Адаптеры для своих сообщений---//
+
 fun createConversationSelfTextReplyImageAdapterDelegate(
-    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
     onSelfTextReplyImageLongClicked: (ConversationViewItem.Self.TextReplyOnImage) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (String) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessage: (item: ConversationViewItem) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
         ConversationItemSelfTextReplyImageBinding::inflate
     ) {
-        binding.root.onClick {
-            onSelfMessageClicked(item)
-        }
-        binding.root.setOnLongClickListener {
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessage(item) },
+        )
+        binding.contentLayout.onClick {
             onSelfTextReplyImageLongClicked(item)
-            true
+        }
+        binding.replyImage.onClick {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                onImageClicked(it.content)
+            }
         }
         bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
+
             (item.replyMessage as? ConversationImageItem)?.let {
                 replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
-                replyImage.onClick {
-                    onImageClicked(it.content)
-                }
             }
+
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -108,27 +168,27 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     }
 
 fun createConversationSelfTextAdapterDelegate(
-    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
-    onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit
+    onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessage: (item: ConversationViewItem) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Text, ConversationItemSelfTextBinding>(
         ConversationItemSelfTextBinding::inflate
     ) {
-        binding.root.onClick {
-            onSelfMessageClicked(item)
-        }
-        binding.root.setOnLongClickListener {
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessage(item) },
+        )
+        binding.contentLayout.onClick {
             onSelfMessageLongClicked(item)
-            true
         }
         bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
             val replyMessage = item.replyMessage as? ConversationTextItem
-            if(replyMessage != null) {
-                clReplyMessage.isVisible = true
+            clReplyMessage.isVisible = replyMessage != null
+            if (replyMessage != null) {
                 replyAuthorName.text = getPrintableRawText(replyMessage.userName)
                 replyContent.text = getPrintableRawText(replyMessage.content)
-            } else {
-                clReplyMessage.isVisible = false
             }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
@@ -147,36 +207,35 @@ fun createConversationSelfTextAdapterDelegate(
     }
 
 fun createConversationSelfImageAdapterDelegate(
-    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
     onImageClicked: (String) -> Unit,
-    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit
-) =
-    adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemImageBinding>(
-        ConversationItemImageBinding::inflate
-    ) {
-        binding.messageContent.onClick {
-            onImageClicked(item.content)
-        }
-        binding.root.onClick {
-            onSelfMessageClicked(item)
-        }
-        val imageLongClick = View.OnLongClickListener {
-            onSelfImageLongClicked(item)
-            true
-        }
-        binding.root.setOnLongClickListener(imageLongClick)
-        binding.messageContent.setOnLongClickListener(imageLongClick)
-        bindWithBinding {
-            messageContent.loadRounded(item.content)
-            sendTimeView.setPrintableText(item.time)
-            sendTimeView.isVisible = item.timeVisible
-            status.setImageResource(item.statusIcon)
-            status.isVisible = item.timeVisible
-        }
+    onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessageImage: (item: ConversationViewItem) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemSelfImageBinding>(
+    ConversationItemSelfImageBinding::inflate
+) {
+    binding.root.setTouchListener(
+        onReplyMessage = { onReplyMessageImage(item) },
+    )
+    binding.contentLayout.onClick {
+        onSelfImageLongClicked(item)
     }
+    binding.messageContent.onClick {
+        onImageClicked(item.content)
+    }
+    bindWithBinding {
+        viewBinderHelper.bind(root, item.id.toString())
+        viewBinderHelper.setOpenOnlyOne(true)
+
+        messageContent.loadRounded(item.content)
+        sendTimeView.setPrintableText(item.time)
+        sendTimeView.isVisible = item.timeVisible
+        status.setImageResource(item.statusIcon)
+        status.isVisible = item.timeVisible
+    }
+}
 
 fun createConversationSelfDocumentAdapterDelegate(
-    onSelfMessageClicked: (ConversationViewItem.Self) -> Unit,
     onDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
@@ -191,9 +250,6 @@ fun createConversationSelfDocumentAdapterDelegate(
                 binding.progressBar.isInvisible = it == 100
             }
         }
-        binding.root.onClick {
-            onSelfMessageClicked(item)
-        }
         bindWithBinding {
             binding.progressBar.isInvisible = true
             fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
@@ -204,15 +260,29 @@ fun createConversationSelfDocumentAdapterDelegate(
         }
     }
 
-fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit) =
-    adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
-        ConversationItemReceiveTextBinding::inflate,
 
-        ) {
+//---Адаптеры для принятых личных сообщений---//
+
+fun createConversationReceiveTextAdapterDelegate(
+    onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessage: (item: ConversationViewItem) -> Unit
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
+        ConversationItemReceiveTextBinding::inflate
+    ) {
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessage(item) },
+        )
+        binding.contentLayout.onClick {
+            onReceiveMessageLongClicked(item)
+        }
         bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
 
             val replyMessage = item.replyMessage as? ConversationTextItem
-            if(replyMessage != null) {
+            if (replyMessage != null) {
                 clReplyMessage.isVisible = true
                 replyAuthorName.text = getPrintableRawText(replyMessage.userName)
                 replyContent.text = getPrintableRawText(replyMessage.content)
@@ -239,22 +309,31 @@ fun createConversationReceiveTextAdapterDelegate(onReceiveMessageLongClicked: (C
 
 fun createConversationReceiveTextReplyImageAdapterDelegate(
     onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (String) -> Unit,
+    onReplyMessage: (ConversationViewItem) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
         ConversationItemReceiveTextReplyImageBinding::inflate
     ) {
-        binding.root.setOnLongClickListener {
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessage(item) },
+        )
+        binding.contentLayout.onClick {
             onReceiveTextReplyImageLongClicked(item)
-            true
+        }
+        binding.replyImage.onClick {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                onImageClicked(it.content)
+            }
         }
         bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
+
             (item.replyMessage as? ConversationImageItem)?.let {
                 replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
-                replyImage.onClick {
-                    onImageClicked(it.content)
-                }
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -262,19 +341,33 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
         }
     }
 
-fun createConversationReceiveImageAdapterDelegate(onImageClicked: (String) -> Unit) =
-    adapterDelegateViewBinding<ConversationViewItem.Receive.Image, ConversationItemReceiveImageBinding>(
-        ConversationItemReceiveImageBinding::inflate
-    ) {
-        binding.messageContent.onClick {
-            onImageClicked(item.content)
-        }
-        bindWithBinding {
-            messageContent.loadRounded(item.content)
-            sendTimeView.setPrintableText(item.time)
-            sendTimeView.isVisible = item.timeVisible
-        }
+
+fun createConversationReceiveImageAdapterDelegate(
+    onImageClicked: (String) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+    onReceiveImageLongClicked: (ConversationViewItem.Receive.Image) -> Unit,
+    onReplyMessageImage: (item: ConversationViewItem) -> Unit
+) = adapterDelegateViewBinding<ConversationViewItem.Receive.Image, ConversationItemReceiveImageBinding>(
+    ConversationItemReceiveImageBinding::inflate
+) {
+    binding.messageContent.onClick {
+        onImageClicked(item.content)
     }
+    binding.root.setTouchListener(
+        onReplyMessage = { onReplyMessageImage(item) },
+    )
+    binding.contentLayout.onClick {
+        onReceiveImageLongClicked(item)
+    }
+    bindWithBinding {
+        viewBinderHelper.bind(root, item.id.toString())
+        viewBinderHelper.setOpenOnlyOne(true)
+
+        messageContent.loadRounded(item.content)
+        sendTimeView.setPrintableText(item.time)
+        sendTimeView.isVisible = item.timeVisible
+    }
+}
 
 fun createConversationReceiveDocumentAdapterDelegate(
     onDownloadDocument: (item: ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit
@@ -287,7 +380,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
             onDownloadDocument(item) {
                 binding.progressBar.progress = it
 
-                if(it == 100) delay(400)
+                if (it == 100) delay(400)
                 binding.progressBar.isInvisible = it == 100
             }
         }
@@ -299,21 +392,78 @@ fun createConversationReceiveDocumentAdapterDelegate(
         }
     }
 
+
+//---Адаптеры для принятых групповых сообщений---//
+
+fun createConversationGroupTextReplyImageAdapterDelegate(
+    onGroupTextReplyImageLongClicked: (ConversationViewItem.Group.TextReplyOnImage) -> Unit,
+    onImageClicked: (String) -> Unit,
+    onReplyMessage: (ConversationViewItem) -> Unit,
+    onProfileClicked: (ConversationViewItem.Group) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+) =
+    adapterDelegateViewBinding<ConversationViewItem.Group.TextReplyOnImage, ConversationItemGroupTextReplyImageBinding>(
+        ConversationItemGroupTextReplyImageBinding::inflate
+    ) {
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessage(item) },
+        )
+        binding.contentLayout.onClick {
+            onGroupTextReplyImageLongClicked(item)
+        }
+        binding.replyImage.onClick {
+            (item.replyMessage as? ConversationImageItem)?.let {
+                onImageClicked(it.content)
+            }
+        }
+        binding.avatar.onClick {
+            onProfileClicked(item)
+        }
+        bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
+
+            (item.replyMessage as? ConversationImageItem)?.let {
+                replyMessageName.text = context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
+                replyImage.loadRounded(it.content, radius = 8)
+            }
+            messageContent.setPrintableText(item.content)
+            sendTimeView.setPrintableText(item.time)
+            sendTimeView.isVisible = item.timeVisible
+        }
+    }
+
 fun createConversationGroupTextAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit
+    onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
+    onReplyMessage: (ConversationViewItem) -> Unit,
+    viewBinderHelper: ViewBinderHelper
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
     ) {
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessage(item) },
+        )
+        binding.contentLayout.onClick {
+            onGroupMessageLongClicked(item)
+        }
         binding.avatar.onClick {
             onGroupProfileItemClicked(item)
         }
-        binding.root.setOnLongClickListener {
-            onGroupMessageLongClicked(item)
-            true
-        }
         bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
+
+            val replyMessage = item.replyMessage as? ConversationTextItem
+            if (replyMessage != null) {
+                clReplyMessage.isVisible = true
+                replyAuthorName.text = getPrintableRawText(replyMessage.userName)
+                replyContent.text = getPrintableRawText(replyMessage.content)
+            } else {
+                clReplyMessage.isVisible = false
+            }
+
             tvEdited.isVisible = item.isEdited
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
@@ -332,7 +482,10 @@ fun createConversationGroupTextAdapterDelegate(
 
 fun createConversationGroupImageAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (String) -> Unit,
+    viewBinderHelper: ViewBinderHelper,
+    onReplyMessageImage: (item: ConversationViewItem) -> Unit,
+    onGroupImageLongClicked: (ConversationViewItem.Group.Image) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Image, ConversationItemGroupImageBinding>(
         ConversationItemGroupImageBinding::inflate
@@ -343,7 +496,15 @@ fun createConversationGroupImageAdapterDelegate(
         binding.messageContent.onClick {
             onImageClicked(item.content)
         }
+        binding.root.setTouchListener(
+            onReplyMessage = { onReplyMessageImage(item) },
+        )
+        binding.contentLayout.onClick {
+            onGroupImageLongClicked(item)
+        }
         bindWithBinding {
+            viewBinderHelper.bind(root, item.id.toString())
+            viewBinderHelper.setOpenOnlyOne(true)
             username.setPrintableText(item.userName)
             messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -367,7 +528,7 @@ fun createConversationGroupDocumentAdapterDelegate(
             onDownloadDocument(item) {
                 binding.progressBar.progress = it
 
-                if(it == 100) delay(400)
+                if (it == 100) delay(400)
                 binding.progressBar.isInvisible = it == 100
             }
         }
@@ -382,6 +543,8 @@ fun createConversationGroupDocumentAdapterDelegate(
     }
 
 
+//---Системные адаптеры---//
+
 fun createConversationSystemAdapterDelegate() =
     adapterDelegateViewBinding<ConversationViewItem.System, ConversationItemSystemBinding>(
         ConversationItemSystemBinding::inflate
@@ -390,3 +553,24 @@ fun createConversationSystemAdapterDelegate() =
             date.setPrintableText(item.content)
         }
     }
+
+private fun SwipeRevealLayout.setTouchListener(
+    onReplyMessage: () -> Unit,
+    onClick: (() -> Unit?)? = null,
+) {
+    setNeedCloseOnActionPoinerUp(true)
+    setSwipeListener(object : SwipeRevealLayout.SimpleSwipeListener() {
+        override fun onOpened(view: SwipeRevealLayout?) {
+            context.vibrate()
+        }
+
+        override fun onLetGo() {
+            close(true)
+            onReplyMessage()
+        }
+
+        override fun onClick() {
+            onClick?.invoke()
+        }
+    })
+}

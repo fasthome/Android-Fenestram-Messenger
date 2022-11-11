@@ -5,6 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class SocketMessageStatus(
+    @SerialName("pending_messages")
+    val pendingMessages: Long,
+
+    @SerialName("chat_id")
+    val chatId: Long,
+
     @SerialName("messages")
     val messages: List<MessageStatusResponse?>?
 )

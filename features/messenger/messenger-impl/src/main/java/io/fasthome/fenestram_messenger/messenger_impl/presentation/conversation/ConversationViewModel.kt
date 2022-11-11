@@ -19,7 +19,6 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
@@ -212,7 +211,10 @@ class ConversationViewModel(
             }
         }
 
-    fun exitToMessenger() = exitWithoutResult()
+    fun exitToMessenger() {
+        messengerInteractor.emitChatListeners(null, chatId)
+        exitWithoutResult()
+    }
 
     override fun createInitialState(): ConversationState {
         return ConversationState(
@@ -235,8 +237,10 @@ class ConversationViewModel(
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                inputMessageMode = if (isEditMode) InputMessageMode.Edit(conversationViewItem
-                    ?: return@updateState state) else InputMessageMode.Default
+                inputMessageMode = if (isEditMode) InputMessageMode.Edit(
+                    conversationViewItem
+                        ?: return@updateState state
+                ) else InputMessageMode.Default
             )
         }
     }
@@ -245,8 +249,11 @@ class ConversationViewModel(
         updateState { state ->
             state.copy(
                 attachedFiles = emptyList(),
-                inputMessageMode = if (isReplyMode) InputMessageMode.Reply(conversationViewItem
-                    ?: return@updateState state) else InputMessageMode.Default)
+                inputMessageMode = if (isReplyMode) InputMessageMode.Reply(
+                    conversationViewItem
+                        ?: return@updateState state
+                ) else InputMessageMode.Default
+            )
         }
     }
 
@@ -270,7 +277,11 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
-                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(selfUserId, params.chat.isGroup, storageUrlConverter) as ConversationViewItem.Self
+                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(
+                            selfUserId,
+                            params.chat.isGroup,
+                            storageUrlConverter
+                        ) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
@@ -323,7 +334,11 @@ class ConversationViewModel(
 
         val tempFileMessages = attachedFiles.map {
             when (it) {
-                is AttachedFile.Image -> createImageMessage(null, it.content, getPrintableRawText(currentViewState.userName))
+                is AttachedFile.Image -> createImageMessage(
+                    null,
+                    it.content,
+                    getPrintableRawText(currentViewState.userName)
+                )
                 is AttachedFile.Document -> createDocumentMessage(null, it.file)
             }
         }
@@ -400,7 +415,8 @@ class ConversationViewModel(
 
     private fun editMessage(newText: String) {
         viewModelScope.launch {
-            val messageToEdit = (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
+            val messageToEdit =
+                (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -422,7 +438,7 @@ class ConversationViewModel(
                     val key = message.keys.firstOrNull() ?: return@launch
                     val newMessages = currentViewState.messages.mapValues {
                         if (it.key == key) {
-                            when(messageToEdit) {
+                            when (messageToEdit) {
                                 is ConversationViewItem.Self.Text -> {
                                     messageToEdit.copy(
                                         content = PrintableText.Raw(newText), isEdited = true
@@ -494,14 +510,14 @@ class ConversationViewModel(
                         MessageType.Text -> {
                             updateStatus(
                                 tempMessage,
-                                SentStatus.Sent,
+                                SentStatus.Received,
                                 id = sendMessageResponse.data.id
                             )
                         }
                         MessageType.Image, MessageType.Document -> {
                             updateStatus(
                                 tempMessage,
-                                SentStatus.Sent,
+                                SentStatus.Received,
                                 storageUrlConverter.convert(text),
                                 sendMessageResponse.data.id
                             )
@@ -581,6 +597,7 @@ class ConversationViewModel(
     }
 
     fun closeSocket() {
+        messengerInteractor.emitChatListeners(null, chatId)
         messengerInteractor.closeSocket()
     }
 
@@ -590,7 +607,6 @@ class ConversationViewModel(
             chatId,
             selfUserId,
             { onNewMessageStatus(it) },
-            { onNewPendingMessagesCallback(it) },
             { onMessagesDeletedCallback(it) }
         )
             .flowOn(Dispatchers.Main)
@@ -706,18 +722,6 @@ class ConversationViewModel(
         }
     }
 
-    private fun onNewPendingMessagesCallback(pendingMessages: Int) {
-        chatId?.let {
-            if (firstVisibleItemPosition == 0 && pendingMessages > 0) {
-                val unreadMessages = currentViewState.messages.values.toList().subList(
-                    0,
-                    currentViewState.messages.size
-                ).map { message -> message.id }
-                messengerInteractor.emitMessageRead(it, unreadMessages)
-            }
-        }
-    }
-
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
         sendEvent(
             ConversationEvent.ShowPersonDetailDialog(
@@ -827,18 +831,6 @@ class ConversationViewModel(
         }
     }
 
-    fun onSelfMessageClicked(selfViewItem: ConversationViewItem.Self) {
-        when (selfViewItem.sentStatus) {
-            SentStatus.Sent -> Unit
-            SentStatus.Error -> {
-                sendEvent(ConversationEvent.ShowErrorSentDialog(selfViewItem))
-            }
-            SentStatus.Read -> Unit
-            SentStatus.Loading -> Unit
-            SentStatus.None -> Unit
-        }
-    }
-
     fun onRetrySentClicked(selfViewItem: ConversationViewItem.Self) {
         updateState { state ->
             state.copy(
@@ -881,8 +873,15 @@ class ConversationViewModel(
         imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
     }
 
-    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self.Text) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
+        when (conversationViewItem.sentStatus) {
+            SentStatus.Error -> sendEvent(ConversationEvent.ShowErrorSentDialog(conversationViewItem))
+            SentStatus.Sent,
+            SentStatus.Received,
+            SentStatus.Read -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            SentStatus.Loading -> Unit
+            SentStatus.None -> Unit
+        }
     }
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
@@ -904,24 +903,16 @@ class ConversationViewModel(
         }
     }
 
-    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive.Text) {
+    fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
-    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group.Text) {
+    fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
-    fun onSelfImageLongClicked(conversationViewItem: ConversationViewItem.Self.Image) {
-        sendEvent(ConversationEvent.ShowSelfImageActionDialog(conversationViewItem))
-    }
-
-    fun onSelfTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Self.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowSelfTextReplyImageDialog(conversationViewItem))
-    }
-
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveTextReplyImageDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {
@@ -960,10 +951,15 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.UpdateScrollPosition(currentViewState.newMessagesCount))
     }
 
-    fun onScrolledToLastPendingMessage() {
+    var isSubscribed = false
+
+    fun onScrolledToLastPendingMessage(firstVisibleItem: Int) {
+        firstVisibleItemPosition = firstVisibleItem
+
         if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0) {
             return
         }
+
         chatId?.let {
             val selfMessageOffset =
                 if (currentViewState.messages.toList().first().second.id == 0L) 1 else 0
@@ -975,6 +971,14 @@ class ConversationViewModel(
                 .map { messageViewItem -> messageViewItem.second.id }
             messengerInteractor.emitMessageRead(it, readMessages)
             updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
+        }
+
+        if (firstVisibleItemPosition > 0 && isSubscribed) {
+            messengerInteractor.emitChatListeners(null, chatId)
+            isSubscribed = false
+        } else if (firstVisibleItemPosition == 0) {
+            messengerInteractor.emitChatListeners(chatId, null)
+            isSubscribed = true
         }
     }
 }
