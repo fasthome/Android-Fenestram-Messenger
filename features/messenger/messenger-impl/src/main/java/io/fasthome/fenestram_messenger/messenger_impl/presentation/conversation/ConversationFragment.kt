@@ -131,8 +131,7 @@ class ConversationFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 if (vm.firstVisibleItemPosition != linearLayoutManager.findFirstVisibleItemPosition()) {
-                    vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
-                    vm.onScrolledToLastPendingMessage()
+                    vm.onScrolledToLastPendingMessage(linearLayoutManager.findFirstVisibleItemPosition())
                 }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems(isResumed)

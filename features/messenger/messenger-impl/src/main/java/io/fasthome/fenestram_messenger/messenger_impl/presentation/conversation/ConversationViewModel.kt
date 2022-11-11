@@ -211,7 +211,10 @@ class ConversationViewModel(
             }
         }
 
-    fun exitToMessenger() = exitWithoutResult()
+    fun exitToMessenger() {
+        messengerInteractor.emitChatListeners(null, chatId)
+        exitWithoutResult()
+    }
 
     override fun createInitialState(): ConversationState {
         return ConversationState(
@@ -507,14 +510,14 @@ class ConversationViewModel(
                         MessageType.Text -> {
                             updateStatus(
                                 tempMessage,
-                                SentStatus.Sent,
+                                SentStatus.Received,
                                 id = sendMessageResponse.data.id
                             )
                         }
                         MessageType.Image, MessageType.Document -> {
                             updateStatus(
                                 tempMessage,
-                                SentStatus.Sent,
+                                SentStatus.Received,
                                 storageUrlConverter.convert(text),
                                 sendMessageResponse.data.id
                             )
@@ -594,6 +597,7 @@ class ConversationViewModel(
     }
 
     fun closeSocket() {
+        messengerInteractor.emitChatListeners(null, chatId)
         messengerInteractor.closeSocket()
     }
 
@@ -603,7 +607,6 @@ class ConversationViewModel(
             chatId,
             selfUserId,
             { onNewMessageStatus(it) },
-            { onNewPendingMessagesCallback(it) },
             { onMessagesDeletedCallback(it) }
         )
             .flowOn(Dispatchers.Main)
@@ -716,18 +719,6 @@ class ConversationViewModel(
                     messages[item.key] = item.value
             }
             it.copy(messages = messages)
-        }
-    }
-
-    private fun onNewPendingMessagesCallback(pendingMessages: Int) {
-        chatId?.let {
-            if (firstVisibleItemPosition == 0 && pendingMessages > 0) {
-                val unreadMessages = currentViewState.messages.values.toList().subList(
-                    0,
-                    currentViewState.messages.size
-                ).map { message -> message.id }
-                messengerInteractor.emitMessageRead(it, unreadMessages)
-            }
         }
     }
 
@@ -960,10 +951,15 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.UpdateScrollPosition(currentViewState.newMessagesCount))
     }
 
-    fun onScrolledToLastPendingMessage() {
+    var isSubscribed = false
+
+    fun onScrolledToLastPendingMessage(firstVisibleItem: Int) {
+        firstVisibleItemPosition = firstVisibleItem
+
         if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0) {
             return
         }
+
         chatId?.let {
             val selfMessageOffset =
                 if (currentViewState.messages.toList().first().second.id == 0L) 1 else 0
@@ -975,6 +971,14 @@ class ConversationViewModel(
                 .map { messageViewItem -> messageViewItem.second.id }
             messengerInteractor.emitMessageRead(it, readMessages)
             updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
+        }
+
+        if (firstVisibleItemPosition > 0 && isSubscribed) {
+            messengerInteractor.emitChatListeners(null, chatId)
+            isSubscribed = false
+        } else if (firstVisibleItemPosition == 0) {
+            messengerInteractor.emitChatListeners(chatId, null)
+            isSubscribed = true
         }
     }
 }

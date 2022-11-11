@@ -57,7 +57,8 @@ fun Message.toConversationViewItem(
             timeVisible = true
         )
     }
-    val sentStatus = getSentStatus(messageStatus)
+    val sentStatus =
+        if (userSenderId == selfUserId && usersHaveRead!!.isNotEmpty()) SentStatus.Read else SentStatus.Received
     return when (selfUserId) {
         userSenderId -> {
             when (messageType) {
@@ -567,12 +568,19 @@ fun getSentStatus(messageStatus: String): SentStatus {
 fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): ConversationViewItem {
     return when (messageType) {
         MESSAGE_TYPE_TEXT -> {
-            (oldViewItem as? ConversationViewItem.Self.Text)
-                ?: (oldViewItem as? ConversationViewItem.Self.TextReplyOnImage)?.copy(
+            return when {
+                (oldViewItem as? ConversationViewItem.Self.Text) != null -> oldViewItem.copy(
                     sentStatus = getSentStatus(
                         messageStatus
                     )
-                ) ?: error("Unknown View Item $oldViewItem !")
+                )
+                (oldViewItem as? ConversationViewItem.Self.TextReplyOnImage) != null -> oldViewItem.copy(
+                    sentStatus = getSentStatus(
+                        messageStatus
+                    )
+                )
+                else -> error("Unknown View Item $oldViewItem !")
+            }
         }
         MESSAGE_TYPE_IMAGE -> {
             (oldViewItem as ConversationViewItem.Self.Image).copy(

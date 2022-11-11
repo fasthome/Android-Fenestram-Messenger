@@ -27,7 +27,6 @@ class MessengerSocket(private val baseUrl: String) {
         messageCallback: MessageResponseWithChatId.() -> Unit,
         messageActionCallback: MessageActionResponse.() -> Unit,
         messageStatusCallback: MessageStatusResponse.() -> Unit,
-        pendingMessagesCallback: PendingMessagesResponse.() -> Unit,
         messageDeletedCallback: SocketDeleteMessage.() -> Unit
     ) {
         try {
@@ -73,13 +72,6 @@ class MessengerSocket(private val baseUrl: String) {
                 }
             }
 
-            socket?.on("chatPendingMessages") {
-                Log.d(this.javaClass.simpleName, "chatPendingMessages: " + it[0].toString())
-                val pendingMessages =
-                    json.decodeFromString<PendingMessagesResponse>(it[0].toString())
-                pendingMessagesCallback(pendingMessages)
-            }
-
         } catch (e: Exception) {
         }
     }
@@ -92,8 +84,14 @@ class MessengerSocket(private val baseUrl: String) {
 
     fun emitMessageRead(chatId: Long, messages: List<Long>) {
         val messageReadRequest = JSONObject("{chat_id:$chatId,messages:$messages}")
-        Log.d("emitMessageRead", messages.toString())
+        Log.d("emitMessageRead", messageReadRequest.toString())
         socket?.emit("messageRead", messageReadRequest)
+    }
+
+    fun emitChatListeners(subChatId: Long?, unsubChatId: Long?) {
+        val messageReadRequest = JSONObject("{sub:$subChatId,unsub:$unsubChatId}")
+        Log.d("emitChatListeners", messageReadRequest.toString())
+        socket?.emit("chatListeners", messageReadRequest)
     }
 
     fun messageToMessageResponse(message: MessageResponseWithChatId?) = MessageResponseWithChatId(
@@ -110,7 +108,8 @@ class MessengerSocket(private val baseUrl: String) {
         accessChats = message?.accessChats ?: emptyList(),
         isEdited = message?.isEdited ?: false,
         status = "",
-        replyMessage = message?.replyMessage
+        replyMessage = message?.replyMessage,
+        usersHaveRead = message?.usersHaveRead ?: listOf()
     )
 
     fun messageActionToMessageActionResponse(messageAction: MessageActionResponse?) =
