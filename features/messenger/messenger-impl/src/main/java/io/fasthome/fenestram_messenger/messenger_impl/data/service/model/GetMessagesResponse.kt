@@ -15,5 +15,28 @@ class GetMessagesResponse(
     val limit: Int?,
 
     @SerialName("total")
-    val total: Int
+    val total: Int,
+
+//    @SerialName("chat")
+//    val chat: ChatResponse? = null
 )
+
+@Serializable
+class ChatResponse(
+    val id: Long,
+    val name: String,
+    @SerialName("created_at")
+    val createdDate: String,
+    @SerialName("updated_at")
+    val updatedDate: String,
+    @SerialName("users")
+    val users: Long,
+    @SerialName("avatar")
+    val avatar: String,
+    @SerialName("is_group")
+    val isGroup: Boolean,
+    @SerialName("listeners")
+    val listeners: Unit? = null,
+    val permittedReactions: List<String>? = null,
+    val pendingMessages: Long? = null,
+    )

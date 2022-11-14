@@ -70,10 +70,14 @@ class MessengerViewModel(
     private var _query = ""
     val items = loadDataHelper.getDataFlow(
         getItems = {
+            sendEvent(MessengerEvent.ProgressEvent(isProgress = true))
             messengerInteractor.getMessengerPageItems(_query)
         },
         getCachedSelectedId = { null },
-        mapDataItem = messengerMapper::toMessengerViewItem,
+        mapDataItem = {
+            sendEvent(MessengerEvent.ProgressEvent(isProgress = false))
+            return@getDataFlow messengerMapper.toMessengerViewItem(it)
+        },
         getItemId = { it.id },
         getItem = { null }
     ).cachedIn(viewModelScope)

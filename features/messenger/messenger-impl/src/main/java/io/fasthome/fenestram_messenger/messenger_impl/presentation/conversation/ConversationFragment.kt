@@ -137,8 +137,7 @@ class ConversationFragment :
                 super.onScrolled(recyclerView, dx, dy)
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 if (vm.firstVisibleItemPosition != linearLayoutManager.findFirstVisibleItemPosition()) {
-                    vm.firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
-                    vm.onScrolledToLastPendingMessage()
+                    vm.onScrolledToLastPendingMessage(linearLayoutManager.findFirstVisibleItemPosition())
                 }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
                     vm.loadItems(isResumed)
@@ -366,6 +365,10 @@ class ConversationFragment :
                 is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Document -> Unit
             }
+            is ConversationEvent.DotsEvent -> {
+                binding.userStatusView.setPrintableText(event.userStatus)
+                binding.userStatusDots.setPrintableText(event.userStatusDots)
+            }
         }
     }
 
@@ -413,6 +416,10 @@ class ConversationFragment :
         with(binding) {
             switchInputPlate(isReplyMode)
             if (isReplyMode && message != null) {
+                inputMessage.setOnSizeChanged(onHeightChanged = {
+                    clEditMessage.setPadding(0, 0, 0, it + 10.dp)
+                    clEditMessage.setPadding(0, 0, 0, it + 10.dp)
+                })
                 when (message) {
                     is ConversationViewItem.Self.Forward,
                         is ConversationViewItem.Group.Forward,

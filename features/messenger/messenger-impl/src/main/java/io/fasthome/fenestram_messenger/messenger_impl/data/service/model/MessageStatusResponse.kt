@@ -42,5 +42,8 @@ class MessageStatusResponse(
     val accessChats: List<Long>,
 
     @SerialName("forwarded_messages")
-    val forwardedMessages: List<Long>?
+    val forwardedMessages: List<Long>?,
+
+    @SerialName("users_have_read")
+    val usersHaveRead: List<Long>
 )

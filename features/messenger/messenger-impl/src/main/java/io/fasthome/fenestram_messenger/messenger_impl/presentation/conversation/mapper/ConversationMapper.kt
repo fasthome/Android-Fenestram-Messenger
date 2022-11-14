@@ -23,6 +23,10 @@ const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
 const val MESSAGE_TYPE_DOCUMENT = "document"
+const val MESSAGE_TYPE_VOICE = "voices"
+const val MESSAGE_TYPE_IMAGES = "images"
+const val MESSAGE_TYPE_VIDEOS = "videos"
+const val MESSAGE_TYPE_AUDIOS = "audios"
 
 const val MESSAGE_STATUS_SENT = "sent"
 const val MESSAGE_STATUS_RECEIVED = "pending"
@@ -133,7 +137,8 @@ fun Message.toConversationViewItem(
             timeVisible = true
         )
     }
-    val sentStatus = getSentStatus(messageStatus)
+    val sentStatus =
+        if (userSenderId == selfUserId && usersHaveRead?.isNotEmpty() == true) SentStatus.Read else SentStatus.Received
     return when {
         (selfUserId == userSenderId) -> {
             when (messageType) {
@@ -226,58 +231,64 @@ fun Message.toConversationViewItem(
                         timeVisible = true,
                     )
                 }
-                else -> error("Unknown Message Type! type $messageType")
+                else -> {
+                    ConversationViewItem.System(
+                        content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        timeVisible = true
+                    )
+                }
             }
         }
         else -> {
             if (isGroup == true) {
                 when (messageType) {
                     MESSAGE_TYPE_TEXT -> {
-                        when {
-                            (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null) -> {
-                                ConversationViewItem.Group.Text(
-                                    content = PrintableText.Raw(text),
-                                    time = PrintableText.Raw(timeFormatter.format(date)),
-                                    sentStatus = SentStatus.None,
-                                    userName = PrintableText.Raw(getName(initiator)),
-                                    avatar = initiator?.avatar ?: "",
-                                    date = date,
-                                    id = id,
-                                    phone = initiator?.phone ?: "",
-                                    nickname = initiator?.nickname ?: "",
-                                    userId = initiator?.id ?: 0,
-                                    isEdited = isEdited,
-                                    timeVisible = true,
-                                    messageType = messageType,
-                                    replyMessage = replyMessage?.toConversationViewItem(
-                                        selfUserId,
-                                        isGroup,
-                                        profileImageUrlConverter
-                                    )
+                        if (replyMessage?.messageType == MESSAGE_TYPE_TEXT || replyMessage == null) {
+                            ConversationViewItem.Group.Text(
+                                content = PrintableText.Raw(text),
+                                time = PrintableText.Raw(timeFormatter.format(date)),
+                                sentStatus = SentStatus.None,
+                                userName = PrintableText.Raw(getName(initiator)),
+                                avatar = initiator?.avatar ?: "",
+                                date = date,
+                                id = id,
+                                phone = initiator?.phone ?: "",
+                                nickname = initiator?.nickname ?: "",
+                                userId = initiator?.id ?: 0,
+                                isEdited = isEdited,
+                                timeVisible = true,
+                                messageType = messageType,
+                                replyMessage = replyMessage?.toConversationViewItem(
+                                    selfUserId,
+                                    isGroup,
+                                    profileImageUrlConverter
                                 )
-                            }
-                            else -> {
-                                ConversationViewItem.Group.TextReplyOnImage(
-                                    content = PrintableText.Raw(text),
-                                    time = PrintableText.Raw(timeFormatter.format(date)),
-                                    sentStatus = SentStatus.None,
-                                    userName = PrintableText.Raw(getName(initiator)),
-                                    avatar = initiator?.avatar ?: "",
-                                    date = date,
-                                    id = id,
-                                    phone = initiator?.phone ?: "",
-                                    nickname = initiator?.nickname ?: "",
-                                    userId = initiator?.id ?: 0,
-                                    isEdited = isEdited,
-                                    timeVisible = true,
-                                    messageType = messageType,
-                                    replyMessage = replyMessage?.toConversationViewItem(
-                                        selfUserId,
-                                        isGroup,
-                                        profileImageUrlConverter
-                                    )
+                            )
+                        } else {
+                            ConversationViewItem.Group.TextReplyOnImage(
+                                content = PrintableText.Raw(text),
+                                time = PrintableText.Raw(timeFormatter.format(date)),
+                                sentStatus = SentStatus.None,
+                                userName = PrintableText.Raw(getName(initiator)),
+                                avatar = initiator?.avatar ?: "",
+                                date = date,
+                                id = id,
+                                phone = initiator?.phone ?: "",
+                                nickname = initiator?.nickname ?: "",
+                                userId = initiator?.id ?: 0,
+                                isEdited = isEdited,
+                                timeVisible = true,
+                                messageType = messageType,
+                                replyMessage = replyMessage.toConversationViewItem(
+                                    selfUserId,
+                                    isGroup,
+                                    profileImageUrlConverter
                                 )
-                            }
+                            )
                         }
                     }
                     MESSAGE_TYPE_IMAGE -> {
@@ -328,7 +339,16 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
-                    else -> error("Unknown Message Type! type $messageType")
+                    else -> {
+                        ConversationViewItem.System(
+                            content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
+                            time = PrintableText.Raw(timeFormatter.format(date)),
+                            sentStatus = SentStatus.Sent,
+                            date = date,
+                            id = id,
+                            timeVisible = true
+                        )
+                    }
                 }
             } else {
                 when (messageType) {
@@ -415,7 +435,14 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
-                    else -> error("Unknown Message Type! type $messageType")
+                    else ->  ConversationViewItem.System(
+                        content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
+                        time = PrintableText.Raw(timeFormatter.format(date)),
+                        sentStatus = SentStatus.Sent,
+                        date = date,
+                        id = id,
+                        timeVisible = true
+                    )
                 }
             }
         }
@@ -630,13 +657,24 @@ fun getSentStatus(messageStatus: String): SentStatus {
 fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): ConversationViewItem {
     return when (messageType) {
         MESSAGE_TYPE_TEXT -> {
-            (oldViewItem as? ConversationViewItem.Self.Text)
-                ?: (oldViewItem as? ConversationViewItem.Self.TextReplyOnImage)?.copy(
+            return when {
+                (oldViewItem as? ConversationViewItem.Self.Text) != null -> oldViewItem.copy(
                     sentStatus = getSentStatus(
                         messageStatus
                     )
-                ) ?: (oldViewItem as? ConversationViewItem.Self.Forward)
-                ?: error("Unknown View Item $oldViewItem !")
+                )
+                (oldViewItem as? ConversationViewItem.Self.TextReplyOnImage) != null -> oldViewItem.copy(
+                    sentStatus = getSentStatus(
+                        messageStatus
+                    )
+                )
+                (oldViewItem as? ConversationViewItem.Self.Forward) != null -> oldViewItem.copy(
+                    sentStatus = getSentStatus(
+                        messageStatus
+                    )
+                )
+                else -> error("Unknown View Item $oldViewItem !")
+            }
         }
         MESSAGE_TYPE_IMAGE -> {
             (oldViewItem as ConversationViewItem.Self.Image).copy(
