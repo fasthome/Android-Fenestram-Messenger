@@ -1002,7 +1002,15 @@ class ConversationViewModel(
     }
 
     fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
-        //
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    }
+
+    fun onReceiveForwardLongClicked(conversationViewItem: ConversationViewItem.Receive.Forward) {
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
+    fun onGroupForwardLongClicked(conversationViewItem: ConversationViewItem.Group.Forward) {
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {

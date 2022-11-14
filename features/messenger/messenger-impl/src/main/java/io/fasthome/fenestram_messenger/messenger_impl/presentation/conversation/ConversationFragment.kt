@@ -109,9 +109,9 @@ class ConversationFragment :
         }, onSelfForwardLongClicked = {
             vm.onSelfForwardLongClicked(it)
         }, onReceiveForwardLongClicked = {
-            // TODO: K
+            vm.onReceiveForwardLongClicked(it)
         }, onGroupForwardLongClicked = {
-            // TODO: K
+            vm.onGroupForwardLongClicked(it)
         })
 
     private val attachedAdapter = AttachedAdapter(
@@ -376,6 +376,9 @@ class ConversationFragment :
         } else null,
         onReply = {
             vm.replyMessageMode(true, conversationViewItem)
+        },
+        onForward = {
+            vm.openChatSelectorForForward(conversationViewItem.id)
         }
     ).show()
 
@@ -411,6 +414,15 @@ class ConversationFragment :
             switchInputPlate(isReplyMode)
             if (isReplyMode && message != null) {
                 when (message) {
+                    is ConversationViewItem.Self.Forward,
+                        is ConversationViewItem.Group.Forward,
+                        is ConversationViewItem.Receive.Forward -> {
+                        replyImage.isVisible = false
+                        tvEditMessageTitle.isVisible = false
+                        tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
+                        tvEditMessageTitle.text = getPrintableRawText(message.userName)
+                        tvTextToEdit.setText(R.string.forward_message)
+                        }
                     is ConversationTextItem -> {
                         tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
                         tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)

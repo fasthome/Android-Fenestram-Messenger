@@ -11,7 +11,8 @@ object ImageViewerContract : NavigationContract<ImageViewerContract.Params, NoRe
     @Parcelize
     data class Params(
         val imageUrl : String?,
-        val imageBitmap : Bitmap?
+        val imageBitmap : Bitmap?,
+        val onActionDelete: ((id: Long, chatId: Long) -> Unit)? = null
     ) : Parcelable
 
 }

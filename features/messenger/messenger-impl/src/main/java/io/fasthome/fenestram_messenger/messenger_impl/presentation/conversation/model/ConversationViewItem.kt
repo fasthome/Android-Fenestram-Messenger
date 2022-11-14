@@ -79,7 +79,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            val forwardMessage: Self
+            val forwardMessage: ConversationViewItem
         ) : Self()
 
         data class Image(
@@ -140,7 +140,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            val forwardMessage: Receive
+            val forwardMessage: ConversationViewItem
         ) : Receive()
 
         data class TextReplyOnImage(
@@ -222,7 +222,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            val forwardMessage: Group
+            val forwardMessage: ConversationViewItem
         ) : Group(userName, avatar, phone, userId)
 
         data class TextReplyOnImage(

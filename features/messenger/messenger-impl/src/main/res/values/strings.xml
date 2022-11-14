@@ -34,6 +34,7 @@
     <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
     <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
     <string name="forward">Переслать</string>
+    <string name="forward_message">Пересланное сообщение</string>
 
     <string name="conversation_copy_message">Скопировать текст</string>
     <string name="conversation_delete_message">Удалить сообщение</string>

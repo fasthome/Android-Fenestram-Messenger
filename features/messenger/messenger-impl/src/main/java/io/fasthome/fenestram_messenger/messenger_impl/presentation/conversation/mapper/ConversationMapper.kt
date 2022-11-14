@@ -72,7 +72,7 @@ fun Message.toForwardConversationViewItem(
                 userName = PrintableText.Raw(getName(initiator)),
                 forwardMessage = message.toConversationViewItem(selfUserId,
                     isGroup,
-                    profileImageUrlConverter) as ConversationViewItem.Self
+                    profileImageUrlConverter)
             )
             else -> {
                 if (isGroup) {
@@ -108,7 +108,7 @@ fun Message.toForwardConversationViewItem(
                         userName = PrintableText.Raw(getName(initiator)),
                         forwardMessage = message.toConversationViewItem(selfUserId,
                             isGroup,
-                            profileImageUrlConverter)  as ConversationViewItem.Receive
+                            profileImageUrlConverter)
                     )
                 }
             }
