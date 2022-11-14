@@ -38,7 +38,7 @@ class ProfileGuestViewModel(
     private val profileImageUtil: ProfileImageUtil,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
-    private val imageViewerLauncher = registerScreen(ImageViewerContract)
+    private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
 
     private val filesProfileGuestLauncher =
         registerScreen(ProfileGuestFilesNavigationContract) { result ->
@@ -218,7 +218,7 @@ class ProfileGuestViewModel(
         }
         else {
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
-                imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
             }
         }
     }

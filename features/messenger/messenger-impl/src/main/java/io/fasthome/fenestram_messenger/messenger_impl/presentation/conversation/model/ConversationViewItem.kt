@@ -9,11 +9,13 @@ import java.time.ZonedDateTime
 typealias OnStatusChanged = (SentStatus) -> Unit
 
 interface ConversationImageItem {
+    val id: Long
     val userName: PrintableText
     val content: String
 }
 
 interface ConversationTextItem {
+    val id: Long
     val userName: PrintableText
     val content: PrintableText
 }
@@ -289,6 +291,10 @@ sealed interface ConversationViewItem {
         override var userName: PrintableText = PrintableText.EMPTY,
     ) : ConversationViewItem
 
+}
+
+fun ConversationViewItem.canDelete(): Boolean {
+    return this is ConversationViewItem.Self
 }
 
 fun getStatusIcon(sentStatus: SentStatus) =

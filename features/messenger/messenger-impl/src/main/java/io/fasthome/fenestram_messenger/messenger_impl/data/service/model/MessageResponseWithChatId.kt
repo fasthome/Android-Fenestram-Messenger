@@ -15,13 +15,13 @@ class MessageResponseWithChatId(
     val initiator: Initiator?,
 
     @SerialName("reply_message_id")
-    val replyMessageId: Long?,
+    val replyMessageId: Long? = null,
 
     @SerialName("access")
-    val access: List<Long>,
+    val access: List<Long>? = null,
 
     @SerialName("accessChats")
-    val accessChats: List<Long>,
+    val accessChats: List<Long>? = null,
 
     @SerialName("is_edited")
     val isEdited: Boolean,
@@ -36,10 +36,10 @@ class MessageResponseWithChatId(
     val text: String,
 
     @SerialName("chat_id")
-    val chatId: String?,
+    val chatId: String? = null,
 
     @SerialName("author_id")
-    val authorId: Long?,
+    val authorId: Long? = null,
 
     @SerialName("message_type")
     val type: String,

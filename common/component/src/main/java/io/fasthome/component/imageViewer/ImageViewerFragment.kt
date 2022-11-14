@@ -2,6 +2,7 @@ package io.fasthome.component.imageViewer
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import io.fasthome.component.R
 import io.fasthome.component.databinding.FragmentImageViewerBinding
@@ -41,6 +42,15 @@ class ImageViewerFragment :
             state.imageUrl?.let {
                 loadRounded(state.imageUrl, radius = 1, transform = FitCenter())
             }
+        }
+
+        binding.ibDelete.isVisible = state.canDelete
+        binding.ibForward.isVisible = state.canForward;
+        binding.ibDelete.onClick {
+            vm.onDeleteImage()
+        }
+        binding.ibForward.onClick {
+            vm.onForwardImage()
         }
     }
 

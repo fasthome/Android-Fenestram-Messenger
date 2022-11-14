@@ -45,7 +45,7 @@ class ProfileViewModel(
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
     private var updateContinueButtonJob by switchJob()
     private var avatarUrl: String? = null
-    private val imageViewerLauncher = registerScreen(ImageViewerContract)
+    private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
 
     init {
         pickFileInterface.resultEvents()
@@ -198,7 +198,7 @@ class ProfileViewModel(
             pickFileInterface.pickFile()
         } else {
             if (currentViewState.avatarUrl != null || currentViewState.avatarBitmap != null) {
-                imageViewerLauncher.launch(ImageViewerContract.Params(currentViewState.avatarUrl, currentViewState.avatarBitmap))
+                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.Params(currentViewState.avatarUrl, currentViewState.avatarBitmap))
             }
         }
     }

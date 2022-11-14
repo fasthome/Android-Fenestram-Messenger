@@ -77,7 +77,7 @@ class ConversationFragment :
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
         }, onImageClicked = {
-            vm.onImageClicked(it)
+            vm.onImageClicked(conversationViewItem = it)
         }, onSelfDownloadDocument = { item, progressListener ->
             vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
         }, onRecieveDownloadDocument = { item, progressListener ->
@@ -351,6 +351,7 @@ class ConversationFragment :
                 is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Image -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Document -> Unit
+                is ConversationViewItem.Self.Forward -> replyImageDialog(event.conversationViewItem)
             }
 
             is ConversationEvent.ShowReceiveMessageActionDialog -> when (event.conversationViewItem) {
@@ -358,12 +359,14 @@ class ConversationFragment :
                 is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Image -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Document -> Unit
+                is ConversationViewItem.Receive.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.ShowGroupMessageActionDialog -> when (event.conversationViewItem) {
                 is ConversationViewItem.Group.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Document -> Unit
+                is ConversationViewItem.Group.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.DotsEvent -> {
                 binding.userStatusView.setPrintableText(event.userStatus)

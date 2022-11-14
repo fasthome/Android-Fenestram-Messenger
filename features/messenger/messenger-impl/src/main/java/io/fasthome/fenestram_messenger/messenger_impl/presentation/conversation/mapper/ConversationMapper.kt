@@ -93,7 +93,7 @@ fun Message.toForwardConversationViewItem(
                         userName = PrintableText.Raw(getName(initiator)),
                         forwardMessage = message.toConversationViewItem(selfUserId,
                             isGroup,
-                            profileImageUrlConverter) as ConversationViewItem.Group,
+                            profileImageUrlConverter),
                         avatar = initiator?.avatar ?: "",
                         phone = initiator?.phone ?: "",
                         userId = initiator?.id ?: 0

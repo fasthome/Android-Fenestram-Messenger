@@ -25,7 +25,7 @@ class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
 
     //---Клик для открытия картинки---//
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
 
     //---Клики по сообщениям с документами---//
     onSelfDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
@@ -154,7 +154,7 @@ class ConversationAdapter(
 
 fun createConversationSelfTextReplyImageAdapterDelegate(
     onSelfTextReplyImageLongClicked: (ConversationViewItem.Self.TextReplyOnImage) -> Unit,
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit
 ) =
@@ -169,7 +169,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
         }
         binding.replyImage.onClick {
             (item.replyMessage as? ConversationImageItem)?.let {
-                onImageClicked(it.content)
+                onImageClicked(item)
             }
         }
         bindWithBinding {
@@ -194,7 +194,7 @@ fun createConversationSelfForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (ConversationViewItem) -> Unit
 ) = adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
     ConversationItemSelfForwardTextBinding::inflate
 ) {
@@ -205,7 +205,9 @@ fun createConversationSelfForwardAdapterDelegate(
         onSelfForwardLongClicked(item)
     }
     binding.forwardImage.onClick {
-        onImageClicked(item.forwardMessage.content as? String ?: return@onClick)
+        (item.forwardMessage as? ConversationImageItem)?.let {
+            onImageClicked(item.forwardMessage)
+        }
     }
     bindWithBinding {
         when(item.forwardMessage) {
@@ -265,7 +267,7 @@ fun createConversationSelfTextAdapterDelegate(
     }
 
 fun createConversationSelfImageAdapterDelegate(
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit
@@ -279,7 +281,7 @@ fun createConversationSelfImageAdapterDelegate(
         onSelfImageLongClicked(item)
     }
     binding.messageContent.onClick {
-        onImageClicked(item.content)
+        onImageClicked(item)
     }
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
@@ -359,7 +361,7 @@ fun createConversationReceiveForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
-    onImageClicked:(String) -> Unit
+    onImageClicked:(ConversationViewItem) -> Unit
 ) = adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
     ConversationItemReceiveForwardTextBinding::inflate
 ) {
@@ -370,7 +372,9 @@ fun createConversationReceiveForwardAdapterDelegate(
         onReceiveForwardLongClicked(item)
     }
     binding.forwardImage.onClick {
-        onImageClicked(item.forwardMessage.content as? String ?: return@onClick)
+        (item.forwardMessage as? ConversationImageItem)?.let {
+            onImageClicked(item.forwardMessage)
+        }
     }
     bindWithBinding {
         when(item.forwardMessage) {
@@ -397,7 +401,7 @@ fun createConversationReceiveForwardAdapterDelegate(
 
 fun createConversationReceiveTextReplyImageAdapterDelegate(
     onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
 ) =
@@ -412,7 +416,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
         }
         binding.replyImage.onClick {
             (item.replyMessage as? ConversationImageItem)?.let {
-                onImageClicked(it.content)
+                onImageClicked(item)
             }
         }
         bindWithBinding {
@@ -431,7 +435,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
 
 
 fun createConversationReceiveImageAdapterDelegate(
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReceiveImageLongClicked: (ConversationViewItem.Receive.Image) -> Unit,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit
@@ -439,7 +443,7 @@ fun createConversationReceiveImageAdapterDelegate(
     ConversationItemReceiveImageBinding::inflate
 ) {
     binding.messageContent.onClick {
-        onImageClicked(item.content)
+        onImageClicked(item)
     }
     binding.root.setTouchListener(
         onReplyMessage = { onReplyMessageImage(item) },
@@ -485,7 +489,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
 
 fun createConversationGroupTextReplyImageAdapterDelegate(
     onGroupTextReplyImageLongClicked: (ConversationViewItem.Group.TextReplyOnImage) -> Unit,
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onProfileClicked: (ConversationViewItem.Group) -> Unit,
     viewBinderHelper: ViewBinderHelper,
@@ -501,7 +505,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
         }
         binding.replyImage.onClick {
             (item.replyMessage as? ConversationImageItem)?.let {
-                onImageClicked(it.content)
+                onImageClicked(item)
             }
         }
         binding.avatar.onClick {
@@ -567,7 +571,7 @@ fun createConversationGroupForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
-    onImageClicked: (String) -> Unit
+    onImageClicked: (ConversationViewItem) -> Unit
 ) = adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
     ConversationItemGroupForwardTextBinding::inflate
 ) {
@@ -578,7 +582,9 @@ fun createConversationGroupForwardAdapterDelegate(
         onGroupForwardLongClicked(item)
     }
     binding.forwardImage.onClick {
-        onImageClicked(item.forwardMessage.content as? String ?: return@onClick)
+        (item.forwardMessage as? ConversationImageItem)?.let {
+            onImageClicked(item.forwardMessage)
+        }
     }
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
@@ -606,7 +612,7 @@ fun createConversationGroupForwardAdapterDelegate(
 
 fun createConversationGroupImageAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onImageClicked: (String) -> Unit,
+    onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
     onGroupImageLongClicked: (ConversationViewItem.Group.Image) -> Unit
@@ -618,7 +624,7 @@ fun createConversationGroupImageAdapterDelegate(
             onGroupProfileItemClicked(item)
         }
         binding.messageContent.onClick {
-            onImageClicked(item.content)
+            onImageClicked(item)
         }
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessageImage(item) },
