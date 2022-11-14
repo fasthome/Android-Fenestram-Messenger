@@ -156,6 +156,7 @@ class ConversationViewModel(
                 if (firstNewMessageCount != 0L) {
                     updateScrollPosition()
                 }
+
             }
         }
     }
@@ -277,11 +278,12 @@ class ConversationViewModel(
                 }
                 is CallResult.Success -> {
                     updateState { state ->
-                        val tempMessage = (result.data ?: return@updateState state).toConversationViewItem(
-                            selfUserId,
-                            params.chat.isGroup,
-                            storageUrlConverter
-                        ) as ConversationViewItem.Self
+                        val tempMessage =
+                            (result.data ?: return@updateState state).toConversationViewItem(
+                                selfUserId,
+                                params.chat.isGroup,
+                                storageUrlConverter
+                            ) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
@@ -416,7 +418,8 @@ class ConversationViewModel(
     private fun editMessage(newText: String) {
         viewModelScope.launch {
             val messageToEdit =
-                (currentViewState.inputMessageMode as? InputMessageMode.Edit ?: return@launch).messageToEdit
+                (currentViewState.inputMessageMode as? InputMessageMode.Edit
+                    ?: return@launch).messageToEdit
             val result = messengerInteractor.editMessage(
                 chatId = chatId ?: return@launch,
                 messageId = messageToEdit.id,
@@ -472,6 +475,7 @@ class ConversationViewModel(
         messageType: MessageType,
         existMessage: ConversationViewItem.Self? = null,
     ) {
+        messengerInteractor.emitChatListeners(chatId, null)
         viewModelScope.launch {
             var tempMessage = when (messageType) {
                 MessageType.Text -> {
@@ -505,7 +509,8 @@ class ConversationViewModel(
                     updateStatus(tempMessage, SentStatus.Error)
                 }
                 is CallResult.Success -> {
-                    tempMessage.userName = PrintableText.Raw(sendMessageResponse.data.userName ?: "")
+                    tempMessage.userName =
+                        PrintableText.Raw(sendMessageResponse.data.userName ?: "")
                     when (messageType) {
                         MessageType.Text -> {
                             updateStatus(
@@ -885,7 +890,11 @@ class ConversationViewModel(
             SentStatus.Error -> sendEvent(ConversationEvent.ShowErrorSentDialog(conversationViewItem))
             SentStatus.Sent,
             SentStatus.Received,
-            SentStatus.Read -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            SentStatus.Read -> sendEvent(
+                ConversationEvent.ShowSelfMessageActionDialog(
+                    conversationViewItem
+                )
+            )
             SentStatus.Loading -> Unit
             SentStatus.None -> Unit
         }
@@ -963,6 +972,18 @@ class ConversationViewModel(
     fun onScrolledToLastPendingMessage(firstVisibleItem: Int) {
         firstVisibleItemPosition = firstVisibleItem
 
+        if (firstVisibleItemPosition > 0 && isSubscribed) {
+            messengerInteractor.emitChatListeners(null, chatId)
+            isSubscribed = false
+        } else if (firstVisibleItemPosition == 0) {
+            messengerInteractor.emitChatListeners(chatId, null)
+            messengerInteractor.emitMessageRead(
+                chatId!!,
+                currentViewState.messages.values.map { it.id }
+            )
+            isSubscribed = true
+        }
+
         if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0) {
             return
         }
@@ -980,12 +1001,5 @@ class ConversationViewModel(
             updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
         }
 
-        if (firstVisibleItemPosition > 0 && isSubscribed) {
-            messengerInteractor.emitChatListeners(null, chatId)
-            isSubscribed = false
-        } else if (firstVisibleItemPosition == 0) {
-            messengerInteractor.emitChatListeners(chatId, null)
-            isSubscribed = true
-        }
     }
 }

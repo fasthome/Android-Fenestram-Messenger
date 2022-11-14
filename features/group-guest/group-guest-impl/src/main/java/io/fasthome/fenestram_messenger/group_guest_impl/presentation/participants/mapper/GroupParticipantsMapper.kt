@@ -1,13 +1,12 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper
 
-import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.AnotherUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.CurrentUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
 import io.fasthome.fenestram_messenger.util.Country
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.kotlin.ifOrNull
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.setMaskByCountry
 
 fun userToParticipantsItem(user: User, currentId: Long?): ParticipantsViewItem {
@@ -15,7 +14,8 @@ fun userToParticipantsItem(user: User, currentId: Long?): ParticipantsViewItem {
         CurrentUserViewItem(
             userId = user.id,
             name = PrintableText.Raw(
-                user.name + " (Вы)"),
+                user.name + " (Вы)"
+            ),
             avatar = user.avatar
         )
     else
@@ -33,7 +33,7 @@ fun participantsViewItemToDifferentUsers(
     return if (user.userId == currentId)
         CurrentUserViewItem(
             userId = user.userId,
-            name = user.name,
+            name = PrintableText.Raw(getPrintableRawText(user.name) + " (Вы)"),
             avatar = user.avatar
         )
     else
@@ -44,8 +44,8 @@ fun participantsViewItemToDifferentUsers(
         )
 }
 
-private fun getName(user : User) : String{
-    return when{
+private fun getName(user: User): String {
+    return when {
         user.contactName?.isNotEmpty() == true -> user.contactName!!
         user.name.isNotEmpty() -> user.name
         else -> user.phone.setMaskByCountry(Country.RUSSIA)

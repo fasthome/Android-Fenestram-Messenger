@@ -32,7 +32,7 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                             replyMessage = null,
                             isEdited = lastMessage[0].isEdited,
                             messageStatus = lastMessage[0].messageStatus,
-                            usersHaveRead = null
+                            usersHaveRead = lastMessage[0].users_have_read
                         )
                     }
                     ),
@@ -47,10 +47,10 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
     }
 
     fun responseToGetMessagesByChat(response: List<MessageResponse>) = response.map {
-            responseToMessage(it)
-        }
+        responseToMessage(it)
+    }
 
-    fun responseToMessage(mess : MessageResponse): Message {
+    fun responseToMessage(mess: MessageResponse): Message {
         with(mess) {
             return Message(
                 id = id,
