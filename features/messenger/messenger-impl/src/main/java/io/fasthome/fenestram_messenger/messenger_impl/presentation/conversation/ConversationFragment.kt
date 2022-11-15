@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
@@ -29,6 +30,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenu
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.TagParticipantsAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
@@ -44,6 +46,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
 import java.time.ZonedDateTime
 
 
@@ -72,12 +75,20 @@ class ConversationFragment :
             .register(::permissionFragment)
     )
 
+    private val tagsAdapter = TagParticipantsAdapter(
+        onUserClicked = {
+            vm.onSelectUserTagClicked(it)
+        }
+    )
+
     private val conversationAdapter = ConversationAdapter(
         viewBinderHelper = ViewBinderHelper(),
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
         }, onImageClicked = {
             vm.onImageClicked(it)
+        }, onUserTagClicked = { userTag ->
+            vm.onUserTagClicked(userTag)
         }, onSelfDownloadDocument = { item, progressListener ->
             vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
         }, onRecieveDownloadDocument = { item, progressListener ->
@@ -154,6 +165,33 @@ class ConversationFragment :
             )
         })
         attachedList.adapter = attachedAdapter
+        rvChatUserTags.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
+        rvChatUserTags.adapter = tagsAdapter
+        rvChatUserTags.addItemDecoration(SpacingItemDecoration { index, itemCount ->
+            Rect(
+                0.dp,
+                4.dp,
+                0.dp,
+                4.dp,
+            )
+        })
+
+        inputMessage.doAfterTextChanged { text ->
+            if (!text.isNullOrEmpty()) {
+                if (text.toString() == "@") {
+                    vm.fetchTags("")
+                    return@doAfterTextChanged
+                } else {
+                    val nickname = text.substring(0, inputMessage.selectionStart)
+                    if (USER_TAG_PATTERN.matcher(nickname).matches()) {
+                        vm.fetchTags(nickname)
+                        return@doAfterTextChanged
+                    }
+                }
+            }
+            vm.fetchTags(null)
+        }
 
         sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
@@ -195,7 +233,8 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.loadCircle(url = state.avatar,
+            placeholderRes = R.drawable.ic_avatar_placeholder)
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
@@ -339,6 +378,19 @@ class ConversationFragment :
                     }
                 ).show()
             }
+            is ConversationEvent.ShowUsersTags -> {
+                tagsAdapter.items = event.users
+            }
+
+            is ConversationEvent.UpdateInputUserTag -> {
+                val newText = if(binding.inputMessage.text.toString() == "@") {
+                    "@${event.nickname}"
+                } else {
+                    "@" + event.nickname + binding.inputMessage.text?.replace(USER_TAG_PATTERN.toRegex(),"")
+                }
+                binding.inputMessage.setText(newText)
+                binding.inputMessage.lastCharFocus()
+            }
 
             is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
                 is ConversationViewItem.Self.Text -> replyTextDialog(event.conversationViewItem)
@@ -366,15 +418,16 @@ class ConversationFragment :
         }
     }
 
-    private fun replyImageDialog(conversationViewItem: ConversationViewItem) = MessageActionDialog.create(
-        fragment = this,
-        onDelete = if (conversationViewItem is ConversationViewItem.Self) {
-            { vm.onDeleteMessageClicked(conversationViewItem) }
-        } else null,
-        onReply = {
-            vm.replyMessageMode(true, conversationViewItem)
-        }
-    ).show()
+    private fun replyImageDialog(conversationViewItem: ConversationViewItem) =
+        MessageActionDialog.create(
+            fragment = this,
+            onDelete = if (conversationViewItem is ConversationViewItem.Self) {
+                { vm.onDeleteMessageClicked(conversationViewItem) }
+            } else null,
+            onReply = {
+                vm.replyMessageMode(true, conversationViewItem)
+            }
+        ).show()
 
     private fun replyTextDialog(conversationViewItem: ConversationViewItem) {
 
@@ -415,7 +468,8 @@ class ConversationFragment :
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(),
+                            R.color.white))
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
@@ -424,7 +478,8 @@ class ConversationFragment :
                         replyImage.loadRounded(message.content, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
-                            getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
+                            getString(R.string.reply_image_from_ph,
+                                getPrintableRawText(message.userName))
                     }
                 }
             }
