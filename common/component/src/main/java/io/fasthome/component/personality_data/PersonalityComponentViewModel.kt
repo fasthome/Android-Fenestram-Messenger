@@ -184,7 +184,7 @@ class PersonalityComponentViewModel(
                             R.string.personality_same_nickname
                         )
                     }
-                    inputText.length in 2..PersonalityComponentFragment.MAX_SYMBOLS_NICKNAME -> {
+                    inputText.length in PersonalityComponentFragment.MIN_SYMBOLS_NICKNAME..PersonalityComponentFragment.MAX_SYMBOLS_NICKNAME -> {
                         isValid = true
                         errorPrintableText = PrintableText.StringResource(
                             R.string.personality_incorrect_length_nickname
