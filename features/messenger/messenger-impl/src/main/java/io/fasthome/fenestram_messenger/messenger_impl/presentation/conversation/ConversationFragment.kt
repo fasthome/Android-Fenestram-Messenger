@@ -165,8 +165,6 @@ class ConversationFragment :
             )
         })
         attachedList.adapter = attachedAdapter
-        rvChatUserTags.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, true)
         rvChatUserTags.adapter = tagsAdapter
         rvChatUserTags.addItemDecoration(SpacingItemDecoration { index, itemCount ->
             Rect(
@@ -178,19 +176,7 @@ class ConversationFragment :
         })
 
         inputMessage.doAfterTextChanged { text ->
-            if (!text.isNullOrEmpty()) {
-                if (text.toString() == "@") {
-                    vm.fetchTags("")
-                    return@doAfterTextChanged
-                } else {
-                    val nickname = text.substring(0, inputMessage.selectionStart)
-                    if (USER_TAG_PATTERN.matcher(nickname).matches()) {
-                        vm.fetchTags(nickname)
-                        return@doAfterTextChanged
-                    }
-                }
-            }
-            vm.fetchTags(null)
+            vm.fetchTags(text.toString(), inputMessage.selectionStart)
         }
 
         sendButton.onClick() {
@@ -383,13 +369,19 @@ class ConversationFragment :
             }
 
             is ConversationEvent.UpdateInputUserTag -> {
-                val newText = if(binding.inputMessage.text.toString() == "@") {
-                    "@${event.nickname}"
-                } else {
-                    "@" + event.nickname + binding.inputMessage.text?.replace(USER_TAG_PATTERN.toRegex(),"")
+                var text = binding.inputMessage.text.toString()
+                if(text.isNotEmpty()) {
+                    var tagCharIndex = 0
+                    do {
+                        tagCharIndex = text.indexOf("@", tagCharIndex)
+                        tagCharIndex++
+                    } while (tagCharIndex < binding.inputMessage.selectionStart)
+
+                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(tagCharIndex)
                 }
-                binding.inputMessage.setText(newText)
+                binding.inputMessage.setText(text)
                 binding.inputMessage.lastCharFocus()
+
             }
 
             is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
