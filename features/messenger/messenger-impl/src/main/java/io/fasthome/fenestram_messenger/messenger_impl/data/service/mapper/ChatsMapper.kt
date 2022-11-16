@@ -2,9 +2,12 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatUsersResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
@@ -74,6 +77,19 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
         messageType = messageStatusResponse.type,
         usersHaveRead = messageStatusResponse.usersHaveRead
     )
+
+    fun toChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse): ChatChanges {
+        val chatUsers = chatChangesResponse.updatedValues!!.chatUsers?.map { chatUser ->
+            ChatUsersResult(
+                chatUser.id,
+                chatUser.contactName ?: chatUser.name ?: chatUser.nickname ?: "",
+                chatUser.avatar ?: ""
+            )
+        }
+        return ChatChanges(
+            chatUsers = chatUsers
+        )
+    }
 
     companion object {
         const val TYPING_MESSAGE_STATUS = "typingMessage"

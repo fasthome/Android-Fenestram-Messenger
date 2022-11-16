@@ -2,11 +2,9 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
 import android.util.Log
 import io.fasthome.fenestram_messenger.data.UserStorage
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketDeleteMessage
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -72,7 +70,8 @@ class MessengerInteractor(
         id: Long,
         selfUserId: Long,
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
-        onMessageDeletedCallback: (List<Long>) -> Unit
+        onMessageDeletedCallback: (List<Long>) -> Unit,
+        onNewChatChangesCallback: (ChatChanges) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -96,9 +95,23 @@ class MessengerInteractor(
                 override fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage) {
                     onMessageDeletedCallback(socketDeleteMessage.message.map { it.id })
                 }
+
+                override fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse) {
+                    onNewChatChangesCallback(chatsMapper.toChatChanges(chatChangesResponse))
+                }
+
             })
 
         return messagesFlow
+    }
+
+    fun getChatChanges(
+        chatId: Long,
+        onNewChatChanges: (ChatChanges) -> Unit
+    ) {
+        messageRepo.getChatChanges(chatId) {
+            onNewChatChanges(chatsMapper.toChatChanges(it))
+        }
     }
 
     fun emitMessageAction(chatId: String, action: String) {
@@ -115,7 +128,10 @@ class MessengerInteractor(
         messageRepo.emitChatListeners(subChatId, unsubChatId)
     }
 
-    suspend fun getNewMessages(onNewMessageStatusCallback: (MessageStatus) -> Unit): Flow<Message> {
+    suspend fun getNewMessages(
+        onNewMessageStatusCallback: (MessageStatus) -> Unit,
+        onNewChatChangesCallback: (ChatChanges) -> Unit
+    ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = null,
             token = tokensRepo.getAccessToken(),
@@ -133,6 +149,10 @@ class MessengerInteractor(
                 }
 
                 override fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage) {
+                }
+
+                override fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse) {
+                    onNewChatChangesCallback(chatsMapper.toChatChanges(chatChangesResponse))
                 }
             },
             selfUserId = null

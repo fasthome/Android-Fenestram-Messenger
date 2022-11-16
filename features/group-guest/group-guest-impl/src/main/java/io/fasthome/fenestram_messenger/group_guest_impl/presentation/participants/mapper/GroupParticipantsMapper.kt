@@ -4,9 +4,9 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.AnotherUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.CurrentUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatUsersResult
 import io.fasthome.fenestram_messenger.util.Country
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.setMaskByCountry
 
 fun userToParticipantsItem(user: User, currentId: Long?): ParticipantsViewItem {
@@ -26,21 +26,21 @@ fun userToParticipantsItem(user: User, currentId: Long?): ParticipantsViewItem {
         )
 }
 
-fun participantsViewItemToDifferentUsers(
-    user: ParticipantsViewItem,
-    currentId: Long?
+fun chatUserToParticipantsViewItem(
+    selfUserId: Long?,
+    chatUserResult: ChatUsersResult,
 ): ParticipantsViewItem {
-    return if (user.userId == currentId)
+    return if (chatUserResult.userId == selfUserId)
         CurrentUserViewItem(
-            userId = user.userId,
-            name = PrintableText.Raw(getPrintableRawText(user.name) + " (Вы)"),
-            avatar = user.avatar
+            userId = chatUserResult.userId,
+            name = PrintableText.Raw("${chatUserResult.userName} (Вы)"),
+            avatar = chatUserResult.avatar
         )
     else
         AnotherUserViewItem(
-            userId = user.userId,
-            name = user.name,
-            avatar = user.avatar
+            userId = chatUserResult.userId,
+            name = PrintableText.Raw(chatUserResult.userName),
+            avatar = chatUserResult.avatar
         )
 }
 

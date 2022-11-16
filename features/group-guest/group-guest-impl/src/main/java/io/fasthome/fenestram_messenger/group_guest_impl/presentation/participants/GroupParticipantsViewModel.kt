@@ -10,7 +10,7 @@ import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterfac
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestContract
-import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.participantsViewItemToDifferentUsers
+import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.chatUserToParticipantsViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.userToParticipantsItem
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -39,6 +39,7 @@ class GroupParticipantsViewModel(
     init {
         viewModelScope.launch {
             userId = groupGuestInteractor.getUserId().successOrSendError()
+            subscribeToChatChanges()
             updateState { state ->
                 state.copy(participants = params.participants.map {
                     userToParticipantsItem(it, userId)
@@ -49,13 +50,7 @@ class GroupParticipantsViewModel(
 
     private val addUserToChatLauncher = registerScreen(GroupGuestContract) { result ->
         when (result) {
-            is GroupGuestContract.Result.UsersAdded -> {
-                updateState { state ->
-                    state.copy(participants = result.users.map {
-                        participantsViewItemToDifferentUsers(it, userId)
-                    })
-                }
-            }
+            is GroupGuestContract.Result.UsersAdded -> {}
             is GroupGuestContract.Result.Canceled -> {}
         }
         exitWithResult(GroupGuestContract.createResult(result))
@@ -75,6 +70,26 @@ class GroupParticipantsViewModel(
 
     override fun createInitialState(): GroupParticipantsState {
         return GroupParticipantsState(listOf())
+    }
+
+    private fun subscribeToChatChanges() {
+        viewModelScope.launch {
+            messengerFeature.onChatChanges(params.chatId!!) { chatChanges ->
+                chatChanges.chatUsers?.let { chatUsers ->
+
+                    val selfChatUser = chatUsers.find { it.userId == userId }
+                    val listWithSelfFirst = chatUsers.toMutableList()
+                    listWithSelfFirst.remove(selfChatUser)
+                    listWithSelfFirst.add(0, selfChatUser!!)
+
+                    updateState { state ->
+                        state.copy(participants = listWithSelfFirst.map {
+                            chatUserToParticipantsViewItem(userId, it)
+                        })
+                    }
+                }
+            }
+        }
     }
 
     fun onAddUserToChat() {
@@ -99,12 +114,6 @@ class GroupParticipantsViewModel(
             groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()?.let {
                 if (userId == id)
                     router.backTo(null)
-                else
-                    updateState { state ->
-                        state.copy(participants = it.map { item ->
-                            participantsViewItemToDifferentUsers(item, userId)
-                        })
-                    }
             }
         }
     }

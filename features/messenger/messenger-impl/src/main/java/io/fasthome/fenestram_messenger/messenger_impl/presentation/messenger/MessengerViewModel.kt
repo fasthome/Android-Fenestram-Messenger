@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -138,7 +139,9 @@ class MessengerViewModel(
     }
 
     private suspend fun subscribeMessages() {
-        messengerInteractor.getNewMessages { onNewMessageStatus(it) }
+        messengerInteractor.getNewMessages(
+            { onNewMessageStatus(it) },
+            { onChatChangesCallback(it) })
             .collectWhenViewActive()
             .onEach { message ->
                 loadDataHelper.invalidateSource()
@@ -161,6 +164,10 @@ class MessengerViewModel(
                 }
             )
         }
+    }
+
+    private fun onChatChangesCallback(chatChanges: ChatChanges) {
+        //TODO изменение имени и аватара чата
     }
 
     private fun subscribeMessageActions() {

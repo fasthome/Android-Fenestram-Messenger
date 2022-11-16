@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_api
 
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
@@ -16,6 +17,11 @@ interface MessengerFeature {
     val messengerNavigationContract: NavigationContractApi<NoParams, NoResult>
 
     val conversationNavigationContract: NavigationContractApi<Params, MessengerResult>
+
+    suspend fun onChatChanges(
+        id: Long,
+        chatChangesCallback: (ChatChanges) -> Unit
+    )
 
     suspend fun deleteChat(id: Long): CallResult<Unit>
 

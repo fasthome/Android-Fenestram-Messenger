@@ -5,7 +5,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ReplyMessageResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
@@ -42,7 +42,8 @@ class MessengerRepoImpl(
             messageId = messageId,
             chatId = chatId,
             text = text,
-            messageType = messageType)
+            messageType = messageType
+        )
     }
 
     override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(
@@ -104,8 +105,18 @@ class MessengerRepoImpl(
             messageCallback = { callback.onNewMessage(this) },
             messageActionCallback = { callback.onNewMessageAction(this) },
             messageStatusCallback = { callback.onNewMessageStatus(this) },
-            messageDeletedCallback = { callback.onMessageDeleted(this) }
+            messageDeletedCallback = { callback.onMessageDeleted(this) },
+            chatChangesCallback = { callback.onNewChatChanges(this) }
         )
+    }
+
+    override fun getChatChanges(
+        chatId: Long,
+        onNewChatChanges: (SocketChatChanges.ChatChangesResponse) -> Unit
+    ) {
+        socket.getChatChanges(chatId) {
+            onNewChatChanges(this)
+        }
     }
 
     override fun emitMessageAction(chatId: String, action: String) {

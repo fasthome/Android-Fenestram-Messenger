@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -612,7 +613,8 @@ class ConversationViewModel(
             chatId,
             selfUserId,
             { onNewMessageStatus(it) },
-            { onMessagesDeletedCallback(it) }
+            { onMessagesDeletedCallback(it) },
+            { onChatChangesCallback(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -732,6 +734,10 @@ class ConversationViewModel(
             }
             it.copy(messages = messages)
         }
+    }
+
+    private fun onChatChangesCallback(chatChanges: ChatChanges) {
+        //TODO изменение имени и аватара чата
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {

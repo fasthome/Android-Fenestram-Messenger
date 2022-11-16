@@ -195,7 +195,10 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.loadCircle(
+            url = state.avatar,
+            placeholderRes = R.drawable.ic_avatar_placeholder
+        )
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
@@ -366,15 +369,16 @@ class ConversationFragment :
         }
     }
 
-    private fun replyImageDialog(conversationViewItem: ConversationViewItem) = MessageActionDialog.create(
-        fragment = this,
-        onDelete = if (conversationViewItem is ConversationViewItem.Self) {
-            { vm.onDeleteMessageClicked(conversationViewItem) }
-        } else null,
-        onReply = {
-            vm.replyMessageMode(true, conversationViewItem)
-        }
-    ).show()
+    private fun replyImageDialog(conversationViewItem: ConversationViewItem) =
+        MessageActionDialog.create(
+            fragment = this,
+            onDelete = if (conversationViewItem is ConversationViewItem.Self) {
+                { vm.onDeleteMessageClicked(conversationViewItem) }
+            } else null,
+            onReply = {
+                vm.replyMessageMode(true, conversationViewItem)
+            }
+        ).show()
 
     private fun replyTextDialog(conversationViewItem: ConversationViewItem) {
 
@@ -415,7 +419,12 @@ class ConversationFragment :
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                        tvTextToEdit.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.white
+                            )
+                        )
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
@@ -424,7 +433,10 @@ class ConversationFragment :
                         replyImage.loadRounded(message.content, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
-                            getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
+                            getString(
+                                R.string.reply_image_from_ph,
+                                getPrintableRawText(message.userName)
+                            )
                     }
                 }
             }
@@ -503,8 +515,4 @@ class ConversationFragment :
         )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        vm.closeSocket()
-    }
 }
