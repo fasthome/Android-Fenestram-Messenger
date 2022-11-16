@@ -46,7 +46,6 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
 import java.time.ZonedDateTime
 
 
