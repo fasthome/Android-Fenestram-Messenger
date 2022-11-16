@@ -71,7 +71,8 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
     fun toMessageStatus(messageStatusResponse: MessageStatusResponse) = MessageStatus(
         messageId = messageStatusResponse.id,
         messageStatus = messageStatusResponse.messageStatus,
-        messageType = messageStatusResponse.type
+        messageType = messageStatusResponse.type,
+        usersHaveRead = messageStatusResponse.usersHaveRead
     )
 
     companion object {

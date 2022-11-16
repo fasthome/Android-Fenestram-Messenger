@@ -72,6 +72,12 @@ class MessengerSocket(private val baseUrl: String) {
                 }
             }
 
+            socket?.on("receiveChatChanges") {
+                Log.d(this.javaClass.simpleName, "receiveChatChanges: " + it[0].toString())
+//                val chatChanges = json.decodeFromString<SocketChatChanges>(it[0].toString())
+//                messageDeletedCallback(messageAction)
+            }
+
         } catch (e: Exception) {
         }
     }
@@ -120,6 +126,7 @@ class MessengerSocket(private val baseUrl: String) {
         )
 
     fun closeClientSocket() {
+        Log.d("asd", "closed")
         socket?.close()
         socket = null
     }
