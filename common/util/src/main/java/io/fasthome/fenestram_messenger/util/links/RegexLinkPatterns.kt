@@ -60,3 +60,8 @@ val PHONE_PATTERN: Pattern = Pattern.compile(
     //todo пока только русские номера
     "(\\+7|7|8)[\\s\\-]?\\(?[489][0-9]{2}\\)?[\\s\\-]?[0-9]{3}[\\s\\-]?[0-9]{2}[\\s\\-]?[0-9]{2}"
 )
+
+val USER_TAG_PATTERN: Pattern = Pattern.compile(
+    "(\\@)" +
+            "[a-zA-ZЁёА-Яа-я0-9_]{2,22}"
+)
