@@ -284,8 +284,23 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     }
 
     override fun onDoubleTap(motionEvent: MotionEvent): Boolean {
-        fitToScreen()
-        return false
+        if(saveScale == SWIPE_SCALE) {
+            val mScaleFactor = 2f
+            saveScale *= mScaleFactor
+            if (origWidth * saveScale <= viewWidth
+                || origHeight * saveScale <= viewHeight
+            ) {
+                matrixGeneral!!.postScale(mScaleFactor, mScaleFactor, viewWidth / 2.toFloat(),
+                    viewHeight / 2.toFloat())
+            } else {
+                matrixGeneral!!.postScale(mScaleFactor, mScaleFactor,
+                    motionEvent.x, motionEvent.y)
+            }
+            fixTranslation()
+        } else {
+            fitToScreen()
+        }
+        return true
     }
 
     override fun onDoubleTapEvent(motionEvent: MotionEvent): Boolean {
