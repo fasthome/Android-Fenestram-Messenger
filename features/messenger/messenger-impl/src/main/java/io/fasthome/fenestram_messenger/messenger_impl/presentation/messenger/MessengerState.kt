@@ -9,5 +9,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mod
 data class MessengerState(
     val chats: List<Chat>,
     val messengerViewItems: List<MessengerViewItem>,
-    val newMessagesCount: Int
+    val newMessagesCount: Int,
+    val isSelectMode: Boolean
 )

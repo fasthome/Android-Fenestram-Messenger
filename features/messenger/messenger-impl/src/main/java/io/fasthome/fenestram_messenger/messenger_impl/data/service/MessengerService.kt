@@ -136,6 +136,15 @@ class MessengerService(
             )
     }
 
+    suspend fun forwardMessage(chatId: Long, messageId: Long): Message? {
+        val response: BaseResponse<ForwardMessageReponse> =
+            client.runPost(
+                path = "chats/forward/message/$chatId",
+                body = ForwardMessageRequest(listOf(messageId.toString()))
+            )
+        return if(response.data?.message != null) getChatsMapper.responseToMessage(response.data!!.message!!) else null
+    }
+
     suspend fun replyMessage(messageId: Long, chatId: Long, text: String, messageType: String): Message? {
         val response: BaseResponse<ReplyMessageResponse> =
             client.runPost(

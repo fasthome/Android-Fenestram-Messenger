@@ -29,6 +29,7 @@ class PersonalityComponentFragment :
     companion object {
         const val MAX_SYMBOLS = 15
         const val MAX_SYMBOLS_NICKNAME = 22
+        const val MIN_SYMBOLS_NICKNAME = 2
         const val MAX_SYMBOLS_EMAIL = 30
     }
 
@@ -43,6 +44,7 @@ class PersonalityComponentFragment :
         labelMail.includeTextView.setText(R.string.common_email_label)
         labelName.includeTextView.setText(R.string.common_name_label)
         labelUserName.includeTextView.setText(R.string.common_user_name_label)
+        nicknameInfo.text = getString(R.string.profile_nickname_info, MIN_SYMBOLS_NICKNAME)
 
 
         nameInput.filters += listOf(
@@ -57,22 +59,25 @@ class PersonalityComponentFragment :
 
         userNameInput.filters += listOf(
             SpaceInputFilter(REGEX_LETTERS_NICKNAME),
-            InputFilter.LengthFilter(MAX_SYMBOLS_NICKNAME)
+            InputFilter.LengthFilter(MAX_SYMBOLS_NICKNAME),
+            SpacesToUnderscoresInputFilter()
         )
 
         nameInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.UsernameKey, it?.toString() ?: "")
+            vm.onFieldChanged(EditTextKey.UsernameKey, it.toString())
         }
         mailInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.MailKey, it?.toString() ?: "")
+            vm.onFieldChanged(EditTextKey.MailKey, it.toString())
 
         }
         userNameInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.NicknameKey, it?.toString() ?: "")
-
+            if(it.toString().contains(' ')) {
+                userNameInput.lastCharFocus()
+            }
+            vm.onFieldChanged(EditTextKey.NicknameKey, userNameInput.text.toString())
         }
         birthdateInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.BirthdateKey, it?.toString() ?: "")
+            vm.onFieldChanged(EditTextKey.BirthdateKey, it.toString())
         }
         HooliDatePicker(birthdateInput).registerDatePicker(childFragmentManager)
     }
@@ -141,6 +146,7 @@ class PersonalityComponentFragment :
                 mailInput.isEnabled = event.edit
                 birthdateInput.isEnabled = event.edit
                 userNameInput.isEnabled = event.edit
+                nicknameInfo.isVisible = event.edit
             }
             is PersonalityEvent.VisibleName -> {
                 nameInput.isVisible = event.isVisible

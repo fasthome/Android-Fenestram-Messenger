@@ -7,6 +7,7 @@ import android.text.Spanned
 import android.widget.TextView
 import java.util.regex.Pattern
 
+
 class LinkBuilder {
 
     private var context: Context? = null

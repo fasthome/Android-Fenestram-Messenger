@@ -11,7 +11,7 @@ val REGEX_DIGITS_AND_SPECIAL_SYMBOLS = "^[0-9 .,\\-/]*$".toRegex()
 val REGEX_PASSWORD = "[a-zA-Z0-9]".toRegex()
 val REGEX_LETTERS_AND_SPACE_AND_DASH = "[a-zA-ZЁёА-Яа-я -]".toRegex()
 val REGEX_LETTERS_NUMBERS_SPACE_DASH = "[a-zA-ZЁёА-Яа-я 0-9-]".toRegex()
-val REGEX_LETTERS_NICKNAME = "[a-zA-ZЁёА-Яа-я0-9 ._-]".toRegex()
+val REGEX_LETTERS_NICKNAME = "[a-zA-ZЁёА-Яа-я0-9_ ]".toRegex()
 
 val REGEX_RU_LETTERS_AND_SPACE = "[ЁёА-Яа-я ]".toRegex()
 val REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE = "[a-zA-Z0-9 ._-]".toRegex()

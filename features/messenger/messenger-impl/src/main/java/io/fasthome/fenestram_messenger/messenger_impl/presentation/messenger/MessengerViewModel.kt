@@ -31,7 +31,8 @@ class MessengerViewModel(
     private val messengerInteractor: MessengerInteractor,
     profileGuestFeature: ProfileGuestFeature,
     private val loadDataHelper: PagingDataViewModelHelper,
-    private val messengerMapper: MessengerMapper
+    private val messengerMapper: MessengerMapper,
+    private val params: MessengerNavigationContract.Params,
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
     private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
@@ -95,16 +96,32 @@ class MessengerViewModel(
     }
 
     fun launchConversation(messangerViewItem: MessengerViewItem) {
-        conversationlauncher.launch(
-            ConversationNavigationContract.Params(
-                fromContacts = false,
-                chat = messangerViewItem.originalChat
+        if (params.chatSelectionMode) {
+            exitWithResult(
+                MessengerNavigationContract.createResult(
+                    MessengerNavigationContract.Result.ChatSelected(chatName = messangerViewItem.name,
+                        chatId = messangerViewItem.id,
+                        isGroup = messangerViewItem.isGroup,
+                        avatar = messangerViewItem.profileImageUrl,
+                        pendingMessages = messangerViewItem.pendingAmount)
+                )
             )
-        )
+        } else {
+            conversationlauncher.launch(
+                ConversationNavigationContract.Params(
+                    fromContacts = false,
+                    chat = messangerViewItem.originalChat
+                )
+            )
+        }
     }
 
     override fun createInitialState(): MessengerState {
-        return MessengerState(listOf(), listOf(), newMessagesCount = 0)
+        return MessengerState(
+            chats = listOf(),
+            messengerViewItems = listOf(),
+            newMessagesCount = 0,
+            isSelectMode = params.chatSelectionMode)
     }
 
     fun onCreateChatClicked() {
@@ -216,4 +233,6 @@ class MessengerViewModel(
             state.copy(newMessagesCount = 0)
         }
     }
+
+    fun exitToConversation() = exitWithoutResult()
 }

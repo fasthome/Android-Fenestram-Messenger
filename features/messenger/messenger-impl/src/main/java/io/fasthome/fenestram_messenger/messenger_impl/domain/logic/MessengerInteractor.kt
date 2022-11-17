@@ -46,6 +46,8 @@ class MessengerInteractor(
     suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
         messageRepo.sendMessage(id, text, type, localId, authorId)
 
+    suspend fun forwardMessage(chatId: Long, messageId: Long) = messageRepo.forwardMessage(chatId, messageId)
+
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
 

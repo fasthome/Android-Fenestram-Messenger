@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
@@ -29,6 +30,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenu
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.TagParticipantsAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
@@ -72,12 +74,20 @@ class ConversationFragment :
             .register(::permissionFragment)
     )
 
+    private val tagsAdapter = TagParticipantsAdapter(
+        onUserClicked = {
+            vm.onSelectUserTagClicked(it)
+        }
+    )
+
     private val conversationAdapter = ConversationAdapter(
         viewBinderHelper = ViewBinderHelper(),
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
         }, onImageClicked = {
-            vm.onImageClicked(it)
+            vm.onImageClicked(conversationViewItem = it)
+        }, onUserTagClicked = { userTag ->
+            vm.onUserTagClicked(userTag)
         }, onSelfDownloadDocument = { item, progressListener ->
             vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
         }, onRecieveDownloadDocument = { item, progressListener ->
@@ -106,6 +116,12 @@ class ConversationFragment :
             vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
         }, onGroupTextReplyImageLongClicked = {
             vm.onGroupMessageLongClicked(it)
+        }, onSelfForwardLongClicked = {
+            vm.onSelfForwardLongClicked(it)
+        }, onReceiveForwardLongClicked = {
+            vm.onReceiveForwardLongClicked(it)
+        }, onGroupForwardLongClicked = {
+            vm.onGroupForwardLongClicked(it)
         })
 
     private val attachedAdapter = AttachedAdapter(
@@ -154,6 +170,19 @@ class ConversationFragment :
             )
         })
         attachedList.adapter = attachedAdapter
+        rvChatUserTags.adapter = tagsAdapter
+        rvChatUserTags.addItemDecoration(SpacingItemDecoration { index, itemCount ->
+            Rect(
+                0.dp,
+                4.dp,
+                0.dp,
+                4.dp,
+            )
+        })
+
+        inputMessage.doAfterTextChanged { text ->
+            vm.fetchTags(text.toString(), inputMessage.selectionStart)
+        }
 
         sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
@@ -195,10 +224,12 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(
-            url = state.avatar,
-            placeholderRes = R.drawable.ic_avatar_placeholder
-        )
+        avatarImage.loadCircle(url = state.avatar,
+            placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.onClick {
+            if(state.avatar.isNotEmpty())
+            vm.onImageClicked(url = state.avatar)
+        }
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
@@ -236,6 +267,9 @@ class ConversationFragment :
 
         when (state.inputMessageMode) {
             is InputMessageMode.Default -> {
+                state.inputMessageMode.inputText?.let {
+                    inputMessage.setText(it)
+                }
                 renderStateEditMode(false, null)
                 renderStateReplyMode(false, null)
             }
@@ -342,12 +376,32 @@ class ConversationFragment :
                     }
                 ).show()
             }
+            is ConversationEvent.ShowUsersTags -> {
+                tagsAdapter.items = event.users
+            }
+
+            is ConversationEvent.UpdateInputUserTag -> {
+                var text = binding.inputMessage.text.toString()
+                if(text.isNotEmpty()) {
+                    var tagCharIndex = 0
+                    do {
+                        tagCharIndex = text.indexOf("@", tagCharIndex)
+                        tagCharIndex++
+                    } while (tagCharIndex < binding.inputMessage.selectionStart)
+
+                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(tagCharIndex)
+                }
+                binding.inputMessage.setText(text)
+                binding.inputMessage.lastCharFocus()
+
+            }
 
             is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
                 is ConversationViewItem.Self.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Image -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Document -> Unit
+                is ConversationViewItem.Self.Forward -> replyImageDialog(event.conversationViewItem)
             }
 
             is ConversationEvent.ShowReceiveMessageActionDialog -> when (event.conversationViewItem) {
@@ -355,12 +409,14 @@ class ConversationFragment :
                 is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Image -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Document -> Unit
+                is ConversationViewItem.Receive.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.ShowGroupMessageActionDialog -> when (event.conversationViewItem) {
                 is ConversationViewItem.Group.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Document -> Unit
+                is ConversationViewItem.Group.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.DotsEvent -> {
                 binding.userStatusView.setPrintableText(event.userStatus)
@@ -369,16 +425,18 @@ class ConversationFragment :
         }
     }
 
-    private fun replyImageDialog(conversationViewItem: ConversationViewItem) =
-        MessageActionDialog.create(
-            fragment = this,
-            onDelete = if (conversationViewItem is ConversationViewItem.Self) {
-                { vm.onDeleteMessageClicked(conversationViewItem) }
-            } else null,
-            onReply = {
-                vm.replyMessageMode(true, conversationViewItem)
-            }
-        ).show()
+    private fun replyImageDialog(conversationViewItem: ConversationViewItem) = MessageActionDialog.create(
+        fragment = this,
+        onDelete = if (conversationViewItem is ConversationViewItem.Self) {
+            { vm.onDeleteMessageClicked(conversationViewItem) }
+        } else null,
+        onReply = {
+            vm.replyMessageMode(true, conversationViewItem)
+        },
+        onForward = {
+            vm.openChatSelectorForForward(conversationViewItem.id)
+        }
+    ).show()
 
     private fun replyTextDialog(conversationViewItem: ConversationViewItem) {
 
@@ -400,6 +458,9 @@ class ConversationFragment :
             } else null,
             onReply = {
                 vm.replyMessageMode(true, conversationViewItem)
+            },
+            onForward = {
+                vm.openChatSelectorForForward(conversationViewItem.id)
             }
         ).show()
     }
@@ -413,18 +474,22 @@ class ConversationFragment :
                     clEditMessage.setPadding(0, 0, 0, it + 10.dp)
                 })
                 when (message) {
+                    is ConversationViewItem.Self.Forward,
+                        is ConversationViewItem.Group.Forward,
+                        is ConversationViewItem.Receive.Forward -> {
+                        replyImage.isVisible = false
+                        tvEditMessageTitle.isVisible = false
+                        tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
+                        tvEditMessageTitle.text = getPrintableRawText(message.userName)
+                        tvTextToEdit.setText(R.string.forward_message)
+                        }
                     is ConversationTextItem -> {
                         tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
                         tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.white
-                            )
-                        )
+                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
@@ -433,10 +498,7 @@ class ConversationFragment :
                         replyImage.loadRounded(message.content, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
-                            getString(
-                                R.string.reply_image_from_ph,
-                                getPrintableRawText(message.userName)
-                            )
+                            getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
                     }
                 }
             }

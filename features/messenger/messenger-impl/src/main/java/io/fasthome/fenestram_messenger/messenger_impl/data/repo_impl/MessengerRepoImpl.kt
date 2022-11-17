@@ -32,6 +32,12 @@ class MessengerRepoImpl(
         messengerService.sendMessage(id, text, type, localId, authorId)
     }
 
+    override suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?> = callForResult {
+        messengerService.forwardMessage(chatId,messageId)
+    }
+
+
+
     override suspend fun replyMessage(
         chatId: Long,
         messageId: Long,

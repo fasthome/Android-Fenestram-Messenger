@@ -114,7 +114,7 @@ class MainViewModel(
 
     fun buildFragment(type: MainFeature.TabType): Fragment {
         return when (type) {
-            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams()
+            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams(MessengerFeature.MessengerParams(false))
                 .createFragment()
             MainFeature.TabType.Contacts -> features.contactsFeature.contactsNavigationContract.createParams()
                 .createFragment()
