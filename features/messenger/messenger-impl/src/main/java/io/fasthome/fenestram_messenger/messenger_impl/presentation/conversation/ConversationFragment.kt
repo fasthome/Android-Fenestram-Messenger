@@ -226,6 +226,10 @@ class ConversationFragment :
     override fun renderState(state: ConversationState) = with(binding) {
         avatarImage.loadCircle(url = state.avatar,
             placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.onClick {
+            if(state.avatar.isNotEmpty())
+            vm.onImageClicked(url = state.avatar)
+        }
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
