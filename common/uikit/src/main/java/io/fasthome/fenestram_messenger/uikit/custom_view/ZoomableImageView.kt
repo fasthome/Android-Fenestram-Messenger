@@ -192,7 +192,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 centerY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
-                if (saveScale == MIN_SCALE && canSwipe) {
+                if (saveScale == SWIPE_SCALE && canSwipe) {
                     view.animate()
                         .y(event.rawY + dY)
                         .setDuration(0)
@@ -214,7 +214,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
 
             MotionEvent.ACTION_UP -> {
                 if (canSwipe) {
-                    if (saveScale == MIN_SCALE) {
+                    if (saveScale == SWIPE_SCALE) {
                         val middleTopCenter = centerY / 4
                         if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
                             onDownSwipe?.invoke()
@@ -226,6 +226,18 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                         .alpha(1f)
                         .start()
                     onAlphaChanged?.invoke(1f)
+                }
+                if(saveScale < SWIPE_SCALE) {
+                    view.animate()
+                        .y(startY)
+                        .setDuration(100)
+                        .alpha(1f)
+                        .withEndAction {
+                        fitToScreen()
+                    }
+                        .start()
+                    onAlphaChanged?.invoke(1f)
+
                 }
             }
         }
@@ -272,8 +284,23 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     }
 
     override fun onDoubleTap(motionEvent: MotionEvent): Boolean {
-        fitToScreen()
-        return false
+        if(saveScale == SWIPE_SCALE) {
+            val mScaleFactor = 2f
+            saveScale *= mScaleFactor
+            if (origWidth * saveScale <= viewWidth
+                || origHeight * saveScale <= viewHeight
+            ) {
+                matrixGeneral!!.postScale(mScaleFactor, mScaleFactor, viewWidth / 2.toFloat(),
+                    viewHeight / 2.toFloat())
+            } else {
+                matrixGeneral!!.postScale(mScaleFactor, mScaleFactor,
+                    motionEvent.x, motionEvent.y)
+            }
+            fixTranslation()
+        } else {
+            fitToScreen()
+        }
+        return true
     }
 
     override fun onDoubleTapEvent(motionEvent: MotionEvent): Boolean {
@@ -287,7 +314,8 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         const val DRAG = 1
         const val ZOOM = 2
 
-        const val MIN_SCALE = 1f
+        const val SWIPE_SCALE = 1f
+        const val MIN_SCALE = -2f
         const val MAX_SCALE = 4f
     }
 }
