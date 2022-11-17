@@ -92,7 +92,8 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
                 onSelfForwardLongClicked = onSelfForwardLongClicked,
-                onImageClicked = onImageClicked
+                onImageClicked = onImageClicked,
+                onUserTagClicked = onUserTagClicked
             ),
 
             createConversationReceiveTextAdapterDelegate(
@@ -106,7 +107,8 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
                 onReceiveForwardLongClicked = onReceiveForwardLongClicked,
-                onImageClicked = onImageClicked
+                onImageClicked = onImageClicked,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationReceiveTextReplyImageAdapterDelegate(
                 onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
@@ -144,7 +146,8 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
                 onGroupForwardLongClicked = onGroupForwardLongClicked,
-                onImageClicked = onImageClicked
+                onImageClicked = onImageClicked,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationGroupTextReplyImageAdapterDelegate(
                 onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
@@ -202,6 +205,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     }
 
 fun createConversationSelfForwardAdapterDelegate(
+    onUserTagClicked: (String) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
@@ -225,7 +229,7 @@ fun createConversationSelfForwardAdapterDelegate(
             is ConversationTextItem -> {
                 forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                 messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
-                messageContent.addCommonLinks()
+                messageContent.addCommonLinks(onUserTagClicked)
             }
             is ConversationImageItem -> {
                 forwardAuthorName.text = getString(R.string.reply_image_from_ph, getPrintableRawText(item.forwardMessage.userName))
@@ -371,6 +375,7 @@ fun createConversationReceiveTextAdapterDelegate(
     }
 
 fun createConversationReceiveForwardAdapterDelegate(
+    onUserTagClicked: (String) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
@@ -394,7 +399,7 @@ fun createConversationReceiveForwardAdapterDelegate(
             is ConversationTextItem -> {
                 forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                 messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
-                messageContent.addCommonLinks()
+                messageContent.addCommonLinks(onUserTagClicked)
             }
             is ConversationImageItem -> {
                 ivArrow.isVisible = false
@@ -586,6 +591,7 @@ fun createConversationGroupTextAdapterDelegate(
 
 
 fun createConversationGroupForwardAdapterDelegate(
+    onUserTagClicked: (String) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
@@ -611,7 +617,7 @@ fun createConversationGroupForwardAdapterDelegate(
             is ConversationTextItem -> {
                 forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                 messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
-                messageContent.addCommonLinks()
+                messageContent.addCommonLinks(onUserTagClicked)
             }
             is ConversationImageItem -> {
                 forwardAuthorName.text = getString(R.string.reply_image_from_ph, getPrintableRawText(item.forwardMessage.userName))
