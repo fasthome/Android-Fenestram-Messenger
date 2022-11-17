@@ -4,43 +4,28 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.AnotherUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.CurrentUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
-import io.fasthome.fenestram_messenger.messenger_api.entity.ChatUsersResult
 import io.fasthome.fenestram_messenger.util.Country
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setMaskByCountry
 
-fun userToParticipantsItem(user: User, currentId: Long?): ParticipantsViewItem {
-    return if (user.id == currentId)
+fun userToParticipantsItem(user: User, selfUserId: Long?): ParticipantsViewItem {
+    return if (user.id == selfUserId)
         CurrentUserViewItem(
             userId = user.id,
             name = PrintableText.Raw(
-                user.name + " (Вы)"
+                getName(user) + " (Вы)"
             ),
-            avatar = user.avatar
+            avatar = user.avatar,
+            nickname = user.nickname,
+            phone = user.phone
         )
     else
         AnotherUserViewItem(
             userId = user.id,
             name = PrintableText.Raw(getName(user)),
-            avatar = user.avatar
-        )
-}
-
-fun chatUserToParticipantsViewItem(
-    selfUserId: Long?,
-    chatUserResult: ChatUsersResult,
-): ParticipantsViewItem {
-    return if (chatUserResult.userId == selfUserId)
-        CurrentUserViewItem(
-            userId = chatUserResult.userId,
-            name = PrintableText.Raw("${chatUserResult.userName} (Вы)"),
-            avatar = chatUserResult.avatar
-        )
-    else
-        AnotherUserViewItem(
-            userId = chatUserResult.userId,
-            name = PrintableText.Raw(chatUserResult.userName),
-            avatar = chatUserResult.avatar
+            avatar = user.avatar,
+            nickname = user.nickname,
+            phone = user.phone
         )
 }
 

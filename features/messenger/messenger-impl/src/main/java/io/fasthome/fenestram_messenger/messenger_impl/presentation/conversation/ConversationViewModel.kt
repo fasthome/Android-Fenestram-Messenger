@@ -738,6 +738,14 @@ class ConversationViewModel(
 
     private fun onChatChangesCallback(chatChanges: ChatChanges) {
         //TODO изменение имени и аватара чата
+        with(chatChanges) {
+            users?.let { users ->
+                chatUsers = users
+                if (selfUserId !in users.map { user -> user.id }) {
+                    exitToMessenger()
+                }
+            }
+        }
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {

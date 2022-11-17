@@ -515,4 +515,8 @@ class ConversationFragment :
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.closeSocket()
+    }
 }

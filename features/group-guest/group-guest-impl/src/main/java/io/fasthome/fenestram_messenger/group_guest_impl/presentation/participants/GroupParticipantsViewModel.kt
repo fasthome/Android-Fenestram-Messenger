@@ -10,12 +10,12 @@ import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterfac
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.group_guest_impl.domain.logic.GroupGuestInteractor
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.GroupGuestContract
-import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.chatUserToParticipantsViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.mapper.userToParticipantsItem
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.launch
 
 class GroupParticipantsViewModel(
@@ -29,7 +29,7 @@ class GroupParticipantsViewModel(
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
 
-    private var userId: Long? = null
+    private var selfUserId: Long? = null
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract)
 
@@ -38,11 +38,10 @@ class GroupParticipantsViewModel(
 
     init {
         viewModelScope.launch {
-            userId = groupGuestInteractor.getUserId().successOrSendError()
-            subscribeToChatChanges()
+            selfUserId = groupGuestInteractor.getUserId().successOrSendError()
             updateState { state ->
                 state.copy(participants = params.participants.map {
-                    userToParticipantsItem(it, userId)
+                    userToParticipantsItem(it, selfUserId)
                 })
             }
         }
@@ -72,19 +71,23 @@ class GroupParticipantsViewModel(
         return GroupParticipantsState(listOf())
     }
 
-    private fun subscribeToChatChanges() {
+    fun subscribeToChatChanges() {
         viewModelScope.launch {
+            selfUserId?.let { selfUserId = groupGuestInteractor.getUserId().successOrSendError() }
             messengerFeature.onChatChanges(params.chatId!!) { chatChanges ->
-                chatChanges.chatUsers?.let { chatUsers ->
+                chatChanges.users?.let { chatUsers ->
+                    if (selfUserId !in chatUsers.map { user -> user.id }) {
+                        router.backTo(null)
+                    }
 
-                    val selfChatUser = chatUsers.find { it.userId == userId }
+                    val selfChatUser = chatUsers.find { it.id == selfUserId }
                     val listWithSelfFirst = chatUsers.toMutableList()
                     listWithSelfFirst.remove(selfChatUser)
                     listWithSelfFirst.add(0, selfChatUser!!)
 
                     updateState { state ->
                         state.copy(participants = listWithSelfFirst.map {
-                            chatUserToParticipantsViewItem(userId, it)
+                            userToParticipantsItem(it, selfUserId)
                         })
                     }
                 }
@@ -102,17 +105,23 @@ class GroupParticipantsViewModel(
     }
 
     fun onMenuClicked(id: Long) {
-        params.participants.find { user ->
-            user.id == id
+        currentViewState.participants.find { user ->
+            user.userId == id
         }?.let {
-            sendEvent(GroupParticipantsEvent.MenuOpenEvent(id, it.nickname, it.phone))
+            sendEvent(
+                GroupParticipantsEvent.MenuOpenEvent(
+                    id,
+                    getPrintableRawText(it.name),
+                    it.phone
+                )
+            )
         }
     }
 
     fun onDeleteUserClicked(id: Long) {
         viewModelScope.launch {
             groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()?.let {
-                if (userId == id)
+                if (selfUserId == id)
                     router.backTo(null)
             }
         }
@@ -123,20 +132,19 @@ class GroupParticipantsViewModel(
     }
 
     fun onAnotherUserClicked(userId: Long) {
-        val selectedUser = params.participants.find { it.id == userId }!!
-        val userName =
-            if (!selectedUser.contactName.isNullOrEmpty()) selectedUser.contactName else selectedUser.name
-        sendEvent(
-            GroupParticipantsEvent.ShowPersonDetailDialog(
-                PersonDetail(
-                    userId = userId,
-                    userName = userName!!,
-                    userNickname = selectedUser.nickname,
-                    avatar = selectedUser.avatar,
-                    phone = selectedUser.phone
+        currentViewState.participants.find { it.userId == userId }?.let { selectedUser ->
+            sendEvent(
+                GroupParticipantsEvent.ShowPersonDetailDialog(
+                    PersonDetail(
+                        userId = userId,
+                        userName = getPrintableRawText(selectedUser.name),
+                        userNickname = selectedUser.nickname,
+                        avatar = selectedUser.avatar,
+                        phone = selectedUser.phone
+                    )
                 )
             )
-        )
+        }
     }
 
 

@@ -3,7 +3,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
-import io.fasthome.fenestram_messenger.messenger_api.entity.ChatUsersResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
@@ -79,15 +78,22 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
     )
 
     fun toChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse): ChatChanges {
-        val chatUsers = chatChangesResponse.updatedValues!!.chatUsers?.map { chatUser ->
-            ChatUsersResult(
-                chatUser.id,
-                chatUser.contactName ?: chatUser.name ?: chatUser.nickname ?: "",
-                chatUser.avatar ?: ""
+        val chatUsers = chatChangesResponse.updatedValues!!.chatUsers?.map { user ->
+            User(
+                id = user.id,
+                phone = user.phone,
+                name = user.name ?: "",
+                nickname = user.nickname ?: "",
+                contactName = user.contactName,
+                email = user.email ?: "",
+                birth = user.birth ?: "",
+                avatar = profileImageUrlConverter.convert(user.avatar),
+                isOnline = user.isOnline ?: false,
+                lastActive = ZonedDateTime.now()
             )
         }
         return ChatChanges(
-            chatUsers = chatUsers
+            users = chatUsers
         )
     }
 

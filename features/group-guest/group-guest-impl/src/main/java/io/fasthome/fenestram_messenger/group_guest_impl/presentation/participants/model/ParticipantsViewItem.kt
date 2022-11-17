@@ -8,6 +8,8 @@ import kotlinx.parcelize.Parcelize
 open class ParticipantsViewItem(
     open val userId: Long,
     open val name: PrintableText,
+    open val nickname: String,
+    open val phone: String,
     open val avatar: String
 ) : Parcelable
 
@@ -15,19 +17,21 @@ open class ParticipantsViewItem(
 class AnotherUserViewItem(
     override val userId: Long,
     override val name: PrintableText,
+    override val nickname: String,
+    override val phone: String,
     override val avatar: String
 ) : ParticipantsViewItem(
-    userId, name,
-    avatar
+    userId, name, nickname, phone, avatar
 ), Parcelable
 
 @Parcelize
 class CurrentUserViewItem(
     override val userId: Long,
     override val name: PrintableText,
+    override val nickname: String,
+    override val phone: String,
     override val avatar: String
 ) : ParticipantsViewItem(
-    userId, name,
-    avatar
+    userId, name, nickname, phone, avatar
 ), Parcelable
 
