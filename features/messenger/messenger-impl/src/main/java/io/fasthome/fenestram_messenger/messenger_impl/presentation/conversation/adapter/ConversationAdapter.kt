@@ -18,6 +18,9 @@ import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.delay
 
 class ConversationAdapter(
+    //---Клик для открытия профиля по нажатию на обращение к пользователю---//
+    onUserTagClicked:(String) -> Unit,
+
     //---[ViewBinderHelper] Для ответа на сообщение по свайпу---//
     viewBinderHelper: ViewBinderHelper,
 
@@ -66,7 +69,8 @@ class ConversationAdapter(
             createConversationSelfTextAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageText,
-                onSelfMessageLongClicked = onSelfMessageLongClicked
+                onSelfMessageLongClicked = onSelfMessageLongClicked,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationSelfImageAdapterDelegate(
                 onImageClicked = onImageClicked,
@@ -81,7 +85,8 @@ class ConversationAdapter(
                 onSelfTextReplyImageLongClicked = onSelfTextReplyImageLongClicked,
                 onImageClicked = onImageClicked,
                 viewBinderHelper = viewBinderHelper,
-                onReplyMessage = onReplyMessageImage
+                onReplyMessage = onReplyMessageImage,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationSelfForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
@@ -93,7 +98,8 @@ class ConversationAdapter(
             createConversationReceiveTextAdapterDelegate(
                 onReceiveMessageLongClicked = onReceiveMessageLongClicked,
                 onReplyMessage = onReplyMessageText,
-                viewBinderHelper = viewBinderHelper
+                viewBinderHelper = viewBinderHelper,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationReceiveDocumentAdapterDelegate(onDownloadDocument = onRecieveDownloadDocument),
             createConversationReceiveForwardAdapterDelegate(
@@ -106,7 +112,8 @@ class ConversationAdapter(
                 onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
                 onImageClicked = onImageClicked,
                 viewBinderHelper = viewBinderHelper,
-                onReplyMessage = onReplyMessageImage
+                onReplyMessage = onReplyMessageImage,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationReceiveImageAdapterDelegate(
                 onImageClicked = onImageClicked,
@@ -119,7 +126,8 @@ class ConversationAdapter(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
                 onGroupMessageLongClicked = onGroupMessageLongClicked,
                 onReplyMessage = onReplyMessageText,
-                viewBinderHelper = viewBinderHelper
+                viewBinderHelper = viewBinderHelper,
+                onUserTagClicked = onUserTagClicked
             ),
             createConversationGroupImageAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
@@ -143,7 +151,8 @@ class ConversationAdapter(
                 onImageClicked = onImageClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessageImage,
-                onProfileClicked = onGroupProfileItemClicked
+                onProfileClicked = onGroupProfileItemClicked,
+                onUserTagClicked = onUserTagClicked
             ),
 
             createConversationSystemAdapterDelegate(),
@@ -153,6 +162,7 @@ class ConversationAdapter(
 //---Адаптеры для своих сообщений---//
 
 fun createConversationSelfTextReplyImageAdapterDelegate(
+    onUserTagClicked: (String) -> Unit,
     onSelfTextReplyImageLongClicked: (ConversationViewItem.Self.TextReplyOnImage) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
@@ -184,6 +194,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
+            messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
@@ -234,6 +245,7 @@ fun createConversationSelfForwardAdapterDelegate(
 }
 
 fun createConversationSelfTextAdapterDelegate(
+    onUserTagClicked:(String) -> Unit,
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit
@@ -258,7 +270,7 @@ fun createConversationSelfTextAdapterDelegate(
             }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
-            messageContent.addCommonLinks()
+            messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
@@ -324,6 +336,7 @@ fun createConversationSelfDocumentAdapterDelegate(
 //---Адаптеры для принятых личных сообщений---//
 
 fun createConversationReceiveTextAdapterDelegate(
+    onUserTagClicked:(String) -> Unit,
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit
@@ -351,7 +364,7 @@ fun createConversationReceiveTextAdapterDelegate(
             }
             tvEdited.isVisible = item.isEdited
             messageContent.setPrintableText(item.content)
-            messageContent.addCommonLinks()
+            messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
         }
@@ -400,6 +413,7 @@ fun createConversationReceiveForwardAdapterDelegate(
 }
 
 fun createConversationReceiveTextReplyImageAdapterDelegate(
+    onUserTagClicked: (String) -> Unit,
     onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
@@ -429,6 +443,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
+            messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.isVisible = item.timeVisible
         }
     }
@@ -488,6 +503,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
 //---Адаптеры для принятых групповых сообщений---//
 
 fun createConversationGroupTextReplyImageAdapterDelegate(
+    onUserTagClicked: (String) -> Unit,
     onGroupTextReplyImageLongClicked: (ConversationViewItem.Group.TextReplyOnImage) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
@@ -521,11 +537,13 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
+            messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.isVisible = item.timeVisible
         }
     }
 
 fun createConversationGroupTextAdapterDelegate(
+    onUserTagClicked:(String) -> Unit,
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
@@ -559,7 +577,7 @@ fun createConversationGroupTextAdapterDelegate(
             tvEdited.isVisible = item.isEdited
             username.setPrintableText(item.userName)
             messageContent.setPrintableText(item.content)
-            messageContent.addCommonLinks()
+            messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)

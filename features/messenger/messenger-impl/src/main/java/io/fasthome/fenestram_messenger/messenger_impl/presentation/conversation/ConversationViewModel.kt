@@ -39,6 +39,8 @@ import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.mode
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
+import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
+import io.fasthome.fenestram_messenger.util.links.getNicknameFromLink
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
 import io.fasthome.network.client.ProgressListener
@@ -641,6 +643,45 @@ class ConversationViewModel(
                 messages = newMessages
             )
         }
+    }
+
+    fun onSelectUserTagClicked(user: User) {
+        sendEvent(ConversationEvent.ShowUsersTags(emptyList()))
+        sendEvent(ConversationEvent.UpdateInputUserTag(nickname = user.nickname))
+    }
+
+    fun onUserTagClicked(userTag: String) {
+        val clickedUser =
+            chatUsers.firstOrNull { it.nickname.equals(userTag.getNicknameFromLink(), true) }
+        if (clickedUser != null) {
+            sendEvent(ConversationEvent.ShowPersonDetailDialog(PersonDetail(
+                userId = clickedUser.id,
+                avatar = clickedUser.avatar,
+                phone = clickedUser.phone,
+                userName = clickedUser.name,
+                userNickname = clickedUser.nickname
+            )))
+        }
+    }
+
+    fun fetchTags(text: String,selectionStart: Int) {
+        var users = emptyList<User>()
+        if (text.isNotEmpty() && selectionStart != 0 && text.contains('@')) {
+            val prevTag = text.getOrNull(selectionStart - 2)
+            val canShowTagList = if(prevTag == null) text.startsWith('@') else prevTag == ' '
+                if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
+                    users = chatUsers.filter { it.nickname.isNotEmpty() }
+                } else {
+                    val tagPos = text.lastIndexOf('@')
+                    val nickname = text.substring(tagPos, selectionStart)
+                    if (USER_TAG_PATTERN.matcher(nickname)
+                            .matches() && text.getOrNull(tagPos - 1) == ' '
+                    ) {
+                        chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
+                    }
+                }
+        }
+        sendEvent(ConversationEvent.ShowUsersTags(users))
     }
 
     fun onUserClicked(editMode: Boolean) {

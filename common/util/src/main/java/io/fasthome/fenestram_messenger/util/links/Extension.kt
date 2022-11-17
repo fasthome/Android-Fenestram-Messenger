@@ -22,7 +22,7 @@ fun TextView.applyLinks(links: List<Link>) {
         .build()
 }
 
-fun TextView.addCommonLinks() {
+fun TextView.addCommonLinks(onUserTagClicked:((String) -> Unit)?) {
 
     val webLinks: Link = Link(WEB_URL_PATTERN)
         .setOnLongClickListener {
@@ -53,8 +53,15 @@ fun TextView.addCommonLinks() {
             startCommonLinkIntent(context, uri)
         }
 
-    applyLinks(webLinks, emailLinks, phoneLinks)
+        val userTagLinks: Link = Link(USER_TAG_PATTERN)
+        .setOnClickListener {
+            onUserTagClicked?.invoke(it)
+        }
+
+    applyLinks(webLinks, emailLinks, phoneLinks, userTagLinks)
 }
+
+fun String.getNicknameFromLink() = this.substring(1)
 
 private fun startCommonLinkIntent(context: Context, uri: Uri) {
     val intent = Intent(Intent.ACTION_VIEW, uri)

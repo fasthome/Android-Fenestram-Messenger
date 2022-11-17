@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
@@ -29,6 +30,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenu
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.TagParticipantsAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
@@ -72,12 +74,20 @@ class ConversationFragment :
             .register(::permissionFragment)
     )
 
+    private val tagsAdapter = TagParticipantsAdapter(
+        onUserClicked = {
+            vm.onSelectUserTagClicked(it)
+        }
+    )
+
     private val conversationAdapter = ConversationAdapter(
         viewBinderHelper = ViewBinderHelper(),
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
         }, onImageClicked = {
             vm.onImageClicked(conversationViewItem = it)
+        }, onUserTagClicked = { userTag ->
+            vm.onUserTagClicked(userTag)
         }, onSelfDownloadDocument = { item, progressListener ->
             vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
         }, onRecieveDownloadDocument = { item, progressListener ->
@@ -160,6 +170,19 @@ class ConversationFragment :
             )
         })
         attachedList.adapter = attachedAdapter
+        rvChatUserTags.adapter = tagsAdapter
+        rvChatUserTags.addItemDecoration(SpacingItemDecoration { index, itemCount ->
+            Rect(
+                0.dp,
+                4.dp,
+                0.dp,
+                4.dp,
+            )
+        })
+
+        inputMessage.doAfterTextChanged { text ->
+            vm.fetchTags(text.toString(), inputMessage.selectionStart)
+        }
 
         sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
@@ -201,7 +224,8 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(url = state.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.loadCircle(url = state.avatar,
+            placeholderRes = R.drawable.ic_avatar_placeholder)
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
             emptyContainer
@@ -344,6 +368,25 @@ class ConversationFragment :
                         vm.onCancelSentClicked(event.conversationViewItem)
                     }
                 ).show()
+            }
+            is ConversationEvent.ShowUsersTags -> {
+                tagsAdapter.items = event.users
+            }
+
+            is ConversationEvent.UpdateInputUserTag -> {
+                var text = binding.inputMessage.text.toString()
+                if(text.isNotEmpty()) {
+                    var tagCharIndex = 0
+                    do {
+                        tagCharIndex = text.indexOf("@", tagCharIndex)
+                        tagCharIndex++
+                    } while (tagCharIndex < binding.inputMessage.selectionStart)
+
+                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(tagCharIndex)
+                }
+                binding.inputMessage.setText(text)
+                binding.inputMessage.lastCharFocus()
+
             }
 
             is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
