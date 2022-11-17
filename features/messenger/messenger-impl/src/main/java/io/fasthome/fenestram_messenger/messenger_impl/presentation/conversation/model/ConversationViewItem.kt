@@ -9,11 +9,13 @@ import java.time.ZonedDateTime
 typealias OnStatusChanged = (SentStatus) -> Unit
 
 interface ConversationImageItem {
+    val id: Long
     val userName: PrintableText
     val content: String
 }
 
 interface ConversationTextItem {
+    val id: Long
     val userName: PrintableText
     val content: PrintableText
 }
@@ -67,6 +69,21 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
         ) : Self(), ConversationTextItem
 
+        data class Forward(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override var sentStatus: SentStatus,
+            override val localId: String,
+            override val timeVisible: Boolean,
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: ConversationViewItem?,
+            override var userName: PrintableText,
+            val forwardMessage: ConversationViewItem
+        ) : Self()
+
         data class Image(
             override val id: Long,
             override val content: String,
@@ -113,6 +130,20 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
         ) : Receive(), ConversationTextItem
+
+        data class Forward(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override var sentStatus: SentStatus,
+            override val timeVisible: Boolean,
+            override val nickname: String?,
+            override val messageType: String?,
+            override val replyMessage: ConversationViewItem?,
+            override var userName: PrintableText,
+            val forwardMessage: ConversationViewItem
+        ) : Receive()
 
         data class TextReplyOnImage(
             override val id: Long,
@@ -179,6 +210,23 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
         ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
+        data class Forward(
+            override val id: Long,
+            override val content: PrintableText,
+            override val time: PrintableText,
+            override val date: ZonedDateTime?,
+            override var sentStatus: SentStatus,
+            override val timeVisible: Boolean,
+            override val avatar: String,
+            override val phone: String,
+            override val nickname: String?,
+            override val userId: Long,
+            override val messageType: String?,
+            override val replyMessage: ConversationViewItem?,
+            override var userName: PrintableText,
+            val forwardMessage: ConversationViewItem
+        ) : Group(userName, avatar, phone, userId)
+
         data class TextReplyOnImage(
             override val id: Long,
             override val content: PrintableText,
@@ -243,6 +291,10 @@ sealed interface ConversationViewItem {
         override var userName: PrintableText = PrintableText.EMPTY,
     ) : ConversationViewItem
 
+}
+
+fun ConversationViewItem.canDelete(): Boolean {
+    return this is ConversationViewItem.Self
 }
 
 fun getStatusIcon(sentStatus: SentStatus) =

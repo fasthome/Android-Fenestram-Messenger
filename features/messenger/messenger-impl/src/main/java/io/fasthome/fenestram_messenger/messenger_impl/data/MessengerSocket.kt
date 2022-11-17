@@ -27,7 +27,7 @@ class MessengerSocket(private val baseUrl: String) {
         messageCallback: MessageResponseWithChatId.() -> Unit,
         messageActionCallback: MessageActionResponse.() -> Unit,
         messageStatusCallback: MessageStatusResponse.() -> Unit,
-        messageDeletedCallback: SocketDeleteMessage.() -> Unit
+        messageDeletedCallback: SocketDeleteMessage.() -> Unit,
     ) {
         try {
             val opts = IO.Options()
@@ -49,6 +49,12 @@ class MessengerSocket(private val baseUrl: String) {
                     }
                 }
             }
+
+            socket?.on("receiveForwardMessage") {
+                Log.d(this.javaClass.simpleName, "receiveForwardMessage: " + it[0].toString())
+                val message = json.decodeFromString<SocketForwardMessage>(it[0].toString())
+                    messageCallback(messageToMessageResponse(message.message))
+                }
 
             socket?.on("receiveMessageAction") {
                 Log.d(this.javaClass.simpleName, "receiveMessageAction: " + it[0].toString())
@@ -109,7 +115,8 @@ class MessengerSocket(private val baseUrl: String) {
         isEdited = message?.isEdited ?: false,
         status = "",
         replyMessage = message?.replyMessage,
-        usersHaveRead = message?.usersHaveRead ?: listOf()
+        usersHaveRead = message?.usersHaveRead ?: listOf(),
+        forwardedMessages = message?.forwardedMessages
     )
 
     fun messageActionToMessageActionResponse(messageAction: MessageActionResponse?) =

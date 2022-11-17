@@ -31,7 +31,7 @@ class GroupParticipantsViewModel(
 
     private var userId: Long? = null
 
-    private val imageViewerLauncher = registerScreen(ImageViewerContract)
+    private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
 
     private val conversationLauncher =
         registerScreen(messengerFeature.conversationNavigationContract) { }
@@ -132,7 +132,7 @@ class GroupParticipantsViewModel(
 
 
     fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
-        imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
+        imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(url, bitmap))
     }
 
     fun onLaunchConversationClicked(personDetail: PersonDetail) {

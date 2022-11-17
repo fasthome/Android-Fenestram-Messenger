@@ -54,4 +54,17 @@
         app:iconGravity="textStart"
         app:layout_constraintTop_toBottomOf="@id/delete_message" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/forward_message"
+        style="@style/BottomActionDialogButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:paddingVertical="15dp"
+        android:text="@string/conversation_forward_message"
+        app:icon="@drawable/ic_action_forward"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@+id/reply_message" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

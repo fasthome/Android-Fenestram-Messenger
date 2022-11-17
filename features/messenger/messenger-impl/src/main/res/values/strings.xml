@@ -33,11 +33,14 @@
     <string name="messenger_edited">изменено</string>
     <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
     <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
+    <string name="forward">Переслать</string>
+    <string name="forward_message">Пересланное сообщение</string>
 
     <string name="conversation_copy_message">Скопировать текст</string>
     <string name="conversation_delete_message">Удалить сообщение</string>
     <string name="conversation_edit_message">Редактировать сообщение</string>
     <string name="conversation_reply_message">Ответить на сообщение</string>
+    <string name="conversation_forward_message">Переслать сообщение</string>
     <string name="messenger_document">Документ</string>
 
     <string name="user_status_online">Online</string>

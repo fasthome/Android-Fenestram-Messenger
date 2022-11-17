@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -26,10 +27,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.CapturedItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -68,7 +66,42 @@ class ConversationViewModel(
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
-    private val imageViewerLauncher = registerScreen(ImageViewerContract)
+    private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
+        when(result) {
+            is ImageViewerContract.Result.Delete -> {
+                deleteMessage(result.messageId)
+            }
+            is ImageViewerContract.Result.Forward -> {
+                openChatSelectorForForward(result.messageId)
+            }
+        }
+    }
+
+    private val messengerLauncher =
+        registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
+            when (result) {
+                is MessengerFeature.MessengerNavResult.ChatSelected -> {
+                    if(result.chatId != chatId) {
+                        lastPage = null
+                        updateState {
+                            ConversationState(
+                                messages = mapOf(),
+                                userName = result.chatName,
+                                userStatus = UserStatus.Offline.toPrintableText("", result.isGroup),
+                                userStatusDots = PrintableText.EMPTY,
+                                isChatEmpty = false,
+                                avatar = storageUrlConverter.convert(result.avatar),
+                                attachedFiles = listOf(),
+                                inputMessageMode = InputMessageMode.Default,
+                                newMessagesCount = 0,
+                            )
+                        }
+                    }
+                    chatId = result.chatId ?: return@registerScreen
+                    forwardMessage()
+                }
+            }
+        }
 
     private val cameraLauncher =
         registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
@@ -96,6 +129,7 @@ class ConversationViewModel(
     private var loadItemsJob by switchJob()
     private var downloadFileJob by switchJob()
     private var lastPage: MessagesPage? = null
+    private var messagesToForward: Long? = null
     var firstVisibleItemPosition: Int = -1
 
     private val openFileLauncher = registerScreen(OpenFileNavigationContract)
@@ -199,6 +233,7 @@ class ConversationViewModel(
         val profileGuestFeature: ProfileGuestFeature,
         val authFeature: AuthFeature,
         val cameraFeature: CameraFeature,
+        val messengerFeature: MessengerFeature
     )
 
     private val profileGuestLauncher =
@@ -230,6 +265,39 @@ class ConversationViewModel(
             inputMessageMode = InputMessageMode.Default,
             newMessagesCount = params.chat.pendingMessages.toInt()
         )
+    }
+
+    fun openChatSelectorForForward(messageId: Long) {
+        messagesToForward = messageId
+        messengerLauncher.launch(
+            MessengerFeature.MessengerParams(true)
+        )
+    }
+
+    private fun forwardMessage() {
+        viewModelScope.launch {
+            if (chatId != null && messagesToForward != null) {
+                val result = messengerInteractor.forwardMessage(chatId!!, messagesToForward!!)
+                when (result) {
+                    is CallResult.Error -> {
+                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
+                        messagesToForward = null
+                    }
+                    is CallResult.Success -> {
+                        updateState { state ->
+                            val tempMessages = if(state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(selfUserId,
+                                params.chat.isGroup,
+                                storageUrlConverter) ?: emptyMap()
+                            return@updateState state.copy(
+                                inputMessageMode = InputMessageMode.Default,
+                                messages = tempMessages.plus(state.messages)
+                            )
+                        }
+                        sendEvent(ConversationEvent.UpdateScrollPosition(0))
+                    }
+                }
+            }
+        }
     }
 
     fun editMessageMode(
@@ -657,7 +725,7 @@ class ConversationViewModel(
             .onEach { message ->
                 loadItemsJob?.join()
                 updateState { state ->
-                    if (message.isEdited && state.messages.filter { it.value.id == message.id }
+                    if (message.forwardedMessages.isNullOrEmpty() && message.isEdited && state.messages.filter { it.value.id == message.id }
                             .isNotEmpty()) {
                         return@updateState state.copy(
                             messages = state.messages.mapValues {
@@ -671,14 +739,13 @@ class ConversationViewModel(
                             }
                         )
                     }
+
+                    val newMessages = listOf(message).toConversationItems(
+                        selfUserId = selfUserId,
+                        isGroup = params.chat.isGroup,
+                        storageUrlConverter)
                     state.copy(
-                        messages = mapOf(
-                            UUID.randomUUID().toString() to message.toConversationViewItem(
-                                selfUserId = selfUserId,
-                                isGroup = params.chat.isGroup,
-                                storageUrlConverter
-                            )
-                        ).plus(state.messages)
+                        messages = newMessages.plus(state.messages)
                     )
                 }
                 if (message.messageType == MESSAGE_TYPE_SYSTEM) {
@@ -920,8 +987,26 @@ class ConversationViewModel(
         }
     }
 
-    fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
-        imageViewerLauncher.launch(ImageViewerContract.Params(url, bitmap))
+    fun onImageClicked(
+        url: String? = null,
+        bitmap: Bitmap? = null,
+        conversationViewItem: ConversationViewItem? = null,
+    ) {
+        val imageParams =
+            if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
+                imageUrl = url,
+                imageBitmap = bitmap)
+            else {
+                val mess = conversationViewItem.replyMessage ?: conversationViewItem
+                ImageViewerContract.ImageViewerParams.MessageImageParams(
+                    imageUrl = mess.content as? String,
+                    imageBitmap = bitmap,
+                    messageId = mess.id,
+                    canDelete = conversationViewItem.canDelete()
+                )
+            }
+
+        imageViewerLauncher.launch(imageParams)
     }
 
     fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {
@@ -937,21 +1022,24 @@ class ConversationViewModel(
     }
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
+        deleteMessage(conversationViewItem.id)
+    }
+
+    private fun deleteMessage(messageId: Long) {
         viewModelScope.launch {
             messengerInteractor.deleteMessage(
-                messageId = conversationViewItem.id,
+                messageId = messageId,
                 chatId = chatId ?: return@launch
             ).onSuccess {
                 updateState {
                     val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
                     currentViewState.messages.entries.forEach { item ->
-                        if (item.value.id != conversationViewItem.id)
+                        if (item.value.id != messageId)
                             messages[item.key] = item.value
                     }
                     it.copy(messages = messages)
                 }
             }
-
         }
     }
 
@@ -965,6 +1053,18 @@ class ConversationViewModel(
 
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
         sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
+    fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    }
+
+    fun onReceiveForwardLongClicked(conversationViewItem: ConversationViewItem.Receive.Forward) {
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
+    fun onGroupForwardLongClicked(conversationViewItem: ConversationViewItem.Group.Forward) {
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
     fun onTypingMessage() {
