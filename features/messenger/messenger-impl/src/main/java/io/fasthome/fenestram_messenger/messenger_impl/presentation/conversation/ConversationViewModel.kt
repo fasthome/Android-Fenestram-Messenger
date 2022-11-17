@@ -92,7 +92,7 @@ class ConversationViewModel(
                                 isChatEmpty = false,
                                 avatar = storageUrlConverter.convert(result.avatar),
                                 attachedFiles = listOf(),
-                                inputMessageMode = InputMessageMode.Default,
+                                inputMessageMode = InputMessageMode.Default(),
                                 newMessagesCount = 0,
                             )
                         }
@@ -289,7 +289,7 @@ class ConversationViewModel(
                                 params.chat.isGroup,
                                 storageUrlConverter) ?: emptyMap()
                             return@updateState state.copy(
-                                inputMessageMode = InputMessageMode.Default,
+                                inputMessageMode = InputMessageMode.Default(),
                                 messages = tempMessages.plus(state.messages)
                             )
                         }
@@ -1051,12 +1051,12 @@ class ConversationViewModel(
                     }
                     when(state.inputMessageMode) {
                         is InputMessageMode.Edit -> {
-                            if(state.inputMessageMode.messageToEdit.id == conversationViewItem.id) {
+                            if(state.inputMessageMode.messageToEdit.id == messageId) {
                                 return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
                             }
                         }
                         is InputMessageMode.Reply -> {
-                            if(state.inputMessageMode.messageToReply.id == conversationViewItem.id) {
+                            if(state.inputMessageMode.messageToReply.id == messageId) {
                                 return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
                             }
                         }
