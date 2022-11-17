@@ -198,7 +198,7 @@ class ProfileViewModel(
             pickFileInterface.pickFile()
         } else {
             if (currentViewState.avatarUrl != null || currentViewState.avatarBitmap != null) {
-                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.Params(currentViewState.avatarUrl, currentViewState.avatarBitmap))
+                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(currentViewState.avatarUrl, currentViewState.avatarBitmap))
             }
         }
     }

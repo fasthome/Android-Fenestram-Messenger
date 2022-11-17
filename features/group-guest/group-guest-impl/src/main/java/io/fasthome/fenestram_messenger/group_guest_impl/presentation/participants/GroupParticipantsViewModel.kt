@@ -132,7 +132,7 @@ class GroupParticipantsViewModel(
 
 
     fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
-        imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.Params(url, bitmap))
+        imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(url, bitmap))
     }
 
     fun onLaunchConversationClicked(personDetail: PersonDetail) {

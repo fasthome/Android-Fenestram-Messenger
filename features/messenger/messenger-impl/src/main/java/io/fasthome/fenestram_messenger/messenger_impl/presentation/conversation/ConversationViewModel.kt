@@ -2,7 +2,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.Manifest
 import android.graphics.Bitmap
-import android.media.Image
 import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
@@ -284,7 +283,7 @@ class ConversationViewModel(
                     }
                     is CallResult.Success -> {
                         updateState { state ->
-                            val tempMessages = result.data?.toForwardConversationViewItem(selfUserId,
+                            val tempMessages = if(state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(selfUserId,
                                 params.chat.isGroup,
                                 storageUrlConverter) ?: emptyMap()
                             return@updateState state.copy(
@@ -952,13 +951,13 @@ class ConversationViewModel(
         bitmap: Bitmap? = null,
         conversationViewItem: ConversationViewItem? = null,
     ) {
-        val params =
-            if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.Params(
+        val imageParams =
+            if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
                 imageUrl = url,
                 imageBitmap = bitmap)
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
-                ImageViewerContract.ImageViewerParams.ParamsConversation(
+                ImageViewerContract.ImageViewerParams.MessageImageParams(
                     imageUrl = mess.content as? String,
                     imageBitmap = bitmap,
                     messageId = mess.id,
@@ -966,7 +965,7 @@ class ConversationViewModel(
                 )
             }
 
-        imageViewerLauncher.launch(params)
+        imageViewerLauncher.launch(imageParams)
     }
 
     fun onSelfMessageLongClicked(conversationViewItem: ConversationViewItem.Self) {

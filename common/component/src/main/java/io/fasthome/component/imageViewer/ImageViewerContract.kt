@@ -14,13 +14,13 @@ object ImageViewerContract :
         abstract val imageBitmap: Bitmap?
 
         @Parcelize
-        data class Params(
+        data class ImageParams(
             override val imageUrl: String?,
             override val imageBitmap: Bitmap?,
         ) : ImageViewerParams()
 
         @Parcelize
-        data class ParamsConversation(
+        data class MessageImageParams(
             override val imageUrl: String?,
             override val imageBitmap: Bitmap?,
             val messageId: Long,

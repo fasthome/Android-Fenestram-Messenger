@@ -218,7 +218,7 @@ class ProfileGuestViewModel(
         }
         else {
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
-                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.Params(currentViewState.userAvatar, currentViewState.avatarBitmap))
+                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(currentViewState.userAvatar, currentViewState.avatarBitmap))
             }
         }
     }

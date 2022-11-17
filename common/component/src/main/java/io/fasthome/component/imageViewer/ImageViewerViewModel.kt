@@ -1,6 +1,5 @@
 package io.fasthome.component.imageViewer
 
-import android.media.Image
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -14,7 +13,7 @@ class ImageViewerViewModel(
 ) {
     override fun createInitialState(): ImageViewerState {
         val fromConversationParams =
-            params as? ImageViewerContract.ImageViewerParams.ParamsConversation
+            params as? ImageViewerContract.ImageViewerParams.MessageImageParams
         return ImageViewerState(
             imageUrl = params.imageUrl,
             imageBitmap = params.imageBitmap,
