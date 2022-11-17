@@ -59,7 +59,8 @@ class PersonalityComponentFragment :
 
         userNameInput.filters += listOf(
             SpaceInputFilter(REGEX_LETTERS_NICKNAME),
-            InputFilter.LengthFilter(MAX_SYMBOLS_NICKNAME)
+            InputFilter.LengthFilter(MAX_SYMBOLS_NICKNAME),
+            SpacesToUnderscoresInputFilter()
         )
 
         nameInput.doAfterTextChanged {
@@ -71,7 +72,6 @@ class PersonalityComponentFragment :
         }
         userNameInput.doAfterTextChanged {
             if(it.toString().contains(' ')) {
-                userNameInput.setText(it.toString().replace(' ','_'))
                 userNameInput.lastCharFocus()
             }
             vm.onFieldChanged(EditTextKey.NicknameKey, userNameInput.text.toString())
