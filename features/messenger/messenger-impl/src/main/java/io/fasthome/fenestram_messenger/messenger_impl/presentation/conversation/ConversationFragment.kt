@@ -257,6 +257,9 @@ class ConversationFragment :
 
         when (state.inputMessageMode) {
             is InputMessageMode.Default -> {
+                state.inputMessageMode.inputText?.let {
+                    inputMessage.setText(it)
+                }
                 renderStateEditMode(false, null)
                 renderStateReplyMode(false, null)
             }

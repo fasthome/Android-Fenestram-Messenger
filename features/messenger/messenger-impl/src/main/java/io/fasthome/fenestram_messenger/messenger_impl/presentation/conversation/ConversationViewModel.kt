@@ -227,7 +227,7 @@ class ConversationViewModel(
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
             attachedFiles = listOf(),
-            inputMessageMode = InputMessageMode.Default,
+            inputMessageMode = InputMessageMode.Default(),
             newMessagesCount = params.chat.pendingMessages.toInt()
         )
     }
@@ -242,7 +242,7 @@ class ConversationViewModel(
                 inputMessageMode = if (isEditMode) InputMessageMode.Edit(
                     conversationViewItem
                         ?: return@updateState state
-                ) else InputMessageMode.Default
+                ) else InputMessageMode.Default()
             )
         }
     }
@@ -254,7 +254,7 @@ class ConversationViewModel(
                 inputMessageMode = if (isReplyMode) InputMessageMode.Reply(
                     conversationViewItem
                         ?: return@updateState state
-                ) else InputMessageMode.Default
+                ) else InputMessageMode.Default()
             )
         }
     }
@@ -273,7 +273,7 @@ class ConversationViewModel(
                     updateState { state ->
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
                         state.copy(
-                            inputMessageMode = InputMessageMode.Default
+                            inputMessageMode = InputMessageMode.Default()
                         )
                     }
                 }
@@ -288,7 +288,7 @@ class ConversationViewModel(
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
                         state.copy(
-                            inputMessageMode = InputMessageMode.Default,
+                            inputMessageMode = InputMessageMode.Default(),
                             messages = messages
                         )
                     }
@@ -432,7 +432,7 @@ class ConversationViewModel(
                     updateState { state ->
                         onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
                         state.copy(
-                            inputMessageMode = InputMessageMode.Default
+                            inputMessageMode = InputMessageMode.Default()
                         )
                     }
                 }
@@ -463,7 +463,7 @@ class ConversationViewModel(
                     updateState { state ->
                         state.copy(
                             messages = newMessages,
-                            inputMessageMode = InputMessageMode.Default
+                            inputMessageMode = InputMessageMode.Default()
                         )
                     }
                 }
@@ -763,13 +763,25 @@ class ConversationViewModel(
     }
 
     private fun onMessagesDeletedCallback(deletedMessages: List<Long>) {
-        updateState {
+        updateState { state ->
             val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
             currentViewState.messages.entries.forEach { item ->
                 if (!deletedMessages.contains(item.value.id))
                     messages[item.key] = item.value
             }
-            it.copy(messages = messages)
+            when(state.inputMessageMode) {
+                is InputMessageMode.Edit -> {
+                    if(deletedMessages.contains(state.inputMessageMode.messageToEdit.id)) {
+                        return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
+                    }
+                }
+                is InputMessageMode.Reply -> {
+                    if(deletedMessages.contains(state.inputMessageMode.messageToReply.id)) {
+                        return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
+                    }
+                }
+            }
+            state.copy(messages = messages)
         }
     }
 
@@ -942,13 +954,25 @@ class ConversationViewModel(
                 messageId = conversationViewItem.id,
                 chatId = chatId ?: return@launch
             ).onSuccess {
-                updateState {
+                updateState { state ->
                     val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
                     currentViewState.messages.entries.forEach { item ->
                         if (item.value.id != conversationViewItem.id)
                             messages[item.key] = item.value
                     }
-                    it.copy(messages = messages)
+                    when(state.inputMessageMode) {
+                        is InputMessageMode.Edit -> {
+                            if(state.inputMessageMode.messageToEdit.id == conversationViewItem.id) {
+                                return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
+                            }
+                        }
+                        is InputMessageMode.Reply -> {
+                            if(state.inputMessageMode.messageToReply.id == conversationViewItem.id) {
+                                return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
+                            }
+                        }
+                    }
+                    return@updateState state.copy(messages = messages)
                 }
             }
 
