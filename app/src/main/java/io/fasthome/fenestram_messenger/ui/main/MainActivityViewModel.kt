@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrDefault
 import io.fasthome.fenestram_messenger.util.kotlin.getAndSet
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,7 +40,10 @@ class MainActivityViewModel(
     private val features: Features,
     private val deepLinkNavigator: DeepLinkNavigator,
     private val coreRepo: CoreRepo
-) : BaseViewModel<MainActivityState, MainActivityEvent>(requestParams = REQUEST_PARAMS, router = router) {
+) : BaseViewModel<MainActivityState, MainActivityEvent>(
+    requestParams = REQUEST_PARAMS,
+    router = router
+) {
 
     class Features(
         val authFeature: AuthFeature,
@@ -81,8 +85,6 @@ class MainActivityViewModel(
                 startAuth()
             }
             .launchIn(viewModelScope)
-
-        checkAndOpenSplash()
     }
 
     override fun createInitialState(): MainActivityState {
@@ -93,7 +95,7 @@ class MainActivityViewModel(
         viewModelScope.launch {
             when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
                 is CallResult.Success -> when {
-                    !isAuthedResult.data -> startAuth()
+                    !isAuthedResult.data -> openSplashAndAuth()
                     else -> {
                         if (!fromPush)
                             checkPersonalData()
@@ -103,7 +105,7 @@ class MainActivityViewModel(
                         }
                     }
                 }
-                is CallResult.Error -> startAuth()
+                is CallResult.Error -> openSplashAndAuth()
             }
         }
     }
@@ -193,13 +195,10 @@ class MainActivityViewModel(
         }
     }
 
-    private fun checkAndOpenSplash() {
-        viewModelScope.launch {
-            if (coreRepo.getAppOpenCount() == 0L) {
-                sendEvent(MainActivityEvent.StartSplashEvent)
-            }
-            coreRepo.plusAppOpenCount()
-        }
+    private suspend fun openSplashAndAuth() {
+        sendEvent(MainActivityEvent.StartSplashEvent)
+        delay(100)
+        startAuth()
     }
 
     companion object {
