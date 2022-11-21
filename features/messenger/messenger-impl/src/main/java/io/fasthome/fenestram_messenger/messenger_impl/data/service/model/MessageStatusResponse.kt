@@ -45,5 +45,5 @@ class MessageStatusResponse(
     val forwardedMessages: List<Long>?,
 
     @SerialName("users_have_read")
-    val usersHaveRead: List<Long>
+    val usersHaveRead: List<Long?>?
 )

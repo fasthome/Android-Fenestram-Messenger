@@ -30,7 +30,7 @@ data class Message(
     val isEdited: Boolean,
     val messageStatus: String,
     val replyMessage: Message?,
-    val usersHaveRead: List<Long>?,
+    val usersHaveRead: List<Long?>?,
     val forwardedMessages: List<Message>?
 ) : Parcelable {
     companion object {
@@ -63,5 +63,5 @@ data class MessageStatus(
     val messageId: Long,
     val messageStatus: String,
     val messageType: String,
-    val usersHaveRead: List<Long>?
+    val usersHaveRead: List<Long?>?
 )

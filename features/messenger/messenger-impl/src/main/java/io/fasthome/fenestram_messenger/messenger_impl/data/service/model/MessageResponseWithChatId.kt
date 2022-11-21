@@ -48,7 +48,7 @@ class MessageResponseWithChatId(
     val date: String,
 
     @SerialName("users_have_read")
-    val usersHaveRead: List<Long>?,
+    val usersHaveRead: List<Long?>?,
 
     @SerialName("reactions")
     val reactions: MessageReactions? = null,
