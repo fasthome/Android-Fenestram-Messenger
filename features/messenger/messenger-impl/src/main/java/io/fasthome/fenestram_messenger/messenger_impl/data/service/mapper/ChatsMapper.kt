@@ -2,9 +2,11 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
@@ -76,8 +78,29 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
     fun toMessageStatus(messageStatusResponse: MessageStatusResponse) = MessageStatus(
         messageId = messageStatusResponse.id,
         messageStatus = messageStatusResponse.messageStatus,
-        messageType = messageStatusResponse.type
+        messageType = messageStatusResponse.type,
+        usersHaveRead = messageStatusResponse.usersHaveRead
     )
+
+    fun toChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse): ChatChanges {
+        val chatUsers = chatChangesResponse.updatedValues!!.chatUsers?.map { user ->
+            User(
+                id = user.id,
+                phone = user.phone,
+                name = user.name ?: "",
+                nickname = user.nickname ?: "",
+                contactName = user.contactName,
+                email = user.email ?: "",
+                birth = user.birth ?: "",
+                avatar = profileImageUrlConverter.convert(user.avatar),
+                isOnline = user.isOnline ?: false,
+                lastActive = ZonedDateTime.now()
+            )
+        }
+        return ChatChanges(
+            users = chatUsers
+        )
+    }
 
     companion object {
         const val TYPING_MESSAGE_STATUS = "typingMessage"

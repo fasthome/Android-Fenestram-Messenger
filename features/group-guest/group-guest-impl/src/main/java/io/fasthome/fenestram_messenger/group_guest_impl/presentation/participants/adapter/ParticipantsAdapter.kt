@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participan
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.ItemCurrentUserBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.ItemParticipantBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.AnotherUserViewItem
@@ -46,9 +47,9 @@ fun createParticipantsAdapter(
             onMenuClicked(item.userId)
         }
         binding.root.setOnClickListener { onAnotherUserClicked(item.userId) }
-        
+
         bindWithBinding {
-            avatar.loadCircle(item.avatar)
+            avatar.loadCircle(item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             name.setPrintableText(item.name)
         }
     }

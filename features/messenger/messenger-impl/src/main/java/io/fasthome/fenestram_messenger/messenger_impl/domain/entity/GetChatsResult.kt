@@ -62,5 +62,6 @@ data class MessageAction(
 data class MessageStatus(
     val messageId: Long,
     val messageStatus: String,
-    val messageType: String
+    val messageType: String,
+    val usersHaveRead: List<Long>?
 )

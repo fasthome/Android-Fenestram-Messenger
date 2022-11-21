@@ -39,6 +39,11 @@ class GroupParticipantsFragment :
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.subscribeToChatChanges()
+    }
+
     override fun renderState(state: GroupParticipantsState) {
         adapter.items = state.participants
     }

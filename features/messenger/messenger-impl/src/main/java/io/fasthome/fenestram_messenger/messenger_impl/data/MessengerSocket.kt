@@ -28,6 +28,7 @@ class MessengerSocket(private val baseUrl: String) {
         messageActionCallback: MessageActionResponse.() -> Unit,
         messageStatusCallback: MessageStatusResponse.() -> Unit,
         messageDeletedCallback: SocketDeleteMessage.() -> Unit,
+        chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -78,7 +79,28 @@ class MessengerSocket(private val baseUrl: String) {
                 }
             }
 
+            socket?.on("receiveChatChanges") {
+                Log.d(this.javaClass.simpleName, "receiveChatChanges: " + it[0].toString())
+                val chatChanges = json.decodeFromString<SocketChatChanges>(it[0].toString())
+                if (chatId?.toLong() == chatChanges.data.chatId && chatChanges.data.updatedValues != null) {
+                    chatChangesCallback(chatChanges.data)
+                }
+            }
+
         } catch (e: Exception) {
+        }
+    }
+
+    fun getChatChanges(
+        chatId: Long,
+        chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit
+    ) {
+        socket?.on("receiveChatChanges") {
+            Log.d(this.javaClass.simpleName, "receiveChatChanges: " + it[0].toString())
+            val chatChanges = json.decodeFromString<SocketChatChanges>(it[0].toString())
+            if (chatId == chatChanges.data.chatId && chatChanges.data.updatedValues != null) {
+                chatChangesCallback(chatChanges.data)
+            }
         }
     }
 

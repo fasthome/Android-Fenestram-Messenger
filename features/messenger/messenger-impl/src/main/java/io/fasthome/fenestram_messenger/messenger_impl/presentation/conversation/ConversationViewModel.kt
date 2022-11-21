@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
@@ -544,6 +545,7 @@ class ConversationViewModel(
         messageType: MessageType,
         existMessage: ConversationViewItem.Self? = null,
     ) {
+        messengerInteractor.emitChatListeners(chatId, null)
         viewModelScope.launch {
             var tempMessage = when (messageType) {
                 MessageType.Text -> {
@@ -719,7 +721,8 @@ class ConversationViewModel(
             chatId,
             selfUserId,
             { onNewMessageStatus(it) },
-            { onMessagesDeletedCallback(it) }
+            { onMessagesDeletedCallback(it) },
+            { onChatChangesCallback(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -849,6 +852,18 @@ class ConversationViewModel(
                 }
             }
             state.copy(messages = messages)
+        }
+    }
+
+    private fun onChatChangesCallback(chatChanges: ChatChanges) {
+        //TODO изменение имени и аватара чата
+        with(chatChanges) {
+            users?.let { users ->
+                chatUsers = users
+                if (selfUserId !in users.map { user -> user.id }) {
+                    exitToMessenger()
+                }
+            }
         }
     }
 
@@ -1132,6 +1147,18 @@ class ConversationViewModel(
     fun onScrolledToLastPendingMessage(firstVisibleItem: Int) {
         firstVisibleItemPosition = firstVisibleItem
 
+        if (firstVisibleItemPosition > 0 && isSubscribed) {
+            messengerInteractor.emitChatListeners(null, chatId)
+            isSubscribed = false
+        } else if (firstVisibleItemPosition == 0) {
+            messengerInteractor.emitChatListeners(chatId, null)
+            messengerInteractor.emitMessageRead(
+                chatId!!,
+                currentViewState.messages.values.map { it.id }
+            )
+            isSubscribed = true
+        }
+
         if (firstVisibleItemPosition > currentViewState.newMessagesCount || currentViewState.newMessagesCount == 0) {
             return
         }
@@ -1149,12 +1176,5 @@ class ConversationViewModel(
             updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
         }
 
-        if (firstVisibleItemPosition > 0 && isSubscribed) {
-            messengerInteractor.emitChatListeners(null, chatId)
-            isSubscribed = false
-        } else if (firstVisibleItemPosition == 0) {
-            messengerInteractor.emitChatListeners(chatId, null)
-            isSubscribed = true
-        }
     }
 }

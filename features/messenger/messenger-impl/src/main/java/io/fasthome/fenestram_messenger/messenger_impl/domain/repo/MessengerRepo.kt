@@ -18,7 +18,12 @@ interface MessengerRepo {
         authorId: Long
     ): CallResult<SendMessageResult>
 
-    suspend fun replyMessage(chatId: Long, messageId: Long, text: String, messageType: String): CallResult<Message?>
+    suspend fun replyMessage(
+        chatId: Long,
+        messageId: Long,
+        text: String,
+        messageType: String
+    ): CallResult<Message?>
 
     suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?>
 
@@ -51,6 +56,11 @@ interface MessengerRepo {
         selfUserId: Long?
     )
 
+    fun getChatChanges(
+        chatId: Long,
+        onNewChatChanges: (SocketChatChanges.ChatChangesResponse) -> Unit
+    )
+
     fun emitMessageAction(chatId: String, action: String)
     fun emitMessageRead(chatId: Long, messages: List<Long>)
     fun emitChatListeners(subChatId: Long?, unsubChatId: Long?)
@@ -67,5 +77,6 @@ interface MessengerRepo {
         fun onNewMessageAction(messageAction: MessageActionResponse)
         fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse)
         fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage)
+        fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse)
     }
 }

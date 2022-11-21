@@ -49,8 +49,7 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
         } ?: LastMessage.Text(PrintableText.EMPTY)
 
         val sentStatus = if (chat.pendingMessages == 0L) {
-            chat.messages.lastOrNull()
-                ?.let { message -> getSentStatus(message.messageStatus) } ?: SentStatus.None
+            if (chat.messages[0].usersHaveRead.isNullOrEmpty()) SentStatus.Received else SentStatus.Read
         } else {
             SentStatus.None
         }

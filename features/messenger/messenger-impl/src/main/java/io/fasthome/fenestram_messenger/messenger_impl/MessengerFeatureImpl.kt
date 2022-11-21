@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl
 
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -58,6 +59,15 @@ class MessengerFeatureImpl(
                 }
 
             })
+
+    override suspend fun onChatChanges(
+        id: Long,
+        chatChangesCallback: (ChatChanges) -> Unit
+    ) {
+        messengerInteractor.getChatChanges(id) {
+            chatChangesCallback(it)
+        }
+    }
 
     override suspend fun deleteChat(id: Long) = messengerInteractor.deleteChat(id)
 

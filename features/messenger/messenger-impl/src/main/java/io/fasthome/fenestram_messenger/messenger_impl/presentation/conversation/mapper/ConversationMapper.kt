@@ -435,7 +435,7 @@ fun Message.toConversationViewItem(
                             timeVisible = true
                         )
                     }
-                    else ->  ConversationViewItem.System(
+                    else -> ConversationViewItem.System(
                         content = PrintableText.Raw("Вместо этого текста, должно быть сообщение с messageType $messageType! Скоро"),
                         time = PrintableText.Raw(timeFormatter.format(date)),
                         sentStatus = SentStatus.Sent,
@@ -654,19 +654,19 @@ fun getSentStatus(messageStatus: String): SentStatus {
     }
 }
 
-fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): ConversationViewItem {
+fun MessageStatus.toConversationViewItem(
+    oldViewItem: ConversationViewItem
+): ConversationViewItem {
+    val sentStatus =
+        if (usersHaveRead?.isNotEmpty() == true) SentStatus.Read else SentStatus.Received
     return when (messageType) {
         MESSAGE_TYPE_TEXT -> {
             return when {
                 (oldViewItem as? ConversationViewItem.Self.Text) != null -> oldViewItem.copy(
-                    sentStatus = getSentStatus(
-                        messageStatus
-                    )
+                    sentStatus = sentStatus
                 )
                 (oldViewItem as? ConversationViewItem.Self.TextReplyOnImage) != null -> oldViewItem.copy(
-                    sentStatus = getSentStatus(
-                        messageStatus
-                    )
+                    sentStatus = sentStatus
                 )
                 (oldViewItem as? ConversationViewItem.Self.Forward) != null -> oldViewItem.copy(
                     sentStatus = getSentStatus(
@@ -678,24 +678,18 @@ fun MessageStatus.toConversationViewItem(oldViewItem: ConversationViewItem): Con
         }
         MESSAGE_TYPE_IMAGE -> {
             (oldViewItem as ConversationViewItem.Self.Image).copy(
-                sentStatus = getSentStatus(
-                    messageStatus
-                )
+                sentStatus = sentStatus
             )
         }
 
         MESSAGE_TYPE_DOCUMENT -> {
             (oldViewItem as ConversationViewItem.Self.Document).copy(
-                sentStatus = getSentStatus(
-                    messageStatus
-                )
+                sentStatus = sentStatus
             )
         }
         MESSAGE_TYPE_SYSTEM -> {
             (oldViewItem as ConversationViewItem.System).copy(
-                sentStatus = getSentStatus(
-                    messageStatus
-                )
+                sentStatus = sentStatus
             )
         }
         else -> error("Unknown Message Type! type $messageType")
