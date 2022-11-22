@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
-import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
@@ -27,7 +26,6 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
-import io.ktor.network.sockets.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.android.ext.android.inject
 
@@ -83,6 +81,7 @@ class MessengerFragment :
 
         messageAdapter.addOnPagesUpdatedListener {
             binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
+            if(lastScrollPosition == 0) binding.chatList.smoothScrollToPosition(0)
         }
         val linearLayoutManager =
             LinearLayoutManager(requireContext())
