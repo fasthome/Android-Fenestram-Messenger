@@ -24,7 +24,6 @@ class FenestramApplication : Application() {
         }
 
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
-        BuildConfig.BUILD_TYPE
         OneSignal.initWithContext(this)
         OneSignal.setAppId(BuildConfig.ONESIGNAL_APP_ID)
     }
