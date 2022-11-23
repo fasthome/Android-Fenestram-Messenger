@@ -12,17 +12,28 @@ class RemoteMessagesMapper {
         Log.d("Push-Notification", "data=$data")
 
         if (data == null) return PushClickData.Unknown
-        val chatName = if (data["is_group"]?.toString().toBoolean()) {
-            data["chat_name"]?.toString()
+
+        return if (data["is_group"]?.toString().toBoolean()) {
+            PushClickData.Chat(
+                chatId = data["chat_id"]?.toString(),
+                userAvatar = data["chat_avatar"]?.toString(),
+                chatName = data["chat_name"]?.toString(),
+                isGroup = data["is_group"]?.toString().toBoolean()
+            )
         } else {
-            (data["user_contact_name"] ?: data["user_name"])?.toString()
+            val userName = when {
+                !data["user_contact_name"]?.toString().isNullOrEmpty() -> data["user_contact_name"]?.toString()
+                !data["user_name"]?.toString().isNullOrEmpty() -> data["user_name"]?.toString()
+                !data["user_nickname"]?.toString().isNullOrEmpty() -> data["user_nickname"]?.toString()
+                else -> ""
+            }
+            PushClickData.Chat(
+                chatId = data["chat_id"]?.toString(),
+                userAvatar = data["user_avatar"]?.toString(),
+                chatName = userName,
+                isGroup = data["is_group"]?.toString().toBoolean()
+            )
         }
-        return PushClickData.Chat(
-            chatId = data["chat_id"]?.toString(),
-            userAvatar = data["user_avatar"]?.toString(),
-            chatName = chatName,
-            isGroup = data["is_group"]?.toString().toBoolean()
-        )
     }
 
     private fun Intent.extrasMap(): Map<String, Any?>? {
