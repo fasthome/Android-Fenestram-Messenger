@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger
 
 import android.app.Application
 import android.os.StrictMode
+import com.onesignal.OneSignal
 import io.fasthome.fenestram_messenger.di.AppModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -21,6 +22,11 @@ class FenestramApplication : Application() {
             androidContext(this@FenestramApplication)
             modules(AppModule())
         }
+
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
+        BuildConfig.BUILD_TYPE
+        OneSignal.initWithContext(this)
+        OneSignal.setAppId(BuildConfig.ONESIGNAL_APP_ID)
     }
 
 }
