@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
 import java.io.File
@@ -113,6 +114,7 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
+            val metaInfo: MetaInfo?
         ) : Self()
     }
 
@@ -184,6 +186,7 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
+            val metaInfo: MetaInfo?
         ) : Receive()
     }
 
@@ -275,6 +278,7 @@ sealed interface ConversationViewItem {
             var path: String? = null,
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
+            val metaInfo: MetaInfo?
         ) : Group(userName, avatar, phone, userId)
     }
 
@@ -309,4 +313,20 @@ fun getStatusIcon(sentStatus: SentStatus) =
 
 enum class SentStatus {
     Sent, Error, Read, Loading, Received, None
+}
+
+data class MetaInfo(
+    var name: String,
+    /**
+     * Расширение файла, напр. ".txt"
+     */
+    var extension: String,
+    /**
+     * Размер файла указанный в мегабайтах
+     */
+    var size: Int,
+    var url: String
+) {
+    constructor() : this("","",0,"")
+    constructor(content: ContentResponse) : this(content.name,content.extension,content.size,content.url)
 }
