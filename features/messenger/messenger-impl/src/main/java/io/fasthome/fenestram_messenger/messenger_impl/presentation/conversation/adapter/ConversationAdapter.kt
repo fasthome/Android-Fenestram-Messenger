@@ -51,6 +51,11 @@ class ConversationAdapter(
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
 
+    //---Клики по документам---//
+    onReceiveDocumentLongClicked:(ConversationViewItem.Receive) -> Unit,
+    onSelfDocumentLongClicked:(ConversationViewItem.Self) -> Unit,
+    onGroupDocumentLongClicked:(ConversationViewItem.Group) -> Unit,
+
     //---Клики по ответам на сообщения---//
     onSelfTextReplyImageLongClicked: (item: ConversationViewItem.Self.TextReplyOnImage) -> Unit,
     onReceiveTextReplyImageLongClicked: (item: ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
@@ -80,7 +85,8 @@ class ConversationAdapter(
             ),
             createConversationSelfDocumentAdapterDelegate(
                 onDownloadDocument = onSelfDownloadDocument,
-                onReplyMessageDocument = onReplyMessage
+                onReplyMessageDocument = onReplyMessage,
+                onSelfDocumentLongClicked = onSelfDocumentLongClicked
             ),
             createConversationSelfTextReplyImageAdapterDelegate(
                 onSelfTextReplyImageLongClicked = onSelfTextReplyImageLongClicked,
@@ -105,7 +111,9 @@ class ConversationAdapter(
             ),
             createConversationReceiveDocumentAdapterDelegate(
                 onDownloadDocument = onRecieveDownloadDocument,
-                onReplyMessageDocument = onReplyMessage),
+                onReplyMessageDocument = onReplyMessage,
+                onReceiveDocumentLongClicked = onReceiveDocumentLongClicked
+                ),
 
             createConversationReceiveForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
@@ -145,7 +153,8 @@ class ConversationAdapter(
             createConversationGroupDocumentAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
                 onDownloadDocument = onGroupDownloadDocument,
-                onReplyMessageDocument = onReplyMessage
+                onReplyMessageDocument = onReplyMessage,
+                onGroupDocumentLongClicked = onGroupDocumentLongClicked
             ),
             createConversationGroupForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
@@ -330,7 +339,8 @@ fun createConversationSelfImageAdapterDelegate(
 
 fun createConversationSelfDocumentAdapterDelegate(
     onDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
-    onReplyMessageDocument: (item: ConversationViewItem) -> Unit
+    onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
+    onSelfDocumentLongClicked: (ConversationViewItem.Self) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
         ConversationItemSelfDocumentBinding::inflate
@@ -338,6 +348,9 @@ fun createConversationSelfDocumentAdapterDelegate(
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessageDocument(item) }
         )
+        binding.contentLayout.onClick {
+            onSelfDocumentLongClicked(item)
+        }
         binding.messageContent.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
@@ -524,7 +537,8 @@ fun createConversationReceiveImageAdapterDelegate(
 
 fun createConversationReceiveDocumentAdapterDelegate(
     onDownloadDocument: (item: ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
-    onReplyMessageDocument: (item: ConversationViewItem) -> Unit
+    onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
+    onReceiveDocumentLongClicked: (ConversationViewItem.Receive) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
         ConversationItemReceiveDocumentBinding::inflate
@@ -532,6 +546,9 @@ fun createConversationReceiveDocumentAdapterDelegate(
         binding.root.setTouchListener(
             onReplyMessage = { onReplyMessageDocument(item) }
         )
+        binding.contentLayout.onClick {
+            onReceiveDocumentLongClicked(item)
+        }
         binding.messageContent.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
@@ -733,6 +750,7 @@ fun createConversationGroupDocumentAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onDownloadDocument: (item: ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
+    onGroupDocumentLongClicked: (ConversationViewItem.Group) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
         ConversationItemGroupDocumentBinding::inflate
@@ -742,6 +760,10 @@ fun createConversationGroupDocumentAdapterDelegate(
         )
         binding.avatar.onClick {
             onGroupProfileItemClicked(item)
+        }
+
+        binding.contentLayout.onClick {
+            onGroupDocumentLongClicked(item)
         }
         binding.messageContent.onClick {
             binding.progressBar.isVisible = true

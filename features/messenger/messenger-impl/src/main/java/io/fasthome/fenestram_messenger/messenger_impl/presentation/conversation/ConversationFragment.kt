@@ -121,6 +121,12 @@ class ConversationFragment :
             vm.onReceiveForwardLongClicked(it)
         }, onGroupForwardLongClicked = {
             vm.onGroupForwardLongClicked(it)
+        }, onReceiveDocumentLongClicked = {
+            vm.onReceiveDocumentLongClicked(it)
+        }, onSelfDocumentLongClicked = {
+            vm.onSelfDocumentLongClicked(it)
+        }, onGroupDocumentLongClicked = {
+            vm.onGroupDocumentLongClicked(it)
         })
 
     private val attachedAdapter = AttachedAdapter(
@@ -399,7 +405,7 @@ class ConversationFragment :
                 is ConversationViewItem.Self.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Image -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Self.Document -> Unit
+                is ConversationViewItem.Self.Document -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Forward -> replyImageDialog(event.conversationViewItem)
             }
 
@@ -407,14 +413,14 @@ class ConversationFragment :
                 is ConversationViewItem.Receive.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Image -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Receive.Document -> Unit
+                is ConversationViewItem.Receive.Document -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.ShowGroupMessageActionDialog -> when (event.conversationViewItem) {
                 is ConversationViewItem.Group.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Group.Document -> Unit
+                is ConversationViewItem.Group.Document -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.DotsEvent -> {

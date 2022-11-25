@@ -19,119 +19,123 @@
             android:layout_gravity="center"
             android:background="@drawable/ic_action_reply" />
     </FrameLayout>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/message_content"
-        android:layout_width="wrap_content"
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxWidth="300dp"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/message_rectangle_self"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:clickable="true">
 
-        <ImageView
-            android:id="@+id/document_bg"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginHorizontal="15dp"
-            android:layout_marginVertical="8dp"
-            android:alpha="0.3"
-            android:background="@drawable/bg_image_document"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_document_message"
-            app:layout_constraintEnd_toEndOf="@+id/document_bg"
-            app:layout_constraintStart_toStartOf="@+id/document_bg"
-            app:layout_constraintTop_toTopOf="@id/document_bg" />
-
-        <LinearLayout
-            android:gravity="center_vertical"
-            android:id="@+id/ll_meta_info"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/message_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingVertical="4dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/document_bg"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/message_rectangle_self"
+            android:maxWidth="300dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/document_bg"
-            app:layout_constraintTop_toTopOf="@+id/document_bg">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/file_name"
-                style="@style/Text.White.14sp"
+            <ImageView
+                android:id="@+id/document_bg"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginVertical="8dp"
+                android:alpha="0.3"
+                android:background="@drawable/bg_image_document"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_document_message"
+                app:layout_constraintEnd_toEndOf="@+id/document_bg"
+                app:layout_constraintStart_toStartOf="@+id/document_bg"
+                app:layout_constraintTop_toTopOf="@id/document_bg" />
+
+            <LinearLayout
+                android:id="@+id/ll_meta_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:ellipsize="middle"
-                android:ems="10"
-                tools:text="9a4cca46-6c98-11ed-a1eb-0242ac120002.zip"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingVertical="4dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/document_bg"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/document_bg"
-                app:layout_constraintTop_toTopOf="parent" />
-            <TextView
-                android:id="@+id/file_size"
-                style="@style/Text.Gray.12sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="0/10 Мб"
-                android:minWidth="100dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/file_name"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/file_name"
-                app:layout_constraintTop_toBottomOf="@id/file_name"
-                app:layout_constraintVertical_bias="0.0" />
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:progressDrawable="@drawable/progress_bar_hooli"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/file_size"
-                app:layout_constraintWidth_min="80dp" />
+                app:layout_constraintTop_toTopOf="@+id/document_bg">
+
+                <TextView
+                    android:id="@+id/file_name"
+                    style="@style/Text.White.14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="middle"
+                    android:ems="10"
+                    android:maxLines="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/document_bg"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="9a4cca46-6c98-11ed-a1eb-0242ac120002.zip" />
+
+                <TextView
+                    android:id="@+id/file_size"
+                    style="@style/Text.Gray.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/file_name"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/file_name"
+                    app:layout_constraintTop_toBottomOf="@id/file_name"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:text="0/10 Мб" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progressDrawable="@drawable/progress_bar_hooli"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/file_size"
+                    app:layout_constraintWidth_min="80dp" />
 
 
-        </LinearLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/send_time_view"
+            style="@style/Text.Gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="30dp"
+            android:text="@string/timeviewcheck"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/message_content" />
+
+        <ImageView
+            android:id="@+id/status"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/message_content"
+            app:srcCompat="@drawable/ic_approve_send" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/send_time_view"
-        style="@style/Text.Gray"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="30dp"
-        android:text="@string/timeviewcheck"
-        android:textSize="11sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/message_content" />
-
-    <ImageView
-        android:id="@+id/status"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/message_content"
-        app:srcCompat="@drawable/ic_approve_send" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
 </io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

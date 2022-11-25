@@ -1106,6 +1106,18 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
+    fun onGroupDocumentLongClicked(conversationViewItem: ConversationViewItem.Group) {
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+    }
+
+    fun onSelfDocumentLongClicked(conversationViewItem: ConversationViewItem.Self) {
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    }
+
+    fun onReceiveDocumentLongClicked(conversationViewItem: ConversationViewItem.Receive) {
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
     fun onTypingMessage() {
         messengerInteractor.emitMessageAction(chatId.toString(), TYPING_MESSAGE_STATUS)
     }

@@ -65,22 +65,25 @@
             <TextView
                 android:id="@+id/file_name"
                 style="@style/Text.Blue.14sp"
-                android:drawableTint="@color/blue3"
-                android:textColor="@color/blue3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:drawableStart="@drawable/ic_document_message"
                 android:drawablePadding="6dp"
-                tools:text="документ.zip"
-                android:layout_marginTop="2dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:drawableTint="@color/blue3"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:textColor="@color/blue3"
+                tools:text="документд-окументдокдокументдокументдокументдокумент-   документ-   -ументдокументдокументдокументдокументдокумент.zip" />
 
             <ImageView
                 android:id="@+id/reply_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="300dp"
-                android:layout_marginBottom="4dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginBottom="4dp"
+                android:maxWidth="300dp"
                 android:minWidth="200dp"
                 android:minHeight="175dp"
                 android:scaleType="fitCenter" />

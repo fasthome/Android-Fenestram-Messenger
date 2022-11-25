@@ -33,9 +33,9 @@
             android:layout_marginStart="10dp"
             android:background="@drawable/ic_avatar_placeholder"
             app:layout_constraintBottom_toBottomOf="@+id/text_container"
+            app:layout_constraintEnd_toStartOf="@+id/text_container"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/text_container"
             app:layout_constraintVertical_bias="1.0" />
 
         <LinearLayout
@@ -44,11 +44,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginEnd="180dp"
+            android:background="@drawable/message_rectangle_receive"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/avatar"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/message_rectangle_receive">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/username"
@@ -59,6 +59,7 @@
                 android:paddingTop="5dp"
                 android:text="Мария Сергеевна"
                 tools:ignore="HardcodedText" />
+
             <TextView
                 android:id="@+id/reply_message_name"
                 style="@style/Text.Blue.12sp"
@@ -67,6 +68,7 @@
                 android:layout_marginBottom="5dp"
                 android:fontFamily="@font/geometria"
                 android:maxEms="16"
+                android:paddingHorizontal="12dp"
                 android:textColor="@color/blue3"
                 app:barrierMargin="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -74,20 +76,24 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                android:paddingHorizontal="12dp"
                 tools:text="Ответ на фото\nдля Мария Сергеева" />
+
             <TextView
-                android:paddingHorizontal="12dp"
                 android:id="@+id/file_name"
                 style="@style/Text.Blue.14sp"
-                android:drawableTint="@color/blue3"
-                android:textColor="@color/blue3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:drawableStart="@drawable/ic_document_message"
                 android:drawablePadding="6dp"
-                tools:text="123213документ-мвылвым-123213документ.zip"
-                android:layout_marginTop="2dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:drawableTint="@color/blue3"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:paddingHorizontal="12dp"
+                android:textColor="@color/blue3"
+                tools:text="123213документ-мвылвым-123213документ.zip" />
+
             <ImageView
                 android:id="@+id/reply_image"
                 android:layout_width="match_parent"

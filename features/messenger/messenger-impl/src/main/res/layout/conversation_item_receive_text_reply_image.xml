@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
+            android:maxWidth="350dp"
             android:minWidth="48dp"
             android:minHeight="24dp"
             android:orientation="vertical"
@@ -59,17 +60,22 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="Ответ на фото\nдля Мария Сергеева" />
+
             <TextView
                 android:id="@+id/file_name"
                 style="@style/Text.Blue.14sp"
-                android:drawableTint="@color/blue3"
-                android:textColor="@color/blue3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:drawableStart="@drawable/ic_document_message"
                 android:drawablePadding="6dp"
-                tools:text="документ.zip"
-                android:layout_marginTop="2dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:drawableTint="@color/blue3"
+                android:ellipsize="middle"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:textColor="@color/blue3"
+                tools:text=" документдокумент документдокумент документдокумент документдокумент.zip" />
+
             <ImageView
                 android:id="@+id/reply_image"
                 android:layout_width="wrap_content"
@@ -77,7 +83,8 @@
                 android:maxWidth="300dp"
                 android:minWidth="200dp"
                 android:minHeight="175dp"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"
+                tools:visibility="gone" />
 
             <TextView
                 android:id="@+id/message_content"
