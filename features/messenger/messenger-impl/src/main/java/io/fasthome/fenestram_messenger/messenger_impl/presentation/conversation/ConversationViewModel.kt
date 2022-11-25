@@ -451,11 +451,20 @@ class ConversationViewModel(
             is Content.LoadableContent -> content.load()?.array
             null -> return
         }
-        messengerInteractor.uploadProfileImage(
+        val result = messengerInteractor.uploadProfileImage(
             byteArray ?: return
-        ).getOrNull()?.imagePath.let {
+        )
+        result.getOrNull()?.imagePath.let {
             fileStoragePath = it
             it
+        }
+        when(result) {
+            is CallResult.Error -> {
+                updateState { state ->
+                    updateStatus(tempMessage, SentStatus.Error)
+                    state
+                }
+            }
         }
         sendMessage(
             text = fileStoragePath ?: return,
