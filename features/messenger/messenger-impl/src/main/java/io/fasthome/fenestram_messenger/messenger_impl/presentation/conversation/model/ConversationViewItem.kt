@@ -44,6 +44,7 @@ sealed interface ConversationViewItem {
 
     sealed class Self : ConversationViewItem {
         abstract val localId: String
+        abstract val metaInfo: MetaInfo?
 
         data class Text(
             override val id: Long,
@@ -58,6 +59,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: MetaInfo? = null,
         ) : Self(), ConversationTextItem
 
         data class TextReplyOnImage(
@@ -73,6 +75,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: MetaInfo? = null,
         ) : Self(), ConversationTextItem
 
         data class Forward(
@@ -87,7 +90,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            val forwardMessage: ConversationViewItem
+            val forwardMessage: ConversationViewItem,
+            override val metaInfo: MetaInfo? = null,
         ) : Self()
 
         data class Image(
@@ -103,6 +107,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: MetaInfo? = null,
         ) : Self(), ConversationImageItem
 
         data class Document(

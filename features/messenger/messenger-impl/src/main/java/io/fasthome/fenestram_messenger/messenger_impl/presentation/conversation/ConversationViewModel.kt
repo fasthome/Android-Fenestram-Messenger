@@ -465,16 +465,12 @@ class ConversationViewModel(
     }
 
     private suspend fun sendDocument(tempMessage: ConversationViewItem.Self.Document) {
-        var fileStoragePath: String? = null
-        messengerInteractor.uploadDocument(
+        var fileStoragePath: String?
+        val result = messengerInteractor.uploadDocument(
             tempMessage.file?.readBytes() ?: return,
-            extension = tempMessage.file.name.let { fileName ->
-                if (fileName.substring(fileName.lastIndexOf('.'), fileName.length) == ".pdf")
-                    ".pdf"
-                else
-                    ".txt"
-            }
-        ).getOrNull()?.documentPath.let {
+            tempMessage.file.name
+        )
+        result.getOrNull()?.documentPath.let {
             fileStoragePath = it
             it
         }
@@ -557,7 +553,7 @@ class ConversationViewModel(
                 }
                 MessageType.Document -> {
                     if ((existMessage as ConversationViewItem.Self.Document).file == null) return@launch
-                    existMessage
+                    existMessage.copy(metaInfo = MetaInfo(name = existMessage.file?.name ?: "", extension = existMessage.file?.extension ?: "", size = 0f, url = ""))
                 }
             }
             val messages = currentViewState.messages

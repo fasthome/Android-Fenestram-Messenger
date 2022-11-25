@@ -191,8 +191,8 @@ class MessengerInteractor(
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
-    suspend fun uploadDocument(documentBytes: ByteArray, extension: String) =
-        messageRepo.uploadDocument(documentBytes, UUID.randomUUID().toString() + extension)
+    suspend fun uploadDocument(documentBytes: ByteArray, name: String) =
+        messageRepo.uploadDocument(documentBytes, name)
 
     suspend fun getDocument(storagePath: String, progressListener: ProgressListener) =
         messageRepo.getDocument(storagePath, progressListener)

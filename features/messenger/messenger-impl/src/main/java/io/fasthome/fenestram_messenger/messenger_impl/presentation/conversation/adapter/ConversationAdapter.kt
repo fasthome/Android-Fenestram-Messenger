@@ -368,10 +368,13 @@ fun createConversationSelfDocumentAdapterDelegate(
             }
         }
         bindWithBinding {
-            fileSize.text = getString(R.string.mb_real, item.metaInfo?.size ?: 0f)
+            if(item.metaInfo != null && item.metaInfo!!.size != 0f) {
+                fileSize.text = getString(R.string.mb_real, item.metaInfo?.size!!)
+            } else {
+                fileSize.isVisible = false
+            }
             binding.progressBar.isInvisible = true
-            fileName.text =
-                item.metaInfo?.name //item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
+            fileName.text = item.metaInfo?.name
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
             sendTimeView.isVisible = item.timeVisible
