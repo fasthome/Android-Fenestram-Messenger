@@ -21,6 +21,11 @@ interface ConversationTextItem {
     val content: PrintableText
 }
 
+interface ConversationDocumentItem {
+    val userName: PrintableText
+    val metaInfo: MetaInfo?
+}
+
 sealed interface ConversationViewItem {
 
     val id: Long
@@ -114,8 +119,8 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
-            val metaInfo: MetaInfo?
-        ) : Self()
+            override val metaInfo: MetaInfo?
+        ) : Self(), ConversationDocumentItem
     }
 
     sealed class Receive : ConversationViewItem {
@@ -186,8 +191,8 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
-            val metaInfo: MetaInfo?
-        ) : Receive()
+            override val metaInfo: MetaInfo?
+        ) : Receive(), ConversationDocumentItem
     }
 
     sealed class Group(
@@ -278,8 +283,8 @@ sealed interface ConversationViewItem {
             var path: String? = null,
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
-            val metaInfo: MetaInfo?
-        ) : Group(userName, avatar, phone, userId)
+            override val metaInfo: MetaInfo?
+        ) : Group(userName, avatar, phone, userId), ConversationDocumentItem
     }
 
     data class System(
@@ -324,9 +329,9 @@ data class MetaInfo(
     /**
      * Размер файла указанный в мегабайтах
      */
-    var size: Int,
+    var size: Float,
     var url: String
 ) {
-    constructor() : this("","",0,"")
+    constructor() : this("","",0f,"")
     constructor(content: ContentResponse) : this(content.name,content.extension,content.size,content.url)
 }

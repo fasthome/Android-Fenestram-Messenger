@@ -15,6 +15,6 @@ class ContentResponse(
     /**
      * Размер файла указанный в мегабайтах
      */
-    var size: Int,
+    var size: Float,
     var url: String,
 ) : Parcelable

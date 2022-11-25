@@ -35,6 +35,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.singleSameTime
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationDocumentItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
@@ -106,14 +107,12 @@ class ConversationFragment :
             vm.onSelfMessageLongClicked(it)
         }, onReceiveTextReplyImageLongClicked = {
             vm.onReceiveTextReplyImageLongClicked(it)
-        }, onReplyMessageText = {
+        }, onReplyMessage = {
             vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
         }, onGroupImageLongClicked = {
             vm.onGroupMessageLongClicked(it)
         }, onReceiveImageLongClicked = {
             vm.onReceiveMessageLongClicked(it)
-        }, onReplyMessageImage = {
-            vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
         }, onGroupTextReplyImageLongClicked = {
             vm.onGroupMessageLongClicked(it)
         }, onSelfForwardLongClicked = {
@@ -499,6 +498,13 @@ class ConversationFragment :
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
                             getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
+                    }
+                    is ConversationDocumentItem -> {
+                        tvEditMessageTitle.isVisible = false
+                        replyImage.isVisible = false
+                        tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
+                        tvTextToEdit.text =
+                            getString(R.string.reply_document_ph, getPrintableRawText(message.userName))
                     }
                 }
             }

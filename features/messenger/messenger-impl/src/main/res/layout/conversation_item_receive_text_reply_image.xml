@@ -59,7 +59,17 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="Ответ на фото\nдля Мария Сергеева" />
-
+            <TextView
+                android:id="@+id/file_name"
+                style="@style/Text.Blue.14sp"
+                android:drawableTint="@color/blue3"
+                android:textColor="@color/blue3"
+                android:drawableStart="@drawable/ic_document_message"
+                android:drawablePadding="6dp"
+                tools:text="документ.zip"
+                android:layout_marginTop="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
             <ImageView
                 android:id="@+id/reply_image"
                 android:layout_width="wrap_content"
