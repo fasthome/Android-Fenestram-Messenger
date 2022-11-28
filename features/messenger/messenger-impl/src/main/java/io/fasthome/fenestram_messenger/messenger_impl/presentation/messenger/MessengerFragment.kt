@@ -81,7 +81,7 @@ class MessengerFragment :
 
         messageAdapter.addOnPagesUpdatedListener {
             binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
-            if(lastScrollPosition == 0) binding.chatList.smoothScrollToPosition(0)
+            if (lastScrollPosition == 0) binding.chatList.smoothScrollToPosition(0)
         }
         val linearLayoutManager =
             LinearLayoutManager(requireContext())
@@ -93,6 +93,11 @@ class MessengerFragment :
                 lastScrollPosition = linearLayoutManager.findFirstVisibleItemPosition()
                 if (lastScrollPosition == 0) {
                     vm.onReadMessages()
+                }
+                if (dy > 0) {
+                    vm.onScrolledDown(true)
+                } else if (dy < 0) {
+                    vm.onScrolledDown(false)
                 }
             }
         })
@@ -118,22 +123,22 @@ class MessengerFragment :
     }
 
     override fun renderState(state: MessengerState) {
-        if(state.isSelectMode) {
+        if (state.isSelectMode) {
             toggleToolbar(true, R.string.forward)
         } else {
             toggleToolbar(false)
-            if (state.newMessagesCount == 0) {
-                updateFabIcon(iconRes = null, badgeCount = state.newMessagesCount)
-
-                fabActionListener = {
-                    vm.onCreateChatClicked()
-                }
-            } else {
-                if (lastScrollPosition != 0) {
-                    updateFabIcon(iconRes = R.drawable.ic_arrow_up, badgeCount = state.newMessagesCount)
+            when {
+                state.scrolledDown || state.newMessagesCount != 0 && lastScrollPosition != 0 -> {
+                    updateFabIcon(iconRes = R.drawable.ic_arrow_up, state.newMessagesCount)
                     fabActionListener = {
                         binding.chatList.smoothScrollToPosition(0)
                     }
+                }
+                state.newMessagesCount == 0 && !state.scrolledDown -> {
+                    fabActionListener = {
+                        vm.onCreateChatClicked()
+                    }
+                    updateFabIcon(iconRes = null, badgeCount = state.newMessagesCount)
                 }
             }
         }
@@ -180,9 +185,14 @@ class MessengerFragment :
             appNameHeader.isVisible = !visible
             val constraints = ConstraintSet().apply {
                 clone(root)
-                connect(chatsSv.id,ConstraintSet.TOP,if(visible) toolbar.id else appNameHeader.id, ConstraintSet.BOTTOM)
+                connect(
+                    chatsSv.id,
+                    ConstraintSet.TOP,
+                    if (visible) toolbar.id else appNameHeader.id,
+                    ConstraintSet.BOTTOM
+                )
             }
-                root.setConstraintSet(constraints)
+            root.setConstraintSet(constraints)
         }
     }
 

@@ -99,11 +99,13 @@ class MessengerViewModel(
         if (params.chatSelectionMode) {
             exitWithResult(
                 MessengerNavigationContract.createResult(
-                    MessengerNavigationContract.Result.ChatSelected(chatName = messangerViewItem.name,
+                    MessengerNavigationContract.Result.ChatSelected(
+                        chatName = messangerViewItem.name,
                         chatId = messangerViewItem.id,
                         isGroup = messangerViewItem.isGroup,
                         avatar = messangerViewItem.profileImageUrl,
-                        pendingMessages = messangerViewItem.pendingAmount)
+                        pendingMessages = messangerViewItem.pendingAmount
+                    )
                 )
             )
         } else {
@@ -121,7 +123,9 @@ class MessengerViewModel(
             chats = listOf(),
             messengerViewItems = listOf(),
             newMessagesCount = 0,
-            isSelectMode = params.chatSelectionMode)
+            isSelectMode = params.chatSelectionMode,
+            scrolledDown = false
+        )
     }
 
     fun onCreateChatClicked() {
@@ -232,6 +236,11 @@ class MessengerViewModel(
         updateState { state ->
             state.copy(newMessagesCount = 0)
         }
+    }
+
+    fun onScrolledDown(scrolledDown: Boolean) {
+        if (currentViewState.scrolledDown != scrolledDown)
+            updateState { state -> state.copy(scrolledDown = scrolledDown) }
     }
 
     fun exitToConversation() = exitWithoutResult()
