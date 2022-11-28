@@ -17,8 +17,8 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
-import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -68,7 +68,7 @@ class ConversationViewModel(
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
-        when(result) {
+        when (result) {
             is ImageViewerContract.Result.Delete -> {
                 deleteMessage(result.messageId)
             }
@@ -82,7 +82,7 @@ class ConversationViewModel(
         registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
             when (result) {
                 is MessengerFeature.MessengerNavResult.ChatSelected -> {
-                    if(result.chatId != chatId) {
+                    if (result.chatId != chatId) {
                         lastPage = null
                         updateState {
                             ConversationState(
@@ -286,9 +286,12 @@ class ConversationViewModel(
                     }
                     is CallResult.Success -> {
                         updateState { state ->
-                            val tempMessages = if(state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(selfUserId,
-                                params.chat.isGroup,
-                                storageUrlConverter) ?: emptyMap()
+                            val tempMessages =
+                                if (state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(
+                                    selfUserId,
+                                    params.chat.isGroup,
+                                    storageUrlConverter
+                                ) ?: emptyMap()
                             return@updateState state.copy(
                                 inputMessageMode = InputMessageMode.Default(),
                                 messages = tempMessages.plus(state.messages)
@@ -656,32 +659,36 @@ class ConversationViewModel(
         val clickedUser =
             chatUsers.firstOrNull { it.nickname.equals(userTag.getNicknameFromLink(), true) }
         if (clickedUser != null) {
-            sendEvent(ConversationEvent.ShowPersonDetailDialog(PersonDetail(
-                userId = clickedUser.id,
-                avatar = clickedUser.avatar,
-                phone = clickedUser.phone,
-                userName = clickedUser.name,
-                userNickname = clickedUser.nickname
-            )))
+            sendEvent(
+                ConversationEvent.ShowPersonDetailDialog(
+                    PersonDetail(
+                        userId = clickedUser.id,
+                        avatar = clickedUser.avatar,
+                        phone = clickedUser.phone,
+                        userName = clickedUser.name,
+                        userNickname = clickedUser.nickname
+                    )
+                )
+            )
         }
     }
 
-    fun fetchTags(text: String,selectionStart: Int) {
+    fun fetchTags(text: String, selectionStart: Int) {
         var users = emptyList<User>()
         if (text.isNotEmpty() && selectionStart != 0 && text.contains('@')) {
             val prevTag = text.getOrNull(selectionStart - 2)
-            val canShowTagList = if(prevTag == null) text.startsWith('@') else prevTag == ' '
-                if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
-                    users = chatUsers.filter { it.nickname.isNotEmpty() }
-                } else {
-                    val tagPos = text.lastIndexOf('@')
-                    val nickname = text.substring(tagPos, selectionStart)
-                    if (USER_TAG_PATTERN.matcher(nickname)
-                            .matches() && text.getOrNull(tagPos - 1) == ' '
-                    ) {
-                        chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
-                    }
+            val canShowTagList = if (prevTag == null) text.startsWith('@') else prevTag == ' '
+            if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
+                users = chatUsers.filter { it.nickname.isNotEmpty() }
+            } else {
+                val tagPos = text.lastIndexOf('@')
+                val nickname = text.substring(tagPos, selectionStart)
+                if (USER_TAG_PATTERN.matcher(nickname)
+                        .matches() && text.getOrNull(tagPos - 1) == ' '
+                ) {
+                    chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
                 }
+            }
         }
         sendEvent(ConversationEvent.ShowUsersTags(users))
     }
@@ -746,7 +753,8 @@ class ConversationViewModel(
                     val newMessages = listOf(message).toConversationItems(
                         selfUserId = selfUserId,
                         isGroup = params.chat.isGroup,
-                        storageUrlConverter)
+                        storageUrlConverter
+                    )
                     state.copy(
                         messages = newMessages.plus(state.messages)
                     )
@@ -772,6 +780,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
+            updateState { state -> state.copy(avatar = it.avatar, userName = PrintableText.Raw(it.chatName)) }
         }
     }
 
@@ -839,15 +848,21 @@ class ConversationViewModel(
                 if (!deletedMessages.contains(item.value.id))
                     messages[item.key] = item.value
             }
-            when(state.inputMessageMode) {
+            when (state.inputMessageMode) {
                 is InputMessageMode.Edit -> {
-                    if(deletedMessages.contains(state.inputMessageMode.messageToEdit.id)) {
-                        return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
+                    if (deletedMessages.contains(state.inputMessageMode.messageToEdit.id)) {
+                        return@updateState state.copy(
+                            messages = messages,
+                            inputMessageMode = InputMessageMode.Default("")
+                        )
                     }
                 }
                 is InputMessageMode.Reply -> {
-                    if(deletedMessages.contains(state.inputMessageMode.messageToReply.id)) {
-                        return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
+                    if (deletedMessages.contains(state.inputMessageMode.messageToReply.id)) {
+                        return@updateState state.copy(
+                            messages = messages,
+                            inputMessageMode = InputMessageMode.Default()
+                        )
                     }
                 }
             }
@@ -1022,7 +1037,8 @@ class ConversationViewModel(
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
                 imageUrl = url,
-                imageBitmap = bitmap)
+                imageBitmap = bitmap
+            )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
@@ -1064,15 +1080,21 @@ class ConversationViewModel(
                         if (item.value.id != messageId)
                             messages[item.key] = item.value
                     }
-                    when(state.inputMessageMode) {
+                    when (state.inputMessageMode) {
                         is InputMessageMode.Edit -> {
-                            if(state.inputMessageMode.messageToEdit.id == messageId) {
-                                return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
+                            if (state.inputMessageMode.messageToEdit.id == messageId) {
+                                return@updateState state.copy(
+                                    messages = messages,
+                                    inputMessageMode = InputMessageMode.Default("")
+                                )
                             }
                         }
                         is InputMessageMode.Reply -> {
-                            if(state.inputMessageMode.messageToReply.id == messageId) {
-                                return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
+                            if (state.inputMessageMode.messageToReply.id == messageId) {
+                                return@updateState state.copy(
+                                    messages = messages,
+                                    inputMessageMode = InputMessageMode.Default()
+                                )
                             }
                         }
                     }
