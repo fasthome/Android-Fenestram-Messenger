@@ -24,4 +24,8 @@ class CoreStorage(
             this@CoreStorage.appOpenCount = getAppOpenCount() + 1
         }
 
+    suspend fun clearPrefs() = withContext(DispatchersProvider.IO) {
+        preferencesStorage.clear()
+    }
+
 }
