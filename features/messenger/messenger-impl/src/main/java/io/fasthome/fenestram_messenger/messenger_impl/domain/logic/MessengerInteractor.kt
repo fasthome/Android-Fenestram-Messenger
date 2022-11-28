@@ -208,5 +208,7 @@ class MessengerInteractor(
         filesRepo.saveFile(itemId = itemId, tempFile.readBytes(), tempFile.name)
     }
 
+    suspend fun clearFiles() = filesRepo.clearFiles()
+
     suspend fun getUserId() = userStorage.getUserId()
 }

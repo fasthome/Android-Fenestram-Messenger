@@ -30,7 +30,8 @@ class MessengerFeatureImpl(
                         chatName = it.chatName,
                         avatar = it.avatar,
                         isGroup = it.isGroup,
-                        pendingMessages = it.pendingMessages)
+                        pendingMessages = it.pendingMessages
+                    )
                 } else {
                     MessengerFeature.MessengerNavResult.Canceled
                 }
@@ -68,6 +69,8 @@ class MessengerFeatureImpl(
             chatChangesCallback(it)
         }
     }
+
+    override suspend fun clearFileStorage() = messengerInteractor.clearFiles()
 
     override suspend fun deleteChat(id: Long) = messengerInteractor.deleteChat(id)
 

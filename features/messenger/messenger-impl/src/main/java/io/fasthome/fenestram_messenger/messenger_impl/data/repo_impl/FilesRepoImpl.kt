@@ -33,4 +33,7 @@ class FilesRepoImpl(private val cameraFileStorage: CameraFileStorage) :
 
             cameraFileStorage.saveFile(path, content)
         }
+
+    override suspend fun clearFiles() = cameraFileStorage.clear()
+
 }

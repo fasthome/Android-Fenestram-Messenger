@@ -13,5 +13,7 @@ class CoreRepoImpl(
 
     override suspend fun plusAppOpenCount() = coreStorage.plusOpenCount()
 
+    override suspend fun clearStorage() = coreStorage.clearPrefs()
+
 
 }
