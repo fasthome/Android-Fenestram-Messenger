@@ -789,6 +789,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
+            updateState { state -> state.copy(avatar = it.avatar, userName = PrintableText.Raw(it.chatName)) }
         }
     }
 
