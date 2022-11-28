@@ -1,8 +1,6 @@
 package io.fasthome.fenestram_messenger.data
 
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
-import io.fasthome.fenestram_messenger.data.KeyValueStorage
-import io.fasthome.fenestram_messenger.data.stored
 import kotlinx.coroutines.withContext
 
 class UserStorage(
@@ -19,7 +17,7 @@ class UserStorage(
             return@withContext userId
         }
 
-    suspend fun setUserId(userId : Long) =
+    suspend fun setUserId(userId: Long) =
         withContext(DispatchersProvider.IO) {
             this@UserStorage.userId = userId
         }
@@ -29,7 +27,7 @@ class UserStorage(
             return@withContext userPhone
         }
 
-    suspend fun setUserPhone(userPhone : String) =
+    suspend fun setUserPhone(userPhone: String) =
         withContext(DispatchersProvider.IO) {
             this@UserStorage.userPhone = userPhone
         }
@@ -39,7 +37,7 @@ class UserStorage(
             return@withContext userCode
         }
 
-    suspend fun setUserCode(userCode : String) =
+    suspend fun setUserCode(userCode: String) =
         withContext(DispatchersProvider.IO) {
             this@UserStorage.userCode = userCode
         }
@@ -48,5 +46,9 @@ class UserStorage(
         withContext(DispatchersProvider.IO) {
             this@UserStorage.userId = null
         }
+    }
+
+    suspend fun clearPrefs() = withContext(DispatchersProvider.IO) {
+        preferencesStorage.clear()
     }
 }

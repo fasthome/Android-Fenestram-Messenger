@@ -11,9 +11,11 @@ interface FilesRepo {
     suspend fun getFile(itemId: String): CallResult<FileData?>
 
     suspend fun saveFile(
-        itemId : String,
+        itemId: String,
         content: ByteArray,
         fileName: String?,
     ): CallResult<Unit>
+
+    suspend fun clearFiles()
 
 }
