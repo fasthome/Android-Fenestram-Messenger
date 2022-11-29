@@ -1119,12 +1119,9 @@ class ConversationViewModel(
     }
 
     fun onDownloadDocument(
-        itemSelf: ConversationViewItem.Self.Document? = null,
-        itemReceive: ConversationViewItem.Receive.Document? = null,
-        itemGroup: ConversationViewItem.Group.Document? = null,
+        item: ConversationViewItem,
         progressListener: ProgressListener,
     ) {
-        val item = itemSelf ?: itemReceive ?: itemGroup ?: return
         val documentLink = item.content.toString()
         downloadFileJob = viewModelScope.launch {
             messengerInteractor.getDocument(

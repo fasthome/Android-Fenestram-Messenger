@@ -61,20 +61,93 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="Ответ на фото\nдля Мария Сергеева" />
 
-            <TextView
-                android:id="@+id/file_name"
-                style="@style/Text.Blue.14sp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/reply_document_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:drawableStart="@drawable/ic_document_message"
-                android:drawablePadding="6dp"
-                android:drawableTint="@color/blue3"
-                android:ellipsize="middle"
-                android:maxEms="10"
-                android:maxLines="1"
-                android:textColor="@color/blue3"
-                tools:text=" документдокумент документдокумент документдокумент документдокумент.zip" />
+                android:layout_marginEnd="10dp"
+                android:maxWidth="300dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/document_bg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginVertical="8dp"
+                    android:alpha="0.3"
+                    android:background="@drawable/bg_image_document"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_margin="10dp"
+                    android:src="@drawable/ic_document_message"
+                    app:layout_constraintEnd_toEndOf="@+id/document_bg"
+                    app:layout_constraintStart_toStartOf="@+id/document_bg"
+                    app:layout_constraintTop_toTopOf="@id/document_bg" />
+
+                <LinearLayout
+                    android:id="@+id/ll_meta_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingVertical="4dp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="10dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/document_bg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/document_bg"
+                    app:layout_constraintTop_toTopOf="@+id/document_bg">
+
+                    <TextView
+                        android:id="@+id/file_name"
+                        style="@style/Text.White.14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="middle"
+                        android:ems="10"
+                        android:maxLines="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/document_bg"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="9a4cca46-6c98-11ed-a1eb-0242ac120002.zip" />
+
+                    <TextView
+                        android:id="@+id/file_size"
+                        style="@style/Text.Gray.12sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="100dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/file_name"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/file_name"
+                        app:layout_constraintTop_toBottomOf="@id/file_name"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="0/10 Мб" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:progressDrawable="@drawable/progress_bar_hooli"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/file_size"
+                        app:layout_constraintWidth_min="80dp" />
+
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
                 android:id="@+id/reply_image"

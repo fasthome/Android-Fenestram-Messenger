@@ -32,7 +32,7 @@
     <string name="messenger_search_contacts">Поиск контакта</string>
     <string name="messenger_edited">изменено</string>
     <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
-    <string name="reply_document_ph">Ответ на документ от %1$s</string>
+    <string name="reply_document_ph">Ответ на файл\nот %1$s</string>
     <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
     <string name="meta_document_size_ph">%1$.2f/%2$.1f Мб</string>
     <string name="mb_real">%1$.1f Мб</string>

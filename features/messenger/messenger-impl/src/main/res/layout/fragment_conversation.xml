@@ -246,6 +246,7 @@
     <LinearLayout
         android:id="@+id/chat_user_tags_container"
         android:layout_width="0dp"
+        android:visibility="gone"
         app:layout_constraintHeight_max="250dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -273,7 +274,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/input_message"
         app:layout_constraintEnd_toEndOf="@+id/input_message"
         app:layout_constraintStart_toStartOf="@+id/input_message"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/iv_close_edit"

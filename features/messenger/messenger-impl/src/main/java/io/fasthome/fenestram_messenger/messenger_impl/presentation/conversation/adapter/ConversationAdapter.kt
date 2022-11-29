@@ -32,9 +32,7 @@ class ConversationAdapter(
     onImageClicked: (ConversationViewItem) -> Unit,
 
     //---Клики по сообщениям с документами---//
-    onSelfDownloadDocument: (item: ConversationViewItem.Self.Document, progressListener: ProgressListener) -> Unit,
-    onRecieveDownloadDocument: (item: ConversationViewItem.Receive.Document, progressListener: ProgressListener) -> Unit,
-    onGroupDownloadDocument: (item: ConversationViewItem.Group.Document, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
 
     //---Клики по сообщениям с изображениями---//
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
@@ -84,7 +82,7 @@ class ConversationAdapter(
                 onReplyMessageImage = onReplyMessage
             ),
             createConversationSelfDocumentAdapterDelegate(
-                onDownloadDocument = onSelfDownloadDocument,
+                onDownloadDocument = onDownloadDocument,
                 onReplyMessageDocument = onReplyMessage,
                 onSelfDocumentLongClicked = onSelfDocumentLongClicked
             ),
@@ -93,7 +91,8 @@ class ConversationAdapter(
                 onImageClicked = onImageClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onDownloadDocument = onDownloadDocument
             ),
             createConversationSelfForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
@@ -110,7 +109,7 @@ class ConversationAdapter(
                 onUserTagClicked = onUserTagClicked
             ),
             createConversationReceiveDocumentAdapterDelegate(
-                onDownloadDocument = onRecieveDownloadDocument,
+                onDownloadDocument = onDownloadDocument,
                 onReplyMessageDocument = onReplyMessage,
                 onReceiveDocumentLongClicked = onReceiveDocumentLongClicked
                 ),
@@ -127,7 +126,8 @@ class ConversationAdapter(
                 onImageClicked = onImageClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onDownloadDocument = onDownloadDocument
             ),
             createConversationReceiveImageAdapterDelegate(
                 onImageClicked = onImageClicked,
@@ -152,7 +152,7 @@ class ConversationAdapter(
             ),
             createConversationGroupDocumentAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
-                onDownloadDocument = onGroupDownloadDocument,
+                onDownloadDocument = onDownloadDocument,
                 onReplyMessageDocument = onReplyMessage,
                 onGroupDocumentLongClicked = onGroupDocumentLongClicked
             ),
@@ -169,7 +169,8 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onProfileClicked = onGroupProfileItemClicked,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onDownloadDocument = onDownloadDocument
             ),
 
             createConversationSystemAdapterDelegate(),
@@ -184,6 +185,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
         ConversationItemSelfTextReplyImageBinding::inflate
@@ -205,17 +207,34 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
 
             (item.replyMessage as? ConversationImageItem)?.let {
                 replyImage.isVisible = true
-                fileName.isVisible = false
                 replyMessageName.text =
                     context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
+                binding.replyDocumentContent.isVisible = false
+
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
+                binding.replyDocumentContent.isVisible = true
                 replyImage.isVisible = false
-                fileName.isVisible = true
                 fileName.text = it.metaInfo?.name
                 replyMessageName.text =
                     context.getString(R.string.reply_document_ph, getPrintableRawText(it.userName))
+                binding.fileSize.text = getString(R.string.mb_real,it.metaInfo!!.size)
+
+                binding.replyDocumentContent.onClick {
+                    binding.progressBar.isVisible = true
+                    onDownloadDocument(item.replyMessage!!) { progress ->
+                        binding.progressBar.progress = progress
+                        it.metaInfo?.let { meta ->
+                            binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                meta.size * progress / 100,
+                                meta.size)
+                        }
+                        if (progress == 100) delay(400)
+                        binding.progressBar.isVisible = progress != 100
+                        binding.fileSize.isVisible = progress != 100
+                    }
+                }
             }
 
             tvEdited.isVisible = item.isEdited
@@ -471,6 +490,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
     onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
         ConversationItemReceiveTextReplyImageBinding::inflate
@@ -491,16 +511,35 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
             viewBinderHelper.setOpenOnlyOne(true)
 
             (item.replyMessage as? ConversationImageItem)?.let {
+                replyImage.isVisible = true
                 replyMessageName.text =
                     context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
+                binding.replyDocumentContent.isVisible = false
+
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
+                binding.replyDocumentContent.isVisible = true
                 replyImage.isVisible = false
-                fileName.isVisible = true
                 fileName.text = it.metaInfo?.name
                 replyMessageName.text =
                     context.getString(R.string.reply_document_ph, getPrintableRawText(it.userName))
+                binding.fileSize.text = getString(R.string.mb_real,it.metaInfo!!.size)
+
+                binding.replyDocumentContent.onClick {
+                    binding.progressBar.isVisible = true
+                    onDownloadDocument(item.replyMessage!!) { progress ->
+                        binding.progressBar.progress = progress
+                        it.metaInfo?.let { meta ->
+                            binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                meta.size * progress / 100,
+                                meta.size)
+                        }
+                        if (progress == 100) delay(400)
+                        binding.progressBar.isVisible = progress != 100
+                        binding.fileSize.isVisible = progress != 100
+                    }
+                }
             }
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
@@ -586,6 +625,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onProfileClicked: (ConversationViewItem.Group) -> Unit,
     viewBinderHelper: ViewBinderHelper,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.TextReplyOnImage, ConversationItemGroupTextReplyImageBinding>(
         ConversationItemGroupTextReplyImageBinding::inflate
@@ -609,17 +649,37 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
             viewBinderHelper.setOpenOnlyOne(true)
 
             (item.replyMessage as? ConversationImageItem)?.let {
+                replyImage.isVisible = true
                 replyMessageName.text =
                     context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
                 replyImage.loadRounded(it.content, radius = 8)
+                binding.replyDocumentContent.isVisible = false
+
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
+                binding.replyDocumentContent.isVisible = true
                 replyImage.isVisible = false
-                fileName.isVisible = true
                 fileName.text = it.metaInfo?.name
                 replyMessageName.text =
                     context.getString(R.string.reply_document_ph, getPrintableRawText(it.userName))
+                binding.fileSize.text = getString(R.string.mb_real,it.metaInfo!!.size)
+
+                binding.replyDocumentContent.onClick {
+                    binding.progressBar.isVisible = true
+                    onDownloadDocument(item.replyMessage!!) { progress ->
+                        binding.progressBar.progress = progress
+                        it.metaInfo?.let { meta ->
+                            binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                meta.size * progress / 100,
+                                meta.size)
+                        }
+                        if (progress == 100) delay(400)
+                        binding.progressBar.isVisible = progress != 100
+                        binding.fileSize.isVisible = progress != 100
+                    }
+                }
             }
+
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
             messageContent.addCommonLinks(onUserTagClicked)

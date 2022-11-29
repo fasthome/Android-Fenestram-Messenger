@@ -89,12 +89,8 @@ class ConversationFragment :
             vm.onImageClicked(conversationViewItem = it)
         }, onUserTagClicked = { userTag ->
             vm.onUserTagClicked(userTag)
-        }, onSelfDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
-        }, onRecieveDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
-        }, onGroupDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
+        }, onDownloadDocument = { item, progressListener ->
+            vm.onDownloadDocument(item = item, progressListener = progressListener)
         }, onSelfMessageLongClicked = {
             vm.onSelfMessageLongClicked(it)
         }, onReceiveMessageLongClicked = {
@@ -507,7 +503,8 @@ class ConversationFragment :
                     }
                     is ConversationDocumentItem -> {
                         tvEditMessageTitle.isVisible = false
-                        replyImage.isVisible = false
+                        replyImage.isVisible = true
+                        replyImage.setImageResource(R.drawable.ic_reply_mode)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
                             getString(R.string.reply_document_ph, getPrintableRawText(message.userName))
