@@ -3,7 +3,6 @@
  */
 package io.fasthome.component.personality_data
 
-import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.R
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -11,14 +10,14 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE
-import io.fasthome.fenestram_messenger.util.REGEX_EN_LETTERS_AND_DIGITS_AND_SPACE_AND_DASH_AND_DOT_AND_UNDERSCORE_OUTPUT
+import io.fasthome.fenestram_messenger.util.REGEX_EMAIL_PATTERN
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.kotlin.ifOrNull
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class PersonalityComponentViewModel(
     router: ContractRouter,
@@ -205,9 +204,7 @@ class PersonalityComponentViewModel(
                 )
             }
             EditTextKey.MailKey -> {
-                isValid = Patterns.EMAIL_ADDRESS.matcher(
-                    inputText
-                ).matches()
+                isValid = inputText.matches(REGEX_EMAIL_PATTERN)
                 errorPrintableText = PrintableText.StringResource(
                     R.string.personality_incorrect_mail
                 )
