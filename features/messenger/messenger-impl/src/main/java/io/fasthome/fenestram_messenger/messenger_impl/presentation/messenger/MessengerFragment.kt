@@ -158,7 +158,7 @@ class MessengerFragment :
                 vm::createChatClicked
             ).show()
             is MessengerEvent.ProgressEvent -> {
-                binding.progress.isVisible = event.isProgress
+                binding.chatLoadProgress.alpha = if(event.isProgress) 1f else 0f
             }
         }
     }
