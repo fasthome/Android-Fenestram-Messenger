@@ -608,8 +608,13 @@ fun createConversationReceiveDocumentAdapterDelegate(
             }
         }
         bindWithBinding {
+            if(item.metaInfo != null && item.metaInfo!!.size != 0f) {
+                fileSize.text = getString(R.string.mb_real, item.metaInfo?.size!!)
+            } else {
+                fileSize.isVisible = false
+            }
+            fileName.text = item.metaInfo?.name
             binding.progressBar.isInvisible = true
-            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
         }
@@ -845,10 +850,15 @@ fun createConversationGroupDocumentAdapterDelegate(
             }
         }
         bindWithBinding {
+            if(item.metaInfo != null && item.metaInfo!!.size != 0f) {
+                fileSize.text = getString(R.string.mb_real, item.metaInfo?.size!!)
+            } else {
+                fileSize.isVisible = false
+            }
+            fileName.text = item.metaInfo?.name
             binding.progressBar.isInvisible = true
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
-            fileName.text = item.content.substring(item.content.lastIndexOf(".") + 1).toUpperCase()
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             sendTimeView.isVisible = item.timeVisible
         }

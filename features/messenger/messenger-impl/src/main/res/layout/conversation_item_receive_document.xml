@@ -51,15 +51,17 @@
 
             <LinearLayout
                 android:id="@+id/ll_meta_info"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:paddingVertical="6dp"
                 android:paddingStart="4dp"
                 android:paddingEnd="10dp"
+                android:minWidth="150dp"
                 app:layout_constraintBottom_toBottomOf="@+id/document_bg"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/document_bg"
                 app:layout_constraintTop_toTopOf="@+id/document_bg">
 
@@ -69,13 +71,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="middle"
-                    android:ems="10"
+                    android:maxEms="10"
                     android:maxLines="1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/document_bg"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="9a4cca46-6c98-11ed-a1eb-0242ac120002.zip" />
+                    tools:text="9a4ccawekfwe 46-6c98-11ed-a1eb-0242ac120002.zip" />
 
                 <TextView
                     android:id="@+id/file_size"
