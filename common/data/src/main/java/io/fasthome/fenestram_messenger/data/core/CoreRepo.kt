@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.data.core
 
 interface CoreRepo {
 
-    suspend fun getAppOpenCount() : Long
+    suspend fun getAppOpenCount(): Long
     suspend fun plusAppOpenCount()
+    suspend fun clearStorage()
 }

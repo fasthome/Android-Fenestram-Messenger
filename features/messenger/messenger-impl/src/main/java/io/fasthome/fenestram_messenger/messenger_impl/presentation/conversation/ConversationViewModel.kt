@@ -17,8 +17,8 @@ import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
 import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
-import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -68,7 +68,7 @@ class ConversationViewModel(
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
-        when(result) {
+        when (result) {
             is ImageViewerContract.Result.Delete -> {
                 deleteMessage(result.messageId)
             }
@@ -82,7 +82,7 @@ class ConversationViewModel(
         registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
             when (result) {
                 is MessengerFeature.MessengerNavResult.ChatSelected -> {
-                    if(result.chatId != chatId) {
+                    if (result.chatId != chatId) {
                         lastPage = null
                         updateState {
                             ConversationState(
@@ -92,7 +92,6 @@ class ConversationViewModel(
                                 userStatusDots = PrintableText.EMPTY,
                                 isChatEmpty = false,
                                 avatar = storageUrlConverter.convert(result.avatar),
-                                attachedFiles = listOf(),
                                 inputMessageMode = InputMessageMode.Default(),
                                 newMessagesCount = 0,
                             )
@@ -146,10 +145,12 @@ class ConversationViewModel(
                     is PickFileInterface.ResultEvent.PickedFile -> {
                         updateState { state ->
                             state.copy(
-                                attachedFiles = state.attachedFiles.plus(
+                                inputMessageMode = InputMessageMode.Default(attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                                    ?: emptyList()).plus(
                                     AttachedFile.Document(
                                         file = it.tempFile
                                     )
+                                )
                                 )
                             )
                         }
@@ -234,7 +235,7 @@ class ConversationViewModel(
         val profileGuestFeature: ProfileGuestFeature,
         val authFeature: AuthFeature,
         val cameraFeature: CameraFeature,
-        val messengerFeature: MessengerFeature
+        val messengerFeature: MessengerFeature,
     )
 
     private val profileGuestLauncher =
@@ -262,7 +263,6 @@ class ConversationViewModel(
             userStatusDots = PrintableText.EMPTY,
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
-            attachedFiles = listOf(),
             inputMessageMode = InputMessageMode.Default(),
             newMessagesCount = params.chat.pendingMessages.toInt()
         )
@@ -286,9 +286,11 @@ class ConversationViewModel(
                     }
                     is CallResult.Success -> {
                         updateState { state ->
-                            val tempMessages = if(state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(selfUserId,
-                                params.chat.isGroup,
-                                storageUrlConverter) ?: emptyMap()
+                            val tempMessages =
+                                if (state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(
+                                    selfUserId,
+                                    params.chat.isGroup,
+                                    storageUrlConverter) ?: emptyMap()
                             return@updateState state.copy(
                                 inputMessageMode = InputMessageMode.Default(),
                                 messages = tempMessages.plus(state.messages)
@@ -307,7 +309,6 @@ class ConversationViewModel(
     ) {
         updateState { state ->
             state.copy(
-                attachedFiles = emptyList(),
                 inputMessageMode = if (isEditMode) InputMessageMode.Edit(
                     conversationViewItem
                         ?: return@updateState state
@@ -319,7 +320,6 @@ class ConversationViewModel(
     fun replyMessageMode(isReplyMode: Boolean, conversationViewItem: ConversationViewItem? = null) {
         updateState { state ->
             state.copy(
-                attachedFiles = emptyList(),
                 inputMessageMode = if (isReplyMode) InputMessageMode.Reply(
                     conversationViewItem
                         ?: return@updateState state
@@ -370,25 +370,33 @@ class ConversationViewModel(
     private fun attachContentFile(content: Content) {
         updateState { state ->
             state.copy(
-                attachedFiles = state.attachedFiles.plus(
+                inputMessageMode = InputMessageMode.Default(attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                    ?: emptyList()).plus(
                     AttachedFile.Image(
                         content = content
                     )
+                )
                 )
             )
         }
     }
 
     fun addMessageToConversation(mess: String) {
-        val attachedFiles = currentViewState.attachedFiles
 
-        if (attachedFiles.isNotEmpty()) {
-            sendFiles(attachedFiles)
+        val fileState = currentViewState.inputMessageMode as? InputMessageMode.Default
+        fileState?.let {
+            if (it.attachedFiles.isNotEmpty()) {
+                sendFiles(it.attachedFiles)
+            }
         }
 
         if (mess.trim().isNotEmpty()) {
-            when (currentViewState.inputMessageMode) {
+            val state = currentViewState.inputMessageMode
+            when (state) {
                 is InputMessageMode.Default -> {
+                    if (state.attachedFiles.isNotEmpty()) {
+                        sendFiles(state.attachedFiles)
+                    }
                     sendMessage(text = mess, messageType = MessageType.Text)
                 }
                 is InputMessageMode.Edit -> {
@@ -416,7 +424,7 @@ class ConversationViewModel(
         }
 
         updateState { state ->
-            state.copy(attachedFiles = listOf())
+            state.copy(inputMessageMode = InputMessageMode.Default())
         }
 
         viewModelScope.launch {
@@ -451,11 +459,20 @@ class ConversationViewModel(
             is Content.LoadableContent -> content.load()?.array
             null -> return
         }
-        messengerInteractor.uploadProfileImage(
+        val result = messengerInteractor.uploadProfileImage(
             byteArray ?: return
-        ).getOrNull()?.imagePath.let {
+        )
+        result.getOrNull()?.imagePath.let {
             fileStoragePath = it
             it
+        }
+        when(result) {
+            is CallResult.Error -> {
+                updateState { state ->
+                    updateStatus(tempMessage, SentStatus.Error)
+                    state
+                }
+            }
         }
         sendMessage(
             text = fileStoragePath ?: return,
@@ -662,22 +679,22 @@ class ConversationViewModel(
         }
     }
 
-    fun fetchTags(text: String,selectionStart: Int) {
+    fun fetchTags(text: String, selectionStart: Int) {
         var users = emptyList<User>()
         if (text.isNotEmpty() && selectionStart != 0 && text.contains('@')) {
             val prevTag = text.getOrNull(selectionStart - 2)
-            val canShowTagList = if(prevTag == null) text.startsWith('@') else prevTag == ' '
-                if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
-                    users = chatUsers.filter { it.nickname.isNotEmpty() }
-                } else {
-                    val tagPos = text.lastIndexOf('@')
-                    val nickname = text.substring(tagPos, selectionStart)
-                    if (USER_TAG_PATTERN.matcher(nickname)
-                            .matches() && text.getOrNull(tagPos - 1) == ' '
-                    ) {
-                        chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
-                    }
+            val canShowTagList = if (prevTag == null) text.startsWith('@') else prevTag == ' '
+            if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
+                users = chatUsers.filter { it.nickname.isNotEmpty() }
+            } else {
+                val tagPos = text.lastIndexOf('@')
+                val nickname = text.substring(tagPos, selectionStart)
+                if (USER_TAG_PATTERN.matcher(nickname)
+                        .matches() && text.getOrNull(tagPos - 1) == ' '
+                ) {
+                    chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
                 }
+            }
         }
         sendEvent(ConversationEvent.ShowUsersTags(users))
     }
@@ -768,6 +785,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
+            updateState { state -> state.copy(avatar = it.avatar, userName = PrintableText.Raw(it.chatName)) }
         }
     }
 
@@ -835,15 +853,17 @@ class ConversationViewModel(
                 if (!deletedMessages.contains(item.value.id))
                     messages[item.key] = item.value
             }
-            when(state.inputMessageMode) {
+            when (state.inputMessageMode) {
                 is InputMessageMode.Edit -> {
-                    if(deletedMessages.contains(state.inputMessageMode.messageToEdit.id)) {
-                        return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
+                    if (deletedMessages.contains(state.inputMessageMode.messageToEdit.id)) {
+                        return@updateState state.copy(messages = messages,
+                            inputMessageMode = InputMessageMode.Default(""))
                     }
                 }
                 is InputMessageMode.Reply -> {
-                    if(deletedMessages.contains(state.inputMessageMode.messageToReply.id)) {
-                        return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
+                    if (deletedMessages.contains(state.inputMessageMode.messageToReply.id)) {
+                        return@updateState state.copy(messages = messages,
+                            inputMessageMode = InputMessageMode.Default())
                     }
                 }
             }
@@ -898,7 +918,7 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        if (currentViewState.attachedFiles.size == 10) {
+        if ((currentViewState.inputMessageMode as? InputMessageMode.Default)?.attachedFiles?.size == 10) {
             showMessage(Message.PopUp(PrintableText.StringResource(R.string.messenger_max_attach)))
             return
         }
@@ -946,9 +966,11 @@ class ConversationViewModel(
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
             state.copy(
-                attachedFiles = state.attachedFiles.filter {
-                    it != attachedFile
-                }
+                inputMessageMode = InputMessageMode.Default(
+                    attachedFiles = (state as? InputMessageMode.Default)?.attachedFiles?.filter {
+                        it != attachedFile
+                    } ?: return@updateState state
+                )
             )
         }
     }
@@ -1060,15 +1082,17 @@ class ConversationViewModel(
                         if (item.value.id != messageId)
                             messages[item.key] = item.value
                     }
-                    when(state.inputMessageMode) {
+                    when (state.inputMessageMode) {
                         is InputMessageMode.Edit -> {
-                            if(state.inputMessageMode.messageToEdit.id == messageId) {
-                                return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default(""))
+                            if (state.inputMessageMode.messageToEdit.id == messageId) {
+                                return@updateState state.copy(messages = messages,
+                                    inputMessageMode = InputMessageMode.Default(""))
                             }
                         }
                         is InputMessageMode.Reply -> {
-                            if(state.inputMessageMode.messageToReply.id == messageId) {
-                                return@updateState state.copy(messages = messages, inputMessageMode = InputMessageMode.Default())
+                            if (state.inputMessageMode.messageToReply.id == messageId) {
+                                return@updateState state.copy(messages = messages,
+                                    inputMessageMode = InputMessageMode.Default())
                             }
                         }
                     }

@@ -249,8 +249,6 @@ class ConversationFragment :
             .singleSameTime()
         conversationAdapter.items = newItems
         username.setPrintableText(state.userName)
-        attachedList.isVisible = state.attachedFiles.isNotEmpty()
-        attachedAdapter.items = state.attachedFiles
         userStatusView.setPrintableText(state.userStatus)
         userStatusDots.setPrintableText(state.userStatusDots)
         if (state.newMessagesCount == 0) {
@@ -271,14 +269,18 @@ class ConversationFragment :
                 state.inputMessageMode.inputText?.let {
                     inputMessage.setText(it)
                 }
+                attachedList.isVisible = state.inputMessageMode.attachedFiles.isNotEmpty()
+                attachedAdapter.items = state.inputMessageMode.attachedFiles
                 renderStateEditMode(false, null)
                 renderStateReplyMode(false, null)
             }
             is InputMessageMode.Edit -> {
+                attachedList.isVisible = false
                 renderStateReplyMode(false, null)
                 renderStateEditMode(true, state.inputMessageMode.messageToEdit)
             }
             is InputMessageMode.Reply -> {
+                attachedList.isVisible = false
                 renderStateEditMode(false, null)
                 renderStateReplyMode(true, state.inputMessageMode.messageToReply)
             }
