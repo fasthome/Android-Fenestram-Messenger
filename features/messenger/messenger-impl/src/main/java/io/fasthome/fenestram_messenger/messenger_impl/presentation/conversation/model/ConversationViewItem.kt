@@ -335,7 +335,7 @@ data class MetaInfo(
      * Размер файла указанный в мегабайтах
      */
     var size: Float,
-    var url: String
+    var url: String?
 ) {
     constructor() : this("","",0f,"")
     constructor(content: ContentResponse) : this(content.name,content.extension,content.size,content.url)

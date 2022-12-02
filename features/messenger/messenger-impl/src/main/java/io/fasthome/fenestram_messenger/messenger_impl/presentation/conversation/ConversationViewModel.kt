@@ -570,7 +570,7 @@ class ConversationViewModel(
                 }
                 MessageType.Document -> {
                     if ((existMessage as ConversationViewItem.Self.Document).file == null) return@launch
-                    existMessage.copy(metaInfo = MetaInfo(name = existMessage.file?.name ?: "", extension = existMessage.file?.extension ?: "", size = 0f, url = ""))
+                    existMessage.copy(metaInfo = MetaInfo(name = existMessage.file?.name ?: "", extension = existMessage.file?.extension ?: "", size = existMessage.file?.fileSizeInMb() ?: 0f, url = ""))
                 }
             }
             val messages = currentViewState.messages
