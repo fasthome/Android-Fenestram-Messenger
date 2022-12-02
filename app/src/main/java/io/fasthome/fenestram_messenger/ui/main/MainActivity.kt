@@ -6,6 +6,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.terrakok.cicerone.NavigatorHolder
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import io.fasthome.fenestram_messenger.CustomAppNavigator
 import io.fasthome.fenestram_messenger.R
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -23,6 +26,11 @@ import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.koin.viewModel
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val UPDATE_REQUEST_CODE = 1
+    }
+
     private val fragmentContainerId = R.id.container
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -63,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 is BaseViewEvent.ShowMessage -> Unit
             }
         }
+        checkUpdate()
     }
 
     private fun handleEvent(event: MainActivityEvent) {
@@ -95,6 +104,24 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         if (intent != null) {
             handleIntent(intent)
+        }
+    }
+
+    private fun checkUpdate() {
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    AppUpdateType.FLEXIBLE,
+                    this,
+                    UPDATE_REQUEST_CODE
+                )
+            }
         }
     }
 
