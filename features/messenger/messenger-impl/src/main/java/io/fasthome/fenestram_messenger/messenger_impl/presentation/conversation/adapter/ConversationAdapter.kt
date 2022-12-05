@@ -99,7 +99,8 @@ class ConversationAdapter(
                 onReplyMessage = onReplyMessage,
                 onSelfForwardLongClicked = onSelfForwardLongClicked,
                 onImageClicked = onImageClicked,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onDownloadDocument = onDownloadDocument
             ),
 
             createConversationReceiveTextAdapterDelegate(
@@ -119,7 +120,8 @@ class ConversationAdapter(
                 onReplyMessage = onReplyMessage,
                 onReceiveForwardLongClicked = onReceiveForwardLongClicked,
                 onImageClicked = onImageClicked,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onDownloadDocument = onDownloadDocument
             ),
             createConversationReceiveTextReplyImageAdapterDelegate(
                 onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
@@ -161,7 +163,8 @@ class ConversationAdapter(
                 onReplyMessage = onReplyMessage,
                 onGroupForwardLongClicked = onGroupForwardLongClicked,
                 onImageClicked = onImageClicked,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onDownloadDocument = onDownloadDocument
             ),
             createConversationGroupTextReplyImageAdapterDelegate(
                 onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
@@ -253,6 +256,7 @@ fun createConversationSelfForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
         ConversationItemSelfForwardTextBinding::inflate
@@ -269,7 +273,8 @@ fun createConversationSelfForwardAdapterDelegate(
             }
         }
         bindWithBinding {
-            when (item.forwardMessage) {
+            val forwardMessage = item.forwardMessage
+            when (forwardMessage) {
                 is ConversationTextItem -> {
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
@@ -282,6 +287,31 @@ fun createConversationSelfForwardAdapterDelegate(
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
                     forwardImage.loadRounded(item.forwardMessage.content as String)
+                }
+                is ConversationDocumentItem -> {
+                    forwardAuthorName.text = getString(R.string.forward_file_from_ph,
+                        getPrintableRawText(forwardMessage.userName))
+                    ivArrow.isVisible = false
+                    messageContent.isVisible = false
+                    forwardImage.isVisible = false
+                    replyDocumentContent.isVisible = true
+                    fileName.text = forwardMessage.metaInfo?.name
+                    binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+
+                    binding.replyDocumentContent.onClick {
+                        binding.progressBar.isVisible = true
+                        onDownloadDocument(item.replyMessage!!) { progress ->
+                            binding.progressBar.progress = progress
+                            forwardMessage.metaInfo?.let { meta ->
+                                binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                    meta.size * progress / 100,
+                                    meta.size)
+                            }
+                            if (progress == 100) delay(400)
+                            binding.progressBar.isVisible = progress != 100
+                            binding.fileSize.isVisible = progress != 100
+                        }
+                    }
                 }
             }
             viewBinderHelper.bind(root, item.id.toString())
@@ -445,6 +475,7 @@ fun createConversationReceiveForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
         ConversationItemReceiveForwardTextBinding::inflate
@@ -461,7 +492,8 @@ fun createConversationReceiveForwardAdapterDelegate(
             }
         }
         bindWithBinding {
-            when (item.forwardMessage) {
+            val forwardMessage = item.forwardMessage
+            when (forwardMessage) {
                 is ConversationTextItem -> {
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
@@ -474,6 +506,31 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardAuthorName.text = getString(R.string.reply_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName))
                     forwardImage.loadRounded(item.forwardMessage.content as String)
+                }
+                is ConversationDocumentItem -> {
+                    forwardAuthorName.text = getString(R.string.forward_file_from_ph,
+                        getPrintableRawText(forwardMessage.userName))
+                    ivArrow.isVisible = false
+                    messageContent.isVisible = false
+                    forwardImage.isVisible = false
+                    replyDocumentContent.isVisible = true
+                    fileName.text = forwardMessage.metaInfo?.name
+                    binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+
+                    binding.replyDocumentContent.onClick {
+                        binding.progressBar.isVisible = true
+                        onDownloadDocument(item.replyMessage!!) { progress ->
+                            binding.progressBar.progress = progress
+                            forwardMessage.metaInfo?.let { meta ->
+                                binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                    meta.size * progress / 100,
+                                    meta.size)
+                            }
+                            if (progress == 100) delay(400)
+                            binding.progressBar.isVisible = progress != 100
+                            binding.fileSize.isVisible = progress != 100
+                        }
+                    }
                 }
             }
             viewBinderHelper.bind(root, item.id.toString())
@@ -741,6 +798,7 @@ fun createConversationGroupForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
+    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
         ConversationItemGroupForwardTextBinding::inflate
@@ -759,7 +817,8 @@ fun createConversationGroupForwardAdapterDelegate(
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
-            when (item.forwardMessage) {
+            val forwardMessage = item.forwardMessage
+            when (forwardMessage) {
                 is ConversationTextItem -> {
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
@@ -772,6 +831,31 @@ fun createConversationGroupForwardAdapterDelegate(
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
                     forwardImage.loadRounded(item.forwardMessage.content as String)
+                }
+                is ConversationDocumentItem -> {
+                    forwardAuthorName.text = getString(R.string.forward_file_from_ph,
+                        getPrintableRawText(forwardMessage.userName))
+                    ivArrow.isVisible = false
+                    messageContent.isVisible = false
+                    forwardImage.isVisible = false
+                    replyDocumentContent.isVisible = true
+                    fileName.text = forwardMessage.metaInfo?.name
+                    binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+
+                    binding.replyDocumentContent.onClick {
+                        binding.progressBar.isVisible = true
+                        onDownloadDocument(item.replyMessage!!) { progress ->
+                            binding.progressBar.progress = progress
+                            forwardMessage.metaInfo?.let { meta ->
+                                binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                    meta.size * progress / 100,
+                                    meta.size)
+                            }
+                            if (progress == 100) delay(400)
+                            binding.progressBar.isVisible = progress != 100
+                            binding.fileSize.isVisible = progress != 100
+                        }
+                    }
                 }
             }
 
