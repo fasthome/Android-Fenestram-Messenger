@@ -50,7 +50,8 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
             it.map { mess ->
                 GetChatsMapper(profileImageUrlConverter).responseToMessage(mess)
             }
-        }
+        },
+        content = messageResponse.content
     )
 
     fun toMessageAction(messageActionResponse: MessageActionResponse): MessageAction {

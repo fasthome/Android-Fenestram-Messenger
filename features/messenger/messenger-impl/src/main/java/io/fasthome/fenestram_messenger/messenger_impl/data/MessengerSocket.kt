@@ -138,7 +138,8 @@ class MessengerSocket(private val baseUrl: String) {
         status = "",
         replyMessage = message?.replyMessage,
         usersHaveRead = message?.usersHaveRead ?: listOf(),
-        forwardedMessages = message?.forwardedMessages
+        forwardedMessages = message?.forwardedMessages,
+        content = message?.content ?: emptyList()
     )
 
     fun messageActionToMessageActionResponse(messageAction: MessageActionResponse?) =

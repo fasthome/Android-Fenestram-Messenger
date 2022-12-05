@@ -22,6 +22,8 @@ fun createFile(parent : File, fileName : String) : File {
     return file
 }
 
+fun File.fileSizeInMb() = this.length() / 1048576f
+
 fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
     inputStream.use { input ->
         val outputStream = FileOutputStream(outputFile)

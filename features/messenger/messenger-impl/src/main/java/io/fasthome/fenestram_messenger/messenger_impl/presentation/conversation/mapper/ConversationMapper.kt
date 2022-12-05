@@ -7,6 +7,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
@@ -22,7 +23,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
 const val MESSAGE_TYPE_IMAGE = "image"
-const val MESSAGE_TYPE_DOCUMENT = "document"
+const val MESSAGE_TYPE_DOCUMENT = "documents"
 const val MESSAGE_TYPE_VOICE = "voices"
 const val MESSAGE_TYPE_IMAGES = "images"
 const val MESSAGE_TYPE_VIDEOS = "videos"
@@ -217,7 +218,9 @@ fun Message.toConversationViewItem(
                         timeVisible = true,
                         file = null,
                         path = null,
-                        userName = PrintableText.Raw(getName(initiator))
+                        userName = PrintableText.Raw(getName(initiator)),
+                        // TODO: Content содержит список документов, изменить когда появится возможность отсылать несколько документов
+                        metaInfo = content?.firstOrNull()?.let { MetaInfo(it) }
                     )
                 }
 
@@ -326,6 +329,7 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
+                            metaInfo = content?.firstOrNull()?.let { MetaInfo(it) }
                         )
                     }
 
@@ -421,7 +425,8 @@ fun Message.toConversationViewItem(
                             date = date,
                             id = id,
                             timeVisible = true,
-                            userName = PrintableText.Raw(getName(initiator))
+                            userName = PrintableText.Raw(getName(initiator)),
+                            metaInfo = content?.firstOrNull()?.let { MetaInfo(it) }
                         )
                     }
 
@@ -611,7 +616,8 @@ fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.
     file = file,
     timeVisible = true,
     path = null,
-    userName = PrintableText.EMPTY
+    userName = PrintableText.EMPTY,
+    metaInfo = null
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

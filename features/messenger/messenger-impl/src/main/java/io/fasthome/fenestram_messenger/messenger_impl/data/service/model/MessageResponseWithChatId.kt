@@ -56,4 +56,6 @@ class MessageResponseWithChatId(
     @SerialName("forwarded_messages")
     val forwardedMessages: List<MessageResponse>?,
 
+    @SerialName("content")
+    val content: List<ContentResponse>
     )

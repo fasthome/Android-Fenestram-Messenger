@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.messenger_impl.R
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
 import java.io.File
@@ -18,6 +19,11 @@ interface ConversationTextItem {
     val id: Long
     val userName: PrintableText
     val content: PrintableText
+}
+
+interface ConversationDocumentItem {
+    val userName: PrintableText
+    val metaInfo: MetaInfo?
 }
 
 sealed interface ConversationViewItem {
@@ -38,6 +44,7 @@ sealed interface ConversationViewItem {
 
     sealed class Self : ConversationViewItem {
         abstract val localId: String
+        abstract val metaInfo: MetaInfo?
 
         data class Text(
             override val id: Long,
@@ -52,6 +59,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: MetaInfo? = null,
         ) : Self(), ConversationTextItem
 
         data class TextReplyOnImage(
@@ -67,6 +75,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: MetaInfo? = null,
         ) : Self(), ConversationTextItem
 
         data class Forward(
@@ -81,7 +90,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            val forwardMessage: ConversationViewItem
+            val forwardMessage: ConversationViewItem,
+            override val metaInfo: MetaInfo? = null,
         ) : Self()
 
         data class Image(
@@ -97,6 +107,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: MetaInfo? = null,
         ) : Self(), ConversationImageItem
 
         data class Document(
@@ -113,7 +124,8 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
-        ) : Self()
+            override val metaInfo: MetaInfo?
+        ) : Self(), ConversationDocumentItem
     }
 
     sealed class Receive : ConversationViewItem {
@@ -184,7 +196,8 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
-        ) : Receive()
+            override val metaInfo: MetaInfo?
+        ) : Receive(), ConversationDocumentItem
     }
 
     sealed class Group(
@@ -275,7 +288,8 @@ sealed interface ConversationViewItem {
             var path: String? = null,
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
-        ) : Group(userName, avatar, phone, userId)
+            override val metaInfo: MetaInfo?
+        ) : Group(userName, avatar, phone, userId), ConversationDocumentItem
     }
 
     data class System(
@@ -309,4 +323,20 @@ fun getStatusIcon(sentStatus: SentStatus) =
 
 enum class SentStatus {
     Sent, Error, Read, Loading, Received, None
+}
+
+data class MetaInfo(
+    var name: String,
+    /**
+     * Расширение файла, напр. ".txt"
+     */
+    var extension: String,
+    /**
+     * Размер файла указанный в мегабайтах
+     */
+    var size: Float,
+    var url: String?
+) {
+    constructor() : this("","",0f,"")
+    constructor(content: ContentResponse) : this(content.name,content.extension,content.size,content.url)
 }
