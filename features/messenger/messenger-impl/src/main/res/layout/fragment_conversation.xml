@@ -243,11 +243,13 @@
             android:gravity="center" />
     </RelativeLayout>
 
+
+    <!-- Не изменять android:visibility! -->
     <LinearLayout
         android:id="@+id/chat_user_tags_container"
         android:layout_width="0dp"
-        android:visibility="gone"
-        app:layout_constraintHeight_max="250dp"
+        android:visibility="visible"
+        app:layout_constraintHeight_max="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toTopOf="@+id/input_message"

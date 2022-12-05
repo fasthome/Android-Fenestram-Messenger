@@ -63,5 +63,5 @@ val PHONE_PATTERN: Pattern = Pattern.compile(
 
 val USER_TAG_PATTERN: Pattern = Pattern.compile(
     "(\\@)" +
-            "[a-zA-ZЁёА-Яа-я0-9_]{2,22}"
+            "[a-zA-ZЁёА-Яа-я0-9_]{1,22}"
 )
