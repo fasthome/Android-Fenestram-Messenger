@@ -62,6 +62,7 @@ class MessengerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
         chatList.adapter = messageAdapter
+        chatList.itemAnimator = null
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 

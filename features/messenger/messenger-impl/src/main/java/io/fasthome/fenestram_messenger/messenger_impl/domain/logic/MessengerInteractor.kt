@@ -168,8 +168,8 @@ class MessengerInteractor(
         messageRepo.deleteMessage(messageId, chatId)
 
 
-    fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =
-        messageRepo.getPageChats(query)
+    fun getMessengerPageItems(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> =
+        messageRepo.getPageChats(query, fromSocket)
 
     private var page = 0
 
