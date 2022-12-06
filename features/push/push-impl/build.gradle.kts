@@ -15,6 +15,7 @@ dependencies {
     implementation(project(Modules.Feature.messenger.api))
 
     implementation(Deps.Firebase.messaging)
+    implementation(Deps.onesignal)
 
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.di))
