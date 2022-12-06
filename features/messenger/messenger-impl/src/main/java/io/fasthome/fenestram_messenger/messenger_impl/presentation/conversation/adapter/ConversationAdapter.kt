@@ -279,6 +279,9 @@ fun createConversationSelfForwardAdapterDelegate(
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
+                    replyDocumentContent.isVisible = false
+                    forwardImage.isVisible = false
+                    ivArrow.isVisible = true
                 }
                 is ConversationImageItem -> {
                     forwardAuthorName.text = getString(R.string.reply_image_from_ph,
@@ -286,6 +289,7 @@ fun createConversationSelfForwardAdapterDelegate(
                     ivArrow.isVisible = false
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
+                    replyDocumentContent.isVisible = false
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
@@ -296,20 +300,20 @@ fun createConversationSelfForwardAdapterDelegate(
                     forwardImage.isVisible = false
                     replyDocumentContent.isVisible = true
                     fileName.text = forwardMessage.metaInfo?.name
-                    binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+                    fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
 
-                    binding.replyDocumentContent.onClick {
-                        binding.progressBar.isVisible = true
+                    replyDocumentContent.onClick {
+                        progressBar.isVisible = true
                         onDownloadDocument(item.replyMessage!!) { progress ->
-                            binding.progressBar.progress = progress
+                            progressBar.progress = progress
                             forwardMessage.metaInfo?.let { meta ->
-                                binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                fileSize.text = getString(R.string.meta_document_size_ph,
                                     meta.size * progress / 100,
                                     meta.size)
                             }
                             if (progress == 100) delay(400)
-                            binding.progressBar.isVisible = progress != 100
-                            binding.fileSize.isVisible = progress != 100
+                            progressBar.isVisible = progress != 100
+                            fileSize.isVisible = progress != 100
                         }
                     }
                 }
@@ -498,11 +502,16 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
+                    replyDocumentContent.isVisible = false
+                    forwardImage.isVisible = false
+                    ivArrow.isVisible = true
+                    messageContent.isVisible = true
                 }
                 is ConversationImageItem -> {
                     ivArrow.isVisible = false
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
+                    replyDocumentContent.isVisible = false
                     forwardAuthorName.text = getString(R.string.reply_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName))
                     forwardImage.loadRounded(item.forwardMessage.content as String)
@@ -517,18 +526,18 @@ fun createConversationReceiveForwardAdapterDelegate(
                     fileName.text = forwardMessage.metaInfo?.name
                     binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
 
-                    binding.replyDocumentContent.onClick {
-                        binding.progressBar.isVisible = true
+                    replyDocumentContent.onClick {
+                        progressBar.isVisible = true
                         onDownloadDocument(item.replyMessage!!) { progress ->
-                            binding.progressBar.progress = progress
+                            progressBar.progress = progress
                             forwardMessage.metaInfo?.let { meta ->
-                                binding.fileSize.text = getString(R.string.meta_document_size_ph,
+                                fileSize.text = getString(R.string.meta_document_size_ph,
                                     meta.size * progress / 100,
                                     meta.size)
                             }
                             if (progress == 100) delay(400)
-                            binding.progressBar.isVisible = progress != 100
-                            binding.fileSize.isVisible = progress != 100
+                            progressBar.isVisible = progress != 100
+                            fileSize.isVisible = progress != 100
                         }
                     }
                 }
@@ -823,11 +832,15 @@ fun createConversationGroupForwardAdapterDelegate(
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
+                    replyDocumentContent.isVisible = false
+                    forwardImage.isVisible = false
+                    ivArrow.isVisible = true
                 }
                 is ConversationImageItem -> {
                     forwardAuthorName.text = getString(R.string.reply_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName))
                     ivArrow.isVisible = false
+                    replyDocumentContent.isVisible = false
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
                     forwardImage.loadRounded(item.forwardMessage.content as String)
