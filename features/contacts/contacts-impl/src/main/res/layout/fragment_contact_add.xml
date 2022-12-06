@@ -75,21 +75,17 @@
         app:layout_constraintStart_toStartOf="@id/contact_add_input_number" />
 
 
-    <com.santalu.maskara.widget.MaskEditText
+    <!--    <com.santalu.maskara.widget.MaskEditText-->
+    <!--        android:paddingStart="@dimen/contact_add_include_edittext_padding"-->
+
+    <io.fasthome.fenestram_messenger.uikit.custom_view.PhoneEditText
         android:id="@+id/contact_add_input_number"
-        style="@style/PhoneNumberInput"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/contact_add_input_height"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/contacts_input_margin_start_end"
         android:layout_marginTop="@dimen/contact_add_input_margin_top"
         android:layout_marginEnd="@dimen/contacts_input_margin_start_end"
-        android:hint="@string/number_placeholder"
-        android:inputType="number"
-        android:paddingStart="@dimen/contact_add_include_edittext_padding"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contact_add_input_second_name"
-        app:mask="+7 ### ### ## ##" />
+        app:layout_constraintTop_toBottomOf="@+id/contact_add_input_second_name" />
 
     <include
         android:id="@+id/contact_add_invalid_number"

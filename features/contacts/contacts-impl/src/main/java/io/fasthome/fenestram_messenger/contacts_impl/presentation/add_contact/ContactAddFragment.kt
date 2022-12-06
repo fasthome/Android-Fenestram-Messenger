@@ -38,6 +38,7 @@ class ContactAddFragment :
                 vm.navigateBack()
             }
             contactAddInputSecondName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
+            contactAddInputNumber.setBackground(R.drawable.bg_rounded_edittext)
 
             contactAddLabelFirstName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.contact_add_first_name_label))
 
@@ -70,14 +71,14 @@ class ContactAddFragment :
             contactAddInputFirstName.includeEditText.addTextChangedListener {
                 vm.onNameTextChanged(
                     contactAddInputFirstName.includeEditText.text.toString(),
-                    contactAddInputNumber.unMasked
+                    contactAddInputNumber.isValid()
                 )
             }
 
-            contactAddInputNumber.addTextChangedListener {
+            contactAddInputNumber.addListener {
                 vm.onNumberTextChanged(
                     contactAddInputFirstName.includeEditText.text.toString(),
-                    contactAddInputNumber.unMasked
+                    contactAddInputNumber.isValid()
                 )
             }
 
@@ -85,7 +86,8 @@ class ContactAddFragment :
                 vm.checkAndWriteContact(
                     contactAddInputFirstName.includeEditText.text.toString(),
                     contactAddInputSecondName.includeEditText.text.toString(),
-                    contactAddInputNumber.unMasked
+                    contactAddInputNumber.getPhoneNumber(),
+                    contactAddInputNumber.isValid()
                 )
             }
         }
@@ -139,7 +141,7 @@ class ContactAddFragment :
                     state.name?.let { contactAddInputFirstName.includeEditText.setText(it) }
                     state.phone?.let {
                         contactAddInputNumber.apply {
-                            setText(it)
+                            setPhoneNumber(it)
                             isEnabled = false
                         }
                     }
@@ -163,7 +165,7 @@ class ContactAddFragment :
     }
 
     private fun renderNumberIdle() = with(binding) {
-        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext)
+        contactAddInputNumber.setBackground(R.drawable.bg_rounded_edittext)
         contactAddInvalidNumber.includeTextInvalid.visibility = View.GONE
         contactAddLabelNumber.includeTextView.setTextColor(
             ContextCompat.getColor(
@@ -185,7 +187,7 @@ class ContactAddFragment :
     }
 
     private fun renderNumberEmpty() = with(binding) {
-        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInputNumber.setBackgroundDrawable(R.drawable.bg_rounded_edittext_error)
         contactAddInvalidNumber.includeTextInvalid.run {
             setPrintableText(
                 PrintableText.StringResource(
@@ -203,7 +205,7 @@ class ContactAddFragment :
     }
 
     private fun renderNumberIncorrect() = with(binding) {
-        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInputNumber.setBackgroundDrawable(R.drawable.bg_rounded_edittext_error)
         contactAddInvalidNumber.includeTextInvalid.run {
             setPrintableText(
                 PrintableText.StringResource(

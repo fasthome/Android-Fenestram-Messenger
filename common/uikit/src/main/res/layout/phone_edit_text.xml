@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <EditText
+        android:id="@+id/phone_input"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_border"
+        android:fontFamily="@font/geometria"
+        android:importantForAutofill="no"
+        android:inputType="phone"
+        android:padding="10dp"
+        android:text="@string/common_country_code_text"
+        android:textColor="@color/gray1"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/country_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/geometria"
+        android:textColor="@color/gray1"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="@id/phone_input"
+        app:layout_constraintTop_toBottomOf="@id/phone_input" />
+
+</merge>
