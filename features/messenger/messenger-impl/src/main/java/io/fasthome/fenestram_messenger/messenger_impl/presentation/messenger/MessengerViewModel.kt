@@ -69,10 +69,11 @@ class MessengerViewModel(
         }
 
     private var _query = ""
+
     val items = loadDataHelper.getDataFlow(
         getItems = {
             sendEvent(MessengerEvent.ProgressEvent(isProgress = true))
-            messengerInteractor.getMessengerPageItems(_query)
+            messengerInteractor.getMessengerPageItems(_query, loadDataHelper.fromSocket)
         },
         getCachedSelectedId = { null },
         mapDataItem = {
@@ -198,9 +199,11 @@ class MessengerViewModel(
                 viewModelScope.launch(context = NonCancellable) {
                     if (!messengerMapper.messageActions.contains(messageAction)) {
                         messengerMapper.messageActions.add(messageAction)
+                        loadDataHelper.fromSocket = true
                         loadDataHelper.invalidateSource()
                         delay(1500)
                         messengerMapper.messageActions.remove(messageAction)
+                        loadDataHelper.fromSocket = true
                         loadDataHelper.invalidateSource()
                     }
                 }

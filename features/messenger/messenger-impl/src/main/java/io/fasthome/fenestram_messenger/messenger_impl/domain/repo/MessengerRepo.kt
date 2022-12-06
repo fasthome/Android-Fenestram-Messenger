@@ -27,7 +27,7 @@ interface MessengerRepo {
 
     suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?>
 
-    fun getPageChats(query: String): TotalPagingSource<Int, Chat>
+    fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat>
 
     suspend fun postChats(
         name: String,
