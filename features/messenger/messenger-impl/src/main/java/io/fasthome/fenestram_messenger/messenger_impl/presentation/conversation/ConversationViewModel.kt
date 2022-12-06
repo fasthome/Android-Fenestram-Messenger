@@ -689,10 +689,9 @@ class ConversationViewModel(
             } else {
                 val tagPos = text.lastIndexOf('@')
                 val nickname = text.substring(tagPos, selectionStart)
-                if (USER_TAG_PATTERN.matcher(nickname)
-                        .matches() && text.getOrNull(tagPos - 1) == ' '
+                if (USER_TAG_PATTERN.matcher(nickname).matches() && (text.getOrNull(tagPos - 1) ?: ' ') == ' '
                 ) {
-                    chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
+                    users = chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
                 }
             }
         }

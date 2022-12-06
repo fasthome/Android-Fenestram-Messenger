@@ -273,16 +273,20 @@ class ConversationFragment :
                 attachedAdapter.items = state.inputMessageMode.attachedFiles
                 renderStateEditMode(false, null)
                 renderStateReplyMode(false, null)
+                binding.chatUserTagsContainer.setPadding(0,0,0,0)
+
             }
             is InputMessageMode.Edit -> {
                 attachedList.isVisible = false
                 renderStateReplyMode(false, null)
                 renderStateEditMode(true, state.inputMessageMode.messageToEdit)
+                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
             is InputMessageMode.Reply -> {
                 attachedList.isVisible = false
                 renderStateEditMode(false, null)
                 renderStateReplyMode(true, state.inputMessageMode.messageToReply)
+                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
         }
 
@@ -381,6 +385,15 @@ class ConversationFragment :
             }
             is ConversationEvent.ShowUsersTags -> {
                 tagsAdapter.items = event.users
+                when(vm.viewState.value.inputMessageMode) {
+                    is InputMessageMode.Reply,
+                    is InputMessageMode.Edit -> {
+                        binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+                    }
+                    is InputMessageMode.Default -> {
+                        binding.chatUserTagsContainer.setPadding(0,0,0,0)
+                    }
+                }
             }
 
             is ConversationEvent.UpdateInputUserTag -> {
