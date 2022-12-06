@@ -111,6 +111,25 @@ class NetworkClient(
         }
     }
 
+    suspend inline fun <reified Response> runSubmitFormWithDocument(
+        path: String,
+        binaryData: ByteArray,
+        filename: String,
+        params: Map<String, Any?> = emptyMap(),
+        useBaseUrl: Boolean = true,
+    ): Response {
+        return httpClient.submitFormWithBinaryData(
+            url = buildUrl(path, useBaseUrl),
+            formData = formData {
+                append("documents", binaryData, Headers.build {
+                    append(HttpHeaders.ContentDisposition, "filename=$filename")
+                })
+            }
+        ) {
+            params.forEach { (t, u) -> parameter(t, u) }
+        }
+    }
+
     suspend inline fun <reified Response> runDelete(
         path: String,
         useBaseUrl: Boolean = true,

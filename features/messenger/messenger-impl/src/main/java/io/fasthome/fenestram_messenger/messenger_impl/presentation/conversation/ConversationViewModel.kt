@@ -484,6 +484,7 @@ class ConversationViewModel(
     private suspend fun sendDocument(tempMessage: ConversationViewItem.Self.Document) {
         var fileStoragePath: String?
         val result = messengerInteractor.uploadDocument(
+            chatId ?: return,
             tempMessage.file?.readBytes() ?: return,
             tempMessage.file.name
         )
@@ -491,7 +492,7 @@ class ConversationViewModel(
             fileStoragePath = it
             it
         }
-        sendMessage(
+        sendMessage( // TODO: !!!
             text = fileStoragePath ?: return,
             messageType = MessageType.Document,
             existMessage = tempMessage
