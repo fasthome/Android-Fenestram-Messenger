@@ -178,7 +178,7 @@ class MessengerInteractor(
         newMessagesCount: Int,
         id: Long
     ): CallResult<MessagesPage> {
-        //todo isResumed оставить, возможно вернется баг с загрузкой из onResume
+        if(isResumed) page = 0
         page++
         return if (newMessagesCount != 0) {
             page += newMessagesCount / (page * PAGE_SIZE)
@@ -211,4 +211,8 @@ class MessengerInteractor(
     suspend fun clearFiles() = filesRepo.clearFiles()
 
     suspend fun getUserId() = userStorage.getUserId()
+
+    fun clearLastInstance() {
+        page = 0
+    }
 }
