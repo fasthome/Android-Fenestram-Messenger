@@ -14,8 +14,8 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
@@ -38,7 +38,7 @@ class MessengerFragment :
 
     private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
 
-    private val environment by inject<Environment>()
+    private val profileImageUrlConverter by inject<StorageUrlConverter>()
 
     private val viewBinderHelper = ViewBinderHelper()
 
@@ -47,7 +47,7 @@ class MessengerFragment :
     private lateinit var fabActionListener: () -> Unit
 
     private var messageAdapter = MessengerAdapter(
-        environment = environment,
+        profileImageUrlConverter = profileImageUrlConverter,
         onChatClicked = {
             vm.launchConversation(it)
         },

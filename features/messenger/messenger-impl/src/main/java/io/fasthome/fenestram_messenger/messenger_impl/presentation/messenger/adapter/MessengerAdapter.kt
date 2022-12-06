@@ -5,9 +5,9 @@ import android.os.Handler
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.MessangerChatItemBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
@@ -21,7 +21,7 @@ import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class MessengerAdapter(
-    environment: Environment,
+    profileImageUrlConverter: StorageUrlConverter,
     onChatClicked: (MessengerViewItem) -> Unit,
     onProfileClicked: (MessengerViewItem) -> Unit,
     onDeleteChat: (id: Long) -> Unit,
@@ -34,7 +34,7 @@ class MessengerAdapter(
         ),
         delegates = listOf(
             createMessengerAdapter(
-                environment,
+                profileImageUrlConverter,
                 onChatClicked,
                 onProfileClicked,
                 onDeleteChat,
@@ -46,7 +46,7 @@ class MessengerAdapter(
 
 @SuppressLint("ClickableViewAccessibility")
 fun createMessengerAdapter(
-    environment: Environment,
+    profileImageUrlConverter: StorageUrlConverter,
     chatClicked: (MessengerViewItem) -> Unit,
     onProfileClicked: (MessengerViewItem) -> Unit,
     onDeleteChat: (id: Long) -> Unit,
@@ -92,7 +92,7 @@ fun createMessengerAdapter(
                 when (item.lastMessage) {
                     is LastMessage.Image -> {
                         lastMessage.setText(R.string.messenger_image)
-                        image.loadRounded(environment.endpoints.baseUrl.dropLast(1) + item.lastMessage.imageUrl)
+                        image.loadRounded(profileImageUrlConverter.convert(item.lastMessage.imageUrl))
                         image.isVisible = true
                         statusDots.setPrintableText(PrintableText.EMPTY)
                     }

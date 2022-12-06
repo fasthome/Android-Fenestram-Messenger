@@ -10,7 +10,7 @@ import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.personality_data.UserDetail
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
-import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -35,11 +35,11 @@ class ProfileViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     settingsFeature: SettingsFeature,
-    private val environment: Environment,
     private val pickFileInterface: PickFileInterface,
     private val profileInteractor: ProfileInteractor,
     private val profileImageUtil: ProfileImageUtil,
     private val personalityInterface: PersonalityInterface,
+    private val profileImageUrlConverter: StorageUrlConverter
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
@@ -89,7 +89,7 @@ class ProfileViewModel(
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
                     avatarUrl = if (!personalData.avatar.isNullOrEmpty())
-                        environment.endpoints.baseUrl.dropLast(1) + personalData.avatar
+                        profileImageUrlConverter.convert(personalData.avatar)
                     else
                         null
 
@@ -122,7 +122,7 @@ class ProfileViewModel(
                 avatarFile != null -> {
                     profileInteractor.uploadProfileImage(avatarFile.readBytes())
                         .getOrNull()?.profileImagePath.let {
-                            avatarUrl = environment.endpoints.baseUrl.dropLast(1) + it
+                            avatarUrl = profileImageUrlConverter.convert(it)
                             it
                         }
                 }
