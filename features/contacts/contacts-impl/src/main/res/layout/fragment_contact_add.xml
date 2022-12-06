@@ -74,10 +74,6 @@
         app:layout_constraintBottom_toTopOf="@id/contact_add_input_number"
         app:layout_constraintStart_toStartOf="@id/contact_add_input_number" />
 
-
-    <!--    <com.santalu.maskara.widget.MaskEditText-->
-    <!--        android:paddingStart="@dimen/contact_add_include_edittext_padding"-->
-
     <io.fasthome.fenestram_messenger.uikit.custom_view.PhoneEditText
         android:id="@+id/contact_add_input_number"
         android:layout_width="match_parent"
