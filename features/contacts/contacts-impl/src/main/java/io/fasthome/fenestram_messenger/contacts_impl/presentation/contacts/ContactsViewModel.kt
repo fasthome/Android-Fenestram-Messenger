@@ -18,10 +18,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.util.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -104,7 +101,7 @@ class ContactsViewModel(
             originalContactsViewItem
         } else {
             originalContactsViewItem.filter {
-                if (it !is ContactsViewItem.Header) {
+                if (it !is ContactsViewItem.Header && it.name !is PrintableText.StringResource) {
                     getPrintableRawText(it.name).contains(text.trim(), true)
                 } else {
                     false
