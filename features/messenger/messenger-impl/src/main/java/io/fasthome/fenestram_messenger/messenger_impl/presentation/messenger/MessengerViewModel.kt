@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
@@ -19,11 +20,10 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class MessengerViewModel(
     router: ContractRouter,
@@ -71,19 +71,30 @@ class MessengerViewModel(
 
     private var _query = ""
 
-    val items = loadDataHelper.getDataFlow(
-        getItems = {
-            sendEvent(MessengerEvent.ProgressEvent(isProgress = true))
-            messengerInteractor.getMessengerPageItems(_query, loadDataHelper.fromSocket)
-        },
-        getCachedSelectedId = { null },
-        mapDataItem = {
-            sendEvent(MessengerEvent.ProgressEvent(isProgress = false))
-            return@getDataFlow messengerMapper.toMessengerViewItem(it)
-        },
-        getItemId = { it.id },
-        getItem = { null }
-    ).cachedIn(viewModelScope)
+    override fun createInitialState(): MessengerState {
+        return MessengerState(
+            chats = listOf(),
+            messengerViewItems = listOf(),
+            newMessagesCount = 0,
+            isSelectMode = params.chatSelectionMode,
+            scrolledDown = false
+        )
+    }
+
+    fun fetchChats(): Flow<PagingData<MessengerViewItem>> {
+        val items = loadDataHelper.getDataFlow(
+            getItems = {
+                messengerInteractor.getMessengerPageItems(_query, loadDataHelper.fromSocket)
+            },
+            getCachedSelectedId = { null },
+            mapDataItem = {
+                return@getDataFlow messengerMapper.toMessengerViewItem(it)
+            },
+            getItemId = { it.id },
+            getItem = { null },
+        ).cachedIn(viewModelScope)
+        return items
+    }
 
     fun filterChats(query: String) {
         _query = query.trim()
@@ -119,16 +130,6 @@ class MessengerViewModel(
                 )
             )
         }
-    }
-
-    override fun createInitialState(): MessengerState {
-        return MessengerState(
-            chats = listOf(),
-            messengerViewItems = listOf(),
-            newMessagesCount = 0,
-            isSelectMode = params.chatSelectionMode,
-            scrolledDown = false
-        )
     }
 
     fun onCreateChatClicked() {
@@ -234,6 +235,8 @@ class MessengerViewModel(
                     it.copy(messengerViewItems = chats)
                 }
             loadDataHelper.invalidateSource()
+            delay(300)
+            sendEvent(MessengerEvent.Invalidate())
         }
     }
 
