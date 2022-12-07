@@ -28,14 +28,14 @@ import kotlinx.coroutines.launch
 class MessengerViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val messengerInteractor: MessengerInteractor,
     profileGuestFeature: ProfileGuestFeature,
+    private val messengerInteractor: MessengerInteractor,
     private val loadDataHelper: PagingDataViewModelHelper,
     private val messengerMapper: MessengerMapper,
     private val params: MessengerNavigationContract.Params,
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
-    private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
+    private val conversationLauncher = registerScreen(ConversationNavigationContract) { result ->
         when (result) {
             is ConversationNavigationContract.Result.ChatDeleted -> {
                 updateState {
@@ -52,6 +52,7 @@ class MessengerViewModel(
     }
 
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
+
     private val profileGuestLauncher =
         registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
             when (result) {
@@ -96,24 +97,25 @@ class MessengerViewModel(
         }
     }
 
-    fun launchConversation(messangerViewItem: MessengerViewItem) {
+    fun launchConversation(messengerViewItem: MessengerViewItem) {
         if (params.chatSelectionMode) {
-            exitWithResult(
-                MessengerNavigationContract.createResult(
-                    MessengerNavigationContract.Result.ChatSelected(
-                        chatName = messangerViewItem.name,
-                        chatId = messangerViewItem.id,
-                        isGroup = messangerViewItem.isGroup,
-                        avatar = messangerViewItem.profileImageUrl,
-                        pendingMessages = messangerViewItem.pendingAmount
-                    )
+            /***
+             * Если мы пересылаем сообщение, backStack должен быть очищен, чтобы не вернуться по кнопке назад в предыдущие чаты
+             */
+            router.backTo(null)
+            conversationLauncher.launch(
+                ConversationNavigationContract.Params(
+                    fromContacts = false,
+                    chat = messengerViewItem.originalChat,
+                    forwardMessage = params.forwardMessage
                 )
             )
         } else {
-            conversationlauncher.launch(
+            conversationLauncher.launch(
+
                 ConversationNavigationContract.Params(
                     fromContacts = false,
-                    chat = messangerViewItem.originalChat
+                    chat = messengerViewItem.originalChat
                 )
             )
         }

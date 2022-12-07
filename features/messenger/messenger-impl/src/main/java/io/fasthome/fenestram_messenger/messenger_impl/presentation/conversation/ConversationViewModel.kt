@@ -82,7 +82,6 @@ class ConversationViewModel(
     private var loadItemsJob by switchJob()
     private var downloadFileJob by switchJob()
     private var lastPage: MessagesPage? = null
-    private var messagesToForward: Long? = null
     var firstVisibleItemPosition: Int = -1
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
@@ -97,29 +96,7 @@ class ConversationViewModel(
     }
 
     private val messengerLauncher =
-        registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
-            when (result) {
-                is MessengerFeature.MessengerNavResult.ChatSelected -> {
-                    lastPage = null
-                    chatId = result.chatId ?: return@registerScreen
-                    messengerInteractor.clearLastInstance()
-                    updateState {
-                        ConversationState(
-                            messages = mapOf(),
-                            userName = result.chatName,
-                            userStatus = UserStatus.Offline.toPrintableText("", result.isGroup),
-                            userStatusDots = PrintableText.EMPTY,
-                            isChatEmpty = false,
-                            avatar = storageUrlConverter.convert(result.avatar),
-                            inputMessageMode = InputMessageMode.Default(),
-                            newMessagesCount = 0,
-                        )
-                    }
-                    forwardMessage()
-                }
-                MessengerFeature.MessengerNavResult.Canceled -> Unit
-            }
-        }
+        registerScreen(features.messengerFeature.messengerNavigationContract)
 
     private val cameraLauncher =
         registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
@@ -232,6 +209,10 @@ class ConversationViewModel(
     fun fetchMessages(isResumed: Boolean) {
         viewModelScope.launch {
             getMessages(isResumed)
+
+            params.forwardMessage?.let {
+                forwardMessage(it)
+            }
         }
     }
 
@@ -276,26 +257,18 @@ class ConversationViewModel(
     }
 
     fun openChatSelectorForForward(messageId: Long) {
-        messagesToForward = messageId
         messengerLauncher.launch(
-            MessengerFeature.MessengerParams(true)
+            MessengerFeature.MessengerParams(
+                chatSelectionMode = true,
+                forwardMessage = MessengerFeature.ForwardMessage(messageId)
+            )
         )
     }
 
-    private fun forwardMessage() {
+    private fun forwardMessage(forwardMessage: MessengerFeature.ForwardMessage) {
         viewModelScope.launch {
-            if (chatId != null && messagesToForward != null) {
-                when (val result =
-                    messengerInteractor.forwardMessage(chatId!!, messagesToForward!!)) {
-                    is CallResult.Error -> {
-                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
-                        messagesToForward = null
-                    }
-                    is CallResult.Success -> {
-                        fetchMessages(isResumed = true)
-                    }
-                }
-            }
+            messengerInteractor.forwardMessage(chatId ?: return@launch, forwardMessage.id)
+                .withErrorHandled {}
         }
     }
 
@@ -1238,5 +1211,9 @@ class ConversationViewModel(
             updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
         }
 
+    }
+
+    fun onViewStopped() {
+        loadItemsJob = null
     }
 }

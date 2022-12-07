@@ -598,6 +598,11 @@ class ConversationFragment :
         )
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onViewStopped()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         vm.closeSocket()

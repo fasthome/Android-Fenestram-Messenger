@@ -11,31 +11,21 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerNavigationContract
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.contract.map
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
 
 class MessengerFeatureImpl(
     private val messengerInteractor: MessengerInteractor,
 ) : MessengerFeature {
 
-    override val messengerNavigationContract: NavigationContractApi<MessengerFeature.MessengerParams, MessengerFeature.MessengerNavResult> =
+    override val messengerNavigationContract: NavigationContractApi<MessengerFeature.MessengerParams, NoResult> =
         MessengerNavigationContract.map(
             {
                 MessengerNavigationContract.Params(
-                    chatSelectionMode = it.chatSelectionMode
+                    chatSelectionMode = it.chatSelectionMode,
+                    forwardMessage = it.forwardMessage
                 )
             },
-            resultMapper = {
-                if (it is MessengerNavigationContract.Result.ChatSelected) {
-                    MessengerFeature.MessengerNavResult.ChatSelected(
-                        chatId = it.chatId,
-                        chatName = it.chatName,
-                        avatar = it.avatar,
-                        isGroup = it.isGroup,
-                        pendingMessages = it.pendingMessages
-                    )
-                } else {
-                    MessengerFeature.MessengerNavResult.Canceled
-                }
-            }
+            resultMapper = { it }
         )
 
     override val conversationNavigationContract: NavigationContractApi<MessengerFeature.Params, MessengerFeature.MessengerResult> =
