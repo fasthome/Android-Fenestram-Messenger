@@ -1,11 +1,9 @@
 package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 
 import android.os.Bundle
-import android.telephony.PhoneNumberFormattingTextWatcher
 import android.view.View
 import android.widget.Button
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentWelcomeBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -15,7 +13,6 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 
 
 class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragment_welcome) {
@@ -24,12 +21,8 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
     private val binding by fragmentViewBinding(FragmentWelcomeBinding::bind)
 
-    private lateinit var phoneNumberUtil: PhoneNumberUtil
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        phoneNumberUtil = PhoneNumberUtil.createInstance(requireContext())
 
         with(binding) {
 
@@ -39,27 +32,15 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
             appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_hoolichat_label))
 
-            val phoneNumberInputManager =
-                PhoneNumberInputManager(phoneNumberUtil, binding.phoneInput) {
-                    vm.updateCountry(it)
-                }
-
             buttonSendCode.setOnClickListener {
-                val number = binding.phoneInput.text.toString()
-                val isValid = phoneNumberInputManager.validateNumber(number)
                 vm.checkPhoneNumber(
-                    number.filter { it.isDigit() },
-                    isValid
+                    binding.phoneInput.getPhoneNumberFiltered(),
+                    binding.phoneInput.isValid()
                 )
             }
 
-            with(phoneInput) {
-                filters = arrayOf(PhoneNumberInputFilter())
-                addTextChangedListener(phoneNumberInputManager)
-                addTextChangedListener(PhoneNumberFormattingTextWatcher())
-                addTextChangedListener {
-                    vm.overWritePhoneNumber()
-                }
+            phoneInput.addListener {
+                vm.overWritePhoneNumber()
             }
         }
     }
@@ -70,11 +51,10 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
     }
 
     override fun renderState(state: WelcomeState): Unit = with(binding) {
-        binding.countryName.text = state.country
         if (state.error)
-            phoneInput.setBackgroundResource(R.drawable.error_rounded_border)
+            phoneInput.setBackground(R.drawable.error_rounded_border)
         else
-            phoneInput.setBackgroundResource(R.drawable.rounded_border)
+            phoneInput.setBackground(R.drawable.rounded_border)
         buttonSendCode.loading(state.isLoad)
     }
 

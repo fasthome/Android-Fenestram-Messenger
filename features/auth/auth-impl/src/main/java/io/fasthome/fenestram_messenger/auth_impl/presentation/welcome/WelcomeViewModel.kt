@@ -26,7 +26,7 @@ class WelcomeViewModel(
     private val debugLauncher = registerScreen(debugFeature.navigationContract)
 
     override fun createInitialState(): WelcomeState {
-        return WelcomeState(country = "", error = false, isLoad = false)
+        return WelcomeState(error = false, isLoad = false)
     }
 
     fun checkPhoneNumber(phoneNumber: String, isValid: Boolean) {
@@ -57,19 +57,13 @@ class WelcomeViewModel(
             }
         } else
             updateState { state ->
-                state.copy(country = "", error = true, isLoad = false)
+                state.copy(error = true, isLoad = false)
             }
-    }
-
-    fun updateCountry(countryName: String) {
-        updateState { state ->
-            state.copy(country = countryName, error = false)
-        }
     }
 
     fun overWritePhoneNumber() {
         updateState { state ->
-            state.copy(country = currentViewState.country, error = false)
+            state.copy(error = false)
         }
     }
 

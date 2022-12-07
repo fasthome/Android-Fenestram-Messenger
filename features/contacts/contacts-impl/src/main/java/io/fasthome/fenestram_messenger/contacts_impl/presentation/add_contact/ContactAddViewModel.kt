@@ -48,37 +48,37 @@ class ContactAddViewModel(
         router.exit()
     }
 
-    fun onNameTextChanged(firstName: String, phoneNumber: String) {
-        if (firstName.isNotEmpty() && phoneNumber.length == 10) {
+    fun onNameTextChanged(firstName: String, isValid: Boolean) {
+        if (firstName.isNotEmpty() && isValid) {
             updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
         } else {
             updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameIdle) }
         }
     }
 
-    fun onNumberTextChanged(firstName: String, phoneNumber: String) {
-        if (firstName.isNotEmpty() && phoneNumber.length == 10) {
+    fun onNumberTextChanged(firstName: String, isValid: Boolean) {
+        if (firstName.isNotEmpty() && isValid) {
             updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
         } else {
             updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NumberIdle) }
         }
     }
 
-    fun checkAndWriteContact(firstName: String, secondName: String, phoneNumber: String) {
+    fun checkAndWriteContact(firstName: String, secondName: String, phoneNumber: String, isValid: Boolean) {
         when {
             firstName.isEmpty() && phoneNumber.isEmpty() -> updateState {
                 ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberEmpty)
             }
-            firstName.isEmpty() && phoneNumber.length != 10 -> updateState {
+            firstName.isEmpty() && !isValid -> updateState {
                 ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberIncorrect)
             }
-            firstName.isEmpty() && phoneNumber.length == 10 -> updateState {
+            firstName.isEmpty() && isValid -> updateState {
                 ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberCorrect)
             }
             firstName.isNotEmpty() && phoneNumber.isEmpty() -> updateState {
                 ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberEmpty)
             }
-            firstName.isNotEmpty() && phoneNumber.length != 10 -> updateState {
+            firstName.isNotEmpty() && !isValid -> updateState {
                 ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberIncorrect)
             }
             else -> {
