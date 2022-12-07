@@ -44,9 +44,11 @@ fun List<Message>.toConversationItems(
             resultMap[UUID.randomUUID().toString()] =
                 it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter)
         } else {
-            resultMap += it.toForwardConversationViewItem(selfUserId,
+            resultMap += it.toForwardConversationViewItem(
+                selfUserId,
                 isGroup,
-                profileImageUrlConverter)
+                profileImageUrlConverter
+            )
         }
     }
     return resultMap
@@ -75,9 +77,11 @@ fun Message.toForwardConversationViewItem(
                 messageType = messageType,
                 replyMessage = null,
                 userName = PrintableText.Raw(getName(initiator)),
-                forwardMessage = message.toConversationViewItem(selfUserId,
+                forwardMessage = message.toConversationViewItem(
+                    selfUserId,
                     isGroup,
-                    profileImageUrlConverter)
+                    profileImageUrlConverter
+                )
             )
             else -> {
                 if (isGroup) {
@@ -92,9 +96,11 @@ fun Message.toForwardConversationViewItem(
                         messageType = messageType,
                         replyMessage = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        forwardMessage = message.toConversationViewItem(selfUserId,
+                        forwardMessage = message.toConversationViewItem(
+                            selfUserId,
                             isGroup,
-                            profileImageUrlConverter),
+                            profileImageUrlConverter
+                        ),
                         avatar = initiator?.avatar ?: "",
                         phone = initiator?.phone ?: "",
                         userId = initiator?.id ?: 0
@@ -111,9 +117,11 @@ fun Message.toForwardConversationViewItem(
                         messageType = messageType,
                         replyMessage = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        forwardMessage = message.toConversationViewItem(selfUserId,
+                        forwardMessage = message.toConversationViewItem(
+                            selfUserId,
                             isGroup,
-                            profileImageUrlConverter)
+                            profileImageUrlConverter
+                        )
                     )
                 }
             }
@@ -123,6 +131,12 @@ fun Message.toForwardConversationViewItem(
     return resultMap
 }
 
+/***
+ * @param selfUserId ID текущего пользователя
+ * @param isGroup Группа ли
+ * @param profileImageUrlConverter Для преобразования path в link, todo Выделить маппер в объект
+ * @param isForwardMessage пересланное или ответ на сообщение - всегда новое сообщение, поэтому первый статус сообщения должен быть [SentStatus.Sent]
+ */
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
@@ -138,8 +152,13 @@ fun Message.toConversationViewItem(
             timeVisible = true
         )
     }
-    val sentStatus =
+
+    val sentStatus = if (!this.forwardedMessages.isNullOrEmpty() || this.replyMessage != null) {
+        SentStatus.Sent
+    } else {
         if (userSenderId == selfUserId && usersHaveRead?.isNotEmpty() == true) SentStatus.Read else SentStatus.Received
+    }
+
     return when {
         (selfUserId == userSenderId) -> {
             when (messageType) {
