@@ -4,27 +4,19 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 object MessengerNavigationContract :
-    NavigationContract<MessengerNavigationContract.Params, MessengerNavigationContract.Result>(
+    NavigationContract<MessengerNavigationContract.Params, NoResult>(
         MessengerFragment::class) {
     @Parcelize
     data class Params(
         val chatSelectionMode: Boolean = false,
+        val forwardMessage: MessengerFeature.ForwardMessage? = null
     ) : Parcelable
-
-    sealed class Result : Parcelable {
-        @Parcelize
-        class ChatSelected(
-            val chatId: Long?,
-            val chatName: PrintableText,
-            val avatar: String?,
-            val isGroup: Boolean,
-            val pendingMessages: PrintableText?,
-        ) : Result()
-    }
 
 }

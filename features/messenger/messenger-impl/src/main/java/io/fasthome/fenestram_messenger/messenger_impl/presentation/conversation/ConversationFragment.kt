@@ -151,7 +151,7 @@ class ConversationFragment :
                     vm.onScrolledToLastPendingMessage(linearLayoutManager.findFirstVisibleItemPosition())
                 }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
-                    vm.loadItems(isResumed)
+                    vm.loadPage(false)
                 }
             }
         })
@@ -217,10 +217,7 @@ class ConversationFragment :
         pendingMessagesButton.onClick {
             messagesList.smoothScrollToPosition(0)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
         vm.fetchMessages(isResumed = true)
     }
 
@@ -599,6 +596,11 @@ class ConversationFragment :
                 getPrintableText(printableText)
             )
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onViewStopped()
     }
 
     override fun onDestroy() {
