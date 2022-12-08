@@ -28,6 +28,7 @@ fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) 
             onItemClicked(item)
         }
         bindWithBinding {
+            item.name = PrintableText.Raw(context.getPrintableText(item.name))
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
             contactAvatar.loadCircle(
@@ -44,6 +45,7 @@ fun createLocalContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit
             onItemClicked(item)
         }
         bindWithBinding {
+            item.name = PrintableText.Raw(context.getPrintableText(item.name))
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
         }

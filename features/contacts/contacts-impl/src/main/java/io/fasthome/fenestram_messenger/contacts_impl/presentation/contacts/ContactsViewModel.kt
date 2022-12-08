@@ -101,7 +101,7 @@ class ContactsViewModel(
             originalContactsViewItem
         } else {
             originalContactsViewItem.filter {
-                if (it !is ContactsViewItem.Header && it.name !is PrintableText.StringResource) {
+                if (it !is ContactsViewItem.Header) {
                     getPrintableRawText(it.name).contains(text.trim(), true)
                 } else {
                     false
