@@ -15,10 +15,14 @@ import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
 import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
+import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -32,7 +36,7 @@ class ContactsViewModel(
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
             is ContactAddNavigationContract.ContactAddResult.Success -> requestPermissionAndLoadContacts()
-            is ContactAddNavigationContract.ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
+            is ContactAddNavigationContract.ContactAddResult.Canceled -> showMessage(Message.PopUp(result.message))
         }
     }
 

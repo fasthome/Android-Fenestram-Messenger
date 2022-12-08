@@ -6,7 +6,6 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import io.fasthome.component.permission.PermissionComponentContract
@@ -20,6 +19,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.renderLoadingState
@@ -93,15 +93,7 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
         )
     }
 
-    override fun handleEvent(event: ContactsEvent) {
-        when (event) {
-            ContactsEvent.ContactAddCancelled -> Toast.makeText(
-                context,
-                "Не удалось сохранить контакт",
-                Toast.LENGTH_SHORT
-            )
-        }
-    }
+    override fun handleEvent(event: ContactsEvent) = noEventsExpected()
 
     override fun onFabClicked(): Boolean {
         vm.addContact()

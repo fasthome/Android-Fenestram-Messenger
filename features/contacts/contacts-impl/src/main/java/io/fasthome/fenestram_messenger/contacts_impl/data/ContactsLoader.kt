@@ -7,8 +7,10 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.RequiresPermission
+import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -100,7 +102,7 @@ class ContactsLoader(private val context: Context) {
                 .withValue(CommonDataKinds.Phone.NUMBER, mobileNumber)
                 .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE).build()
         )
-        
+
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
             CoroutineScope(Dispatchers.Main).launch {
@@ -108,7 +110,8 @@ class ContactsLoader(private val context: Context) {
             }
         } catch (e: Exception) {
             CoroutineScope(Dispatchers.Main).launch {
-                callback(ContactAddNavigationContract.ContactAddResult.Canceled)
+                val message = PrintableText.StringResource(R.string.failed_to_save_contact)
+                callback(ContactAddNavigationContract.ContactAddResult.Canceled(message))
             }
         }
     }

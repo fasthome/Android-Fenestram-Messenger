@@ -2,10 +2,14 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 
-object ContactAddNavigationContract : NavigationContract<ContactAddNavigationContract.Params, ContactAddNavigationContract.ContactAddResult>(ContactAddFragment::class) {
+object ContactAddNavigationContract :
+    NavigationContract<ContactAddNavigationContract.Params, ContactAddNavigationContract.ContactAddResult>(
+        ContactAddFragment::class
+    ) {
     @Parcelize
     data class Params(
         val name: String? = null,
@@ -19,6 +23,6 @@ object ContactAddNavigationContract : NavigationContract<ContactAddNavigationCon
         object Success : ContactAddResult()
 
         @Parcelize
-        object Canceled : ContactAddResult()
+        class Canceled(val message: PrintableText) : ContactAddResult()
     }
 }
