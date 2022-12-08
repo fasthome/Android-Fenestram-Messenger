@@ -10,6 +10,10 @@ import kotlinx.serialization.Serializable
 class ContactsResponse(
     @SerialName("id")
     val id: Long,
+    @SerialName("user_id")
+    val userId: Long?,
+    @SerialName("owner")
+    val owner: Long,
     @SerialName("name")
     val name: String?,
     @SerialName("phone")
@@ -32,6 +36,10 @@ class User(
     val email: String?,
     @SerialName("birth")
     val birth: String?,
+    @SerialName("contactName")
+    val contactName: String?,
+    @SerialName("onesignal_player_id")
+    val onesignalPlayerId: String?,
     @SerialName("avatar")
     val avatar: String?,
     @SerialName("is_online")

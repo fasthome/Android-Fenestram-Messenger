@@ -51,8 +51,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.util.*
 
@@ -163,7 +161,7 @@ class ConversationViewModel(
         return ConversationState(
             messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup),
+            userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup, chatUsers),
             userStatusDots = PrintableText.EMPTY,
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
@@ -758,6 +756,9 @@ class ConversationViewModel(
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
+                                userStatus = UserStatus.Offline.toPrintableText("",
+                                    params.chat.isGroup,
+                                    chatUsers),
                             )
                         }
                     }
@@ -766,7 +767,13 @@ class ConversationViewModel(
                     messengerInteractor.emitMessageRead(chatId, listOf(message.id))
                     sendEvent(ConversationEvent.UpdateScrollPosition(0))
                 } else if (selfUserId != message.userSenderId) {
-                    updateState { state -> state.copy(newMessagesCount = state.newMessagesCount + 1) }
+                    updateState { state -> state.copy(
+                        newMessagesCount = state.newMessagesCount + 1,
+                        userStatus = UserStatus.Offline.toPrintableText("",
+                            params.chat.isGroup,
+                            chatUsers),
+                    )
+                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -775,7 +782,8 @@ class ConversationViewModel(
             updateState { state ->
                 state.copy(
                     avatar = it.avatar,
-                    userName = PrintableText.Raw(it.chatName)
+                    userName = PrintableText.Raw(it.chatName),
+                    userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup, chatUsers),
                 )
             }
         }
@@ -792,7 +800,7 @@ class ConversationViewModel(
                         ConversationEvent.DotsEvent(
                             userStatus = messageAction.userStatus.toPrintableText(
                                 messageAction.userName,
-                                params.chat.isGroup
+                                params.chat.isGroup, chatUsers
                             ),
                             userStatusDots = PrintableText.Raw(".")
                         )
@@ -806,7 +814,8 @@ class ConversationViewModel(
                             ConversationEvent.DotsEvent(
                                 userStatus = messageAction.userStatus.toPrintableText(
                                     messageAction.userName,
-                                    params.chat.isGroup
+                                    params.chat.isGroup,
+                                    chatUsers
                                 ),
                                 userStatusDots = lastDotsStatus
                             )
@@ -816,7 +825,8 @@ class ConversationViewModel(
                         ConversationEvent.DotsEvent(
                             userStatus = UserStatus.Online.toPrintableText(
                                 messageAction.userName,
-                                params.chat.isGroup
+                                params.chat.isGroup,
+                                chatUsers
                             ),
                             userStatusDots = PrintableText.EMPTY
                         )
