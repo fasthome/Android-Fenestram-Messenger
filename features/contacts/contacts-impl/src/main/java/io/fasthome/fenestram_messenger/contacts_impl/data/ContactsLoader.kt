@@ -7,10 +7,10 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
 import androidx.annotation.RequiresPermission
-import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
+import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +65,12 @@ class ContactsLoader(private val context: Context) {
         return _contactsList.toList()
     }
 
-    fun insertContact(firstName: String, secondName: String, mobileNumber: String, callback: ContactAddNavigationContract.ContactAddResult.() -> Unit) {
+    fun insertContact(
+        firstName: String,
+        secondName: String,
+        mobileNumber: String,
+        callback: ContactAddNavigationContract.ContactAddResult.() -> Unit
+    ) {
         val ops = ArrayList<ContentProviderOperation>()
         val rawContactInsertIndex: Int = ops.size
         ops.add(
@@ -94,18 +99,21 @@ class ContactsLoader(private val context: Context) {
                     ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex
                 )
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Phone.NUMBER, "+7${mobileNumber}")
+                .withValue(CommonDataKinds.Phone.NUMBER, mobileNumber)
                 .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE).build()
         )
+
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
             CoroutineScope(Dispatchers.Main).launch {
                 callback(ContactAddNavigationContract.ContactAddResult.Success)
             }
         } catch (e: Exception) {
-            callback(ContactAddNavigationContract.ContactAddResult.Canceled)
+            CoroutineScope(Dispatchers.Main).launch {
+                val message = PrintableText.StringResource(R.string.failed_to_save_contact)
+                callback(ContactAddNavigationContract.ContactAddResult.Canceled(message))
+            }
         }
-
     }
 
 }
