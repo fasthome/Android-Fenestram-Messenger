@@ -104,8 +104,6 @@ open class BottomSheetFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        binding.content.setupHandleInsetsTop()
-
         binding.root.apply {
             background.alpha = (currentState ?: State.HIDDEN).alpha
             if (config.canceledOnTouchOutside) setOnClickListener { router.exit() }

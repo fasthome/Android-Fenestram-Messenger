@@ -12,7 +12,6 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
 
 class GroupParticipantsFragment :
     BaseFragment<GroupParticipantsState, GroupParticipantsEvent>(R.layout.fragment_group_participants),
@@ -32,8 +31,7 @@ class GroupParticipantsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.participants.adapter = adapter
-        binding.participants.supportBottomSheetScroll()
-
+        binding.participants.isNestedScrollingEnabled = false
         binding.addUserToChat.onClick {
             vm.onAddUserToChat()
         }
