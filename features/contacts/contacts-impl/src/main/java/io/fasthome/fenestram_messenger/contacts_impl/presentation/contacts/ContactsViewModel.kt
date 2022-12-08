@@ -18,10 +18,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.util.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
