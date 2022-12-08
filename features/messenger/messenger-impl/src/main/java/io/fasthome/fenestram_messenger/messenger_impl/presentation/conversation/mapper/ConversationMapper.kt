@@ -660,16 +660,28 @@ private fun getName(user: User?): String {
 fun UserStatus.toPrintableText(userName: String, isGroup: Boolean, groupUsers: List<User>?): PrintableText {
     return when (this) {
         UserStatus.Offline -> {
-            if(isGroup && !groupUsers.isNullOrEmpty())
-                PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
-                else
-            PrintableText.StringResource(R.string.user_status_offline)
+            if (groupUsers.isNullOrEmpty())
+                PrintableText.Raw("")
+            else
+                if(isGroup)
+                    PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
+                    else
+                        if (groupUsers[0].isOnline)
+                            PrintableText.StringResource(R.string.user_status_online)
+                        else
+                            PrintableText.StringResource(R.string.user_status_offline)
         }
         UserStatus.Online -> {
-            if(isGroup && !groupUsers.isNullOrEmpty())
-                PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
+            if (groupUsers.isNullOrEmpty())
+                PrintableText.Raw("")
             else
-                PrintableText.StringResource(R.string.user_status_online)
+                if(isGroup)
+                    PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
+                else
+                    if (groupUsers[0].isOnline)
+                        PrintableText.StringResource(R.string.user_status_online)
+                    else
+                        PrintableText.StringResource(R.string.user_status_offline)
         }
         UserStatus.Typing -> {
             if (isGroup)
