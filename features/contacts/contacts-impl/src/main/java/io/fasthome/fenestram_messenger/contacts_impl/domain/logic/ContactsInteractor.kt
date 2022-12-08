@@ -53,6 +53,10 @@ class ContactsInteractor(
         return deleteContacts(contactIds)
     }
 
+    suspend fun updateContactName(phoneNumber: String, newName: String) {
+        contactsLoader.updateContactName(phoneNumber, newName)
+    }
+
     suspend fun getSelfUserPhone() = userStorage.getUserPhone()
 
 }

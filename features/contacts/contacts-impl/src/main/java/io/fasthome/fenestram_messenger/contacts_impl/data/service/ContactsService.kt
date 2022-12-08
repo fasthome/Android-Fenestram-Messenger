@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.data.service
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.ContactsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.Contacts
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsResponse
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.DeleteContactsRequest
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.SendContactsRequest
@@ -27,12 +28,13 @@ class ContactsService(
             .let(contactsMapper::responseToContactsList)
 
     suspend fun sendContacts(contacts: List<Contact>) {
-        return client
-            .runPost<SendContactsRequest, BaseResponse<Unit>>(
+        client
+            .runPost<SendContactsRequest, BaseResponse<Contacts>>(
                 path = "contacts",
                 body = SendContactsRequest(contactsMapper.contactListToRequest(contacts))
             )
             .requireData()
+        return
     }
 
     suspend fun deleteContacts(contactIds: List<Long>) {

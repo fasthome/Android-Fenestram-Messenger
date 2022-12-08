@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
@@ -55,11 +56,14 @@ class ProfileGuestFragment :
         }
     )
 
+    private val permissionInterface by registerFragment(PermissionComponentContract)
+
     override val vm: ProfileGuestViewModel by viewModel(
         getParamsInterface = ProfileGuestNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::groupParticipantsInterface)
             .register(::pickImageFragment)
+            .register(::permissionInterface)
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
@@ -91,8 +95,8 @@ class ProfileGuestFragment :
             vm.onDeleteChatClicked()
         }
 
-        profileGuestEditGroup.setOnClickListener {
-            vm.onEditGroupClicked(profileGuestName.text.toString().trim())
+        profileGuestEdit.setOnClickListener {
+            vm.onEditClicked(profileGuestName.text.toString().trim())
         }
 
         profileGuestAvatar.setOnClickListener {
@@ -132,13 +136,12 @@ class ProfileGuestFragment :
         }
 
         with(binding) {
-            profileGuestEditGroup.isVisible = state.isGroup
             participantsContainer.isVisible = state.isGroup
             profileGuestPhone.isVisible = !state.isGroup
             profileGuestContainer.isVisible = !state.editMode
             profileGuestVideoChat.isVisible = !state.editMode
             profileGuestCall.isVisible = !state.editMode
-            pickPhotoIcon.isVisible = state.editMode
+            pickPhotoIcon.isVisible = state.editMode && state.isGroup
             profileGuestName.isEnabled = state.editMode
 
             profileGuestName.background.setTint(
@@ -151,7 +154,6 @@ class ProfileGuestFragment :
                     }
                 )
             )
-
 
             if (state.isGroup) {
                 profileGuestNickname.setTextColor(
@@ -184,8 +186,9 @@ class ProfileGuestFragment :
             }
 
             if (state.editMode) {
-                profileGuestAvatar.brightness = 0.5F
-                profileGuestEditGroup.setImageDrawable(
+                if (state.isGroup)
+                    profileGuestAvatar.brightness = 0.5F
+                profileGuestEdit.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
                         R.drawable.ic_complete_edit
@@ -202,7 +205,7 @@ class ProfileGuestFragment :
                 }
             } else {
                 profileGuestAvatar.brightness = 1F
-                profileGuestEditGroup.setImageDrawable(
+                profileGuestEdit.setImageDrawable(
                     ContextCompat.getDrawable(
                         requireContext(),
                         R.drawable.ic_edit

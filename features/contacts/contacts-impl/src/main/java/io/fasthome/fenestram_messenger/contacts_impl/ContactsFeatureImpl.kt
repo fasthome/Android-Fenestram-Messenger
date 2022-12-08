@@ -6,10 +6,8 @@ package io.fasthome.fenestram_messenger.contacts_impl
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
-import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsNavigationContract
-import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.contract.map
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
@@ -44,4 +42,7 @@ class ContactsFeatureImpl(private val contactsInteractor: ContactsInteractor) : 
 
     override suspend fun getContactsAndUploadContacts(): CallResult<List<Contact>> =
         contactsInteractor.getContactsAndUploadContacts()
+
+    override suspend fun updateContactName(phoneNumber: String, newName: String) =
+        contactsInteractor.updateContactName(phoneNumber, newName)
 }

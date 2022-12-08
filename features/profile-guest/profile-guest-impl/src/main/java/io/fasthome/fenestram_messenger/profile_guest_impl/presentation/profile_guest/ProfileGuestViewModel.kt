@@ -1,9 +1,12 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
+import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
+import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
@@ -30,8 +33,10 @@ class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ProfileGuestNavigationContract.Params,
+    private val permissionInterface: PermissionInterface,
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val messengerFeature: MessengerFeature,
+    private val contactsFeature: ContactsFeature,
     private val profileGuestInteractor: ProfileGuestInteractor,
     private val profileImageUrlConverter: StorageUrlConverter,
     private val pickFileInterface: PickFileInterface,
@@ -158,14 +163,13 @@ class ProfileGuestViewModel(
         }
     }
 
-    fun onEditGroupClicked(newName: String) {
+    fun onEditClicked(newName: String) {
+        viewModelScope.launch {
+            if (newName.isEmpty()) {
+                return@launch
+            }
 
-        if (currentViewState.editMode) {
-            viewModelScope.launch {
-                if (newName.isEmpty()) {
-                    return@launch
-                }
-
+            if (currentViewState.editMode && params.isGroup) {
                 if (newName != getPrintableRawText(currentViewState.userName) &&
                     profileGuestInteractor.patchChatName(params.id!!, newName)
                         .successOrSendError() != null
@@ -195,14 +199,28 @@ class ProfileGuestViewModel(
                         profileGuestStatus = EditTextStatus.Idle
                     )
                 }
-            }
-        } else
-            updateState { state ->
-                state.copy(
-                    editMode = true,
-                    profileGuestStatus = EditTextStatus.Editable
-                )
-            }
+
+            } else if (currentViewState.editMode && !params.isGroup) {
+                val permissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
+
+                if (newName != getPrintableRawText(currentViewState.userName) && permissionGranted) {
+                    contactsFeature.updateContactName(params.userPhone, newName)
+                    updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
+                }
+                updateState { state ->
+                    state.copy(
+                        editMode = false,
+                        profileGuestStatus = EditTextStatus.Idle
+                    )
+                }
+            } else
+                updateState { state ->
+                    state.copy(
+                        editMode = true,
+                        profileGuestStatus = EditTextStatus.Editable
+                    )
+                }
+        }
     }
 
     fun deleteChat(id: Long) {
@@ -213,12 +231,16 @@ class ProfileGuestViewModel(
     }
 
     fun onAvatarClicked() {
-        if (currentViewState.editMode) {
+        if (currentViewState.editMode && params.isGroup) {
             pickFileInterface.pickFile()
-        }
-        else {
+        } else {
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
-                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(currentViewState.userAvatar, currentViewState.avatarBitmap))
+                imageViewerLauncher.launch(
+                    ImageViewerContract.ImageViewerParams.ImageParams(
+                        currentViewState.userAvatar,
+                        currentViewState.avatarBitmap
+                    )
+                )
             }
         }
     }
