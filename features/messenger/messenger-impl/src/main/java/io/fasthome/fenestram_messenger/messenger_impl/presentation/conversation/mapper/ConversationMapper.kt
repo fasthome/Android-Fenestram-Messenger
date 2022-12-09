@@ -659,7 +659,7 @@ private fun getName(user: User?): String {
 
 fun UserStatus.toPrintableText(userName: String, isGroup: Boolean, groupUsers: List<User>?): PrintableText {
     return when (this) {
-        UserStatus.Offline -> {
+        UserStatus.OnlineStatus -> {
             if (groupUsers.isNullOrEmpty())
                 PrintableText.Raw("")
             else
@@ -670,18 +670,6 @@ fun UserStatus.toPrintableText(userName: String, isGroup: Boolean, groupUsers: L
                             PrintableText.StringResource(R.string.user_status_online)
                         else
                             PrintableText.StringResource(R.string.user_status_offline)
-        }
-        UserStatus.Online -> {
-            if (groupUsers.isNullOrEmpty())
-                PrintableText.Raw("")
-            else
-                if(isGroup)
-                    PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
-                else
-                    if (groupUsers[0].isOnline)
-                        PrintableText.StringResource(R.string.user_status_online)
-                    else
-                        PrintableText.StringResource(R.string.user_status_offline)
         }
         UserStatus.Typing -> {
             if (isGroup)
