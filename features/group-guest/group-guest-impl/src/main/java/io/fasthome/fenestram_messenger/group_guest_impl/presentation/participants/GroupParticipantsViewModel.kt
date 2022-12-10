@@ -25,9 +25,11 @@ class GroupParticipantsViewModel(
     private val groupGuestInteractor: GroupGuestInteractor,
     private val contactsFeature: ContactsFeature,
     private val messengerFeature: MessengerFeature,
-    private val profileImageUrlConverter: StorageUrlConverter
+    private val profileImageUrlConverter: StorageUrlConverter,
 ) : BaseViewModel<GroupParticipantsState, GroupParticipantsEvent>(router, requestParams),
     GroupParticipantsInterface {
+
+    override lateinit var listChanged: (Int) -> Unit
 
     private var selfUserId: Long? = null
 
@@ -84,6 +86,7 @@ class GroupParticipantsViewModel(
                     val listWithSelfFirst = chatUsers.toMutableList()
                     listWithSelfFirst.remove(selfChatUser)
                     listWithSelfFirst.add(0, selfChatUser!!)
+                    listChanged(chatUsers.size)
 
                     updateState { state ->
                         state.copy(participants = listWithSelfFirst.map {
@@ -121,6 +124,7 @@ class GroupParticipantsViewModel(
     fun onDeleteUserClicked(id: Long) {
         viewModelScope.launch {
             groupGuestInteractor.deleteUserFromChat(params.chatId!!, id).successOrSendError()?.let {
+                listChanged(it.size)
                 if (selfUserId == id)
                     router.backTo(null)
             }
