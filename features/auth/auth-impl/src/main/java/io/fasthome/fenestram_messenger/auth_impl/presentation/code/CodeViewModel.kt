@@ -99,7 +99,7 @@ class CodeViewModel(
     }
 
     companion object {
-        const val duration = 15000
+        const val duration = 60000
         const val step = 1
     }
 }
