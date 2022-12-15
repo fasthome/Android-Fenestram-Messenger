@@ -25,7 +25,8 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
             LastMessage.UserStatus(
                 it.userStatus.toPrintableText(
                     it.userName,
-                    chat.isGroup
+                    chat.isGroup,
+                    null
                 )
             )
         } ?: chat.messages.lastOrNull()?.let { message ->

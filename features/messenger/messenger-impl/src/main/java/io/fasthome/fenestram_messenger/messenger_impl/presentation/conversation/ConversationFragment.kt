@@ -35,6 +35,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.singleSameTime
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationDocumentItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
@@ -88,12 +89,8 @@ class ConversationFragment :
             vm.onImageClicked(conversationViewItem = it)
         }, onUserTagClicked = { userTag ->
             vm.onUserTagClicked(userTag)
-        }, onSelfDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(itemSelf = item, progressListener = progressListener)
-        }, onRecieveDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(itemReceive = item, progressListener = progressListener)
-        }, onGroupDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(itemGroup = item, progressListener = progressListener)
+        }, onDownloadDocument = { item, progressListener ->
+            vm.onDownloadDocument(item = item, progressListener = progressListener)
         }, onSelfMessageLongClicked = {
             vm.onSelfMessageLongClicked(it)
         }, onReceiveMessageLongClicked = {
@@ -106,14 +103,12 @@ class ConversationFragment :
             vm.onSelfMessageLongClicked(it)
         }, onReceiveTextReplyImageLongClicked = {
             vm.onReceiveTextReplyImageLongClicked(it)
-        }, onReplyMessageText = {
+        }, onReplyMessage = {
             vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
         }, onGroupImageLongClicked = {
             vm.onGroupMessageLongClicked(it)
         }, onReceiveImageLongClicked = {
             vm.onReceiveMessageLongClicked(it)
-        }, onReplyMessageImage = {
-            vm.replyMessageMode(isReplyMode = true, conversationViewItem = it)
         }, onGroupTextReplyImageLongClicked = {
             vm.onGroupMessageLongClicked(it)
         }, onSelfForwardLongClicked = {
@@ -122,6 +117,12 @@ class ConversationFragment :
             vm.onReceiveForwardLongClicked(it)
         }, onGroupForwardLongClicked = {
             vm.onGroupForwardLongClicked(it)
+        }, onReceiveDocumentLongClicked = {
+            vm.onReceiveDocumentLongClicked(it)
+        }, onSelfDocumentLongClicked = {
+            vm.onSelfDocumentLongClicked(it)
+        }, onGroupDocumentLongClicked = {
+            vm.onGroupDocumentLongClicked(it)
         })
 
     private val attachedAdapter = AttachedAdapter(
@@ -150,7 +151,7 @@ class ConversationFragment :
                     vm.onScrolledToLastPendingMessage(linearLayoutManager.findFirstVisibleItemPosition())
                 }
                 if (lastScrollPosition == conversationAdapter.itemCount - 1) {
-                    vm.loadItems(isResumed)
+                    vm.loadPage(false)
                 }
             }
         })
@@ -216,10 +217,7 @@ class ConversationFragment :
         pendingMessagesButton.onClick {
             messagesList.smoothScrollToPosition(0)
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
         vm.fetchMessages(isResumed = true)
     }
 
@@ -272,16 +270,20 @@ class ConversationFragment :
                 attachedAdapter.items = state.inputMessageMode.attachedFiles
                 renderStateEditMode(false, null)
                 renderStateReplyMode(false, null)
+                binding.chatUserTagsContainer.setPadding(0,0,0,0)
+
             }
             is InputMessageMode.Edit -> {
                 attachedList.isVisible = false
                 renderStateReplyMode(false, null)
                 renderStateEditMode(true, state.inputMessageMode.messageToEdit)
+                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
             is InputMessageMode.Reply -> {
                 attachedList.isVisible = false
                 renderStateEditMode(false, null)
                 renderStateReplyMode(true, state.inputMessageMode.messageToReply)
+                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
         }
 
@@ -380,6 +382,15 @@ class ConversationFragment :
             }
             is ConversationEvent.ShowUsersTags -> {
                 tagsAdapter.items = event.users
+                when(vm.viewState.value.inputMessageMode) {
+                    is InputMessageMode.Reply,
+                    is InputMessageMode.Edit -> {
+                        binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+                    }
+                    is InputMessageMode.Default -> {
+                        binding.chatUserTagsContainer.setPadding(0,0,0,0)
+                    }
+                }
             }
 
             is ConversationEvent.UpdateInputUserTag -> {
@@ -402,7 +413,7 @@ class ConversationFragment :
                 is ConversationViewItem.Self.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Image -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Self.Document -> Unit
+                is ConversationViewItem.Self.Document -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Self.Forward -> replyImageDialog(event.conversationViewItem)
             }
 
@@ -410,14 +421,14 @@ class ConversationFragment :
                 is ConversationViewItem.Receive.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Image -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Receive.Document -> Unit
+                is ConversationViewItem.Receive.Document -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Receive.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.ShowGroupMessageActionDialog -> when (event.conversationViewItem) {
                 is ConversationViewItem.Group.Text -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Group.Document -> Unit
+                is ConversationViewItem.Group.Document -> replyImageDialog(event.conversationViewItem)
                 is ConversationViewItem.Group.Forward -> replyImageDialog(event.conversationViewItem)
             }
             is ConversationEvent.DotsEvent -> {
@@ -502,6 +513,14 @@ class ConversationFragment :
                         tvTextToEdit.text =
                             getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
                     }
+                    is ConversationDocumentItem -> {
+                        tvEditMessageTitle.isVisible = false
+                        replyImage.isVisible = true
+                        replyImage.setImageResource(R.drawable.ic_reply_mode)
+                        tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
+                        tvTextToEdit.text =
+                            getString(R.string.reply_document_ph, getPrintableRawText(message.userName))
+                    }
                 }
             }
         }
@@ -577,6 +596,11 @@ class ConversationFragment :
                 getPrintableText(printableText)
             )
         )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onViewStopped()
     }
 
     override fun onDestroy() {

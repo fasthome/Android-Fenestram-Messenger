@@ -10,13 +10,13 @@ sealed class ContactsViewItem {
 
     class Local(
         override val avatar: Int,
-        override val name: PrintableText
+        override var name: PrintableText
     ) : ContactsViewItem()
 
     class Api(
         val userId: Long,
         override val avatar: String,
-        override val name: PrintableText,
+        override var name: PrintableText,
     ) : ContactsViewItem()
 
     class Header(

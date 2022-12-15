@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.data.service.mapper
 
-import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.group_guest_impl.data.service.model.AddUsersToChatResponse
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
 import io.fasthome.fenestram_messenger.util.Country
@@ -8,7 +8,7 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setMaskByCountry
 import io.fasthome.network.model.BaseResponse
 
-class AddUsersToChatMapper(private val environment: Environment) {
+class AddUsersToChatMapper(private val profileImageUrlConverter: StorageUrlConverter) {
     fun responseToParticipantsViewItem(response: BaseResponse<AddUsersToChatResponse>): List<ParticipantsViewItem> {
         response.data?.let { list ->
             return list.chatUsers!!.map { user ->
@@ -21,7 +21,7 @@ class AddUsersToChatMapper(private val environment: Environment) {
                 ParticipantsViewItem(
                     userId = user.id,
                     name = PrintableText.Raw(userName),
-                    avatar = environment.endpoints.baseUrl.dropLast(1) + user.avatar,
+                    avatar = profileImageUrlConverter.convert(user.avatar),
                     nickname = user.nickname ?: "",
                     phone = user.phone
                 )

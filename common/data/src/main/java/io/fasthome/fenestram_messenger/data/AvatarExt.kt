@@ -11,7 +11,12 @@ class StorageUrlConverter(private val environment: Environment) {
         if (path.isNullOrEmpty() || path == "null") {
             ""
         } else {
-            environment.endpoints.baseUrl.dropLast(1) + path
+            environment.endpoints.baseUrl.dropLast(1).let {
+                if (path.contains(it))
+                    path
+                else
+                    environment.endpoints.baseUrl.dropLast(1) + path
+            }
         }
 
     fun extractPath(imageUrl: String?) =

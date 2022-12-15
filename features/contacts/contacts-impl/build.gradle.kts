@@ -24,6 +24,4 @@ dependencies {
     androidTestImplementation(Deps.Tests.androidxJunit)
     androidTestImplementation(Deps.Tests.espresso)
     androidTestImplementation(Deps.Tests.junit)
-
-    api(Deps.maskara)
 }

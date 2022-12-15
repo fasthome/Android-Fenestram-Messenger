@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedD
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
@@ -21,6 +22,8 @@ class MessengerRepoImpl(
     private val socket: MessengerSocket,
     private val storageUrlConverter: StorageUrlConverter
 ) : MessengerRepo {
+
+    private var currrentList:  ListWithTotal<Chat> = ListWithTotal(listOf(), 0)
 
     override suspend fun sendMessage(
         id: Long,
@@ -52,16 +55,22 @@ class MessengerRepoImpl(
         )
     }
 
-    override fun getPageChats(query: String): TotalPagingSource<Int, Chat> = totalPagingSource(
-        maxPageSize = PAGE_SIZE,
-        loadPageService = { pageNumber, pageSize ->
-            messengerService.getChats(
-                query = query,
-                page = pageNumber,
-                limit = pageSize
-            )
-        }
-    )
+    override fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> {
+        return if (!fromSocket)
+            totalPagingSource(
+            maxPageSize = PAGE_SIZE,
+            loadPageService = { pageNumber, pageSize ->
+                currrentList = messengerService.getChats(
+                    query = query,
+                    page = pageNumber,
+                    limit = pageSize
+                )
+                currrentList
+            }
+        )
+        else
+            totalPagingSource(PAGE_SIZE) { _, _ -> currrentList }
+    }
 
     override suspend fun postChats(
         name: String,

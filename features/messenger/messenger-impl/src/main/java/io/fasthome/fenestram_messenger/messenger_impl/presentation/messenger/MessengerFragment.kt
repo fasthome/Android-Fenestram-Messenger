@@ -12,10 +12,12 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
@@ -25,8 +27,16 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
+import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MessengerFragment :
@@ -36,9 +46,11 @@ class MessengerFragment :
         getParamsInterface = MessengerNavigationContract.getParams
     )
 
-    private val binding by fragmentViewBinding(FragmentMessengerBinding::bind)
+    private val binding by fragmentViewBinding {
+        FragmentMessengerBinding.bind(it)
+    }
 
-    private val environment by inject<Environment>()
+    private val profileImageUrlConverter by inject<StorageUrlConverter>()
 
     private val viewBinderHelper = ViewBinderHelper()
 
@@ -47,7 +59,7 @@ class MessengerFragment :
     private lateinit var fabActionListener: () -> Unit
 
     private var messageAdapter = MessengerAdapter(
-        environment = environment,
+        profileImageUrlConverter = profileImageUrlConverter,
         onChatClicked = {
             vm.launchConversation(it)
         },
@@ -62,6 +74,7 @@ class MessengerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
         chatList.adapter = messageAdapter
+        chatList.itemAnimator = null
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
@@ -78,9 +91,11 @@ class MessengerFragment :
                 return true
             }
         })
-
         messageAdapter.addOnPagesUpdatedListener {
-            binding.llEmptyView.isVisible = messageAdapter.itemCount < 1
+            if (messageAdapter.itemCount == 0) {
+                toggleEmptyView()
+            }
+
             if (lastScrollPosition == 0) binding.chatList.smoothScrollToPosition(0)
         }
         val linearLayoutManager =
@@ -106,11 +121,23 @@ class MessengerFragment :
             vm.exitToConversation()
         }
 
-        vm.items
-            .distinctUntilChanged()
-            .collectLatestWhenStarted(this@MessengerFragment) {
-                messageAdapter.submitData(it)
-            }
+        CoroutineScope(Dispatchers.Main).launch {
+            vm.fetchChats()
+                .distinctUntilChanged()
+                .collectWhenStarted(this@MessengerFragment) {
+                    messageAdapter.submitData(it)
+                }
+
+            messageAdapter.loadStateFlow
+                .collectWhenStarted(this@MessengerFragment) { loadStates ->
+                    if (loadStates.refresh is LoadState.Loading) {
+                        binding.chatLoadProgress.alpha = 1f
+                    } else {
+                        binding.chatLoadProgress.alpha = 0f
+                        toggleEmptyView()
+                    }
+                }
+        }
 
         fabActionListener = {
             vm.onCreateChatClicked()
@@ -157,8 +184,8 @@ class MessengerFragment :
                 this,
                 vm::createChatClicked
             ).show()
-            is MessengerEvent.ProgressEvent -> {
-                binding.chatLoadProgress.alpha = if(event.isProgress) 1f else 0f
+            is MessengerEvent.Invalidate -> {
+                toggleEmptyView()
             }
         }
     }
@@ -193,6 +220,14 @@ class MessengerFragment :
                 )
             }
             root.setConstraintSet(constraints)
+        }
+    }
+
+    private fun toggleEmptyView() = with(binding) {
+        if (llEmptyView.alpha == 1f && messageAdapter.itemCount != 0) {
+            llEmptyView.alpha = 0f
+        } else if (llEmptyView.alpha == 0f && messageAdapter.itemCount == 0) {
+            llEmptyView.alpha = 1f
         }
     }
 

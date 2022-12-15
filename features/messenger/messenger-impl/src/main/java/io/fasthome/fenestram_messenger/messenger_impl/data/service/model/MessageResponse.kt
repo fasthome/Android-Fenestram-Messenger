@@ -45,7 +45,7 @@ class MessageResponse(
     val author: Initiator?,
 
     @SerialName("content")
-    val content: List<String?>? = null,
+    val content: List<ContentResponse>? = null,
 
     @SerialName("reactions")
     val reactions: MessageReactions? = null,

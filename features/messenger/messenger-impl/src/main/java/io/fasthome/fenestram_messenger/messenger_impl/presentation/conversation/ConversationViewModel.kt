@@ -67,6 +67,21 @@ class ConversationViewModel(
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
+    class Features(
+        val profileGuestFeature: ProfileGuestFeature,
+        val authFeature: AuthFeature,
+        val cameraFeature: CameraFeature,
+        val messengerFeature: MessengerFeature,
+    )
+
+    private var chatId = params.chat.id
+    private var chatUsers = listOf<User>()
+    private var selfUserId: Long? = null
+    private var loadItemsJob by switchJob()
+    private var downloadFileJob by switchJob()
+    private var lastPage: MessagesPage? = null
+    var firstVisibleItemPosition: Int = -1
+
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
             is ImageViewerContract.Result.Delete -> {
@@ -79,29 +94,7 @@ class ConversationViewModel(
     }
 
     private val messengerLauncher =
-        registerScreen(features.messengerFeature.messengerNavigationContract) { result ->
-            when (result) {
-                is MessengerFeature.MessengerNavResult.ChatSelected -> {
-                    if (result.chatId != chatId) {
-                        lastPage = null
-                        updateState {
-                            ConversationState(
-                                messages = mapOf(),
-                                userName = result.chatName,
-                                userStatus = UserStatus.Offline.toPrintableText("", result.isGroup),
-                                userStatusDots = PrintableText.EMPTY,
-                                isChatEmpty = false,
-                                avatar = storageUrlConverter.convert(result.avatar),
-                                inputMessageMode = InputMessageMode.Default(),
-                                newMessagesCount = 0,
-                            )
-                        }
-                    }
-                    chatId = result.chatId ?: return@registerScreen
-                    forwardMessage()
-                }
-            }
-        }
+        registerScreen(features.messengerFeature.messengerNavigationContract)
 
     private val cameraLauncher =
         registerScreen(features.cameraFeature.cameraNavigationContract) { result ->
@@ -123,16 +116,19 @@ class ConversationViewModel(
             }
         }
 
-    private var chatId = params.chat.id
-    private var chatUsers = listOf<User>()
-    private var selfUserId: Long? = null
-    private var loadItemsJob by switchJob()
-    private var downloadFileJob by switchJob()
-    private var lastPage: MessagesPage? = null
-    private var messagesToForward: Long? = null
-    var firstVisibleItemPosition: Int = -1
-
     private val openFileLauncher = registerScreen(OpenFileNavigationContract)
+
+    private val profileGuestLauncher =
+        registerScreen(features.profileGuestFeature.profileGuestNavigationContract) { result ->
+            when (result) {
+                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted ->
+                    exitWithResult(
+                        ConversationNavigationContract.createResult(
+                            ConversationNavigationContract.Result.ChatDeleted(result.id)
+                        )
+                    )
+            }
+        }
 
     init {
         pickFileInterface.resultEvents()
@@ -145,12 +141,13 @@ class ConversationViewModel(
                     is PickFileInterface.ResultEvent.PickedFile -> {
                         updateState { state ->
                             state.copy(
-                                inputMessageMode = InputMessageMode.Default(attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
-                                    ?: emptyList()).plus(
-                                    AttachedFile.Document(
-                                        file = it.tempFile
+                                inputMessageMode = InputMessageMode.Default(
+                                    attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                                        ?: emptyList()).plus(
+                                        AttachedFile.Document(
+                                            file = it.tempFile
+                                        )
                                     )
-                                )
                                 )
                             )
                         }
@@ -160,11 +157,20 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
     }
 
-    fun previousScreen(): Boolean {
-        return params.fromContacts
+    override fun createInitialState(): ConversationState {
+        return ConversationState(
+            messages = mapOf(),
+            userName = PrintableText.Raw(params.chat.name),
+            userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup, chatUsers),
+            userStatusDots = PrintableText.EMPTY,
+            isChatEmpty = false,
+            avatar = storageUrlConverter.convert(params.chat.avatar),
+            inputMessageMode = InputMessageMode.Default(),
+            newMessagesCount = params.chat.pendingMessages.toInt()
+        )
     }
 
-    fun loadItems(isResumed: Boolean) {
+    fun loadPage(isResumed: Boolean) {
         loadItemsJob = viewModelScope.launch {
             val firstNewMessageCount = lastPage?.let {
                 if (it.total <= PAGE_SIZE) {
@@ -200,106 +206,67 @@ class ConversationViewModel(
 
     fun fetchMessages(isResumed: Boolean) {
         viewModelScope.launch {
-            selfUserId = features.authFeature.getUserId(needLogout = true).getOrNull()
-            if (selfUserId == null) {
-                features.authFeature.logout()
-                return@launch
-            }
+            getMessages(isResumed)
 
-            if (chatId == null) {
-                messengerInteractor.postChats(
-                    name = params.chat.name,
-                    users = params.chat.users,
-                    isGroup = params.chat.isGroup
-                ).withErrorHandled {
-                    chatId = it.chatId
-                    if (params.chat.avatar != null && params.chat.isGroup)
-                        if (messengerInteractor.patchChatAvatar(it.chatId, params.chat.avatar)
-                                .successOrSendError() != null
-                        )
-                            updateState { state ->
-                                state.copy(avatar = storageUrlConverter.convert(params.chat.avatar))
-                            }
-                }
+            params.forwardMessage?.let {
+                forwardMessage(it)
             }
-            subscribeMessages(
-                isResumed = isResumed,
-                chatId ?: params.chat.id ?: return@launch,
-                selfUserId ?: return@launch
-            )
-            subscribeMessageActions()
         }
     }
 
-    class Features(
-        val profileGuestFeature: ProfileGuestFeature,
-        val authFeature: AuthFeature,
-        val cameraFeature: CameraFeature,
-        val messengerFeature: MessengerFeature,
-    )
+    private suspend fun getMessages(isResumed: Boolean) {
+        selfUserId = features.authFeature.getUserId(needLogout = true).getOrNull()
+        if (selfUserId == null) {
+            features.authFeature.logout()
+            return
+        }
 
-    private val profileGuestLauncher =
-        registerScreen(features.profileGuestFeature.profileGuestNavigationContract) { result ->
-            when (result) {
-                is ProfileGuestFeature.ProfileGuestResult.ChatDeleted ->
-                    exitWithResult(
-                        ConversationNavigationContract.createResult(
-                            ConversationNavigationContract.Result.ChatDeleted(result.id)
-                        )
+        if (chatId == null) {
+            messengerInteractor.postChats(
+                name = params.chat.name,
+                users = params.chat.users,
+                isGroup = params.chat.isGroup
+            ).withErrorHandled {
+                chatId = it.chatId
+                if (params.chat.avatar != null && params.chat.isGroup)
+                    if (messengerInteractor.patchChatAvatar(it.chatId, params.chat.avatar)
+                            .successOrSendError() != null
                     )
+                        updateState { state ->
+                            state.copy(avatar = storageUrlConverter.convert(params.chat.avatar))
+                        }
             }
         }
+        subscribeMessages(
+            isResumed = isResumed,
+            chatId ?: params.chat.id ?: return,
+            selfUserId ?: return
+        )
+        subscribeMessageActions()
+    }
+
+    fun previousScreen(): Boolean {
+        return params.fromContacts
+    }
 
     fun exitToMessenger() {
         messengerInteractor.emitChatListeners(null, chatId)
         exitWithoutResult()
     }
 
-    override fun createInitialState(): ConversationState {
-        return ConversationState(
-            messages = mapOf(),
-            userName = PrintableText.Raw(params.chat.name),
-            userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup),
-            userStatusDots = PrintableText.EMPTY,
-            isChatEmpty = false,
-            avatar = storageUrlConverter.convert(params.chat.avatar),
-            inputMessageMode = InputMessageMode.Default(),
-            newMessagesCount = params.chat.pendingMessages.toInt()
-        )
-    }
-
     fun openChatSelectorForForward(messageId: Long) {
-        messagesToForward = messageId
         messengerLauncher.launch(
-            MessengerFeature.MessengerParams(true)
+            MessengerFeature.MessengerParams(
+                chatSelectionMode = true,
+                forwardMessage = MessengerFeature.ForwardMessage(messageId)
+            )
         )
     }
 
-    private fun forwardMessage() {
+    private fun forwardMessage(forwardMessage: MessengerFeature.ForwardMessage) {
         viewModelScope.launch {
-            if (chatId != null && messagesToForward != null) {
-                val result = messengerInteractor.forwardMessage(chatId!!, messagesToForward!!)
-                when (result) {
-                    is CallResult.Error -> {
-                        onError(showErrorType = ShowErrorType.Popup, throwable = result.error)
-                        messagesToForward = null
-                    }
-                    is CallResult.Success -> {
-                        updateState { state ->
-                            val tempMessages =
-                                if (state.messages.isEmpty()) emptyMap() else result.data?.toForwardConversationViewItem(
-                                    selfUserId,
-                                    params.chat.isGroup,
-                                    storageUrlConverter) ?: emptyMap()
-                            return@updateState state.copy(
-                                inputMessageMode = InputMessageMode.Default(),
-                                messages = tempMessages.plus(state.messages)
-                            )
-                        }
-                        sendEvent(ConversationEvent.UpdateScrollPosition(0))
-                    }
-                }
-            }
+            messengerInteractor.forwardMessage(chatId ?: return@launch, forwardMessage.id)
+                .withErrorHandled {}
         }
     }
 
@@ -370,12 +337,13 @@ class ConversationViewModel(
     private fun attachContentFile(content: Content) {
         updateState { state ->
             state.copy(
-                inputMessageMode = InputMessageMode.Default(attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
-                    ?: emptyList()).plus(
-                    AttachedFile.Image(
-                        content = content
+                inputMessageMode = InputMessageMode.Default(
+                    attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                        ?: emptyList()).plus(
+                        AttachedFile.Image(
+                            content = content
+                        )
                     )
-                )
                 )
             )
         }
@@ -466,7 +434,7 @@ class ConversationViewModel(
             fileStoragePath = it
             it
         }
-        when(result) {
+        when (result) {
             is CallResult.Error -> {
                 updateState { state ->
                     updateStatus(tempMessage, SentStatus.Error)
@@ -482,16 +450,12 @@ class ConversationViewModel(
     }
 
     private suspend fun sendDocument(tempMessage: ConversationViewItem.Self.Document) {
-        var fileStoragePath: String? = null
-        messengerInteractor.uploadDocument(
+        var fileStoragePath: String?
+        val result = messengerInteractor.uploadDocument(
             tempMessage.file?.readBytes() ?: return,
-            extension = tempMessage.file.name.let { fileName ->
-                if (fileName.substring(fileName.lastIndexOf('.'), fileName.length) == ".pdf")
-                    ".pdf"
-                else
-                    ".txt"
-            }
-        ).getOrNull()?.documentPath.let {
+            tempMessage.file.name
+        )
+        result.getOrNull()?.documentPath.let {
             fileStoragePath = it
             it
         }
@@ -574,7 +538,14 @@ class ConversationViewModel(
                 }
                 MessageType.Document -> {
                     if ((existMessage as ConversationViewItem.Self.Document).file == null) return@launch
-                    existMessage
+                    existMessage.copy(
+                        metaInfo = MetaInfo(
+                            name = existMessage.file?.name ?: "",
+                            extension = existMessage.file?.extension ?: "",
+                            size = existMessage.file?.fileSizeInMb() ?: 0f,
+                            url = ""
+                        )
+                    )
                 }
             }
             val messages = currentViewState.messages
@@ -673,13 +644,17 @@ class ConversationViewModel(
         val clickedUser =
             chatUsers.firstOrNull { it.nickname.equals(userTag.getNicknameFromLink(), true) }
         if (clickedUser != null) {
-            sendEvent(ConversationEvent.ShowPersonDetailDialog(PersonDetail(
-                userId = clickedUser.id,
-                avatar = clickedUser.avatar,
-                phone = clickedUser.phone,
-                userName = clickedUser.name,
-                userNickname = clickedUser.nickname
-            )))
+            sendEvent(
+                ConversationEvent.ShowPersonDetailDialog(
+                    PersonDetail(
+                        userId = clickedUser.id,
+                        avatar = clickedUser.avatar,
+                        phone = clickedUser.phone,
+                        userName = clickedUser.name,
+                        userNickname = clickedUser.nickname
+                    )
+                )
+            )
         }
     }
 
@@ -693,10 +668,15 @@ class ConversationViewModel(
             } else {
                 val tagPos = text.lastIndexOf('@')
                 val nickname = text.substring(tagPos, selectionStart)
-                if (USER_TAG_PATTERN.matcher(nickname)
-                        .matches() && text.getOrNull(tagPos - 1) == ' '
+                if (USER_TAG_PATTERN.matcher(nickname).matches() && (text.getOrNull(tagPos - 1)
+                        ?: ' ') == ' '
                 ) {
-                    chatUsers.filter { it.nickname.contains(nickname.getNicknameFromLink(), true) }
+                    users = chatUsers.filter {
+                        it.nickname.contains(
+                            nickname.getNicknameFromLink(),
+                            true
+                        )
+                    }
                 }
             }
         }
@@ -733,7 +713,7 @@ class ConversationViewModel(
     }
 
     private suspend fun subscribeMessages(isResumed: Boolean, chatId: Long, selfUserId: Long) {
-        loadItems(isResumed)
+        loadPage(isResumed)
         messengerInteractor.getMessagesFromChat(
             chatId,
             selfUserId,
@@ -763,7 +743,8 @@ class ConversationViewModel(
                     val newMessages = listOf(message).toConversationItems(
                         selfUserId = selfUserId,
                         isGroup = params.chat.isGroup,
-                        storageUrlConverter)
+                        storageUrlConverter
+                    )
                     state.copy(
                         messages = newMessages.plus(state.messages)
                     )
@@ -775,6 +756,9 @@ class ConversationViewModel(
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
+                                userStatus = UserStatus.Offline.toPrintableText("",
+                                    params.chat.isGroup,
+                                    chatUsers),
                             )
                         }
                     }
@@ -783,13 +767,25 @@ class ConversationViewModel(
                     messengerInteractor.emitMessageRead(chatId, listOf(message.id))
                     sendEvent(ConversationEvent.UpdateScrollPosition(0))
                 } else if (selfUserId != message.userSenderId) {
-                    updateState { state -> state.copy(newMessagesCount = state.newMessagesCount + 1) }
+                    updateState { state -> state.copy(
+                        newMessagesCount = state.newMessagesCount + 1,
+                        userStatus = UserStatus.Offline.toPrintableText("",
+                            params.chat.isGroup,
+                            chatUsers),
+                    )
+                    }
                 }
             }
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
-            updateState { state -> state.copy(avatar = it.avatar, userName = PrintableText.Raw(it.chatName)) }
+            updateState { state ->
+                state.copy(
+                    avatar = it.avatar,
+                    userName = PrintableText.Raw(it.chatName),
+                    userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup, chatUsers),
+                )
+            }
         }
     }
 
@@ -804,7 +800,7 @@ class ConversationViewModel(
                         ConversationEvent.DotsEvent(
                             userStatus = messageAction.userStatus.toPrintableText(
                                 messageAction.userName,
-                                params.chat.isGroup
+                                params.chat.isGroup, chatUsers
                             ),
                             userStatusDots = PrintableText.Raw(".")
                         )
@@ -818,7 +814,8 @@ class ConversationViewModel(
                             ConversationEvent.DotsEvent(
                                 userStatus = messageAction.userStatus.toPrintableText(
                                     messageAction.userName,
-                                    params.chat.isGroup
+                                    params.chat.isGroup,
+                                    chatUsers
                                 ),
                                 userStatusDots = lastDotsStatus
                             )
@@ -828,7 +825,8 @@ class ConversationViewModel(
                         ConversationEvent.DotsEvent(
                             userStatus = UserStatus.Online.toPrintableText(
                                 messageAction.userName,
-                                params.chat.isGroup
+                                params.chat.isGroup,
+                                chatUsers
                             ),
                             userStatusDots = PrintableText.EMPTY
                         )
@@ -860,14 +858,18 @@ class ConversationViewModel(
             when (state.inputMessageMode) {
                 is InputMessageMode.Edit -> {
                     if (deletedMessages.contains(state.inputMessageMode.messageToEdit.id)) {
-                        return@updateState state.copy(messages = messages,
-                            inputMessageMode = InputMessageMode.Default(""))
+                        return@updateState state.copy(
+                            messages = messages,
+                            inputMessageMode = InputMessageMode.Default("")
+                        )
                     }
                 }
                 is InputMessageMode.Reply -> {
                     if (deletedMessages.contains(state.inputMessageMode.messageToReply.id)) {
-                        return@updateState state.copy(messages = messages,
-                            inputMessageMode = InputMessageMode.Default())
+                        return@updateState state.copy(
+                            messages = messages,
+                            inputMessageMode = InputMessageMode.Default()
+                        )
                     }
                 }
             }
@@ -1044,7 +1046,8 @@ class ConversationViewModel(
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
                 imageUrl = url,
-                imageBitmap = bitmap)
+                imageBitmap = bitmap
+            )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
@@ -1089,14 +1092,18 @@ class ConversationViewModel(
                     when (state.inputMessageMode) {
                         is InputMessageMode.Edit -> {
                             if (state.inputMessageMode.messageToEdit.id == messageId) {
-                                return@updateState state.copy(messages = messages,
-                                    inputMessageMode = InputMessageMode.Default(""))
+                                return@updateState state.copy(
+                                    messages = messages,
+                                    inputMessageMode = InputMessageMode.Default("")
+                                )
                             }
                         }
                         is InputMessageMode.Reply -> {
                             if (state.inputMessageMode.messageToReply.id == messageId) {
-                                return@updateState state.copy(messages = messages,
-                                    inputMessageMode = InputMessageMode.Default())
+                                return@updateState state.copy(
+                                    messages = messages,
+                                    inputMessageMode = InputMessageMode.Default()
+                                )
                             }
                         }
                     }
@@ -1130,17 +1137,26 @@ class ConversationViewModel(
         sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
     }
 
+    fun onGroupDocumentLongClicked(conversationViewItem: ConversationViewItem.Group) {
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+    }
+
+    fun onSelfDocumentLongClicked(conversationViewItem: ConversationViewItem.Self) {
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+    }
+
+    fun onReceiveDocumentLongClicked(conversationViewItem: ConversationViewItem.Receive) {
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+    }
+
     fun onTypingMessage() {
         messengerInteractor.emitMessageAction(chatId.toString(), TYPING_MESSAGE_STATUS)
     }
 
     fun onDownloadDocument(
-        itemSelf: ConversationViewItem.Self.Document? = null,
-        itemReceive: ConversationViewItem.Receive.Document? = null,
-        itemGroup: ConversationViewItem.Group.Document? = null,
+        item: ConversationViewItem,
         progressListener: ProgressListener,
     ) {
-        val item = itemSelf ?: itemReceive ?: itemGroup ?: return
         val documentLink = item.content.toString()
         downloadFileJob = viewModelScope.launch {
             messengerInteractor.getDocument(
@@ -1176,10 +1192,15 @@ class ConversationViewModel(
             isSubscribed = false
         } else if (firstVisibleItemPosition == 0) {
             messengerInteractor.emitChatListeners(chatId, null)
-            messengerInteractor.emitMessageRead(
-                chatId!!,
-                currentViewState.messages.values.map { it.id }
-            )
+            val readMessages = currentViewState.messages.values.filter {
+                it.sentStatus == SentStatus.Received
+            }.map { it.id }
+            if (readMessages.isNotEmpty()) {
+                messengerInteractor.emitMessageRead(
+                    chatId!!,
+                    readMessages
+                )
+            }
             isSubscribed = true
         }
 
@@ -1200,5 +1221,9 @@ class ConversationViewModel(
             updateState { state -> state.copy(newMessagesCount = firstVisibleItemPosition) }
         }
 
+    }
+
+    fun onViewStopped() {
+        loadItemsJob = null
     }
 }

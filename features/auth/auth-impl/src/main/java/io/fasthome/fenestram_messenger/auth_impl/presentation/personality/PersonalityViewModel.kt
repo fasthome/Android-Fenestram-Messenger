@@ -8,7 +8,7 @@ import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.R
-import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -34,7 +34,7 @@ class PersonalityViewModel(
     private val personalityInterface: PersonalityInterface,
     private val params: PersonalityNavigationContract.Params,
     private val profileImageUtil: ProfileImageUtil,
-    private val environment: Environment
+    private val profileImageUrlConverter: StorageUrlConverter
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
 
     private var avatarUrl: String? = null
@@ -94,7 +94,7 @@ class PersonalityViewModel(
         val detail = params.userDetail
 
         avatarUrl = if (!detail.profileImageUrl.isNullOrEmpty())
-            environment.endpoints.baseUrl.dropLast(1) + detail.profileImageUrl
+            profileImageUrlConverter.convert(detail.profileImageUrl)
         else
             null
 
@@ -136,7 +136,7 @@ class PersonalityViewModel(
                 avatarFile != null -> {
                     profileFeature.uploadProfileImage(avatarFile.readBytes())
                         .getOrNull()?.profileImagePath.let {
-                            avatarUrl = environment.endpoints.baseUrl.dropLast(1) + it
+                            avatarUrl = profileImageUrlConverter.convert(it)
                             it
                         }
                 }

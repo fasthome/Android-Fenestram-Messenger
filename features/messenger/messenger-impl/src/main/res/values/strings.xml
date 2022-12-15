@@ -31,8 +31,12 @@
     <string name="messenger_create_chat_cancel">Отмена</string>
     <string name="messenger_search_contacts">Поиск контакта</string>
     <string name="messenger_edited">изменено</string>
+    <string name="forward_file_from_ph">Пересланный файл\nот %1$s</string>
     <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
+    <string name="reply_document_ph">Ответ на файл\nот %1$s</string>
     <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
+    <string name="meta_document_size_ph">%1$.2f/%2$.1f Мб</string>
+    <string name="mb_real">%1$.1f Мб</string>
     <string name="forward">Переслать</string>
     <string name="forward_message">Пересланное сообщение</string>
 
@@ -45,6 +49,7 @@
 
     <string name="user_status_online">Online</string>
     <string name="user_status_offline">Offline</string>
+    <string name="user_group_status">%1$d участников, %2$d в сети</string>
     <string name="user_status_typing">Печатает</string>
     <string name="group_user_status_typing">%s печатает</string>
 </resources>
