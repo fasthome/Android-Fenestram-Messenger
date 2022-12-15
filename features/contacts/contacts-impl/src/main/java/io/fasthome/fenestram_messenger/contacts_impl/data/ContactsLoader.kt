@@ -6,6 +6,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
@@ -99,7 +100,7 @@ class ContactsLoader(private val context: Context) {
                     ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex
                 )
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Phone.NUMBER, mobileNumber)
+                .withValue(CommonDataKinds.Phone.NUMBER, mobileNumber.replace(" ", "").replace("-", ""))
                 .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE).build()
         )
 
@@ -147,7 +148,7 @@ class ContactsLoader(private val context: Context) {
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.d("ContactsLoader", e.message.toString())
         }
     }
 

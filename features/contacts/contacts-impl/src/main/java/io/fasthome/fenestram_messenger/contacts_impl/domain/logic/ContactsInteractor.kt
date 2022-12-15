@@ -55,6 +55,15 @@ class ContactsInteractor(
 
     suspend fun updateContactName(phoneNumber: String, newName: String) {
         contactsLoader.updateContactName(phoneNumber, newName)
+        val localContacts: List<Contact> = contactsLoader.fetchLocalContacts().map {
+            Contact(
+                id = 0,
+                phone = it.phone,
+                userName = it.name,
+                userId = null
+            )
+        }
+        contactsRepo.uploadContacts(localContacts)
     }
 
     suspend fun getSelfUserPhone() = userStorage.getUserPhone()
