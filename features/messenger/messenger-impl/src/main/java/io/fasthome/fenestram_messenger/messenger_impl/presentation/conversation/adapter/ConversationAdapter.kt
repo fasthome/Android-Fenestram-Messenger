@@ -304,7 +304,7 @@ fun createConversationSelfForwardAdapterDelegate(
 
                     replyDocumentContent.onClick {
                         progressBar.isVisible = true
-                        onDownloadDocument(item.replyMessage!!) { progress ->
+                        onDownloadDocument(item.forwardMessage) { progress ->
                             progressBar.progress = progress
                             forwardMessage.metaInfo?.let { meta ->
                                 fileSize.text = getString(R.string.meta_document_size_ph,
@@ -534,7 +534,7 @@ fun createConversationReceiveForwardAdapterDelegate(
 
                     replyDocumentContent.onClick {
                         progressBar.isVisible = true
-                        onDownloadDocument(item.replyMessage!!) { progress ->
+                        onDownloadDocument(item.forwardMessage) { progress ->
                             progressBar.progress = progress
                             forwardMessage.metaInfo?.let { meta ->
                                 fileSize.text = getString(R.string.meta_document_size_ph,
