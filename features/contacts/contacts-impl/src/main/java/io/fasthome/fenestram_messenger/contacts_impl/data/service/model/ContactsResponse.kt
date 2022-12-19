@@ -7,6 +7,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+class Contacts(
+    @SerialName("contacts")
+    val contactsResponse: List<ContactsResponse>?
+)
+
+@Serializable
 class ContactsResponse(
     @SerialName("id")
     val id: Long,

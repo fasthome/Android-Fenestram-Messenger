@@ -700,7 +700,7 @@ class ConversationViewModel(
                             isGroup = params.chat.isGroup,
                             userPhone = chat.chatUsers.firstOrNull { it.id != selfUserId }?.phone
                                 ?: "",
-                            editMode = editMode && params.chat.isGroup
+                            editMode = editMode
                         )
                     )
                 }

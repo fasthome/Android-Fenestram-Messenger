@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.data.service
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.ContactsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.Contacts
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsResponse
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.DeleteContactsRequest
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.SendContactsRequest
