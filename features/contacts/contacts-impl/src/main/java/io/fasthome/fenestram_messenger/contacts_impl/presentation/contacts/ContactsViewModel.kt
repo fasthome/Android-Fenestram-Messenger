@@ -35,7 +35,7 @@ class ContactsViewModel(
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
-            is ContactAddNavigationContract.ContactAddResult.Success -> {}
+            is ContactAddNavigationContract.ContactAddResult.Success -> Unit
             is ContactAddNavigationContract.ContactAddResult.Canceled -> showMessage(Message.PopUp(result.message))
         }
     }

@@ -100,7 +100,7 @@ class ContactsLoader(private val context: Context) {
                     ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex
                 )
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Phone.NUMBER, mobileNumber.replace(" ", "").replace("-", ""))
+                .withValue(CommonDataKinds.Phone.NUMBER, "+${mobileNumber}")
                 .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE).build()
         )
 

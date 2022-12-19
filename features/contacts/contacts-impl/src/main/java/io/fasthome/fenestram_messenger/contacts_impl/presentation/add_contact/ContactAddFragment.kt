@@ -10,7 +10,10 @@ import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactAddBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.*
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
+import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getPrintableText
 import io.fasthome.fenestram_messenger.util.model.EditTextFilter
@@ -86,7 +89,7 @@ class ContactAddFragment :
                 vm.checkAndWriteContact(
                     contactAddInputFirstName.includeEditText.text.toString(),
                     contactAddInputSecondName.includeEditText.text.toString(),
-                    contactAddInputNumber.getPhoneNumber(),
+                    contactAddInputNumber.getPhoneNumberFiltered(),
                     contactAddInputNumber.isValid()
                 )
             }
