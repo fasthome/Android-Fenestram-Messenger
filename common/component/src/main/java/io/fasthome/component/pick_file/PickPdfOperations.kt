@@ -1,11 +1,14 @@
 package io.fasthome.component.pick_file
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
 import io.fasthome.fenestram_messenger.util.android.getFileName
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 interface PickFileOperations {
     suspend fun copyFile(
@@ -31,10 +34,16 @@ class PickFileOperationsImpl(
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun renameFile(oldFile: File, destUri: Uri, destFileParent: File): File {
         val fileName = destUri.getFileName(appContext) ?: return oldFile
+        val newFileName = "document_${
+            SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(
+                Date()
+            )
+        }${fileName.subSequence(fileName.indexOf('.'),fileName.length)}"
 
-        val fileWithRealName = File(destFileParent, fileName)
+        val fileWithRealName = File(destFileParent, newFileName)
         return if (oldFile.renameTo(fileWithRealName)) {
             fileWithRealName
         } else {

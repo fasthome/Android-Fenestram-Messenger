@@ -64,8 +64,7 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
 
         val userStatus = when {
             messageActionResponse.action == TYPING_MESSAGE_STATUS -> UserStatus.Typing
-            messageActionResponse.user?.isOnline == true -> UserStatus.Online
-            else -> UserStatus.Offline
+            else -> UserStatus.OnlineStatus
         }
 
         return MessageAction(

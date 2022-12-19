@@ -161,7 +161,7 @@ class ConversationViewModel(
         return ConversationState(
             messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup, chatUsers),
+            userStatus = UserStatus.OnlineStatus.toPrintableText("", params.chat.isGroup, chatUsers),
             userStatusDots = PrintableText.EMPTY,
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
@@ -756,11 +756,9 @@ class ConversationViewModel(
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
-                                userStatus = UserStatus.Offline.toPrintableText(
-                                    "",
+                                userStatus = UserStatus.OnlineStatus.toPrintableText("",
                                     params.chat.isGroup,
-                                    chatUsers
-                                ),
+                                    chatUsers),
                             )
                         }
                     }
@@ -769,15 +767,12 @@ class ConversationViewModel(
                     messengerInteractor.emitMessageRead(chatId, listOf(message.id))
                     sendEvent(ConversationEvent.UpdateScrollPosition(0))
                 } else if (selfUserId != message.userSenderId) {
-                    updateState { state ->
-                        state.copy(
-                            newMessagesCount = state.newMessagesCount + 1,
-                            userStatus = UserStatus.Offline.toPrintableText(
-                                "",
-                                params.chat.isGroup,
-                                chatUsers
-                            ),
-                        )
+                    updateState { state -> state.copy(
+                        newMessagesCount = state.newMessagesCount + 1,
+                        userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                            params.chat.isGroup,
+                            chatUsers),
+                    )
                     }
                 }
             }
@@ -788,7 +783,7 @@ class ConversationViewModel(
                 state.copy(
                     avatar = it.avatar,
                     userName = PrintableText.Raw(it.chatName),
-                    userStatus = UserStatus.Offline.toPrintableText("", params.chat.isGroup, chatUsers),
+                    userStatus = UserStatus.OnlineStatus.toPrintableText("", params.chat.isGroup, chatUsers),
                 )
             }
         }
@@ -828,7 +823,7 @@ class ConversationViewModel(
                     }
                     sendEvent(
                         ConversationEvent.DotsEvent(
-                            userStatus = UserStatus.Online.toPrintableText(
+                            userStatus = UserStatus.OnlineStatus.toPrintableText(
                                 messageAction.userName,
                                 params.chat.isGroup,
                                 chatUsers

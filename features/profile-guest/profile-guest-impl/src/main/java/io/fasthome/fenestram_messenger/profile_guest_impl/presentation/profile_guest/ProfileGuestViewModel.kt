@@ -64,6 +64,12 @@ class ProfileGuestViewModel(
         }
 
     init {
+        groupParticipantsInterface.listChanged = { size ->
+            updateState {
+                it.copy(participantsQuantity = size)
+            }
+        }
+
         pickFileInterface.resultEvents()
             .onEach {
                 when (it) {
