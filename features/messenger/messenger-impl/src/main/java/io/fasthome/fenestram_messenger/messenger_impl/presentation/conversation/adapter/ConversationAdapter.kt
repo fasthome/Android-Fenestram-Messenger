@@ -404,7 +404,7 @@ fun createConversationSelfDocumentAdapterDelegate(
         binding.contentLayout.onClick {
             onSelfDocumentLongClicked(item)
         }
-        binding.messageContent.onClick {
+        binding.documentBg.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
                 binding.progressBar.progress = progress
@@ -663,7 +663,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
         binding.contentLayout.onClick {
             onReceiveDocumentLongClicked(item)
         }
-        binding.messageContent.onClick {
+        binding.documentBg.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
                 binding.progressBar.progress = progress
@@ -936,7 +936,7 @@ fun createConversationGroupDocumentAdapterDelegate(
         binding.contentLayout.onClick {
             onGroupDocumentLongClicked(item)
         }
-        binding.messageContent.onClick {
+        binding.documentBg.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
                 binding.progressBar.progress = progress
