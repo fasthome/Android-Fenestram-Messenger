@@ -25,4 +25,6 @@ dependencies {
 
     api(Deps.Glide.core)
     kapt(Deps.Glide.compiler)
+
+    api(Deps.libphonenumber)
 }

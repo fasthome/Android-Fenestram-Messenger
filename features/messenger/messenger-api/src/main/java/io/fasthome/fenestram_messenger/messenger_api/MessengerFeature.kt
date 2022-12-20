@@ -7,13 +7,14 @@ import android.os.Parcelable
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
+import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 interface MessengerFeature {
 
-    val messengerNavigationContract: NavigationContractApi<MessengerParams, MessengerNavResult>
+    val messengerNavigationContract: NavigationContractApi<MessengerParams, NoResult>
 
     val conversationNavigationContract: NavigationContractApi<Params, MessengerResult>
 
@@ -34,9 +35,19 @@ interface MessengerFeature {
         authorId: Long,
     ): CallResult<SendMessageResult>
 
+    /**
+     * @param chatSelectionMode если true, то экран мессенджера используется для выбора куда переслать сообщение
+     * @param forwardMessage пересылаемое сообщение
+     */
     @Parcelize
     data class MessengerParams(
         val chatSelectionMode: Boolean = false,
+        val forwardMessage: ForwardMessage? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class ForwardMessage(
+        val id: Long
     ) : Parcelable
 
     sealed class MessengerNavResult : Parcelable {

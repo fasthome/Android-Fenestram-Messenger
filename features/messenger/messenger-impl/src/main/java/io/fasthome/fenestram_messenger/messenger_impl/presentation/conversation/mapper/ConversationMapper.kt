@@ -44,9 +44,11 @@ fun List<Message>.toConversationItems(
             resultMap[UUID.randomUUID().toString()] =
                 it.toConversationViewItem(selfUserId, isGroup, profileImageUrlConverter)
         } else {
-            resultMap += it.toForwardConversationViewItem(selfUserId,
+            resultMap += it.toForwardConversationViewItem(
+                selfUserId,
                 isGroup,
-                profileImageUrlConverter)
+                profileImageUrlConverter
+            )
         }
     }
     return resultMap
@@ -75,9 +77,11 @@ fun Message.toForwardConversationViewItem(
                 messageType = messageType,
                 replyMessage = null,
                 userName = PrintableText.Raw(getName(initiator)),
-                forwardMessage = message.toConversationViewItem(selfUserId,
+                forwardMessage = message.toConversationViewItem(
+                    selfUserId,
                     isGroup,
-                    profileImageUrlConverter)
+                    profileImageUrlConverter
+                )
             )
             else -> {
                 if (isGroup) {
@@ -92,9 +96,11 @@ fun Message.toForwardConversationViewItem(
                         messageType = messageType,
                         replyMessage = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        forwardMessage = message.toConversationViewItem(selfUserId,
+                        forwardMessage = message.toConversationViewItem(
+                            selfUserId,
                             isGroup,
-                            profileImageUrlConverter),
+                            profileImageUrlConverter
+                        ),
                         avatar = initiator?.avatar ?: "",
                         phone = initiator?.phone ?: "",
                         userId = initiator?.id ?: 0
@@ -111,9 +117,11 @@ fun Message.toForwardConversationViewItem(
                         messageType = messageType,
                         replyMessage = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        forwardMessage = message.toConversationViewItem(selfUserId,
+                        forwardMessage = message.toConversationViewItem(
+                            selfUserId,
                             isGroup,
-                            profileImageUrlConverter)
+                            profileImageUrlConverter
+                        )
                     )
                 }
             }
@@ -123,6 +131,12 @@ fun Message.toForwardConversationViewItem(
     return resultMap
 }
 
+/***
+ * @param selfUserId ID текущего пользователя
+ * @param isGroup Группа ли
+ * @param profileImageUrlConverter Для преобразования path в link, todo Выделить маппер в объект
+ * @param isForwardMessage пересланное или ответ на сообщение - всегда новое сообщение, поэтому первый статус сообщения должен быть [SentStatus.Sent]
+ */
 fun Message.toConversationViewItem(
     selfUserId: Long? = null,
     isGroup: Boolean? = null,
@@ -138,8 +152,13 @@ fun Message.toConversationViewItem(
             timeVisible = true
         )
     }
-    val sentStatus =
+
+    val sentStatus = if (!this.forwardedMessages.isNullOrEmpty() || this.replyMessage != null) {
+        SentStatus.Sent
+    } else {
         if (userSenderId == selfUserId && usersHaveRead?.isNotEmpty() == true) SentStatus.Read else SentStatus.Received
+    }
+
     return when {
         (selfUserId == userSenderId) -> {
             when (messageType) {
@@ -638,10 +657,20 @@ private fun getName(user: User?): String {
     }
 }
 
-fun UserStatus.toPrintableText(userName: String, isGroup: Boolean): PrintableText {
+fun UserStatus.toPrintableText(userName: String, isGroup: Boolean, groupUsers: List<User>?): PrintableText {
     return when (this) {
-        UserStatus.Offline -> PrintableText.StringResource(R.string.user_status_offline)
-        UserStatus.Online -> PrintableText.StringResource(R.string.user_status_online)
+        UserStatus.OnlineStatus -> {
+            if (groupUsers.isNullOrEmpty())
+                PrintableText.Raw("")
+            else
+                if(isGroup)
+                    PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
+                    else
+                        if (groupUsers[0].isOnline)
+                            PrintableText.StringResource(R.string.user_status_online)
+                        else
+                            PrintableText.StringResource(R.string.user_status_offline)
+        }
         UserStatus.Typing -> {
             if (isGroup)
                 PrintableText.StringResource(R.string.group_user_status_typing, userName)

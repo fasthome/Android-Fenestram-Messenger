@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adap
 
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
+import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemHeaderBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
@@ -28,10 +29,12 @@ fun createApiContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit) 
             onItemClicked(item)
         }
         bindWithBinding {
+            item.name = PrintableText.Raw(context.getPrintableText(item.name))
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
             contactAvatar.loadCircle(
-                url = item.avatar
+                url = item.avatar,
+                placeholderRes = R.drawable.ic_avatar_placeholder
             )
         }
     }
@@ -44,6 +47,7 @@ fun createLocalContactsAdapterDelegate(onItemClicked: (ContactsViewItem) -> Unit
             onItemClicked(item)
         }
         bindWithBinding {
+            item.name = PrintableText.Raw(context.getPrintableText(item.name))
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
         }

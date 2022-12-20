@@ -69,7 +69,10 @@ class MainActivityViewModel(
         registerScreen(features.authFeature.personalDataNavigationContract) { result ->
             when (result) {
                 AuthFeature.AuthResult.Canceled -> router.finishChain()
-                AuthFeature.AuthResult.Success -> openAuthedRootScreen()
+                AuthFeature.AuthResult.Success -> {
+                    openAuthedRootScreen()
+                    isResumed = true
+                }
             }
         }
 
@@ -78,6 +81,8 @@ class MainActivityViewModel(
             field = value
             handleDeepLink()
         }
+
+    private var isResumed = false
 
     init {
         features.authFeature.startAuthEvents
@@ -96,6 +101,7 @@ class MainActivityViewModel(
             when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
                 is CallResult.Success -> when {
                     !isAuthedResult.data -> openSplashAndAuth()
+                    isResumed -> return@launch
                     else -> {
                         if (!fromPush)
                             checkPersonalData()
@@ -126,8 +132,10 @@ class MainActivityViewModel(
                                 avatar = avatar,
                             )
                         )
-                    else
+                    else {
+                        isResumed = true
                         openAuthedRootScreen()
+                    }
                 }
             }
             is CallResult.Error -> {

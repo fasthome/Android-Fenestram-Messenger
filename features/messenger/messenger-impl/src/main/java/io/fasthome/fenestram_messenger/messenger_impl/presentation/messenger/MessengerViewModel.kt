@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
@@ -19,23 +20,22 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class MessengerViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
-    private val messengerInteractor: MessengerInteractor,
     profileGuestFeature: ProfileGuestFeature,
+    private val messengerInteractor: MessengerInteractor,
     private val loadDataHelper: PagingDataViewModelHelper,
     private val messengerMapper: MessengerMapper,
     private val params: MessengerNavigationContract.Params,
 ) : BaseViewModel<MessengerState, MessengerEvent>(router, requestParams) {
 
-    private val conversationlauncher = registerScreen(ConversationNavigationContract) { result ->
+    private val conversationLauncher = registerScreen(ConversationNavigationContract) { result ->
         when (result) {
             is ConversationNavigationContract.Result.ChatDeleted -> {
                 updateState {
@@ -52,6 +52,7 @@ class MessengerViewModel(
     }
 
     private val createGroupChatLauncher = registerScreen(CreateGroupChatContract)
+
     private val profileGuestLauncher =
         registerScreen(profileGuestFeature.profileGuestNavigationContract) { result ->
             when (result) {
@@ -69,19 +70,31 @@ class MessengerViewModel(
         }
 
     private var _query = ""
-    val items = loadDataHelper.getDataFlow(
-        getItems = {
-            sendEvent(MessengerEvent.ProgressEvent(isProgress = true))
-            messengerInteractor.getMessengerPageItems(_query)
-        },
-        getCachedSelectedId = { null },
-        mapDataItem = {
-            sendEvent(MessengerEvent.ProgressEvent(isProgress = false))
-            return@getDataFlow messengerMapper.toMessengerViewItem(it)
-        },
-        getItemId = { it.id },
-        getItem = { null }
-    ).cachedIn(viewModelScope)
+
+    override fun createInitialState(): MessengerState {
+        return MessengerState(
+            chats = listOf(),
+            messengerViewItems = listOf(),
+            newMessagesCount = 0,
+            isSelectMode = params.chatSelectionMode,
+            scrolledDown = false
+        )
+    }
+
+    fun fetchChats(): Flow<PagingData<MessengerViewItem>> {
+        val items = loadDataHelper.getDataFlow(
+            getItems = {
+                messengerInteractor.getMessengerPageItems(_query, loadDataHelper.fromSocket)
+            },
+            getCachedSelectedId = { null },
+            mapDataItem = {
+                return@getDataFlow messengerMapper.toMessengerViewItem(it)
+            },
+            getItemId = { it.id },
+            getItem = { null },
+        ).cachedIn(viewModelScope)
+        return items
+    }
 
     fun filterChats(query: String) {
         _query = query.trim()
@@ -95,37 +108,28 @@ class MessengerViewModel(
         }
     }
 
-    fun launchConversation(messangerViewItem: MessengerViewItem) {
+    fun launchConversation(messengerViewItem: MessengerViewItem) {
         if (params.chatSelectionMode) {
-            exitWithResult(
-                MessengerNavigationContract.createResult(
-                    MessengerNavigationContract.Result.ChatSelected(
-                        chatName = messangerViewItem.name,
-                        chatId = messangerViewItem.id,
-                        isGroup = messangerViewItem.isGroup,
-                        avatar = messangerViewItem.profileImageUrl,
-                        pendingMessages = messangerViewItem.pendingAmount
-                    )
+            /***
+             * Если мы пересылаем сообщение, backStack должен быть очищен, чтобы не вернуться по кнопке назад в предыдущие чаты
+             */
+            router.backTo(null)
+            conversationLauncher.launch(
+                ConversationNavigationContract.Params(
+                    fromContacts = false,
+                    chat = messengerViewItem.originalChat,
+                    forwardMessage = params.forwardMessage
                 )
             )
         } else {
-            conversationlauncher.launch(
+            conversationLauncher.launch(
+
                 ConversationNavigationContract.Params(
                     fromContacts = false,
-                    chat = messangerViewItem.originalChat
+                    chat = messengerViewItem.originalChat
                 )
             )
         }
-    }
-
-    override fun createInitialState(): MessengerState {
-        return MessengerState(
-            chats = listOf(),
-            messengerViewItems = listOf(),
-            newMessagesCount = 0,
-            isSelectMode = params.chatSelectionMode,
-            scrolledDown = false
-        )
     }
 
     fun onCreateChatClicked() {
@@ -198,9 +202,11 @@ class MessengerViewModel(
                 viewModelScope.launch(context = NonCancellable) {
                     if (!messengerMapper.messageActions.contains(messageAction)) {
                         messengerMapper.messageActions.add(messageAction)
+                        loadDataHelper.fromSocket = true
                         loadDataHelper.invalidateSource()
                         delay(1500)
                         messengerMapper.messageActions.remove(messageAction)
+                        loadDataHelper.fromSocket = true
                         loadDataHelper.invalidateSource()
                     }
                 }
@@ -229,6 +235,8 @@ class MessengerViewModel(
                     it.copy(messengerViewItems = chats)
                 }
             loadDataHelper.invalidateSource()
+            delay(300)
+            sendEvent(MessengerEvent.Invalidate())
         }
     }
 

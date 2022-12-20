@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
 import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -34,8 +35,8 @@ class ContactsViewModel(
 
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
-            is ContactAddNavigationContract.ContactAddResult.Success -> requestPermissionAndLoadContacts()
-            is ContactAddNavigationContract.ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
+            is ContactAddNavigationContract.ContactAddResult.Success -> Unit
+            is ContactAddNavigationContract.ContactAddResult.Canceled -> showMessage(Message.PopUp(result.message))
         }
     }
 
@@ -99,13 +100,13 @@ class ContactsViewModel(
         addContactLauncher.launch(ContactAddNavigationContract.Params(null, null))
     }
 
-    fun filterContacts(text: String) {
-        val filteredContacts = if (text.isEmpty()) {
+    fun filterContacts(query: String) {
+        val filteredContacts = if (query.isEmpty()) {
             originalContactsViewItem
         } else {
             originalContactsViewItem.filter {
                 if (it !is ContactsViewItem.Header) {
-                    getPrintableRawText(it.name).contains(text.trim(), true)
+                    getPrintableRawText(it.name).contains(query.trim(), true)
                 } else {
                     false
                 }
@@ -115,6 +116,16 @@ class ContactsViewModel(
             state.copy(
                 loadingState = LoadingState.Success(filteredContacts)
             )
+        }
+        if (filteredContacts.isEmpty()) {
+            updateState { state ->
+                state.copy(
+                    loadingState = LoadingState.Error(
+                        error = ErrorInfo.createEmpty(),
+                        throwable = EmptyResponseException()
+                    )
+                )
+            }
         }
     }
 

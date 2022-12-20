@@ -6,11 +6,12 @@ import android.content.Context
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.RawContacts
+import android.util.Log
 import androidx.annotation.RequiresPermission
-import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
+import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +66,12 @@ class ContactsLoader(private val context: Context) {
         return _contactsList.toList()
     }
 
-    fun insertContact(firstName: String, secondName: String, mobileNumber: String, callback: ContactAddNavigationContract.ContactAddResult.() -> Unit) {
+    fun insertContact(
+        firstName: String,
+        secondName: String,
+        mobileNumber: String,
+        callback: ContactAddNavigationContract.ContactAddResult.() -> Unit
+    ) {
         val ops = ArrayList<ContentProviderOperation>()
         val rawContactInsertIndex: Int = ops.size
         ops.add(
@@ -94,18 +100,56 @@ class ContactsLoader(private val context: Context) {
                     ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex
                 )
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Phone.NUMBER, "+7${mobileNumber}")
+                .withValue(CommonDataKinds.Phone.NUMBER, "+${mobileNumber}")
                 .withValue(CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.TYPE_MOBILE).build()
         )
+
         try {
             context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
             CoroutineScope(Dispatchers.Main).launch {
                 callback(ContactAddNavigationContract.ContactAddResult.Success)
             }
         } catch (e: Exception) {
-            callback(ContactAddNavigationContract.ContactAddResult.Canceled)
+            CoroutineScope(Dispatchers.Main).launch {
+                val message = PrintableText.StringResource(R.string.failed_to_save_contact)
+                callback(ContactAddNavigationContract.ContactAddResult.Canceled(message))
+            }
         }
+    }
 
+    @RequiresPermission(Manifest.permission.WRITE_CONTACTS)
+    fun updateContactName(number: String, newName: String) {
+        val cursor = context.contentResolver.query(
+            CommonDataKinds.Phone.CONTENT_URI,
+            arrayOf(CommonDataKinds.Phone.CONTACT_ID, CommonDataKinds.Phone.NUMBER),
+            CommonDataKinds.Phone.NUMBER + "=?", arrayOf(number),
+            null
+        )
+        if (cursor == null || cursor.count == 0) return
+        cursor.moveToFirst()
+        val contactId = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID))
+        cursor.close()
+
+        val where = String.format(
+            "%s = '%s' AND %s = ?",
+            ContactsContract.Data.MIMETYPE,
+            CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
+            ContactsContract.Data.CONTACT_ID
+        )
+        val args = arrayOf(contactId)
+        val ops = ArrayList<ContentProviderOperation>()
+        ops.add(
+            ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(where, args)
+                .withValue(CommonDataKinds.StructuredName.GIVEN_NAME, newName)
+                .build()
+        )
+
+        try {
+            context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+        } catch (e: Exception) {
+            Log.d("ContactsLoader", e.message.toString())
+        }
     }
 
 }
