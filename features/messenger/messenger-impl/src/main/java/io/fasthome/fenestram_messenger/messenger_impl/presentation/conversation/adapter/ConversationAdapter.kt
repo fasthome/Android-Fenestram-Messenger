@@ -304,7 +304,7 @@ fun createConversationSelfForwardAdapterDelegate(
 
                     replyDocumentContent.onClick {
                         progressBar.isVisible = true
-                        onDownloadDocument(item.replyMessage!!) { progress ->
+                        onDownloadDocument(item.forwardMessage) { progress ->
                             progressBar.progress = progress
                             forwardMessage.metaInfo?.let { meta ->
                                 fileSize.text = getString(R.string.meta_document_size_ph,
@@ -404,7 +404,7 @@ fun createConversationSelfDocumentAdapterDelegate(
         binding.contentLayout.onClick {
             onSelfDocumentLongClicked(item)
         }
-        binding.messageContent.onClick {
+        binding.documentBg.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
                 binding.progressBar.progress = progress
@@ -534,7 +534,7 @@ fun createConversationReceiveForwardAdapterDelegate(
 
                     replyDocumentContent.onClick {
                         progressBar.isVisible = true
-                        onDownloadDocument(item.replyMessage!!) { progress ->
+                        onDownloadDocument(item.forwardMessage) { progress ->
                             progressBar.progress = progress
                             forwardMessage.metaInfo?.let { meta ->
                                 fileSize.text = getString(R.string.meta_document_size_ph,
@@ -663,7 +663,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
         binding.contentLayout.onClick {
             onReceiveDocumentLongClicked(item)
         }
-        binding.messageContent.onClick {
+        binding.documentBg.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
                 binding.progressBar.progress = progress
@@ -936,7 +936,7 @@ fun createConversationGroupDocumentAdapterDelegate(
         binding.contentLayout.onClick {
             onGroupDocumentLongClicked(item)
         }
-        binding.messageContent.onClick {
+        binding.documentBg.onClick {
             binding.progressBar.isVisible = true
             onDownloadDocument(item) { progress ->
                 binding.progressBar.progress = progress
