@@ -19,10 +19,7 @@ import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.util.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -36,7 +33,11 @@ class ContactsViewModel(
     private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
         when (result) {
             is ContactAddNavigationContract.ContactAddResult.Success -> Unit
-            is ContactAddNavigationContract.ContactAddResult.Canceled -> showMessage(Message.PopUp(result.message))
+            is ContactAddNavigationContract.ContactAddResult.Canceled -> showMessage(
+                Message.PopUp(
+                    result.message
+                )
+            )
         }
     }
 
@@ -64,6 +65,7 @@ class ContactsViewModel(
                         )
                     }
                     is CallResult.Success -> updateState { state ->
+                        val contacts = originalContactsViewItem.map{ it.name }
                         originalContactsViewItem =
                             ContactsMapper.contactsListToViewList(result.data, selfUserPhone)
                                 .toMutableList()
@@ -75,7 +77,10 @@ class ContactsViewModel(
                                 )
                             )
                         } else {
-                            state.copy(loadingState = LoadingState.Success(data = originalContactsViewItem))
+                            state.copy(
+                                loadingState = LoadingState.Success(data = originalContactsViewItem),
+                                needToUpdate = !(contacts.containsAll(originalContactsViewItem.map { it.name }) && originalContactsViewItem.map{it.name}.containsAll(contacts))
+                            )
                         }
                     }
                 }

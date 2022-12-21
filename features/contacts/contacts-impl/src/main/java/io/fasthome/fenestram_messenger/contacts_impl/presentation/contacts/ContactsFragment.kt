@@ -85,7 +85,8 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
             progressContainer = progressContainer,
             contentContainer = null,
             renderData = {
-                contactsAdapter.items = it
+                if (state.needToUpdate)
+                    contactsAdapter.items = it
             },
             renderError = { errorInfo, throwable ->
                 renderError(errorInfo, throwable)
