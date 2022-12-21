@@ -7,18 +7,16 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
 import androidx.core.graphics.drawable.IconCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.core.coroutines.DispatchersProvider
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadBitmap
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.presentation.base.AppFeature
 import io.fasthome.fenestram_messenger.presentation.base.util.Channel
@@ -99,7 +97,13 @@ class FirebasePushService : FirebaseMessagingService() {
             }
 
         val notification = NotificationCompat.Builder(this, Channel.Push.id).also {
-            if (notificationData.isGroup) it.setLargeIcon(getAvatar(notificationData.chatAvatar))
+            if (notificationData.isGroup) it.setLargeIcon(
+                loadBitmap(
+                    applicationContext,
+                    profileImageUrlConverter.convert(notificationData.chatAvatar)
+                )
+            )
+
         }
             .setSmallIcon(R.drawable.ic_launcher)
             .setColor(resources.color(R.color.background))
@@ -125,7 +129,10 @@ class FirebasePushService : FirebaseMessagingService() {
     }
 
     private fun buildMessage(notificationData: NotificationData): NotificationCompat.MessagingStyle.Message {
-        val iconBitmap = getAvatar(notificationData.userAvatar)
+        val iconBitmap = loadBitmap(
+            applicationContext,
+            profileImageUrlConverter.convert(notificationData.userAvatar)
+        )
 
         return NotificationCompat.MessagingStyle.Message(
             notificationData.text,
@@ -150,24 +157,6 @@ class FirebasePushService : FirebaseMessagingService() {
         )
             .addRemoteInput(remoteInput)
             .build()
-    }
-
-    private fun getAvatar(url: String?): Bitmap {
-        return try {
-            Glide.with(this)
-                .asBitmap()
-                .load(profileImageUrlConverter.convert(url))
-                .error(R.drawable.ic_avatar_placeholder)
-                .transform(CircleCrop())
-                .submit(100, 100)
-                .get()
-        } catch (e: Exception) {
-            Glide.with(this)
-                .asBitmap()
-                .load(R.drawable.ic_avatar_placeholder)
-                .submit(100, 100)
-                .get()
-        }
     }
 
     private fun restoreMessagingStyle(notificationId: Int): NotificationCompat.MessagingStyle? {
