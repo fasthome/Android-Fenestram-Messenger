@@ -47,7 +47,8 @@ interface MessengerFeature {
 
     @Parcelize
     data class ForwardMessage(
-        val id: Long
+        val id: Long,
+        val username: PrintableText
     ) : Parcelable
 
     sealed class MessengerNavResult : Parcelable {

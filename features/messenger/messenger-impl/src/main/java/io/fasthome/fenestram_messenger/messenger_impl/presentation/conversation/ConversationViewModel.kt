@@ -88,7 +88,7 @@ class ConversationViewModel(
                 deleteMessage(result.messageId)
             }
             is ImageViewerContract.Result.Forward -> {
-                openChatSelectorForForward(result.messageId)
+                openChatSelectorForForward(result.messageId, result.username)
             }
         }
     }
@@ -161,7 +161,9 @@ class ConversationViewModel(
         return ConversationState(
             messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userStatus = UserStatus.OnlineStatus.toPrintableText("", params.chat.isGroup, chatUsers),
+            userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                params.chat.isGroup,
+                chatUsers),
             userStatusDots = PrintableText.EMPTY,
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
@@ -209,7 +211,9 @@ class ConversationViewModel(
             getMessages(isResumed)
 
             params.forwardMessage?.let {
-                forwardMessage(it)
+                updateState { state ->
+                    state.copy(inputMessageMode = InputMessageMode.Forward(it))
+                }
             }
         }
     }
@@ -254,19 +258,25 @@ class ConversationViewModel(
         exitWithoutResult()
     }
 
-    fun openChatSelectorForForward(messageId: Long) {
+    fun openChatSelectorForForward(messageId: Long, userName: PrintableText) {
         messengerLauncher.launch(
             MessengerFeature.MessengerParams(
                 chatSelectionMode = true,
-                forwardMessage = MessengerFeature.ForwardMessage(messageId)
+                forwardMessage = MessengerFeature.ForwardMessage(messageId, userName)
             )
         )
     }
 
-    private fun forwardMessage(forwardMessage: MessengerFeature.ForwardMessage) {
+    private fun forwardMessage() {
         viewModelScope.launch {
-            messengerInteractor.forwardMessage(chatId ?: return@launch, forwardMessage.id)
-                .withErrorHandled {}
+            messengerInteractor.forwardMessage(chatId ?: return@launch,
+                (currentViewState.inputMessageMode as? InputMessageMode.Forward)?.messageToForward?.id
+                    ?: return@launch)
+                .withErrorHandled {
+                    updateState { state ->
+                        state.copy(inputMessageMode = InputMessageMode.Default())
+                    }
+                }
         }
     }
 
@@ -356,6 +366,12 @@ class ConversationViewModel(
             if (it.attachedFiles.isNotEmpty()) {
                 sendFiles(it.attachedFiles)
             }
+        }
+
+        if (currentViewState.inputMessageMode is InputMessageMode.Forward) {
+            forwardMessage()
+            if (mess.trim().isNotEmpty())
+                sendMessage(text = mess, messageType = MessageType.Text)
         }
 
         if (mess.trim().isNotEmpty()) {
@@ -767,12 +783,13 @@ class ConversationViewModel(
                     messengerInteractor.emitMessageRead(chatId, listOf(message.id))
                     sendEvent(ConversationEvent.UpdateScrollPosition(0))
                 } else if (selfUserId != message.userSenderId) {
-                    updateState { state -> state.copy(
-                        newMessagesCount = state.newMessagesCount + 1,
-                        userStatus = UserStatus.OnlineStatus.toPrintableText("",
-                            params.chat.isGroup,
-                            chatUsers),
-                    )
+                    updateState { state ->
+                        state.copy(
+                            newMessagesCount = state.newMessagesCount + 1,
+                            userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                                params.chat.isGroup,
+                                chatUsers),
+                        )
                     }
                 }
             }
@@ -783,7 +800,9 @@ class ConversationViewModel(
                 state.copy(
                     avatar = it.avatar,
                     userName = PrintableText.Raw(it.chatName),
-                    userStatus = UserStatus.OnlineStatus.toPrintableText("", params.chat.isGroup, chatUsers),
+                    userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                        params.chat.isGroup,
+                        chatUsers),
                 )
             }
         }
@@ -1054,7 +1073,8 @@ class ConversationViewModel(
                     imageUrl = mess.content as? String,
                     imageBitmap = bitmap,
                     messageId = mess.id,
-                    canDelete = conversationViewItem.canDelete()
+                    canDelete = conversationViewItem.canDelete(),
+                    username = conversationViewItem.userName
                 )
             }
 

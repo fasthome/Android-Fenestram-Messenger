@@ -19,7 +19,8 @@ class ImageViewerViewModel(
             imageBitmap = params.imageBitmap,
             messageId = fromConversationParams?.messageId,
             canDelete = fromConversationParams?.canDelete ?: false,
-            canForward = fromConversationParams != null
+            canForward = fromConversationParams != null,
+            username = fromConversationParams?.username
         )
     }
 
@@ -31,7 +32,8 @@ class ImageViewerViewModel(
 
     fun onForwardImage() {
         exitWithResult(ImageViewerContract.createResult(ImageViewerContract.Result.Forward(
-            messageId = currentViewState.messageId ?: return
+            messageId = currentViewState.messageId ?: return,
+            username = currentViewState.username ?: return
         )))
     }
 
