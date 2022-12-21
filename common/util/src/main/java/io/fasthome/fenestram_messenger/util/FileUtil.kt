@@ -3,14 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.util
 
-import android.content.ContentValues
-import android.content.Context
-import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
 import java.io.*
 
 fun createFile(parent : File, fileName : String) : File {
@@ -23,6 +15,8 @@ fun createFile(parent : File, fileName : String) : File {
 }
 
 fun File.fileSizeInMb() = this.length() / 1048576f
+
+fun File.fileSizeInKb() = this.length() / 1024f
 
 fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
     inputStream.use { input ->

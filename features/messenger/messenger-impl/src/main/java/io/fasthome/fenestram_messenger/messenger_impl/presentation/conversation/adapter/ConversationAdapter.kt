@@ -222,7 +222,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
                 fileName.text = it.metaInfo?.name
                 replyMessageName.text =
                     context.getString(R.string.reply_document_ph, getPrintableRawText(it.userName))
-                binding.fileSize.text = getString(R.string.mb_real,it.metaInfo!!.size)
+                binding.fileSize.text = getString(R.string.kb_real,it.metaInfo!!.size)
 
                 binding.replyDocumentContent.onClick {
                     binding.progressBar.isVisible = true
@@ -300,7 +300,7 @@ fun createConversationSelfForwardAdapterDelegate(
                     forwardImage.isVisible = false
                     replyDocumentContent.isVisible = true
                     fileName.text = forwardMessage.metaInfo?.name
-                    fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+                    fileSize.text = getString(R.string.kb_real,forwardMessage.metaInfo?.size ?: 0f)
 
                     replyDocumentContent.onClick {
                         progressBar.isVisible = true
@@ -422,10 +422,10 @@ fun createConversationSelfDocumentAdapterDelegate(
         }
         bindWithBinding {
             if(item.metaInfo != null) {
-                fileSize.text = getString(R.string.mb_real, item.metaInfo?.size!!)
+                fileSize.text = getString(R.string.kb_real, item.metaInfo?.size!!)
             } else {
                 if(item.file != null)
-                    fileSize.text = getString(R.string.mb_real, item.file!!.fileSizeInMb())
+                    fileSize.text = getString(R.string.kb_real, item.file!!.fileSizeInKb())
                 else
                     fileSize.isVisible = false
             }
@@ -530,7 +530,7 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardImage.isVisible = false
                     replyDocumentContent.isVisible = true
                     fileName.text = forwardMessage.metaInfo?.name
-                    binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+                    binding.fileSize.text = getString(R.string.kb_real,forwardMessage.metaInfo?.size ?: 0f)
 
                     replyDocumentContent.onClick {
                         progressBar.isVisible = true
@@ -596,7 +596,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
                 fileName.text = it.metaInfo?.name
                 replyMessageName.text =
                     context.getString(R.string.reply_document_ph, getPrintableRawText(it.userName))
-                binding.fileSize.text = getString(R.string.mb_real,it.metaInfo!!.size)
+                binding.fileSize.text = getString(R.string.kb_real,it.metaInfo!!.size)
 
                 binding.replyDocumentContent.onClick {
                     binding.progressBar.isVisible = true
@@ -681,7 +681,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
         }
         bindWithBinding {
             if(item.metaInfo != null && item.metaInfo!!.size != 0f) {
-                fileSize.text = getString(R.string.mb_real, item.metaInfo?.size!!)
+                fileSize.text = getString(R.string.kb_real, item.metaInfo?.size!!)
             } else {
                 fileSize.isVisible = false
             }
@@ -739,7 +739,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
                 fileName.text = it.metaInfo?.name
                 replyMessageName.text =
                     context.getString(R.string.reply_document_ph, getPrintableRawText(it.userName))
-                binding.fileSize.text = getString(R.string.mb_real,it.metaInfo!!.size)
+                binding.fileSize.text = getString(R.string.kb_real,it.metaInfo!!.size)
 
                 binding.replyDocumentContent.onClick {
                     binding.progressBar.isVisible = true
@@ -859,7 +859,7 @@ fun createConversationGroupForwardAdapterDelegate(
                     forwardImage.isVisible = false
                     replyDocumentContent.isVisible = true
                     fileName.text = forwardMessage.metaInfo?.name
-                    binding.fileSize.text = getString(R.string.mb_real,forwardMessage.metaInfo?.size ?: 0f)
+                    binding.fileSize.text = getString(R.string.kb_real,forwardMessage.metaInfo?.size ?: 0f)
 
                     binding.replyDocumentContent.onClick {
                         binding.progressBar.isVisible = true
@@ -954,7 +954,7 @@ fun createConversationGroupDocumentAdapterDelegate(
         }
         bindWithBinding {
             if(item.metaInfo != null && item.metaInfo!!.size != 0f) {
-                fileSize.text = getString(R.string.mb_real, item.metaInfo?.size!!)
+                fileSize.text = getString(R.string.kb_real, item.metaInfo?.size!!)
             } else {
                 fileSize.isVisible = false
             }

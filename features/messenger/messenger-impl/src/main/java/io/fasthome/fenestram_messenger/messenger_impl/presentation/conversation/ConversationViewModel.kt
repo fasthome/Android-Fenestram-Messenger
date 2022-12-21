@@ -542,7 +542,7 @@ class ConversationViewModel(
                         metaInfo = MetaInfo(
                             name = existMessage.file?.name ?: "",
                             extension = existMessage.file?.extension ?: "",
-                            size = existMessage.file?.fileSizeInMb() ?: 0f,
+                            size = existMessage.file?.fileSizeInKb() ?: 0f,
                             url = ""
                         )
                     )
