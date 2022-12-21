@@ -42,6 +42,7 @@ class ContactsViewModel(
     }
 
     private var originalContactsViewItem = mutableListOf<ContactsViewItem>()
+    private var previousContacts = mutableListOf<String>()
 
     private val conversationLauncher =
         registerScreen(messengerFeature.conversationNavigationContract) { }
@@ -65,7 +66,8 @@ class ContactsViewModel(
                         )
                     }
                     is CallResult.Success -> updateState { state ->
-                        val contacts = originalContactsViewItem.map{ it.name }
+                        val needToUpdate = !(result.data.map { it.phone }.containsAll(previousContacts) && previousContacts.containsAll(result.data.map { it.phone }))
+                        previousContacts = result.data.map { it.phone }.toMutableList()
                         originalContactsViewItem =
                             ContactsMapper.contactsListToViewList(result.data, selfUserPhone)
                                 .toMutableList()
@@ -79,7 +81,7 @@ class ContactsViewModel(
                         } else {
                             state.copy(
                                 loadingState = LoadingState.Success(data = originalContactsViewItem),
-                                needToUpdate = !(contacts.containsAll(originalContactsViewItem.map { it.name }) && originalContactsViewItem.map{it.name}.containsAll(contacts))
+                                needToUpdate = needToUpdate
                             )
                         }
                     }
