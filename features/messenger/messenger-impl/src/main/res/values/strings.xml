@@ -35,8 +35,6 @@
     <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
     <string name="reply_document_ph">Ответ на файл\nот %1$s</string>
     <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
-    <string name="meta_document_size_ph">%1$.2f/%2$.1f Кб</string>
-    <string name="kb_real">%1$.1f Kб</string>
     <string name="forward">Переслать</string>
     <string name="forward_message">Пересланное сообщение</string>
 

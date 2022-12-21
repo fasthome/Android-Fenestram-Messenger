@@ -29,7 +29,7 @@ class MessengerService(
             path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
-        
+
         return SendMessageMapper.responseToSendMessageResult(response.requireData(), localId)
     }
 
@@ -94,9 +94,9 @@ class MessengerService(
         return UploadDocumentResult(documentPath = response.pathToFile)
     }
 
-    suspend fun getDocument(url : String, progressListener: ProgressListener): LoadedDocumentData {
-        val httpResponse = client.runGet<HttpResponse>(path = url, useBaseUrl = false){ progress->
-            progressListener(progress)
+    suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {
+        val httpResponse = client.runGet<HttpResponse>(path = url, useBaseUrl = false) { progress, loadedBytesSize, fullBytesSize, isReady ->
+            progressListener(progress, loadedBytesSize, fullBytesSize, isReady)
         }
         val byteArray = httpResponse.readBytes()
         return LoadedDocumentData(byteArray = byteArray)
@@ -142,7 +142,7 @@ class MessengerService(
                 path = "chats/forward/message/$chatId",
                 body = ForwardMessageRequest(listOf(messageId.toString()))
             )
-        return if(response.data?.message != null) getChatsMapper.responseToMessage(response.data!!.message!!) else null
+        return if (response.data?.message != null) getChatsMapper.responseToMessage(response.data!!.message!!) else null
     }
 
     suspend fun replyMessage(messageId: Long, chatId: Long, text: String, messageType: String): Message? {
@@ -151,10 +151,10 @@ class MessengerService(
                 path = "chats/reply/message/$chatId/$messageId",
                 body = ReplyMessageRequest(text, messageType)
             )
-        return if(response.data?.message != null) getChatsMapper.responseToMessage(response.data!!.message!!) else null
+        return if (response.data?.message != null) getChatsMapper.responseToMessage(response.data!!.message!!) else null
     }
 
-    suspend fun editMessage(messageId: Long, chatId: Long,newText: String) {
+    suspend fun editMessage(messageId: Long, chatId: Long, newText: String) {
         val response: BaseResponse<EditMessageResponse> =
             client.runPatch(
                 path = "chats/message/$chatId/$messageId",

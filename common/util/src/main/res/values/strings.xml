@@ -3,4 +3,8 @@
     <string name="common_today">Сегодня</string>
     <string name="common_yesterday">Вчера</string>
     <string name="open_with">Открыть с помощью</string>
+    <string name="meta_document_size_ph_kb">%1$.2f/%2$.1f Кб</string>
+    <string name="kb_real">%1$.1f Kб</string>
+    <string name="meta_document_size_ph_mb">%1$.2f/%2$.1f Мб</string>
+    <string name="mb_real">%1$.1f Мб</string>
 </resources>
