@@ -326,7 +326,7 @@ enum class SentStatus {
 }
 
 data class MetaInfo(
-    var name: String,
+    var name: PrintableText,
     /**
      * Расширение файла, напр. ".txt"
      */
@@ -337,6 +337,11 @@ data class MetaInfo(
     var size: Float,
     var url: String?
 ) {
-    constructor() : this("","",0f,"")
-    constructor(content: ContentResponse) : this(content.name,content.extension,content.size,content.url)
+    constructor() : this(PrintableText.Raw("File"), "", 0f, "")
+    constructor(content: ContentResponse) : this(
+        PrintableText.Raw(content.name),
+        content.extension,
+        content.size,
+        content.url
+    )
 }

@@ -110,6 +110,7 @@
                     android:layout_height="wrap_content"
                     android:maxWidth="250dp"
                     android:minWidth="170dp"
+                    android:visibility="gone"
                     android:progressDrawable="@drawable/progress_bar_hooli"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

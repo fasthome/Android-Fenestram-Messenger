@@ -556,9 +556,12 @@ class ConversationViewModel(
                     if ((existMessage as ConversationViewItem.Self.Document).file == null) return@launch
                     existMessage.copy(
                         metaInfo = MetaInfo(
-                            name = existMessage.file?.name ?: "",
+                            name = PrintableText.Raw(existMessage.file?.name ?: ""),
                             extension = existMessage.file?.extension ?: "",
-                            size = existMessage.file?.fileSizeInMb() ?: 0f,
+                            /**
+                             * Здесь отправляется значения именно в мегабайтах, т.к. с сервера приходят тоже в мегабайтах, под мегабайты подстроены дальнешие конвертации
+                             */
+                            size = existMessage.file?.let { fileSizeInMb(it.length()) } ?: 0f,
                             url = ""
                         )
                     )
