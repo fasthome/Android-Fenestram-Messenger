@@ -25,6 +25,7 @@ import io.fasthome.component.select_from.SelectFromConversation
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DeleteChatMenuBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConversationBinding
@@ -268,21 +269,31 @@ class ConversationFragment :
                 }
                 attachedList.isVisible = state.inputMessageMode.attachedFiles.isNotEmpty()
                 attachedAdapter.items = state.inputMessageMode.attachedFiles
-                renderStateEditMode(false, null)
-                renderStateReplyMode(false, null)
+                renderStateEditMode(false)
+                renderStateReplyMode(false)
+                renderStateForwardMode(false)
                 binding.chatUserTagsContainer.setPadding(0,0,0,0)
 
             }
             is InputMessageMode.Edit -> {
                 attachedList.isVisible = false
-                renderStateReplyMode(false, null)
+                renderStateReplyMode(false)
                 renderStateEditMode(true, state.inputMessageMode.messageToEdit)
+                renderStateForwardMode(false)
                 binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
             is InputMessageMode.Reply -> {
                 attachedList.isVisible = false
-                renderStateEditMode(false, null)
+                renderStateEditMode(false)
                 renderStateReplyMode(true, state.inputMessageMode.messageToReply)
+                renderStateForwardMode(false)
+                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+            }
+            is InputMessageMode.Forward -> {
+                attachedList.isVisible = false
+                renderStateEditMode(false)
+                renderStateReplyMode(false)
+                renderStateForwardMode(true,state.inputMessageMode.messageToForward)
                 binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
         }
@@ -447,7 +458,7 @@ class ConversationFragment :
             vm.replyMessageMode(true, conversationViewItem)
         },
         onForward = {
-            vm.openChatSelectorForForward(conversationViewItem.id)
+            vm.openChatSelectorForForward(conversationViewItem.id, conversationViewItem.userName)
         }
     ).show()
 
@@ -473,9 +484,30 @@ class ConversationFragment :
                 vm.replyMessageMode(true, conversationViewItem)
             },
             onForward = {
-                vm.openChatSelectorForForward(conversationViewItem.id)
+                vm.openChatSelectorForForward(conversationViewItem.id,
+                    conversationViewItem.userName)
             }
         ).show()
+    }
+
+    private fun renderStateForwardMode(
+        isForwardMode: Boolean,
+        messageToForward: MessengerFeature.ForwardMessage? = null
+    ) {
+        with(binding) {
+            switchInputPlate(isForwardMode)
+            if (isForwardMode && messageToForward != null) {
+                inputMessage.setOnSizeChanged(onHeightChanged = {
+                    clEditMessage.setPadding(0, 0, 0, it + 10.dp)
+                    clEditMessage.setPadding(0, 0, 0, it + 10.dp)
+                })
+                replyImage.isVisible = false
+                tvEditMessageTitle.isVisible = false
+                tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
+                tvTextToEdit.text =
+                    getString(R.string.forward_messages_ph, getPrintableRawText(messageToForward.username))
+            }
+        }
     }
 
     private fun renderStateReplyMode(isReplyMode: Boolean, message: ConversationViewItem? = null) {

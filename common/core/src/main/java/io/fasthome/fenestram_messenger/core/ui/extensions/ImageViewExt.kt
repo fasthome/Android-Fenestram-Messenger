@@ -158,3 +158,21 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
         .skipMemoryCache(true)
         .into(this)
 }
+
+fun loadBitmap(context: Context, url: String, placeholderRes: Int = R.drawable.ic_avatar_placeholder): Bitmap {
+    return try {
+        Glide.with(context)
+            .asBitmap()
+            .load(url)
+            .error(placeholderRes)
+            .transform(CircleCrop())
+            .submit(100, 100)
+            .get()
+    } catch (e: Exception) {
+        Glide.with(context)
+            .asBitmap()
+            .load(placeholderRes)
+            .submit(100, 100)
+            .get()
+    }
+}

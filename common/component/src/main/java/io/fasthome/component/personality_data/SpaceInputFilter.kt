@@ -14,8 +14,6 @@ class SpaceInputFilter(
         source: CharSequence, start: Int, end: Int,
         dest: Spanned, dstart: Int, dend: Int
     ): CharSequence? {
-        if (!source.all(this::isCharAllowed)) return ""
-
         var keepOriginal = true
         val stringBuilder = StringBuilder(end - start)
 

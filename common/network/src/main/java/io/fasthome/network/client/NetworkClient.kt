@@ -56,7 +56,7 @@ class NetworkClient(
         onDownload { bytesSentTotal, contentLength ->
             val step = contentLength / 100
             val currentProgress = bytesSentTotal / step
-            progressListener(currentProgress.toInt())
+            progressListener(currentProgress.toInt(), bytesSentTotal, contentLength, bytesSentTotal == contentLength)
         }
     }
 
@@ -181,4 +181,4 @@ class NetworkClient(
     }
 }
 
-typealias ProgressListener = suspend (progress : Int) -> Unit
+typealias ProgressListener = suspend (progress : Int, loadedBytesSize : Long, fullBytesSize : Long, isReady : Boolean) -> Unit
