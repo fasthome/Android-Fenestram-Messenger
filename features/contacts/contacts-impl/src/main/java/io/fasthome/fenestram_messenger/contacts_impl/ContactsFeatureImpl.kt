@@ -43,6 +43,6 @@ class ContactsFeatureImpl(private val contactsInteractor: ContactsInteractor) : 
     override suspend fun getContactsAndUploadContacts(): CallResult<List<Contact>> =
         contactsInteractor.getContactsAndUploadContacts()
 
-    override suspend fun updateContactName(phoneNumber: String, newName: String) =
-        contactsInteractor.updateContactName(phoneNumber, newName)
+    override suspend fun updateContactName(phoneNumber: String, oldName: String, newName: String) =
+        contactsInteractor.updateContactName(phoneNumber, oldName, newName)
 }

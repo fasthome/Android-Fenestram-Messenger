@@ -212,7 +212,7 @@ class ProfileGuestViewModel(
                 val permissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
 
                 if (newName != getPrintableRawText(currentViewState.userName) && permissionGranted) {
-                    contactsFeature.updateContactName(params.userPhone, newName)
+                    contactsFeature.updateContactName(params.userPhone.drop(1), params.userName, newName)
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
                 }
                 updateState { state ->
@@ -250,6 +250,22 @@ class ProfileGuestViewModel(
                     )
                 )
             }
+        }
+    }
+
+    override fun onBackPressed(): Boolean {
+        exitWithNameChanged()
+        return super.onBackPressed()
+    }
+
+    fun exitWithNameChanged() {
+        val currentName = getPrintableRawText(currentViewState.userName)
+        if (currentName != params.userName) {
+            exitWithResult(
+                ProfileGuestNavigationContract.createResult(
+                    ProfileGuestNavigationContract.Result.ChatNameChanged(currentViewState.userName)
+                )
+            )
         }
     }
 }

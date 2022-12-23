@@ -53,8 +53,8 @@ class ContactsInteractor(
         return deleteContacts(contactIds)
     }
 
-    suspend fun updateContactName(phoneNumber: String, newName: String) {
-        contactsLoader.updateContactName(phoneNumber, newName)
+    suspend fun updateContactName(phoneNumber: String, oldName: String, newName: String) {
+        contactsLoader.updateContactName(phoneNumber, oldName, newName)
         val localContacts: List<Contact> = contactsLoader.fetchLocalContacts().map {
             Contact(
                 id = 0,

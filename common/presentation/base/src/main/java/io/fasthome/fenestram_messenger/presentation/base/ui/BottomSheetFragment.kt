@@ -62,6 +62,7 @@ open class BottomSheetFragment(
 
     private val router: ContractRouter by inject()
     private val binding by fragmentViewBinding(FragmentBottomSheetBinding::bind)
+    private var fragmentInstance: Fragment? = null
 
     private var currentState: State? = null
     private var dismissed: Boolean = false
@@ -71,7 +72,13 @@ open class BottomSheetFragment(
 
     private val stateCallback = StateChangeListener { newState ->
         currentState = newState
-        if (newState == State.HIDDEN) router.exit()
+        if (newState == State.HIDDEN) {
+            if (fragmentInstance is BottomSheetDismissListener) {
+                (fragmentInstance as BottomSheetDismissListener).onDismiss()
+            } else {
+                router.exit()
+            }
+        }
     }
 
     private val slideCallback = SlideChangeListener { slideOffset ->
@@ -93,7 +100,11 @@ open class BottomSheetFragment(
             consumeRestoredStateForKey(KEY_SAVED_STATE)?.let { saved ->
                 if (saved.getBoolean(KEY_DISMISSED)) {
                     currentState = State.HIDDEN
-                    router.exit()
+                    if (fragmentInstance is BottomSheetDismissListener) {
+                        (fragmentInstance as BottomSheetDismissListener).onDismiss()
+                    } else {
+                        router.exit()
+                    }
                 } else {
                     currentState = saved.getSerializable(KEY_BEHAVIOR_STATE) as? State
                 }
@@ -130,8 +141,10 @@ open class BottomSheetFragment(
         }
 
         if (childFragmentManager.findFragmentByTag(CONTENT_TAG) == null) {
+            fragmentInstance = contentClazz.java.newInstance()
+            fragmentInstance?.arguments = this@BottomSheetFragment.arguments
             childFragmentManager.commitNow {
-                add(R.id.content, contentClazz.java, arguments, CONTENT_TAG)
+                add(R.id.content, fragmentInstance ?: return@commitNow, CONTENT_TAG)
             }
         }
 
@@ -229,7 +242,8 @@ open class BottomSheetFragment(
                     BottomSheetBehavior::class.java.getDeclaredField("nestedScrollingChildRef")
                 nestedScrollingChildRefField.isAccessible = true
                 nestedScrollingChildRefField.set(this, WeakReference(target))
-            } catch (e: Exception) { }
+            } catch (e: Exception) {
+            }
         }
 
         @SuppressLint("RestrictedApi")
@@ -284,4 +298,8 @@ open class BottomSheetFragment(
         override fun onStateChanged(bottomSheet: View, newState: Int) = Unit
         override fun onSlide(bottomSheet: View, slideOffset: Float) = block(slideOffset)
     }
+}
+
+interface BottomSheetDismissListener {
+    fun onDismiss()
 }
