@@ -5,10 +5,10 @@ package io.fasthome.fenestram_messenger.contacts_impl.data.service
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.ContactsMapper
-import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.Contacts
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsResponse
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.DeleteContactsRequest
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.SendContactsRequest
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.UpdateContactNameRequest
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
@@ -48,6 +48,18 @@ class ContactsService(
             useBaseUrl = false,
             body = body
         ).requireData()
+    }
+
+    suspend fun updateContactName(name: String, phone: String) {
+        return client
+            .runPost<UpdateContactNameRequest, BaseResponse<Unit>>(
+                path = "contacts/change-name",
+                body = UpdateContactNameRequest(
+                    name = name,
+                    phone = phone
+                )
+            )
+            .requireData()
     }
 
 }

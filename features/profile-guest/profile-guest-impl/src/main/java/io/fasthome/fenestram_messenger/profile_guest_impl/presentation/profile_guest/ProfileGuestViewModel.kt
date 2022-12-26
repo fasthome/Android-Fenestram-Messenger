@@ -212,7 +212,7 @@ class ProfileGuestViewModel(
                 val writePermissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
 
                 if (newName != getPrintableRawText(currentViewState.userName) && writePermissionGranted && readPermissionGranted) {
-                    contactsFeature.updateContactName(params.userPhone.drop(1), params.userName, newName)
+                    contactsFeature.updateContactName(params.userPhone, params.userName, newName)
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
                 }
                 updateState { state ->
