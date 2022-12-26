@@ -3,7 +3,9 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants
 
+import android.Manifest
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -23,7 +25,8 @@ class CreateGroupChatViewModel(
     requestParams: RequestParams,
     router: ContractRouter,
     private val contactsFeature: ContactsFeature,
-    private val params: CreateGroupChatContract.Params
+    private val params: CreateGroupChatContract.Params,
+    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<CreateGroupChatState, CreateGroupChatEvent>(router, requestParams) {
 
     private val createInfoLauncher = registerScreen(CreateInfoContract)
@@ -33,7 +36,12 @@ class CreateGroupChatViewModel(
 
     init {
         viewModelScope.launch {
-            contactsFeature.getContacts().onSuccess {
+            val readPermissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
+            val writePermissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
+
+            if (!readPermissionGranted || !writePermissionGranted) return@launch
+
+            contactsFeature.getContactsAndUploadContacts().onSuccess {
                 originalContacts = it.filter { contact ->
                     contact.user != null
                 }

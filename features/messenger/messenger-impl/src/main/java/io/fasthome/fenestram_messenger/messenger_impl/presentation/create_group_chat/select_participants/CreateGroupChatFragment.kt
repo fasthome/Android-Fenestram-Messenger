@@ -8,12 +8,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateGroupChatBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.AddedContactsAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.ContactsAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
@@ -22,7 +25,13 @@ import io.fasthome.fenestram_messenger.util.onClick
 class CreateGroupChatFragment :
     BaseFragment<CreateGroupChatState, CreateGroupChatEvent>(R.layout.fragment_create_group_chat) {
 
-    override val vm: CreateGroupChatViewModel by viewModel(getParamsInterface = ConversationNavigationContract.getParams)
+    private val permissionInterface by registerFragment(PermissionComponentContract)
+
+    override val vm: CreateGroupChatViewModel by viewModel(
+        getParamsInterface = ConversationNavigationContract.getParams,
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::permissionInterface)
+    )
 
     private val binding by fragmentViewBinding(FragmentCreateGroupChatBinding::bind)
 
