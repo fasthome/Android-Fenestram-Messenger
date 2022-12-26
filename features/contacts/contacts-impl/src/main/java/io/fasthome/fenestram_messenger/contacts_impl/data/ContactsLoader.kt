@@ -118,17 +118,33 @@ class ContactsLoader(private val context: Context) {
     }
 
     @RequiresPermission(Manifest.permission.WRITE_CONTACTS)
-    fun updateContactName(number: String, newName: String) {
+    fun updateContactName(number: String, oldName: String, newName: String) {
         val cursor = context.contentResolver.query(
             CommonDataKinds.Phone.CONTENT_URI,
             arrayOf(CommonDataKinds.Phone.CONTACT_ID, CommonDataKinds.Phone.NUMBER),
-            CommonDataKinds.Phone.NUMBER + "=?", arrayOf(number),
+            CommonDataKinds.Phone.DISPLAY_NAME + "=?", arrayOf(oldName),
             null
         )
-        if (cursor == null || cursor.count == 0) return
-        cursor.moveToFirst()
-        val contactId = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID))
-        cursor.close()
+
+        if (cursor == null || cursor.count == 0) {
+            insertContact(firstName = newName, secondName = "", mobileNumber = number, callback = {})
+            return
+        }
+
+        var contactId: String? = null
+        cursor.use { cur ->
+            while (cur.moveToNext()) {
+                val localNumber = cur.getString(cur.getColumnIndex(CommonDataKinds.Phone.NUMBER))
+                if (localNumber.filter { it.isDigit() } == number) {
+                    contactId = cur.getString(cur.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID))
+                    break
+                }
+            }
+        }
+        if (contactId == null) {
+            insertContact(firstName = newName, secondName = "", mobileNumber = number, callback = {})
+            return
+        }
 
         val where = String.format(
             "%s = '%s' AND %s = ?",

@@ -127,6 +127,9 @@ class ConversationViewModel(
                             ConversationNavigationContract.Result.ChatDeleted(result.id)
                         )
                     )
+                is ProfileGuestFeature.ProfileGuestResult.ChatNameChanged -> {
+                    updateState { state -> state.copy(userName = result.newName) }
+                }
             }
         }
 
@@ -161,9 +164,11 @@ class ConversationViewModel(
         return ConversationState(
             messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userStatus = UserStatus.OnlineStatus.toPrintableText("",
+            userStatus = UserStatus.OnlineStatus.toPrintableText(
+                "",
                 params.chat.isGroup,
-                chatUsers),
+                chatUsers
+            ),
             userStatusDots = PrintableText.EMPTY,
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
@@ -269,9 +274,11 @@ class ConversationViewModel(
 
     private fun forwardMessage() {
         viewModelScope.launch {
-            messengerInteractor.forwardMessage(chatId ?: return@launch,
+            messengerInteractor.forwardMessage(
+                chatId ?: return@launch,
                 (currentViewState.inputMessageMode as? InputMessageMode.Forward)?.messageToForward?.id
-                    ?: return@launch)
+                    ?: return@launch
+            )
                 .withErrorHandled {
                     updateState { state ->
                         state.copy(inputMessageMode = InputMessageMode.Default())
@@ -775,9 +782,11 @@ class ConversationViewModel(
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
-                                userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                                userStatus = UserStatus.OnlineStatus.toPrintableText(
+                                    "",
                                     params.chat.isGroup,
-                                    chatUsers),
+                                    chatUsers
+                                ),
                             )
                         }
                     }
@@ -789,9 +798,11 @@ class ConversationViewModel(
                     updateState { state ->
                         state.copy(
                             newMessagesCount = state.newMessagesCount + 1,
-                            userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                            userStatus = UserStatus.OnlineStatus.toPrintableText(
+                                "",
                                 params.chat.isGroup,
-                                chatUsers),
+                                chatUsers
+                            ),
                         )
                     }
                 }
@@ -803,9 +814,11 @@ class ConversationViewModel(
                 state.copy(
                     avatar = it.avatar,
                     userName = PrintableText.Raw(it.chatName),
-                    userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                    userStatus = UserStatus.OnlineStatus.toPrintableText(
+                        "",
                         params.chat.isGroup,
-                        chatUsers),
+                        chatUsers
+                    ),
                 )
             }
         }

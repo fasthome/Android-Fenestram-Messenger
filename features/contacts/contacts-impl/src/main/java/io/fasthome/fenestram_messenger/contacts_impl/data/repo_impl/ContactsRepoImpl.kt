@@ -6,7 +6,6 @@ package io.fasthome.fenestram_messenger.contacts_impl.data.repo_impl
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.ContactsService
-import io.fasthome.fenestram_messenger.contacts_impl.domain.entity.LocalContact
 import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
@@ -38,5 +37,8 @@ class ContactsRepoImpl(private val authFeature: AuthFeature, private val contact
         contactsService.deleteContacts(contactIds)
     }
 
+    override suspend fun updateContactName(name: String, phone: String) = callForResult {
+        contactsService.updateContactName(name, phone)
+    }
 
 }

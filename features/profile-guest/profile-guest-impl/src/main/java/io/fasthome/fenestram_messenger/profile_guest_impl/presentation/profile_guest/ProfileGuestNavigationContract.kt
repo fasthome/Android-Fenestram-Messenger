@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 object ProfileGuestNavigationContract :
@@ -26,6 +27,9 @@ object ProfileGuestNavigationContract :
 
         @Parcelize
         class ChatDeleted(val id: Long) : Result()
+
+        @Parcelize
+        class ChatNameChanged(val newName: PrintableText) : Result()
 
         @Parcelize
         object Canceled : Result()

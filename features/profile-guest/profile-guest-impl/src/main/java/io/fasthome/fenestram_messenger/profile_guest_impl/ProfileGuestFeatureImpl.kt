@@ -30,6 +30,9 @@ class ProfileGuestFeatureImpl : ProfileGuestFeature {
                         it.id
                     )
                     is ProfileGuestNavigationContract.Result.Canceled -> ProfileGuestFeature.ProfileGuestResult.Canceled
+                    is ProfileGuestNavigationContract.Result.ChatNameChanged -> ProfileGuestFeature.ProfileGuestResult.ChatNameChanged(
+                        it.newName
+                    )
                 }
             }
         )
