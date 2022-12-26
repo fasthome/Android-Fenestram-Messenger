@@ -127,7 +127,7 @@ class ProfileViewModel(
                         }
                 }
                 !avatarUrl.isNullOrEmpty() -> {
-                    avatarUrl!!.substring(21, avatarUrl!!.length)
+                    profileImageUrlConverter.extractPath(avatarUrl!!)
                 }
                 else -> {
                     null
