@@ -207,11 +207,11 @@ class ProfileGuestViewModel(
                         profileGuestStatus = EditTextStatus.Idle
                     )
                 }
-
             } else if (currentViewState.editMode && !params.isGroup) {
-                val permissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
+                val readPermissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
+                val writePermissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
 
-                if (newName != getPrintableRawText(currentViewState.userName) && permissionGranted) {
+                if (newName != getPrintableRawText(currentViewState.userName) && writePermissionGranted && readPermissionGranted) {
                     contactsFeature.updateContactName(params.userPhone.drop(1), params.userName, newName)
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
                 }
