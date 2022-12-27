@@ -68,10 +68,19 @@ class CreateGroupChatFragment :
                 return true
             }
         })
+
+        contactsAllow.setOnClickListener {
+            vm.checkPermissionsAndLoadContacts()
+        }
+
+        vm.checkPermissionsAndLoadContacts()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun renderState(state: CreateGroupChatState) {
+        binding.listContacts.isVisible = state.permissionGranted
+        binding.noPermissionContainer.isVisible = !state.permissionGranted
+
         contactsAdapter.items = state.contacts.map { item ->
             item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
             item

@@ -15,10 +15,10 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.mapper.mapToContactViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
 
 class CreateGroupChatViewModel(
@@ -34,26 +34,28 @@ class CreateGroupChatViewModel(
 
     private val conversationLauncher = registerScreen(ConversationNavigationContract) { }
 
-    init {
+    override fun createInitialState(): CreateGroupChatState {
+        return CreateGroupChatState(listOf(), listOf(), false, params.isGroupChat, true)
+    }
+
+    fun checkPermissionsAndLoadContacts() {
         viewModelScope.launch {
             val readPermissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
-            val writePermissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
 
-            if (!readPermissionGranted || !writePermissionGranted) return@launch
+            if (!readPermissionGranted) {
+                updateState { state -> state.copy(permissionGranted = false) }
+                return@launch
+            }
 
-            contactsFeature.getContactsAndUploadContacts().onSuccess {
+            contactsFeature.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) {
                 originalContacts = it.filter { contact ->
                     contact.user != null
                 }
                 updateState { state ->
-                    state.copy(contacts = originalContacts.map(::mapToContactViewItem))
+                    state.copy(contacts = originalContacts.map(::mapToContactViewItem), permissionGranted = true)
                 }
             }
         }
-    }
-
-    override fun createInitialState(): CreateGroupChatState {
-        return CreateGroupChatState(listOf(), listOf(), false, params.isGroupChat)
     }
 
     fun onContactClicked(contactViewItem: ContactViewItem) {
