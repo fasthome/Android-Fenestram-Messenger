@@ -184,11 +184,9 @@ class ProfileGuestViewModel(
                 }
 
                 val imageUrl: String? = currentViewState.chatImageFile?.let { file ->
-                    profileImageUrlConverter.extractPath(
-                        profileGuestInteractor.uploadChatAvatar(
-                            file.readBytes()
-                        ).getOrNull()?.imagePath
-                    )
+                    profileGuestInteractor.uploadChatAvatar(
+                        file.readBytes()
+                    ).getOrNull()?.imagePath
                 }
 
                 if (imageUrl != null && profileGuestInteractor.patchChatAvatar(
