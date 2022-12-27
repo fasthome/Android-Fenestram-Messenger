@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.mapper.mapToContactViewItem
@@ -25,6 +26,7 @@ class CreateGroupChatViewModel(
     requestParams: RequestParams,
     router: ContractRouter,
     private val contactsFeature: ContactsFeature,
+    private val messengerInteractor: MessengerInteractor,
     private val params: CreateGroupChatContract.Params,
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<CreateGroupChatState, CreateGroupChatEvent>(router, requestParams) {
@@ -49,7 +51,7 @@ class CreateGroupChatViewModel(
 
             contactsFeature.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) {
                 originalContacts = it.filter { contact ->
-                    contact.user != null
+                    contact.user != null && contact.userId != messengerInteractor.getUserId()
                 }
                 updateState { state ->
                     state.copy(contacts = originalContacts.map(::mapToContactViewItem), permissionGranted = true)
