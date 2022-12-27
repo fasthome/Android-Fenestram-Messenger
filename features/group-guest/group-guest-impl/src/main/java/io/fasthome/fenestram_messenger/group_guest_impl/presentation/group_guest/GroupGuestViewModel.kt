@@ -37,9 +37,7 @@ class GroupGuestViewModel(
                 }
                 updateState { state ->
                     state.copy(
-                        contacts = originalContacts.map(::mapToContactViewItem) + AddContactViewItem.Footer(
-                            link = "test/link"
-                        )
+                        contacts = originalContacts.map(::mapToContactViewItem)
                     )
                 }
             }

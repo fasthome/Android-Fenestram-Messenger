@@ -59,7 +59,7 @@ class GroupGuestFragment :
         addButton.onClick {
             vm.onAddClick()
         }
-        listContacts.supportBottomSheetScroll()
+        listContacts.isNestedScrollingEnabled = false
         listContacts.adapter = contactsAdapter
 
     }
