@@ -58,9 +58,9 @@ class ContactAddFragment :
                 getPrintableText(PrintableText.StringResource(R.string.contact_add_second_name_hint))
 
             contactAddInputFirstName.includeEditText.filters =
-                arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+                arrayOf(EditTextFilter(), InputFilter.LengthFilter(25))
             contactAddInputSecondName.includeEditText.filters =
-                arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+                arrayOf(EditTextFilter(), InputFilter.LengthFilter(25))
 
             contactAddInvalidFirstName.includeTextInvalid.run {
                 setPrintableText(
