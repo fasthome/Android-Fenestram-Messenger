@@ -50,8 +50,9 @@ class CreateGroupChatViewModel(
             }
 
             contactsFeature.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) {
+                val id = messengerInteractor.getUserId()
                 originalContacts = it.filter { contact ->
-                    contact.user != null && contact.userId != messengerInteractor.getUserId()
+                    contact.user != null && contact.userId != id
                 }
                 updateState { state ->
                     state.copy(contacts = originalContacts.map(::mapToContactViewItem), permissionGranted = true)
