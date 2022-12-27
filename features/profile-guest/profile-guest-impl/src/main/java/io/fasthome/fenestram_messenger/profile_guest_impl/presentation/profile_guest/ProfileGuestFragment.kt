@@ -140,8 +140,6 @@ class ProfileGuestFragment :
             participantsContainer.isVisible = state.isGroup
             profileGuestPhone.isVisible = !state.isGroup
             profileGuestContainer.isVisible = !state.editMode
-            profileGuestVideoChat.isVisible = !state.editMode
-            profileGuestCall.isVisible = !state.editMode
             pickPhotoIcon.isVisible = state.editMode && state.isGroup
             profileGuestName.isEnabled = state.editMode
 
