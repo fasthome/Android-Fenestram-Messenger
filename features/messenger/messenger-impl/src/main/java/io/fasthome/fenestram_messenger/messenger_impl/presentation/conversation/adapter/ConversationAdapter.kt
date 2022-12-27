@@ -166,7 +166,8 @@ class ConversationAdapter(
                 onGroupForwardLongClicked = onGroupForwardLongClicked,
                 onImageClicked = onImageClicked,
                 onUserTagClicked = onUserTagClicked,
-                onDownloadDocument = onDownloadDocument
+                onDownloadDocument = onDownloadDocument,
+                onGroupProfileItemClicked = onGroupProfileItemClicked
             ),
             createConversationGroupTextReplyImageAdapterDelegate(
                 onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
@@ -697,7 +698,8 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
                     onDownloadDocument = onDownloadDocument
                 )
             }
-
+            username.setPrintableText(item.userName)
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
             messageContent.addCommonLinks(onUserTagClicked)
@@ -753,6 +755,7 @@ fun createConversationGroupForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
+    onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
     onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
 ) =
@@ -769,6 +772,9 @@ fun createConversationGroupForwardAdapterDelegate(
             (item.forwardMessage as? ConversationImageItem)?.let {
                 onImageClicked(item.forwardMessage)
             }
+        }
+        binding.avatar.onClick {
+            onGroupProfileItemClicked(item)
         }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
@@ -814,7 +820,7 @@ fun createConversationGroupForwardAdapterDelegate(
                     )
                 }
             }
-
+            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
