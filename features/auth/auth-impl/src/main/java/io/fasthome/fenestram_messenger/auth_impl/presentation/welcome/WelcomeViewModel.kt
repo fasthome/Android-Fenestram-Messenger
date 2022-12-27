@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.CodeResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -17,7 +18,8 @@ class WelcomeViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val authInteractor: AuthInteractor,
-    private val debugFeature : DebugFeature
+    private val debugFeature : DebugFeature,
+    private val environment : Environment
 ) : BaseViewModel<WelcomeState, WelcomeEvent>(router, requestParams) {
 
     private val checkCodeLauncher = registerScreen(CodeNavigationContract) { result ->
@@ -26,7 +28,7 @@ class WelcomeViewModel(
     private val debugLauncher = registerScreen(debugFeature.navigationContract)
 
     override fun createInitialState(): WelcomeState {
-        return WelcomeState(error = false, isLoad = false)
+        return WelcomeState(error = false, isLoad = false, debugVisible = environment.isDebug)
     }
 
     fun checkPhoneNumber(phoneNumber: String, isValid: Boolean) {

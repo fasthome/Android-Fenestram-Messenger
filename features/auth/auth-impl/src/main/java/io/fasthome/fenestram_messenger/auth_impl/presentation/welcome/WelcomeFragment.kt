@@ -51,6 +51,8 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
     }
 
     override fun renderState(state: WelcomeState): Unit = with(binding) {
+        binding.debug.isVisible = state.debugVisible
+
         if (state.error)
             phoneInput.setBackground(R.drawable.error_rounded_border)
         else
