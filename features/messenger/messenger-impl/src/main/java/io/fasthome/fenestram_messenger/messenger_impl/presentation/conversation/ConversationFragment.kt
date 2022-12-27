@@ -278,15 +278,15 @@ class ConversationFragment :
             is InputMessageMode.Edit -> {
                 attachedList.isVisible = false
                 renderStateReplyMode(false)
-                renderStateEditMode(true, state.inputMessageMode.messageToEdit)
                 renderStateForwardMode(false)
+                renderStateEditMode(true, state.inputMessageMode.messageToEdit)
                 binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
             is InputMessageMode.Reply -> {
                 attachedList.isVisible = false
                 renderStateEditMode(false)
-                renderStateReplyMode(true, state.inputMessageMode.messageToReply)
                 renderStateForwardMode(false)
+                renderStateReplyMode(true, state.inputMessageMode.messageToReply)
                 binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
             }
             is InputMessageMode.Forward -> {
@@ -596,6 +596,7 @@ class ConversationFragment :
         with(binding) {
             switchInputPlate(isEditMode)
             if (!isEditMode || selfMessage == null) return
+            tvEditMessageTitle.isVisible = true
             tvEditMessageTitle.setText(R.string.edit_message_title)
             tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
             tvTextToEdit.setTextAppearance(R.style.Text_Gray_12sp)
