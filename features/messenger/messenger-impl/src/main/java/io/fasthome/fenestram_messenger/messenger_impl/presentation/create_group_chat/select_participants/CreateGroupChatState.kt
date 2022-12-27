@@ -10,4 +10,5 @@ data class CreateGroupChatState(
     val addedContacts: List<ContactViewItem>,
     val needScroll: Boolean,
     val isGroupChat: Boolean,
+    val permissionGranted: Boolean
 )

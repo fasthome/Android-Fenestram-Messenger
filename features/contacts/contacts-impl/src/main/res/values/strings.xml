@@ -23,8 +23,6 @@
     <string name="contact_add_number_empty">Не добавлен номер телефона</string>
     <string name="contact_add_first_name_hint">(обязательно)</string>
     <string name="contact_add_second_name_hint">(необязательно)</string>
-    <string name="no_permission">Вы не разрешили приложению доступ\nк контактам</string>
-    <string name="contacts_allow">Разрешить</string>
     <string name="contacts_unregister_users">Пока не зарегистрированы в приложении</string>
 
     <string name="self_contact_name">%s (вы)</string>

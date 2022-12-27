@@ -149,23 +149,24 @@
 
         <TextView
             android:id="@+id/contacts_error_text"
-            style="@style/EmptyViewText"
+            style="@style/Text.White.16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/contacts_error_text_margin_top"
             android:gravity="center"
-            android:text="@string/no_permission"
+            android:text="@string/contacts_no_permission"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/contacts_error" />
 
         <Button
             android:id="@+id/contacts_allow"
-            style="@style/ContactNameAndAddFirst"
+            style="@style/Text.White.16sp"
+            android:textAllCaps="false"
             android:layout_width="@dimen/contacts_add_first_width"
             android:layout_height="@dimen/contacts_add_first_height"
             android:layout_marginBottom="@dimen/contacts_add_first_margin_bottom"
-            android:text="@string/contacts_allow"
+            android:text="@string/common_allow_permission"
             app:backgroundTint="@color/blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
