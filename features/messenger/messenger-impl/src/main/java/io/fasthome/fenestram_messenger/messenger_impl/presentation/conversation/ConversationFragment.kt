@@ -272,7 +272,7 @@ class ConversationFragment :
                     inputMessage.setText(it)
                 }
                 attachedList.isVisible = state.inputMessageMode.attachedFiles.isNotEmpty()
-                attachedAdapter.items = state.inputMessageMode.attachedFiles.filter {  }
+                attachedAdapter.items = state.inputMessageMode.attachedFiles
                 renderStateEditMode(false)
                 renderStateReplyMode(false)
                 renderStateForwardMode(false)
