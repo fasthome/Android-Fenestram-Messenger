@@ -1006,13 +1006,13 @@ class ConversationViewModel(
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
-            state.copy(
-                inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = (state as? InputMessageMode.Default)?.attachedFiles?.filter {
-                        it != attachedFile
-                    } ?: return@updateState state
-                )
-            )
+            when (state.inputMessageMode) {
+                is InputMessageMode.Default -> {
+                    return@updateState state.copy(inputMessageMode = state.inputMessageMode.copy(
+                        attachedFiles = state.inputMessageMode.attachedFiles.filter { it != attachedFile }))
+                }
+                else -> return@updateState state
+            }
         }
     }
 
