@@ -111,6 +111,24 @@ class NetworkClient(
         }
     }
 
+    suspend inline fun <reified Response> runSubmitFormWithImage(
+        path: String,
+        binaryData: ByteArray,
+        params: Map<String, Any?> = emptyMap(),
+        useBaseUrl: Boolean = true,
+    ): Response {
+        return httpClient.submitFormWithBinaryData(
+            url = buildUrl(path, useBaseUrl),
+            formData = formData {
+                append("images", binaryData, Headers.build {
+                    append(HttpHeaders.ContentDisposition, "files_type=images")
+                })
+            }
+        ) {
+            params.forEach { (t, u) -> parameter(t, u) }
+        }
+    }
+
     suspend inline fun <reified Response> runDelete(
         path: String,
         useBaseUrl: Boolean = true,

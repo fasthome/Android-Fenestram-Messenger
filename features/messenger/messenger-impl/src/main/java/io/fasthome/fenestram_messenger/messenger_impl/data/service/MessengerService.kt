@@ -10,6 +10,7 @@ import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
 import io.ktor.client.statement.*
+import java.util.*
 
 class MessengerService(
     clientFactory: NetworkClientFactory,
@@ -92,6 +93,15 @@ class MessengerService(
             )
             .requireData()
         return UploadDocumentResult(documentPath = response.pathToFile)
+    }
+
+    suspend fun uploadImage(documentBytes: ByteArray, chatId: Long): SendMessageResult {
+        val response = client
+            .runSubmitFormWithImage<BaseResponse<SendMessageResponse>>(
+                path = "chats/$chatId/file_message",
+                binaryData = documentBytes
+            )
+        return SendMessageMapper.responseToSendMessageResult(response.requireData(), UUID.randomUUID().toString())
     }
 
     suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {

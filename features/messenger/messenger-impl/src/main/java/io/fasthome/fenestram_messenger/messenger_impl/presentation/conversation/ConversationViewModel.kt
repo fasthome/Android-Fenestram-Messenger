@@ -446,17 +446,21 @@ class ConversationViewModel(
     private suspend fun sendImage(tempMessage: ConversationViewItem.Self.Image) {
         var fileStoragePath: String? = null
         val byteArray = when (val content = tempMessage.loadableContent) {
-            is Content.FileContent -> content.file.readBytes()
+            is Content.FileContent -> {
+                content.file.readBytes()
+            }
             is Content.LoadableContent -> content.load()?.array
             null -> return
         }
-        val result = messengerInteractor.uploadProfileImage(
-            byteArray ?: return
+        val result = messengerInteractor.uploadImageMessage(
+            byteArray ?: return, chatId ?: return
         )
-        result.getOrNull()?.imagePath.let {
-            fileStoragePath = it
+
+       /* result.getOrNull()?.imagePath.let {
+            fileStoragePath = it //TODO: K
             it
-        }
+        }*/
+
         when (result) {
             is CallResult.Error -> {
                 updateState { state ->
@@ -464,12 +468,17 @@ class ConversationViewModel(
                     state
                 }
             }
+            is CallResult.Success -> {
+                updateState { state ->
+                 state.copy(messages = mapOf(tempMessage.localId to tempMessage).plus(state.messages))
+                }
+            }
         }
-        sendMessage(
+            /*sendMessage(
             text = fileStoragePath ?: return,
             messageType = MessageType.Image,
             existMessage = tempMessage
-        )
+        )*/ //TODO: K
     }
 
     private suspend fun sendDocument(tempMessage: ConversationViewItem.Self.Document) {
