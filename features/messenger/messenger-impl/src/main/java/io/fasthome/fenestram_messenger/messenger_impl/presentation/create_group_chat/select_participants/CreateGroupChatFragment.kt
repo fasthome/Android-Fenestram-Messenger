@@ -114,13 +114,6 @@ class CreateGroupChatFragment :
              * state.addedContacts.isNotEmpty() не скролить, если список пустой
              * state.needScroll не скролить, если последний элемент был удален
              */
-
-            /***
-             * Необходимо дать время binding.listAddedInChat обновить список, решается выставлением задержки для скролла
-             *
-             * state.addedContacts.isNotEmpty() не скролить, если список пустой
-             * state.needScroll не скролить, если последний элемент был удален
-             */
             if (state.addedContacts.isNotEmpty() && state.needScroll) {
                 listAddedInChat.postDelayed({
                     listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
