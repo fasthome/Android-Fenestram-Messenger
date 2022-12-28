@@ -157,7 +157,13 @@ class ContactsLoader(private val context: Context) {
         ops.add(
             ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
                 .withSelection(where, args)
-                .withValue(CommonDataKinds.StructuredName.GIVEN_NAME, newName)
+                .withValue(CommonDataKinds.StructuredName.MIDDLE_NAME, "")
+                .build()
+        )
+        ops.add(
+            ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(where, args)
+                .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, newName)
                 .build()
         )
 
