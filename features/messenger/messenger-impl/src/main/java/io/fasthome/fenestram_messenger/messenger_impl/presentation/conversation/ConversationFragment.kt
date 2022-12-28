@@ -35,7 +35,9 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.findForwardText
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.singleSameTime
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toMessageInfo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationDocumentItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
@@ -223,11 +225,13 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(url = state.avatar,
-            placeholderRes = R.drawable.ic_avatar_placeholder)
+        avatarImage.loadCircle(
+            url = state.avatar,
+            placeholderRes = R.drawable.ic_avatar_placeholder
+        )
         avatarImage.onClick {
-            if(state.avatar.isNotEmpty())
-            vm.onImageClicked(url = state.avatar)
+            if (state.avatar.isNotEmpty())
+                vm.onImageClicked(url = state.avatar)
         }
         if (state.isChatEmpty && emptyContainer.alpha == 0f) {
             emptyContainer.isVisible = true
@@ -272,7 +276,7 @@ class ConversationFragment :
                 renderStateEditMode(false)
                 renderStateReplyMode(false)
                 renderStateForwardMode(false)
-                binding.chatUserTagsContainer.setPadding(0,0,0,0)
+                binding.chatUserTagsContainer.setPadding(0, 0, 0, 0)
 
             }
             is InputMessageMode.Edit -> {
@@ -280,21 +284,36 @@ class ConversationFragment :
                 renderStateReplyMode(false)
                 renderStateForwardMode(false)
                 renderStateEditMode(true, state.inputMessageMode.messageToEdit)
-                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+                binding.chatUserTagsContainer.setPadding(
+                    0,
+                    0,
+                    0,
+                    binding.clEditMessage.height - binding.inputMessage.height
+                )
             }
             is InputMessageMode.Reply -> {
                 attachedList.isVisible = false
                 renderStateEditMode(false)
                 renderStateForwardMode(false)
                 renderStateReplyMode(true, state.inputMessageMode.messageToReply)
-                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+                binding.chatUserTagsContainer.setPadding(
+                    0,
+                    0,
+                    0,
+                    binding.clEditMessage.height - binding.inputMessage.height
+                )
             }
             is InputMessageMode.Forward -> {
                 attachedList.isVisible = false
                 renderStateEditMode(false)
                 renderStateReplyMode(false)
-                renderStateForwardMode(true,state.inputMessageMode.messageToForward)
-                binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+                renderStateForwardMode(true, state.inputMessageMode.messageToForward)
+                binding.chatUserTagsContainer.setPadding(
+                    0,
+                    0,
+                    0,
+                    binding.clEditMessage.height - binding.inputMessage.height
+                )
             }
         }
 
@@ -393,27 +412,34 @@ class ConversationFragment :
             }
             is ConversationEvent.ShowUsersTags -> {
                 tagsAdapter.items = event.users
-                when(vm.viewState.value.inputMessageMode) {
+                when (vm.viewState.value.inputMessageMode) {
                     is InputMessageMode.Reply,
                     is InputMessageMode.Edit -> {
-                        binding.chatUserTagsContainer.setPadding(0,0,0,binding.clEditMessage.height - binding.inputMessage.height)
+                        binding.chatUserTagsContainer.setPadding(
+                            0,
+                            0,
+                            0,
+                            binding.clEditMessage.height - binding.inputMessage.height
+                        )
                     }
                     is InputMessageMode.Default -> {
-                        binding.chatUserTagsContainer.setPadding(0,0,0,0)
+                        binding.chatUserTagsContainer.setPadding(0, 0, 0, 0)
                     }
                 }
             }
 
             is ConversationEvent.UpdateInputUserTag -> {
                 var text = binding.inputMessage.text.toString()
-                if(text.isNotEmpty()) {
+                if (text.isNotEmpty()) {
                     var tagCharIndex = 0
                     do {
                         tagCharIndex = text.indexOf("@", tagCharIndex)
                         tagCharIndex++
                     } while (tagCharIndex < binding.inputMessage.selectionStart)
 
-                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(tagCharIndex)
+                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(
+                        tagCharIndex
+                    )
                 }
                 binding.inputMessage.setText(text)
                 binding.inputMessage.lastCharFocus()
@@ -449,18 +475,22 @@ class ConversationFragment :
         }
     }
 
-    private fun replyImageDialog(conversationViewItem: ConversationViewItem) = MessageActionDialog.create(
-        fragment = this,
-        onDelete = if (conversationViewItem is ConversationViewItem.Self) {
-            { vm.onDeleteMessageClicked(conversationViewItem) }
-        } else null,
-        onReply = {
-            vm.replyMessageMode(true, conversationViewItem)
-        },
-        onForward = {
-            vm.openChatSelectorForForward(conversationViewItem.id, conversationViewItem.userName)
-        }
-    ).show()
+    private fun replyImageDialog(conversationViewItem: ConversationViewItem) =
+        MessageActionDialog.create(
+            fragment = this,
+            onDelete = if (conversationViewItem is ConversationViewItem.Self) {
+                { vm.onDeleteMessageClicked(conversationViewItem) }
+            } else null,
+            onReply = {
+                vm.replyMessageMode(true, conversationViewItem)
+            },
+            onForward = {
+                vm.openChatSelectorForForward(
+                    conversationViewItem.toMessageInfo(),
+                    conversationViewItem.userName
+                )
+            }
+        ).show()
 
     private fun replyTextDialog(conversationViewItem: ConversationViewItem) {
 
@@ -484,8 +514,10 @@ class ConversationFragment :
                 vm.replyMessageMode(true, conversationViewItem)
             },
             onForward = {
-                vm.openChatSelectorForForward(conversationViewItem.id,
-                    conversationViewItem.userName)
+                vm.openChatSelectorForForward(
+                    conversationViewItem.toMessageInfo(),
+                    conversationViewItem.userName
+                )
             }
         ).show()
     }
@@ -504,8 +536,7 @@ class ConversationFragment :
                 replyImage.isVisible = false
                 tvEditMessageTitle.isVisible = false
                 tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
-                tvTextToEdit.text =
-                    getString(R.string.forward_messages_ph, getPrintableRawText(messageToForward.username))
+                tvTextToEdit.setPrintableTextOrGone(findForwardText(messageToForward))
             }
         }
     }
@@ -520,21 +551,26 @@ class ConversationFragment :
                 })
                 when (message) {
                     is ConversationViewItem.Self.Forward,
-                        is ConversationViewItem.Group.Forward,
-                        is ConversationViewItem.Receive.Forward -> {
+                    is ConversationViewItem.Group.Forward,
+                    is ConversationViewItem.Receive.Forward -> {
                         replyImage.isVisible = false
                         tvEditMessageTitle.isVisible = false
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvTextToEdit.setText(R.string.forward_message)
-                        }
+                    }
                     is ConversationTextItem -> {
                         tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
                         tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                        tvTextToEdit.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.white
+                            )
+                        )
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {
@@ -543,7 +579,10 @@ class ConversationFragment :
                         replyImage.loadRounded(message.content, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
-                            getString(R.string.reply_image_from_ph, getPrintableRawText(message.userName))
+                            getString(
+                                R.string.forward_image_from_ph,
+                                getPrintableRawText(message.userName)
+                            )
                     }
                     is ConversationDocumentItem -> {
                         tvEditMessageTitle.isVisible = false
@@ -551,7 +590,10 @@ class ConversationFragment :
                         replyImage.setImageResource(R.drawable.ic_reply_mode)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
-                            getString(R.string.reply_document_ph, getPrintableRawText(message.userName))
+                            getString(
+                                R.string.reply_document_ph,
+                                getPrintableRawText(message.userName)
+                            )
                     }
                 }
             }

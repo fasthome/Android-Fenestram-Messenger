@@ -2,13 +2,14 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
 import io.ktor.util.reflect.*
@@ -657,19 +658,27 @@ private fun getName(user: User?): String {
     }
 }
 
-fun UserStatus.toPrintableText(userName: String, isGroup: Boolean, groupUsers: List<User>?): PrintableText {
+fun UserStatus.toPrintableText(
+    userName: String,
+    isGroup: Boolean,
+    groupUsers: List<User>?
+): PrintableText {
     return when (this) {
         UserStatus.OnlineStatus -> {
             if (groupUsers.isNullOrEmpty())
                 PrintableText.Raw("")
             else
-                if(isGroup)
-                    PrintableText.StringResource(resId = R.string.user_group_status,groupUsers.size,groupUsers.map { it.isOnline }.size)
+                if (isGroup)
+                    PrintableText.StringResource(
+                        resId = R.string.user_group_status,
+                        groupUsers.size,
+                        groupUsers.map { it.isOnline }.size
+                    )
+                else
+                    if (groupUsers[0].isOnline)
+                        PrintableText.StringResource(R.string.user_status_online)
                     else
-                        if (groupUsers[0].isOnline)
-                            PrintableText.StringResource(R.string.user_status_online)
-                        else
-                            PrintableText.StringResource(R.string.user_status_offline)
+                        PrintableText.StringResource(R.string.user_status_offline)
         }
         UserStatus.Typing -> {
             if (isGroup)
@@ -730,3 +739,44 @@ fun MessageStatus.toConversationViewItem(
         else -> error("Unknown Message Type! type $messageType")
     }
 }
+
+fun ConversationViewItem.toMessageInfo(): MessageInfo {
+    val type = when (this) {
+        is ConversationTextItem -> {
+            MessageType.Text
+        }
+        is ConversationImageItem -> {
+            MessageType.Image
+        }
+        is ConversationDocumentItem -> {
+            MessageType.Document
+        }
+        else -> {
+            MessageType.Unknown
+        }
+    }
+    return MessageInfo(
+        id = id,
+        type = type
+    )
+}
+
+fun findForwardText(messageToForward: MessengerFeature.ForwardMessage) =
+    when (messageToForward.message.type) {
+        MessageType.Text -> PrintableText.StringResource(
+            R.string.forward_messages_ph,
+            getPrintableRawText(messageToForward.username)
+        )
+        MessageType.Image -> PrintableText.StringResource(
+            R.string.forward_image_from_ph,
+            getPrintableRawText(messageToForward.username)
+        )
+        MessageType.Document -> PrintableText.StringResource(
+            R.string.forward_file_from_ph,
+            getPrintableRawText(messageToForward.username)
+        )
+        MessageType.Unknown -> PrintableText.StringResource(
+            R.string.forward_messages_ph,
+            getPrintableRawText(messageToForward.username)
+        )
+    }

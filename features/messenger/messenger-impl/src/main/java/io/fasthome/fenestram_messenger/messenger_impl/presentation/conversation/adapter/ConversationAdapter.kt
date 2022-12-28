@@ -281,7 +281,7 @@ fun createConversationSelfForwardAdapterDelegate(
                 }
                 is ConversationImageItem -> {
                     forwardAuthorName.text = getString(
-                        R.string.reply_image_from_ph,
+                        R.string.forward_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName)
                     )
                     ivArrow.isVisible = false
@@ -493,7 +493,7 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardImage.isVisible = true
                     replyDocumentContent.isVisible = false
                     forwardAuthorName.text = getString(
-                        R.string.reply_image_from_ph,
+                        R.string.forward_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName)
                     )
                     forwardImage.loadRounded(item.forwardMessage.content as String)
@@ -791,7 +791,7 @@ fun createConversationGroupForwardAdapterDelegate(
                 }
                 is ConversationImageItem -> {
                     forwardAuthorName.text = getString(
-                        R.string.reply_image_from_ph,
+                        R.string.forward_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName)
                     )
                     ivArrow.isVisible = false
