@@ -19,6 +19,8 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -88,7 +90,7 @@ class ConversationViewModel(
                 deleteMessage(result.messageId)
             }
             is ImageViewerContract.Result.Forward -> {
-                openChatSelectorForForward(result.messageId, result.username)
+                openChatSelectorForForward(MessageInfo(id = result.messageId, type = MessageType.Image), result.username)
             }
         }
     }
@@ -263,11 +265,11 @@ class ConversationViewModel(
         exitWithoutResult()
     }
 
-    fun openChatSelectorForForward(messageId: Long, userName: PrintableText) {
+    fun openChatSelectorForForward(messageInfo: MessageInfo, userName: PrintableText) {
         messengerLauncher.launch(
             MessengerFeature.MessengerParams(
                 chatSelectionMode = true,
-                forwardMessage = MessengerFeature.ForwardMessage(messageId, userName)
+                forwardMessage = MessengerFeature.ForwardMessage(messageInfo, userName)
             )
         )
     }
@@ -276,7 +278,7 @@ class ConversationViewModel(
         viewModelScope.launch {
             messengerInteractor.forwardMessage(
                 chatId ?: return@launch,
-                (currentViewState.inputMessageMode as? InputMessageMode.Forward)?.messageToForward?.id
+                (currentViewState.inputMessageMode as? InputMessageMode.Forward)?.messageToForward?.message?.id
                     ?: return@launch
             )
                 .withErrorHandled {
@@ -573,6 +575,7 @@ class ConversationViewModel(
                         )
                     )
                 }
+                MessageType.Unknown -> return@launch
             }
             val messages = currentViewState.messages
 
@@ -1006,13 +1009,13 @@ class ConversationViewModel(
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
-            state.copy(
-                inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = (state as? InputMessageMode.Default)?.attachedFiles?.filter {
-                        it != attachedFile
-                    } ?: return@updateState state
-                )
-            )
+            when (state.inputMessageMode) {
+                is InputMessageMode.Default -> {
+                    return@updateState state.copy(inputMessageMode = state.inputMessageMode.copy(
+                        attachedFiles = state.inputMessageMode.attachedFiles.filter { it != attachedFile }))
+                }
+                else -> return@updateState state
+            }
         }
     }
 
