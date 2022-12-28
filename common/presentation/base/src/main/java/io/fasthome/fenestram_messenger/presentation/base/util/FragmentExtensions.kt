@@ -99,31 +99,32 @@ internal fun FragmentManager.onBackPressed(): Boolean =
 internal fun FragmentManager.onFabClicked(): Boolean =
     fragments.any { it is FabConsumer && it.onFabClicked() }
 
-internal fun FragmentManager.onFabUpdateIcon(@DrawableRes iconRes : Int? = null, badgeCount : Int) =
+internal fun FragmentManager.onFabUpdateIcon(@DrawableRes iconRes: Int? = null, badgeCount: Int) =
     fragments.any {
         (it as? FabConsumer)?.updateFabIcon(iconRes, badgeCount)
         it is FabConsumer
     }
 
-fun Fragment.showMessage(message: Message): Unit = when (message) {
-    is Message.Alert -> {
-        val tag = message.id
-        (childFragmentManager.findFragmentByTag(tag) as MessageDialogFragment?)
-            ?.dismissAllowingStateLoss()
-        MessageDialogFragment
-            .create(requestParams.requestKey, message)
-            .show(childFragmentManager, tag)
-    }
+fun Fragment.showMessage(message: Message, onCloseClick: () -> Unit = {}, onRetryClick: () -> Unit = {}): Unit =
+    when (message) {
+        is Message.Alert -> {
+            val tag = message.id
+            (childFragmentManager.findFragmentByTag(tag) as MessageDialogFragment?)
+                ?.dismissAllowingStateLoss()
+            MessageDialogFragment
+                .create(requestParams.requestKey, message)
+                .show(childFragmentManager, tag)
+        }
 
-    is Message.PopUp -> Toast
-        .makeText(requireContext(), getPrintableText(message.messageText), Toast.LENGTH_LONG)
-        .show()
-    is Message.Dialog ->
-        ErrorDialog
-            .create(this, message.titleText, message.messageText)
+        is Message.PopUp -> Toast
+            .makeText(requireContext(), getPrintableText(message.messageText), Toast.LENGTH_LONG)
             .show()
+        is Message.Dialog ->
+            ErrorDialog
+                .create(this, message.titleText, message.messageText, onCloseClick, onRetryClick)
+                .show()
 
-}
+    }
 
 
 fun Fragment.getOrCreateArguments(): Bundle {

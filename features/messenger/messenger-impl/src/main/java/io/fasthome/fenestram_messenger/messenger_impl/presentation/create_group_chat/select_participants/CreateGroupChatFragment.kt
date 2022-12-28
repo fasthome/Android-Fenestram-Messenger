@@ -9,6 +9,7 @@ import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import io.fasthome.component.permission.PermissionComponentContract
+import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateGroupChatBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -20,7 +21,9 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.renderLoadingState
 
 class CreateGroupChatFragment :
     BaseFragment<CreateGroupChatState, CreateGroupChatEvent>(R.layout.fragment_create_group_chat) {
@@ -77,19 +80,30 @@ class CreateGroupChatFragment :
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun renderState(state: CreateGroupChatState) {
-        binding.listContacts.isVisible = state.permissionGranted
-        binding.noPermissionContainer.isVisible = !state.permissionGranted
+    override fun renderState(state: CreateGroupChatState) = with(binding) {
+        noPermissionContainer.isVisible = false
 
-        contactsAdapter.items = state.contacts.map { item ->
-            item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
-            item
-        }
-        if (state.addedContacts.isEmpty()) binding.next.hide() else binding.next.show()
+        renderLoadingState(
+            loadingState = state.loadingState,
+            progressContainer = progressContainer,
+            contentContainer = null,
+            renderData = {
+                contactsAdapter.items = it.map { item ->
+                    item.isSelected =
+                        state.addedContacts.find { addedContact -> addedContact.userId == item.userId } != null
+                    item
+                }
+            },
+            renderError = { errorInfo, throwable ->
+                renderError(errorInfo, throwable)
+            }
+        )
+
+        if (state.addedContacts.isEmpty()) next.hide() else next.show()
 
         contactsAdapter.notifyDataSetChanged()
 
-        binding.listAddedInChat.isVisible = (state.addedContacts.isNotEmpty() && state.isGroupChat)
+        listAddedInChat.isVisible = (state.addedContacts.isNotEmpty() && state.isGroupChat)
 
         if (state.isGroupChat) {
             addedContactsAdapter.items = state.addedContacts
@@ -101,9 +115,20 @@ class CreateGroupChatFragment :
              * state.needScroll не скролить, если последний элемент был удален
              */
             if (state.addedContacts.isNotEmpty() && state.needScroll) {
-                binding.listAddedInChat.postDelayed({
-                    binding.listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
+                listAddedInChat.postDelayed({
+                    listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
                 }, 100)
+            }
+        }
+    }
+
+    private fun renderError(errorInfo: ErrorInfo, throwable: Throwable) = with(binding) {
+        when (throwable) {
+            is PermissionDeniedException -> {
+                noPermissionContainer.isVisible = true
+            }
+            else -> {
+                vm.onOtherError(throwable)
             }
         }
     }

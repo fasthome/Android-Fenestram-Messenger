@@ -143,7 +143,10 @@ class ContactsViewModel(
     }
 
     fun onOtherError(throwable: Throwable) {
-        onError(showErrorType = ShowErrorType.Dialog, throwable = throwable)
+        onError(
+            showErrorType = ShowErrorType.Dialog,
+            throwable = throwable,
+            onRetryClick = { requestPermissionAndLoadContacts() })
     }
 
 }
