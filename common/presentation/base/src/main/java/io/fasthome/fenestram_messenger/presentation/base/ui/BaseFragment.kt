@@ -35,7 +35,7 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
             when (event) {
                 is BaseViewEvent.ScreenEvent -> handleEvent(event.event)
                 is BaseViewEvent.ShowMessage -> showMessage(event.message)
-                is BaseViewEvent.ShowDialog -> showMessage(event.message)
+                is BaseViewEvent.ShowDialog -> showMessage(event.message, event.onCloseClick, event.onRetryClick)
             }
         }
 
@@ -57,7 +57,7 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
     override fun onFabClicked(): Boolean =
         childFragmentManager.onFabClicked()
 
-    override fun updateFabIcon(iconRes: Int?, badgeCount : Int) {
+    override fun updateFabIcon(iconRes: Int?, badgeCount: Int) {
         requireActivity().supportFragmentManager.onFabUpdateIcon(iconRes, badgeCount)
     }
 

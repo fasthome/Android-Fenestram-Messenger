@@ -19,6 +19,7 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.LoadingState
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -60,12 +61,25 @@ class CreateGroupChatViewModel(
                 return@launch
             }
 
-            contactsFeature.getContactsAndUploadContacts().withErrorHandled(showErrorType = ShowErrorType.Dialog) {
-                originalContacts = it.filter { contact ->
-                    contact.user != null
+            when (val result = contactsFeature.getContactsAndUploadContacts()) {
+                is CallResult.Error -> {
+                    onError(
+                        ShowErrorType.Dialog,
+                        result.error,
+                        { exitWithoutResult() },
+                        { checkPermissionsAndLoadContacts() })
+
+                    updateState { state ->
+                        state.copy(loadingState = LoadingState.None)
+                    }
                 }
-                updateState { state ->
-                    state.copy(loadingState = LoadingState.Success(data = originalContacts.map(::mapToContactViewItem)))
+                is CallResult.Success -> {
+                    originalContacts = result.data.filter { contact ->
+                        contact.user != null
+                    }
+                    updateState { state ->
+                        state.copy(loadingState = LoadingState.Success(data = originalContacts.map(::mapToContactViewItem)))
+                    }
                 }
             }
         }
@@ -147,7 +161,12 @@ class CreateGroupChatViewModel(
     }
 
     fun onOtherError(throwable: Throwable) {
-        onError(showErrorType = ShowErrorType.Dialog, throwable = throwable)
+        onError(
+            showErrorType = ShowErrorType.Dialog,
+            throwable = throwable,
+            { exitWithoutResult() },
+            { checkPermissionsAndLoadContacts() }
+        )
     }
 
 }
