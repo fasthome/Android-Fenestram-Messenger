@@ -4,4 +4,5 @@ class Endpoints(
     val baseUrl : String,
     val apiBaseUrl: String,
     val refreshTokenUrl: String,
+    val policyUrl : String
 )

@@ -24,11 +24,11 @@ class SettingsViewModel(
         val authFeature: AuthFeature,
     )
 
+    private val infoappLauncher = registerScreen(InfoappNavigationContact)
+
     override fun createInitialState(): SettingsState {
         return SettingsState(blueSelected = false, greenSelected = true)
     }
-
-    private val infoappLauncher = registerScreen(InfoappNavigationContact)
 
     fun onLogoutClicked() {
         sendEvent(SettingsEvent.Logout)

@@ -34,11 +34,14 @@ object EnvironmentModule {
                 EndpointsConfig.Prod -> BuildConfig.REFRESH_TOKEN_URL_PROD + "api/${BuildConfig.PROD_API_VERSION}/"
             }
 
+            val policyUrl = BuildConfig.POLICY_RULES_URL
+
             Environment(
                 endpoints = Endpoints(
                     baseUrl = baseUrl,
                     apiBaseUrl = apiBaseUrl,
                     refreshTokenUrl = refreshTokenUrl,
+                    policyUrl = policyUrl
                 ),
                 isDebug = BuildConfig.IS_DEBUG,
                 apiVersion = apiVersion
