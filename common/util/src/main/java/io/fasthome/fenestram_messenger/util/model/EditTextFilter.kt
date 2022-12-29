@@ -2,9 +2,9 @@ package io.fasthome.fenestram_messenger.util.model
 
 import android.text.InputFilter
 import android.text.Spanned
-import io.fasthome.fenestram_messenger.util.REGEX_EDIT_TEXT
+import io.fasthome.fenestram_messenger.util.REGEX_RU_EN_LETTERS
 
-class EditTextFilter(private val patten: Regex = REGEX_EDIT_TEXT) : InputFilter {
+class EditTextFilter(private val patten: Regex = REGEX_RU_EN_LETTERS) : InputFilter {
     override fun filter(
         source: CharSequence?,
         start: Int,
