@@ -197,7 +197,10 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
         ConversationItemSelfTextReplyImageBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onSelfTextReplyImageLongClicked(item)
@@ -258,7 +261,10 @@ fun createConversationSelfForwardAdapterDelegate(
         ConversationItemSelfForwardTextBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onSelfForwardLongClicked(item)
@@ -329,7 +335,10 @@ fun createConversationSelfTextAdapterDelegate(
         ConversationItemSelfTextBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onSelfMessageLongClicked(item)
@@ -362,7 +371,10 @@ fun createConversationSelfImageAdapterDelegate(
     ConversationItemSelfImageBinding::inflate
 ) {
     binding.root.setTouchListener(
-        onReplyMessage = { onReplyMessageImage(item) },
+        onReplyMessage = {
+            if(item.sentStatus.canSwipe())
+                onReplyMessageImage(item)
+        },
     )
     binding.contentLayout.onClick {
         onSelfImageLongClicked(item)
@@ -391,7 +403,10 @@ fun createConversationSelfDocumentAdapterDelegate(
         ConversationItemSelfDocumentBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessageDocument(item) }
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessageDocument(item)
+            },
         )
         binding.contentLayout.onClick {
             onSelfDocumentLongClicked(item)
@@ -428,7 +443,10 @@ fun createConversationReceiveTextAdapterDelegate(
         ConversationItemReceiveTextBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onReceiveMessageLongClicked(item)
@@ -465,7 +483,10 @@ fun createConversationReceiveForwardAdapterDelegate(
         ConversationItemReceiveForwardTextBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                onReplyMessage(item)
+                             },
         )
         binding.contentLayout.onClick {
             onReceiveForwardLongClicked(item)
@@ -538,7 +559,10 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
         ConversationItemReceiveTextReplyImageBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onReceiveTextReplyImageLongClicked(item)
@@ -597,7 +621,10 @@ fun createConversationReceiveImageAdapterDelegate(
             onImageClicked(item)
         }
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessageImage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessageImage(item)
+            },
         )
         binding.contentLayout.onClick {
             onReceiveImageLongClicked(item)
@@ -621,7 +648,10 @@ fun createConversationReceiveDocumentAdapterDelegate(
         ConversationItemReceiveDocumentBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessageDocument(item) }
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessageDocument(item)
+            },
         )
         binding.contentLayout.onClick {
             onReceiveDocumentLongClicked(item)
@@ -657,7 +687,10 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
         ConversationItemGroupTextReplyImageBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onGroupTextReplyImageLongClicked(item)
@@ -718,7 +751,10 @@ fun createConversationGroupTextAdapterDelegate(
         ConversationItemGroupTextBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onGroupMessageLongClicked(item)
@@ -763,7 +799,10 @@ fun createConversationGroupForwardAdapterDelegate(
         ConversationItemGroupForwardTextBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onGroupForwardLongClicked(item)
@@ -844,7 +883,10 @@ fun createConversationGroupImageAdapterDelegate(
             onImageClicked(item)
         }
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessageImage(item) },
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessageImage(item)
+            },
         )
         binding.contentLayout.onClick {
             onGroupImageLongClicked(item)
@@ -870,7 +912,10 @@ fun createConversationGroupDocumentAdapterDelegate(
         ConversationItemGroupDocumentBinding::inflate
     ) {
         binding.root.setTouchListener(
-            onReplyMessage = { onReplyMessageDocument(item) }
+            onReplyMessage = {
+                if(item.sentStatus.canSwipe())
+                    onReplyMessageDocument(item)
+            },
         )
         binding.avatar.onClick {
             onGroupProfileItemClicked(item)
@@ -1009,6 +1054,8 @@ private fun renderDocument(
     startDownloadView?.onClick(documentLoadClickListener)
     forwardDocumentContent?.onClick(documentLoadClickListener)
 }
+
+private fun SentStatus.canSwipe() = this != SentStatus.Error && this != SentStatus.Loading
 
 private suspend inline fun renderDownloadListener(
     progressBar: ProgressBar,
