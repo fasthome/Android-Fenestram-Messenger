@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenUrlNavigationContract
 import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,8 @@ class WelcomeViewModel(
         exitWithResult(WelcomeNavigationContract.createResult(result))
     }
     private val debugLauncher = registerScreen(debugFeature.navigationContract)
+
+    private val openUrlLauncher = registerScreen(OpenUrlNavigationContract)
 
     override fun createInitialState(): WelcomeState {
         return WelcomeState(error = false, isLoad = false, debugVisible = environment.isDebug)
@@ -71,6 +74,10 @@ class WelcomeViewModel(
 
     fun debugClicked() {
         debugLauncher.launch()
+    }
+
+    fun rulesClicked(){
+        openUrlLauncher.launch(OpenUrlNavigationContract.Params(environment.endpoints.policyUrl))
     }
 
 }

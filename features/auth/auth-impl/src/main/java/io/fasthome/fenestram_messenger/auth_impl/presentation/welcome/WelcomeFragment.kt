@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import io.fasthome.fenestram_messenger.auth_impl.R
 import io.fasthome.fenestram_messenger.auth_impl.databinding.FragmentWelcomeBinding
@@ -13,6 +14,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.spannableString
 
 
 class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragment_welcome) {
@@ -21,27 +23,34 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
 
     private val binding by fragmentViewBinding(FragmentWelcomeBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding) {
+        debug.onClick {
+            vm.debugClicked()
+        }
 
-            debug.onClick{
-                vm.debugClicked()
-            }
+        appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_hoolichat_label))
 
-            appName.includeWelcomeText.setPrintableText(PrintableText.StringResource(R.string.common_hoolichat_label))
+        buttonSendCode.setOnClickListener {
+            vm.checkPhoneNumber(
+                binding.phoneInput.getPhoneNumberFiltered(),
+                binding.phoneInput.isValid()
+            )
+        }
 
-            buttonSendCode.setOnClickListener {
-                vm.checkPhoneNumber(
-                    binding.phoneInput.getPhoneNumberFiltered(),
-                    binding.phoneInput.isValid()
-                )
-            }
+        phoneInput.addListener {
+            vm.overWritePhoneNumber()
+        }
 
-            phoneInput.addListener {
-                vm.overWritePhoneNumber()
-            }
+        rules.spannableString(
+            normalText = getString(R.string.policy_rules_1),
+            spannableText = getString(R.string.policy_rules_2),
+            color = ContextCompat.getColor(requireContext(), R.color.blue)
+        )
+
+        rules.onClick{
+            vm.rulesClicked()
         }
     }
 

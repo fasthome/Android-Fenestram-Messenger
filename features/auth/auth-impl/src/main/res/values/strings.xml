@@ -17,4 +17,6 @@
     <string name="auth_resend_code_button">Отправить заново?</string>
     <string name="auth_resend_code_timer">Отправить заново через</string>
     <string name="auth_error_photo">Невозможно загрузить данный файл</string>
+    <string name="policy_rules_1">Нажав “Отправить код” вы соглашаетесь с \n</string>
+    <string name="policy_rules_2">политикой конфиденциальности</string>
 </resources>

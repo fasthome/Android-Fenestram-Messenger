@@ -72,4 +72,18 @@
         app:layout_constraintEnd_toEndOf="@+id/button_send_code"
         app:layout_constraintStart_toStartOf="@+id/button_send_code"
         app:layout_constraintTop_toTopOf="@+id/button_send_code" />
+
+    <TextView
+        android:id="@+id/rules"
+        style="@style/Text.Light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
