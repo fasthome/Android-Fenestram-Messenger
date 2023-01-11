@@ -123,7 +123,6 @@ fun Fragment.showMessage(message: Message, onCloseClick: () -> Unit = {}, onRetr
             ErrorDialog
                 .create(this, message.titleText, message.messageText, onCloseClick, onRetryClick)
                 .show()
-
     }
 
 

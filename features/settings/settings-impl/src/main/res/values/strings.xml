@@ -3,6 +3,7 @@
     <string name="settings">Настройки</string>
     <string name="changeColor">Изменить цвет</string>
     <string name="settings_about_app">О приложении</string>
+    <string name="settings_bug_report">Сообщить о проблеме</string>
     <string name="exitAccount">Выход из учетной записи</string>
     <string name="settings_delete_account">Удаление аккаунта</string>
     <string name="settings_delete">Удалить</string>
