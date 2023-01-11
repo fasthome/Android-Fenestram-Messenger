@@ -83,7 +83,7 @@ class MessengerService(
         return UploadImageResult(imagePath = response.pathToFile)
     }
 
-    suspend fun uploadDocument(documentBytes: ByteArray, guid: String, chatId: Long): UploadDocumentResult {
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String, chatId: Long): SendMessageResponse {
         val response = client
             .runSubmitFormWithDocument<BaseResponse<SendMessageResponse>>(
                 path = "chats/$chatId/file_message",
@@ -91,7 +91,7 @@ class MessengerService(
                 filename = guid,
             )
             .requireData()
-        return UploadDocumentResult(documentPath = "")
+        return response
     }
 
     suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {

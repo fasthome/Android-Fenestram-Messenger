@@ -71,7 +71,7 @@ interface MessengerRepo {
         chatId: Long,
         documentBytes: ByteArray,
         guid: String
-    ): CallResult<UploadDocumentResult>
+    ): CallResult<SendMessageResponse>
 
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)
