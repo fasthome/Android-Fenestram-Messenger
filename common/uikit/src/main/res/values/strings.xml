@@ -16,6 +16,7 @@
     <string name="common_incorrect_code_label">Неверный код</string>
     <string name="common_resend_code_button">Отправить заново?</string>
     <string name="common_close">Закрыть</string>
+    <string name="common_dialog_retry">Попробовать еще раз</string>
     <string name="common_notification_channel_title_push">PUSH-уведомления</string>
     <string name="common_notification_channel_description_push">Получение PUSH-уведомлений</string>
     <string name="common_more_button">Далее</string>
@@ -25,5 +26,7 @@
     <string name="common_accept">Подтвердить</string>
     <string name="common_save">Сохранить</string>
     <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
+    <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
+    <string name="common_allow_permission">Разрешить</string>
 
 </resources>

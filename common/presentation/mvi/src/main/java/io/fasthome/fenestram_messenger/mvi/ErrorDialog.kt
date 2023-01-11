@@ -13,7 +13,9 @@ object ErrorDialog {
     fun create(
         fragment: Fragment,
         titleText: PrintableText?,
-        messageText: PrintableText
+        messageText: PrintableText,
+        onCloseClick: () -> Unit,
+        onRetryClick: () -> Unit
     ): Dialog {
         val errorBinding = DialogErrorBinding.inflate(fragment.layoutInflater)
 
@@ -29,8 +31,15 @@ object ErrorDialog {
             description.setPrintableText(messageText)
 
             close.onClick {
+                onCloseClick()
                 dialog.dismiss()
             }
+
+            retry.onClick {
+                onRetryClick()
+                dialog.dismiss()
+            }
+
             return dialog.build()
         }
     }

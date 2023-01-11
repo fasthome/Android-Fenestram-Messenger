@@ -3,27 +3,36 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants
 
+import android.Manifest
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.mapper.mapToContactViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
 
 class CreateGroupChatViewModel(
     requestParams: RequestParams,
     router: ContractRouter,
     private val contactsFeature: ContactsFeature,
-    private val params: CreateGroupChatContract.Params
+    private val messengerInteractor: MessengerInteractor,
+    private val params: CreateGroupChatContract.Params,
+    private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<CreateGroupChatState, CreateGroupChatEvent>(router, requestParams) {
 
     private val createInfoLauncher = registerScreen(CreateInfoContract)
@@ -31,21 +40,52 @@ class CreateGroupChatViewModel(
 
     private val conversationLauncher = registerScreen(ConversationNavigationContract) { }
 
-    init {
+    override fun createInitialState(): CreateGroupChatState {
+        return CreateGroupChatState(LoadingState.None, listOf(), false, params.isGroupChat)
+    }
+
+    fun checkPermissionsAndLoadContacts() {
         viewModelScope.launch {
-            contactsFeature.getContacts().onSuccess {
-                originalContacts = it.filter { contact ->
-                    contact.user != null
-                }
+            updateState { state ->
+                state.copy(loadingState = LoadingState.Loading)
+            }
+
+            val readPermissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
+            if (!readPermissionGranted) {
                 updateState { state ->
-                    state.copy(contacts = originalContacts.map(::mapToContactViewItem))
+                    state.copy(
+                        loadingState = LoadingState.Error(
+                            error = ErrorInfo.createEmpty(),
+                            throwable = PermissionDeniedException()
+                        )
+                    )
+                }
+                return@launch
+            }
+
+            when (val result = contactsFeature.getContactsAndUploadContacts()) {
+                is CallResult.Error -> {
+                    onError(
+                        ShowErrorType.Dialog,
+                        result.error,
+                        { exitWithoutResult() },
+                        { checkPermissionsAndLoadContacts() })
+
+                    updateState { state ->
+                        state.copy(loadingState = LoadingState.None)
+                    }
+                }
+                is CallResult.Success -> {
+                    val id = messengerInteractor.getUserId()
+                    originalContacts = result.data.filter { contact ->
+                        contact.user != null && contact.userId != id
+                    }
+                    updateState { state ->
+                        state.copy(loadingState = LoadingState.Success(data = originalContacts.map(::mapToContactViewItem)))
+                    }
                 }
             }
         }
-    }
-
-    override fun createInitialState(): CreateGroupChatState {
-        return CreateGroupChatState(listOf(), listOf(), false, params.isGroupChat)
     }
 
     fun onContactClicked(contactViewItem: ContactViewItem) {
@@ -113,7 +153,7 @@ class CreateGroupChatViewModel(
         }
         updateState { state ->
             state.copy(
-                contacts = filteredContacts.map(::mapToContactViewItem)
+                loadingState = LoadingState.Success(filteredContacts.map(::mapToContactViewItem))
             )
         }
     }
@@ -121,6 +161,15 @@ class CreateGroupChatViewModel(
     override fun onBackPressed(): Boolean {
         exitWithoutResult()
         return true
+    }
+
+    fun onOtherError(throwable: Throwable) {
+        onError(
+            showErrorType = ShowErrorType.Dialog,
+            throwable = throwable,
+            { exitWithoutResult() },
+            { checkPermissionsAndLoadContacts() }
+        )
     }
 
 }

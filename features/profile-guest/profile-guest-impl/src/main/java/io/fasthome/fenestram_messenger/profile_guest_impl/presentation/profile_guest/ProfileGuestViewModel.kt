@@ -184,11 +184,9 @@ class ProfileGuestViewModel(
                 }
 
                 val imageUrl: String? = currentViewState.chatImageFile?.let { file ->
-                    profileImageUrlConverter.extractPath(
-                        profileGuestInteractor.uploadChatAvatar(
-                            file.readBytes()
-                        ).getOrNull()?.imagePath
-                    )
+                    profileGuestInteractor.uploadChatAvatar(
+                        file.readBytes()
+                    ).getOrNull()?.imagePath
                 }
 
                 if (imageUrl != null && profileGuestInteractor.patchChatAvatar(
@@ -207,12 +205,13 @@ class ProfileGuestViewModel(
                         profileGuestStatus = EditTextStatus.Idle
                     )
                 }
-
             } else if (currentViewState.editMode && !params.isGroup) {
-                val permissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
-
-                if (newName != getPrintableRawText(currentViewState.userName) && permissionGranted) {
-                    contactsFeature.updateContactName(params.userPhone, newName)
+                val readPermissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
+                val writePermissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
+                val currentName = getPrintableRawText(currentViewState.userName)
+                
+                if (newName != currentName && writePermissionGranted && readPermissionGranted) {
+                    contactsFeature.updateContactName(params.userPhone, currentName, newName)
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
                 }
                 updateState { state ->
@@ -250,6 +249,22 @@ class ProfileGuestViewModel(
                     )
                 )
             }
+        }
+    }
+
+    override fun onBackPressed(): Boolean {
+        exitWithNameChanged()
+        return super.onBackPressed()
+    }
+
+    fun exitWithNameChanged() {
+        val currentName = getPrintableRawText(currentViewState.userName)
+        if (currentName != params.userName) {
+            exitWithResult(
+                ProfileGuestNavigationContract.createResult(
+                    ProfileGuestNavigationContract.Result.ChatNameChanged(currentViewState.userName)
+                )
+            )
         }
     }
 }

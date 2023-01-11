@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.*
 
 class PickFileViewModel(
     requestParams: RequestParams,
@@ -27,7 +28,6 @@ class PickFileViewModel(
     private val pickFileOperations: PickFileOperations,
 ) : BaseViewModel<Unit, Nothing>(router, requestParams), PickFileInterface {
 
-    private val tempFile by lazy { File(fileSystemInterface.cacheDir, "temp_file") }
     private val cameraTempFile by lazy { createFile(fileSystemInterface.cacheDir, "picture") }
 
     private var currentMimeType = params.mimeType
@@ -38,19 +38,19 @@ class PickFileViewModel(
             resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickCancelled)
         } else {
             viewModelScope.launch {
+                val file by lazy { File(fileSystemInterface.cacheDir, "temp_file_" + UUID.randomUUID()) }
                 when (currentMimeType) {
                     is PickFileComponentParams.MimeType.Image -> {
                         pickImageOperations.processImage(
                             uri = uri,
-                            tempFile = tempFile,
+                            tempFile = file,
                             compressToSize = (currentMimeType as PickFileComponentParams.MimeType.Image).compressToSize,
                         )
-                        val file = tempFile
                         resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickedImage(file))
                     }
                     is PickFileComponentParams.MimeType.Document -> {
-                        pickFileOperations.copyFile(uri, tempFile)
-                        val file = pickFileOperations.renameFile(tempFile, uri, fileSystemInterface.cacheDir)
+                        pickFileOperations.copyFile(uri, file)
+                        val file = pickFileOperations.renameFile(file, uri, fileSystemInterface.cacheDir)
                         resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickedFile(file))
                     }
                 }

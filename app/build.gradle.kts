@@ -29,6 +29,17 @@ android {
     buildTypes {
         getByName(BuildType.release) {
             booleanBuildConfigField("IS_DEBUG", false)
+            
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://37.140.197.223/")
+            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://176.99.12.176/")
+            stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://37.140.197.223/")
+            stringBuildConfigField("REFRESH_TOKEN_URL_PROD", "http://176.99.12.176/")
+            stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
+
+            stringBuildConfigField("DEV_API_VERSION", "v1")
+            stringBuildConfigField("PROD_API_VERSION", "v1")
+
+            stringBuildConfigField("POLICY_RULES_URL", "http://37.140.197.223/storage/PrivacyPolicy.html")
 
             isMinifyEnabled = obfuscationEnabled
             isShrinkResources = obfuscationEnabled
@@ -41,6 +52,8 @@ android {
             stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://37.140.197.223/")
             stringBuildConfigField("REFRESH_TOKEN_URL_PROD", "http://176.99.12.176/")
             stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
+
+            stringBuildConfigField("POLICY_RULES_URL", "http://37.140.197.223/storage/PrivacyPolicy.html")
 
             stringBuildConfigField("DEV_API_VERSION", "v1")
             stringBuildConfigField("PROD_API_VERSION", "v1")

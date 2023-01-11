@@ -32,8 +32,8 @@
     <string name="messenger_search_contacts">Поиск контакта</string>
     <string name="messenger_edited">изменено</string>
     <string name="forward_file_from_ph">Пересланный файл\nот %1$s</string>
-    <string name="reply_image_from_ph">Пересланное фото\nот %1$s</string>
-    <string name="forward_messages_ph">Пересланные сообщения от %1$s</string>
+    <string name="forward_image_from_ph">Пересланное фото\nот %1$s</string>
+    <string name="forward_messages_ph">Пересланное сообщение от %1$s</string>
     <string name="reply_document_ph">Ответ на файл\nот %1$s</string>
     <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
     <string name="forward">Переслать</string>

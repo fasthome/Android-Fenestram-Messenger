@@ -48,6 +48,16 @@
         android:textColor="@color/white"
         android:textSize="14sp"/>
 
-
+    <TextView
+        android:id="@+id/policy_rules"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/policy_rules"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/hooliLogo"
+        app:layout_constraintStart_toStartOf="@+id/hooliLogo"
+        app:layout_constraintTop_toBottomOf="@+id/hooliVersion" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,10 +14,8 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getPrintableText
+import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.model.EditTextFilter
-import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
 class ContactAddFragment :
@@ -58,9 +56,9 @@ class ContactAddFragment :
                 getPrintableText(PrintableText.StringResource(R.string.contact_add_second_name_hint))
 
             contactAddInputFirstName.includeEditText.filters =
-                arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+                arrayOf(EditTextFilter(REGEX_RU_EN_LETTERS_AND_SPACE), InputFilter.LengthFilter(25))
             contactAddInputSecondName.includeEditText.filters =
-                arrayOf(EditTextFilter(), InputFilter.LengthFilter(15))
+                arrayOf(EditTextFilter(REGEX_RU_EN_LETTERS_AND_SPACE), InputFilter.LengthFilter(25))
 
             contactAddInvalidFirstName.includeTextInvalid.run {
                 setPrintableText(

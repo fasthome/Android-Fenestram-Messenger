@@ -4,6 +4,7 @@ import io.fasthome.fenestram_messenger.core.debug.DebugRepo
 import io.fasthome.fenestram_messenger.core.debug.NormalDebugRepo
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import io.fasthome.fenestram_messenger.di.bindSafe
 
 object BuildTypeModule {
 
@@ -12,6 +13,6 @@ object BuildTypeModule {
     )
 
     private fun createAppRelease() = module {
-        single(::NormalDebugRepo) bindSafe DebugRepo::class
+        single { NormalDebugRepo() } bindSafe DebugRepo::class
     }
 }

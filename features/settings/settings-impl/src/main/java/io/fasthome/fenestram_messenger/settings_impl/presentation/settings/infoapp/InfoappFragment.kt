@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentInfoappBinding
+import io.fasthome.fenestram_messenger.util.onClick
 
 
 class InfoappFragment : BaseFragment<InfoappState, InfoappEvent>(R.layout.fragment_infoapp) {
@@ -25,6 +26,10 @@ class InfoappFragment : BaseFragment<InfoappState, InfoappEvent>(R.layout.fragme
             onBackPressed()
         }
         hooliLogo.loadCircle(R.drawable.ic_logoholi)
+
+        policyRules.onClick {
+            vm.rulesClicked()
+        }
     }
 
     override fun renderState(state: InfoappState) = nothingToRender()

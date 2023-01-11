@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.BottomSheetDismissListener
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
@@ -33,7 +34,7 @@ import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
 
 class ProfileGuestFragment :
-    BaseFragment<ProfileGuestState, ProfileGuestEvent>(R.layout.fragment_profile_guest) {
+    BaseFragment<ProfileGuestState, ProfileGuestEvent>(R.layout.fragment_profile_guest), BottomSheetDismissListener {
 
     private val binding by fragmentViewBinding(FragmentProfileGuestBinding::bind)
     private val recentFilesAdapter = RecentFilesAdapter()
@@ -139,8 +140,6 @@ class ProfileGuestFragment :
             participantsContainer.isVisible = state.isGroup
             profileGuestPhone.isVisible = !state.isGroup
             profileGuestContainer.isVisible = !state.editMode
-            profileGuestVideoChat.isVisible = !state.editMode
-            profileGuestCall.isVisible = !state.editMode
             pickPhotoIcon.isVisible = state.editMode && state.isGroup
             profileGuestName.isEnabled = state.editMode
 
@@ -254,6 +253,10 @@ class ProfileGuestFragment :
             )
                 .show()
         }
+    }
+
+    override fun onDismiss() {
+        vm.exitWithNameChanged()
     }
 
 }

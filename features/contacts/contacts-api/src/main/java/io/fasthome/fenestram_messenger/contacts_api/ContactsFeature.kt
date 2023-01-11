@@ -24,7 +24,7 @@ interface ContactsFeature {
 
     suspend fun getContactsAndUploadContacts(): CallResult<List<Contact>>
 
-    suspend fun updateContactName(phoneNumber: String, newName: String)
+    suspend fun updateContactName(phoneNumber: String, oldName: String, newName: String)
 
     @Parcelize
     data class Params(

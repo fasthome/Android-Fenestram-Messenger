@@ -19,6 +19,8 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -88,7 +90,7 @@ class ConversationViewModel(
                 deleteMessage(result.messageId)
             }
             is ImageViewerContract.Result.Forward -> {
-                openChatSelectorForForward(result.messageId, result.username)
+                openChatSelectorForForward(MessageInfo(id = result.messageId, type = MessageType.Image), result.username)
             }
         }
     }
@@ -127,6 +129,9 @@ class ConversationViewModel(
                             ConversationNavigationContract.Result.ChatDeleted(result.id)
                         )
                     )
+                is ProfileGuestFeature.ProfileGuestResult.ChatNameChanged -> {
+                    updateState { state -> state.copy(userName = result.newName) }
+                }
             }
         }
 
@@ -161,9 +166,11 @@ class ConversationViewModel(
         return ConversationState(
             messages = mapOf(),
             userName = PrintableText.Raw(params.chat.name),
-            userStatus = UserStatus.OnlineStatus.toPrintableText("",
+            userStatus = UserStatus.OnlineStatus.toPrintableText(
+                "",
                 params.chat.isGroup,
-                chatUsers),
+                chatUsers
+            ),
             userStatusDots = PrintableText.EMPTY,
             isChatEmpty = false,
             avatar = storageUrlConverter.convert(params.chat.avatar),
@@ -258,20 +265,22 @@ class ConversationViewModel(
         exitWithoutResult()
     }
 
-    fun openChatSelectorForForward(messageId: Long, userName: PrintableText) {
+    fun openChatSelectorForForward(messageInfo: MessageInfo, userName: PrintableText) {
         messengerLauncher.launch(
             MessengerFeature.MessengerParams(
                 chatSelectionMode = true,
-                forwardMessage = MessengerFeature.ForwardMessage(messageId, userName)
+                forwardMessage = MessengerFeature.ForwardMessage(messageInfo, userName)
             )
         )
     }
 
     private fun forwardMessage() {
         viewModelScope.launch {
-            messengerInteractor.forwardMessage(chatId ?: return@launch,
-                (currentViewState.inputMessageMode as? InputMessageMode.Forward)?.messageToForward?.id
-                    ?: return@launch)
+            messengerInteractor.forwardMessage(
+                chatId ?: return@launch,
+                (currentViewState.inputMessageMode as? InputMessageMode.Forward)?.messageToForward?.message?.id
+                    ?: return@launch
+            )
                 .withErrorHandled {
                     updateState { state ->
                         state.copy(inputMessageMode = InputMessageMode.Default())
@@ -567,6 +576,7 @@ class ConversationViewModel(
                         )
                     )
                 }
+                MessageType.Unknown -> return@launch
             }
             val messages = currentViewState.messages
 
@@ -776,9 +786,11 @@ class ConversationViewModel(
                             state.copy(
                                 avatar = it.avatar,
                                 userName = PrintableText.Raw(it.chatName),
-                                userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                                userStatus = UserStatus.OnlineStatus.toPrintableText(
+                                    "",
                                     params.chat.isGroup,
-                                    chatUsers),
+                                    chatUsers
+                                ),
                             )
                         }
                     }
@@ -790,9 +802,11 @@ class ConversationViewModel(
                     updateState { state ->
                         state.copy(
                             newMessagesCount = state.newMessagesCount + 1,
-                            userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                            userStatus = UserStatus.OnlineStatus.toPrintableText(
+                                "",
                                 params.chat.isGroup,
-                                chatUsers),
+                                chatUsers
+                            ),
                         )
                     }
                 }
@@ -804,9 +818,11 @@ class ConversationViewModel(
                 state.copy(
                     avatar = it.avatar,
                     userName = PrintableText.Raw(it.chatName),
-                    userStatus = UserStatus.OnlineStatus.toPrintableText("",
+                    userStatus = UserStatus.OnlineStatus.toPrintableText(
+                        "",
                         params.chat.isGroup,
-                        chatUsers),
+                        chatUsers
+                    ),
                 )
             }
         }
@@ -994,13 +1010,13 @@ class ConversationViewModel(
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
-            state.copy(
-                inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = (state as? InputMessageMode.Default)?.attachedFiles?.filter {
-                        it != attachedFile
-                    } ?: return@updateState state
-                )
-            )
+            when (state.inputMessageMode) {
+                is InputMessageMode.Default -> {
+                    return@updateState state.copy(inputMessageMode = state.inputMessageMode.copy(
+                        attachedFiles = state.inputMessageMode.attachedFiles.filter { it != attachedFile }))
+                }
+                else -> return@updateState state
+            }
         }
     }
 

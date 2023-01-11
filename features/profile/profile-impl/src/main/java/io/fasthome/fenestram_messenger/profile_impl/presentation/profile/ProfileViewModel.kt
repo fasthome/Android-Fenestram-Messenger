@@ -127,7 +127,7 @@ class ProfileViewModel(
                         }
                 }
                 !avatarUrl.isNullOrEmpty() -> {
-                    avatarUrl!!.substring(20, avatarUrl!!.length)
+                    profileImageUrlConverter.extractPath(avatarUrl!!)
                 }
                 else -> {
                     null
@@ -147,7 +147,10 @@ class ProfileViewModel(
                 personalData.copy(avatar = avatar)
             )) {
                 is CallResult.Error -> {
-                    onError(showErrorType = ShowErrorType.Dialog, throwable = result.error)
+                    onError(
+                        showErrorType = ShowErrorType.Dialog,
+                        throwable = result.error,
+                        onRetryClick = { checkPersonalData() })
                     updateState { state ->
                         personalityInterface.runEdit(false)
                         state.copy(
@@ -156,7 +159,7 @@ class ProfileViewModel(
                         )
                     }
                 }
-                is CallResult.Success ->{
+                is CallResult.Success -> {
                     showMessage(Message.PopUp(PrintableText.StringResource(R.string.profile_successs_changed)))
                     personalityInterface.setFields(
                         UserDetail(
@@ -194,11 +197,16 @@ class ProfileViewModel(
     }
 
     fun onAvatarClicked() {
-        if(currentViewState.isEdit) {
+        if (currentViewState.isEdit) {
             pickFileInterface.pickFile()
         } else {
             if (currentViewState.avatarUrl != null || currentViewState.avatarBitmap != null) {
-                imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(currentViewState.avatarUrl, currentViewState.avatarBitmap))
+                imageViewerLauncher.launch(
+                    ImageViewerContract.ImageViewerParams.ImageParams(
+                        currentViewState.avatarUrl,
+                        currentViewState.avatarBitmap
+                    )
+                )
             }
         }
     }

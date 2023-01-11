@@ -4,12 +4,14 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.CodeResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
+import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenUrlNavigationContract
 import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.coroutines.launch
 
@@ -17,7 +19,8 @@ class WelcomeViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val authInteractor: AuthInteractor,
-    private val debugFeature : DebugFeature
+    private val debugFeature : DebugFeature,
+    private val environment : Environment
 ) : BaseViewModel<WelcomeState, WelcomeEvent>(router, requestParams) {
 
     private val checkCodeLauncher = registerScreen(CodeNavigationContract) { result ->
@@ -25,8 +28,10 @@ class WelcomeViewModel(
     }
     private val debugLauncher = registerScreen(debugFeature.navigationContract)
 
+    private val openUrlLauncher = registerScreen(OpenUrlNavigationContract)
+
     override fun createInitialState(): WelcomeState {
-        return WelcomeState(error = false, isLoad = false)
+        return WelcomeState(error = false, isLoad = false, debugVisible = environment.isDebug)
     }
 
     fun checkPhoneNumber(phoneNumber: String, isValid: Boolean) {
@@ -69,6 +74,10 @@ class WelcomeViewModel(
 
     fun debugClicked() {
         debugLauncher.launch()
+    }
+
+    fun rulesClicked(){
+        openUrlLauncher.launch(OpenUrlNavigationContract.Params(environment.endpoints.policyUrl))
     }
 
 }
