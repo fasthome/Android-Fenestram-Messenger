@@ -12,9 +12,9 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
+import kotlinx.serialization.SerializationException
 import java.io.IOException
 import java.time.Duration
-import kotlinx.serialization.SerializationException
 
 internal class SimpleNetworkClientFactory(
     private val httpClientEngine: HttpClientEngine,
@@ -36,12 +36,13 @@ internal class SimpleNetworkClientFactory(
     }
 
     private fun HttpClientConfig<*>.baseConfig() {
-        if (environment.isDebug) {
+//        TODO Временно включил логи на релизных сборках
+//        if (environment.isDebug) {
             install(Logging) {
                 level = LogLevel.ALL
                 logger = networkLogger
             }
-        }
+//        }
 
         developmentMode = environment.isDebug
 
