@@ -8,4 +8,6 @@
     <string name="common_error_connection_error_description">Отсутствует Интернет-соединение</string>
     <string name="common_error_login_error_title">Ошибка авторизации</string>
     <string name="common_error_login_error_description">Неверный код</string>
+    <string name="common_error_forbidden">Ошибка Авторизации</string>
+    <string name="common_error_forbidden_description">"Код неверный или сервер посчитал его неверным. Попробуйте ещё раз "</string>
 </resources>

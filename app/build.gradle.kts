@@ -124,6 +124,9 @@ dependencies {
     implementation(project(Modules.Feature.camera.api))
     implementation(project(Modules.Feature.camera.impl))
 
+    implementation(project(Modules.Feature.call.api))
+    implementation(project(Modules.Feature.call.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)
