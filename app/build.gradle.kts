@@ -35,7 +35,7 @@ android {
             stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://37.140.197.223/")
             stringBuildConfigField("REFRESH_TOKEN_URL_PROD", "http://176.99.12.176/")
             stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
-            stringBuildConfigField("INSTABUG_APP_TOKEN", "f664617ad9f962d7eb4af79965fcae2d")
+            stringBuildConfigField("INSTABUG_APP_TOKEN_BETA", "5622f3685b90aca197ee34b9b3a612fb")
 
             stringBuildConfigField("DEV_API_VERSION", "v1")
             stringBuildConfigField("PROD_API_VERSION", "v1")
@@ -53,7 +53,7 @@ android {
             stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://37.140.197.223/")
             stringBuildConfigField("REFRESH_TOKEN_URL_PROD", "http://176.99.12.176/")
             stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
-            stringBuildConfigField("INSTABUG_APP_TOKEN", "f664617ad9f962d7eb4af79965fcae2d")
+            stringBuildConfigField("INSTABUG_APP_TOKEN_BETA", "5622f3685b90aca197ee34b9b3a612fb")
 
             stringBuildConfigField("POLICY_RULES_URL", "http://37.140.197.223/storage/PrivacyPolicy.html")
 

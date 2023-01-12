@@ -29,9 +29,20 @@ class FenestramApplication : Application() {
         OneSignal.initWithContext(this)
         OneSignal.setAppId(BuildConfig.ONESIGNAL_APP_ID)
 
-        Instabug.Builder(this, BuildConfig.INSTABUG_APP_TOKEN)
-            .setInvocationEvents(InstabugInvocationEvent.NONE)
-            .build()
+        if (BuildConfig.IS_DEBUG) {
+            Instabug.Builder(this, BuildConfig.INSTABUG_APP_TOKEN_BETA)
+                .setInvocationEvents(
+                    InstabugInvocationEvent.NONE,
+                    InstabugInvocationEvent.SHAKE,
+                    InstabugInvocationEvent.SCREENSHOT,
+                    InstabugInvocationEvent.TWO_FINGER_SWIPE_LEFT
+                )
+                .build()
+        } else {
+            Instabug.Builder(this, BuildConfig.INSTABUG_APP_TOKEN_BETA)
+                .setInvocationEvents(InstabugInvocationEvent.NONE)
+                .build()
+        }
     }
 
 }
