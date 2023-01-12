@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SendMessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -162,10 +163,11 @@ class MessengerRepoImpl(
     }
 
     override suspend fun uploadDocument(
+        chatId: Long,
         documentBytes: ByteArray,
         guid: String
-    ): CallResult<UploadDocumentResult> = callForResult {
-        messengerService.uploadDocument(documentBytes, guid)
+    ): CallResult<SendMessageResponse> = callForResult {
+        messengerService.uploadDocument(documentBytes, guid, chatId)
     }
 
     override suspend fun getDocument(

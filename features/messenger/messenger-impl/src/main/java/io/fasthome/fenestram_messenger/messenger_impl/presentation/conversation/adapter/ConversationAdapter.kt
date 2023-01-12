@@ -34,7 +34,7 @@ class ConversationAdapter(
     onImageClicked: (ConversationViewItem) -> Unit,
 
     //---Клики по сообщениям с документами---//
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
 
     //---Клики по сообщениям с изображениями---//
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
@@ -191,7 +191,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
         ConversationItemSelfTextReplyImageBinding::inflate
@@ -234,7 +234,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
                     replyUserName = it.userName,
                     fileName = fileName,
                     fileSize = fileSize,
-                    document = item.replyMessage!!,
+                    document = it,
                     onDownloadDocument = onDownloadDocument
                 )
             }
@@ -255,7 +255,7 @@ fun createConversationSelfForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
         ConversationItemSelfForwardTextBinding::inflate
@@ -311,7 +311,7 @@ fun createConversationSelfForwardAdapterDelegate(
                         replyUserName = forwardMessage.userName,
                         fileName = fileName,
                         fileSize = fileSize,
-                        document = item.forwardMessage,
+                        document = forwardMessage,
                         onDownloadDocument = onDownloadDocument
                     )
                 }
@@ -395,7 +395,7 @@ fun createConversationSelfImageAdapterDelegate(
 }
 
 fun createConversationSelfDocumentAdapterDelegate(
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
     onSelfDocumentLongClicked: (ConversationViewItem.Self) -> Unit
 ) =
@@ -477,7 +477,7 @@ fun createConversationReceiveForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
         ConversationItemReceiveForwardTextBinding::inflate
@@ -534,7 +534,7 @@ fun createConversationReceiveForwardAdapterDelegate(
                         replyUserName = forwardMessage.userName,
                         fileName = fileName,
                         fileSize = fileSize,
-                        document = item.forwardMessage,
+                        document = forwardMessage,
                         onDownloadDocument = onDownloadDocument
                     )
                 }
@@ -553,7 +553,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
     onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
         ConversationItemReceiveTextReplyImageBinding::inflate
@@ -596,7 +596,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
                     replyUserName = it.userName,
                     fileName = fileName,
                     fileSize = fileSize,
-                    document = item.replyMessage!!,
+                    document = it,
                     onDownloadDocument = onDownloadDocument
                 )
             }
@@ -640,7 +640,7 @@ fun createConversationReceiveImageAdapterDelegate(
     }
 
 fun createConversationReceiveDocumentAdapterDelegate(
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
     onReceiveDocumentLongClicked: (ConversationViewItem.Receive) -> Unit
 ) =
@@ -681,7 +681,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onProfileClicked: (ConversationViewItem.Group) -> Unit,
     viewBinderHelper: ViewBinderHelper,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.TextReplyOnImage, ConversationItemGroupTextReplyImageBinding>(
         ConversationItemGroupTextReplyImageBinding::inflate
@@ -727,7 +727,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
                     replyUserName = it.userName,
                     fileName = fileName,
                     fileSize = fileSize,
-                    document = item.replyMessage!!,
+                    document = it,
                     onDownloadDocument = onDownloadDocument
                 )
             }
@@ -793,7 +793,7 @@ fun createConversationGroupForwardAdapterDelegate(
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
         ConversationItemGroupForwardTextBinding::inflate
@@ -854,7 +854,7 @@ fun createConversationGroupForwardAdapterDelegate(
                         replyUserName = forwardMessage.userName,
                         fileName = fileName,
                         fileSize = fileSize,
-                        document = item.forwardMessage,
+                        document = forwardMessage,
                         onDownloadDocument = onDownloadDocument
                     )
                 }
@@ -904,7 +904,7 @@ fun createConversationGroupImageAdapterDelegate(
 
 fun createConversationGroupDocumentAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
     onGroupDocumentLongClicked: (ConversationViewItem.Group) -> Unit
 ) =
@@ -998,9 +998,9 @@ private fun renderDocument(
     fileName: TextView,
     fileSize: TextView,
 
-    document: ConversationViewItem,
+    document: ConversationDocumentItem,
     documentFile: File? = null,
-    onDownloadDocument: (item: ConversationViewItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
 ) {
     goneViews?.forEach {
         it.isVisible = false

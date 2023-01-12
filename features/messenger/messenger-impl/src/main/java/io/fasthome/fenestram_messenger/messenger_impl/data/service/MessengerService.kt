@@ -29,7 +29,7 @@ class MessengerService(
             path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
-
+        
         return SendMessageMapper.responseToSendMessageResult(response.requireData(), localId)
     }
 
@@ -83,15 +83,15 @@ class MessengerService(
         return UploadImageResult(imagePath = response.pathToFile)
     }
 
-    suspend fun uploadDocument(documentBytes: ByteArray, guid: String): UploadDocumentResult {
+    suspend fun uploadDocument(documentBytes: ByteArray, guid: String, chatId: Long): SendMessageResponse {
         val response = client
-            .runSubmitFormWithFile<BaseResponse<UploadDocumentResponse>>(
-                path = "files/upload",
+            .runSubmitFormWithDocument<BaseResponse<SendMessageResponse>>(
+                path = "chats/$chatId/file_message",
                 binaryData = documentBytes,
                 filename = guid,
             )
             .requireData()
-        return UploadDocumentResult(documentPath = response.pathToFile)
+        return response
     }
 
     suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {
