@@ -5,22 +5,22 @@ package io.fasthome.fenestram_messenger.auth_impl.di
 
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.auth_impl.AuthFeatureImpl
-import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
-import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
 import io.fasthome.fenestram_messenger.auth_impl.data.repo_impl.AuthRepoImpl
+import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
 import io.fasthome.fenestram_messenger.auth_impl.data.service.UsersService
-import io.fasthome.fenestram_messenger.data.UserStorage
-import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
-import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeViewModel
-import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeViewModel
-import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityViewModel
-import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
-import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigator
-import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
-import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
-import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
 import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.LoginMapper
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ClearUserDataUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.ForceLogoutUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.logic.LogoutUseCase
+import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
+import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeViewModel
+import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigator
+import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
+import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityViewModel
+import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeViewModel
 import io.fasthome.fenestram_messenger.data.StorageQualifier
+import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
@@ -46,7 +46,7 @@ object AuthModule {
     private fun createDataModule() = module {
         single(::AuthRepoImpl) bindSafe AuthRepo::class
         singleAuthorizedService(::UsersService)
-        single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get(), get()) }
+        single { AuthService(get(named(NetworkClientFactoryQualifier.Unauthorized)), get(), get(), get()) }
 
         single { UserStorage(get(named(StorageQualifier.Simple))) }
 

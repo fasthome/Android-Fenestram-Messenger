@@ -31,10 +31,4 @@ class LoginResponse(
 
     @SerialName("avatar")
     val avatar: String?,
-
-    @SerialName("player_id")
-    val playerId: String?,
-
-    @SerialName("socket_id")
-    val sockedId: String?
 )

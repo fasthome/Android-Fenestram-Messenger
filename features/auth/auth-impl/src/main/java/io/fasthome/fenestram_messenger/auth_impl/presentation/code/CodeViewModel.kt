@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -45,7 +46,7 @@ class CodeViewModel(
             when (val loginResult =
                 authInteractor.login(params.phoneNumber, code)) {
                 is CallResult.Error -> {
-                    onError(loginResult.error)
+                    onError(loginResult.error, code)
                 }
                 is CallResult.Success -> {
                     onSuccess(loginResult.data)
@@ -84,7 +85,7 @@ class CodeViewModel(
         )
     }
     
-    private fun onError(error: Throwable) {
+    private fun onError(error: Throwable, code : String) {
         when (error) {
             is UnauthorizedException -> {
                 updateState {
@@ -96,6 +97,9 @@ class CodeViewModel(
                 }
             }
         }
+        onError(ShowErrorType.Dialog, error, onRetryClick = {
+            checkCode(code)
+        })
     }
 
     companion object {

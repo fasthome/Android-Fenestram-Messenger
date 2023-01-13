@@ -4,6 +4,7 @@ import io.fasthome.component.di.ComponentModule
 import io.fasthome.fenestram_messenger.app.di.BuildTypeModule
 import io.fasthome.fenestram_messenger.app.di.EnvironmentModule
 import io.fasthome.fenestram_messenger.auth_impl.di.AuthModule
+import io.fasthome.fenestram_messenger.call_impl.di.CallModule
 import io.fasthome.fenestram_messenger.camera_impl.di.CameraModule
 import io.fasthome.fenestram_messenger.contacts_impl.di.ContactsModule
 import io.fasthome.fenestram_messenger.core.di.CoreModule
@@ -45,6 +46,7 @@ object AppModule {
         GroupGuestModule(),
         OnboardingModule(),
         PushModule(),
-        CameraModule()
+        CameraModule(),
+        CallModule()
     ).flatten()
 }

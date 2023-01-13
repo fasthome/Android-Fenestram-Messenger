@@ -43,7 +43,7 @@ internal class JwtNetworkClientFactory(
         install(NeedRetry) {
             retryCondition { _: HttpRequest, response: HttpResponse ->
                 if (response.status.value == HttpStatusCode.Unauthorized.value) {
-                    tokensRepo.updateToken()
+                    forceLogoutManager.value.forceLogout()
                     true
                 } else {
                     false

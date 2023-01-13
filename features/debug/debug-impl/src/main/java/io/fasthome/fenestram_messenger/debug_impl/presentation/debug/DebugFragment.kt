@@ -112,6 +112,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onEnvironmentChangedClicked(EndpointsConfig.Prod)
         }
 
+        debugSip.onClick{
+            vm.onSipClicked(requireContext())
+        }
+
     }
 
     override fun renderState(state: DebugState) = with(binding) {

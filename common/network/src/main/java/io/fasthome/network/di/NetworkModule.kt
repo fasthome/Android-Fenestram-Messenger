@@ -74,7 +74,7 @@ object NetworkModule {
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 
-        single { TokensService(get(named(NetworkClientFactoryQualifier.RefreshToken))) }
+        single { TokensService(get(named(NetworkClientFactoryQualifier.RefreshToken)), get()) }
 
         factory(::NetworkController)
 

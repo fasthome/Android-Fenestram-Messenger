@@ -3,9 +3,12 @@
  */
 package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.call_api.CallFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.core.debug.DebugRepo
 import io.fasthome.fenestram_messenger.core.debug.EndpointsConfig
@@ -42,6 +45,7 @@ class DebugViewModel(
         val groupGuestFeature: GroupGuestFeature,
         val pushFeature: PushFeature,
         val mainFeature: MainFeature,
+        val callFeature: CallFeature
     )
 
     private var personalData: PersonalData? = null
@@ -219,6 +223,10 @@ class DebugViewModel(
                 )
             )
         )
+    }
+
+    fun onSipClicked(requireContext: Context) {
+        requireContext.startActivity(Intent(requireContext, features.callFeature.demoIntentActivityClass))
     }
 
 }
