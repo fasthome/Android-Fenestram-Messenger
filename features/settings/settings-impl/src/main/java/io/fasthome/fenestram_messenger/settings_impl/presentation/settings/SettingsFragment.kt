@@ -3,8 +3,10 @@ package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
 import android.os.Bundle
 import android.view.View
+import com.instabug.library.Instabug
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.*
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentSettingsBinding
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -32,6 +34,10 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
             vm.startInfoapp()
         }
 
+        tvBugReport.onClick {
+            Instabug.show()
+        }
+
         ibBlueButton.onClick {
             vm.onBlueClicked()
         }
@@ -51,7 +57,7 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
     }
 
     override fun handleEvent(event: SettingsEvent) {
-        when(event){
+        when (event) {
             is SettingsEvent.DeleteAccount -> {
                 DeleteAccountDialog.create(
                     fragment = this,

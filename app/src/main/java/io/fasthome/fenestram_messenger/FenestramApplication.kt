@@ -5,6 +5,8 @@ package io.fasthome.fenestram_messenger
 
 import android.app.Application
 import android.os.StrictMode
+import com.instabug.library.Instabug
+import com.instabug.library.invocation.InstabugInvocationEvent
 import com.onesignal.OneSignal
 import io.fasthome.fenestram_messenger.di.AppModule
 import org.koin.android.ext.koin.androidContext
@@ -26,6 +28,21 @@ class FenestramApplication : Application() {
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
         OneSignal.initWithContext(this)
         OneSignal.setAppId(BuildConfig.ONESIGNAL_APP_ID)
+
+        if (BuildConfig.IS_DEBUG) {
+            Instabug.Builder(this, BuildConfig.INSTABUG_APP_TOKEN_BETA)
+                .setInvocationEvents(
+                    InstabugInvocationEvent.NONE,
+                    InstabugInvocationEvent.SHAKE,
+                    InstabugInvocationEvent.SCREENSHOT,
+                    InstabugInvocationEvent.TWO_FINGER_SWIPE_LEFT
+                )
+                .build()
+        } else {
+            Instabug.Builder(this, BuildConfig.INSTABUG_APP_TOKEN_BETA)
+                .setInvocationEvents(InstabugInvocationEvent.NONE)
+                .build()
+        }
     }
 
 }

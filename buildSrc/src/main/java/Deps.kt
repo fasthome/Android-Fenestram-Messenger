@@ -1,6 +1,3 @@
-import org.gradle.api.Project
-import org.gradle.api.file.ConfigurableFileCollection
-
 object Deps {
 
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.JetBrains.kotlin}"
@@ -129,5 +126,7 @@ object Deps {
     const val socketIO = "io.socket:socket.io-client:2.0.0"
 
     const val processPhoenix = "com.jakewharton:process-phoenix:${Versions.processPhoenix}"
+
+    const val instaBug = "com.instabug.library:instabug:${Versions.instaBug}"
 
 }
