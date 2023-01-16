@@ -20,6 +20,8 @@ class RemoteMessagesMapper {
                 chatName = data["chat_name"]?.toString(),
                 isGroup = data["is_group"]?.toString().toBoolean()
             )
+        } else if (data["is_group"] == null) {
+            PushClickData.Unknown
         } else {
             val userName = when {
                 !data["user_contact_name"]?.toString().isNullOrEmpty() -> data["user_contact_name"]?.toString()
