@@ -29,7 +29,7 @@ class MessengerService(
             path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
-        
+
         return SendMessageMapper.responseToSendMessageResult(response.requireData(), localId)
     }
 
@@ -95,7 +95,10 @@ class MessengerService(
     }
 
     suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {
-        val httpResponse = client.runGet<HttpResponse>(path = url, useBaseUrl = false) { progress, loadedBytesSize, fullBytesSize, isReady ->
+        val httpResponse = client.runGet<HttpResponse>(
+            path = url,
+            useBaseUrl = false
+        ) { progress, loadedBytesSize, fullBytesSize, isReady ->
             progressListener(progress, loadedBytesSize, fullBytesSize, isReady)
         }
         val byteArray = httpResponse.readBytes()
@@ -128,11 +131,11 @@ class MessengerService(
             )
     }
 
-    suspend fun deleteMessage(messageId: Long, chatId: Long) {
+    suspend fun deleteMessage(messageId: Long, chatId: Long, fromAll: Boolean) {
         val response: BaseResponse<DeleteMessageResponse> =
             client.runDelete<DeleteMessageRequest?, BaseResponse<DeleteMessageResponse>>(
                 path = "chats/message/$chatId",
-                body = DeleteMessageRequest(true, listOf(messageId.toString()))
+                body = DeleteMessageRequest(fromAll, listOf(messageId.toString()))
             )
     }
 

@@ -13,7 +13,7 @@ sealed interface ConversationEvent {
     object ShowSelectFromDialog : ConversationEvent
     class ShowUsersTags(val users: List<User>) : ConversationEvent
     class ShowPersonDetailDialog(val selectedPerson: PersonDetail) : ConversationEvent
-    class UpdateInputUserTag(val nickname: String): ConversationEvent
+    class UpdateInputUserTag(val nickname: String) : ConversationEvent
     class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) :
         ConversationEvent
 
@@ -26,5 +26,8 @@ sealed interface ConversationEvent {
     class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group) :
         ConversationEvent
 
-    class DotsEvent(val userStatus : PrintableText, val userStatusDots : PrintableText) : ConversationEvent
+    class ShowDeleteMessageDialog(val messageId: Long) :
+        ConversationEvent
+
+    class DotsEvent(val userStatus: PrintableText, val userStatusDots: PrintableText) : ConversationEvent
 }

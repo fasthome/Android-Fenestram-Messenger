@@ -19,5 +19,6 @@
     <color name="blue2">#053868</color>
     <color name="blue3">#5EA4FF</color>
     <color name="red">#FF4B4B</color>
+    <color name="red_dark">#340C0C</color>
 
 </resources>

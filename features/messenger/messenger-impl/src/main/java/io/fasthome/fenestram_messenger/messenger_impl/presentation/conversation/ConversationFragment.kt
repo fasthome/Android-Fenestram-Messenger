@@ -32,6 +32,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentConver
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.AttachedAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ConversationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.TagParticipantsAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.DeleteMessageDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.ErrorSentDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.dialog.MessageActionDialog
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.addHeaders
@@ -356,7 +357,14 @@ class ConversationFragment :
                 accept = vm::deleteChat,
                 id = event.id
             ).show()
-
+            is ConversationEvent.ShowDeleteMessageDialog -> {
+                DeleteMessageDialog.create(
+                    fragment = this,
+                    onDelete = { fromAll ->
+                        vm.deleteMessage(messageId = event.messageId, fromAll = fromAll)
+                    }
+                ).show()
+            }
             is ConversationEvent.UpdateScrollPosition -> {
                 binding.messagesList.post {
                     (binding.messagesList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(

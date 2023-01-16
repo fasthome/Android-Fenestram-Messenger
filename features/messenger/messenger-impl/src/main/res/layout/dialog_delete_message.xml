@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/Text.White.16sp"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="@string/common_delete_message_title"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/delete_from_self"
+        style="@style/Button.Dialog.Accept"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="50dp"
+        android:text="@string/common_delete_message_from_self"
+        app:layout_constraintEnd_toEndOf="@id/title"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/delete_from_all"
+        style="@style/Button.Dialog.Accept.Red"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/common_delete_message_from_all"
+        app:layout_constraintEnd_toEndOf="@id/delete_from_self"
+        app:layout_constraintStart_toStartOf="@id/delete_from_self"
+        app:layout_constraintTop_toBottomOf="@id/delete_from_self" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cancel"
+        style="@style/Button.Dialog.Cancel"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@null"
+        android:text="@string/common_cancel"
+        app:layout_constraintEnd_toEndOf="@id/delete_from_all"
+        app:layout_constraintStart_toStartOf="@id/delete_from_all"
+        app:layout_constraintTop_toBottomOf="@id/delete_from_all" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

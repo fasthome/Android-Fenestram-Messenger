@@ -24,7 +24,7 @@ class MessengerRepoImpl(
     private val storageUrlConverter: StorageUrlConverter
 ) : MessengerRepo {
 
-    private var currrentList:  ListWithTotal<Chat> = ListWithTotal(listOf(), 0)
+    private var currrentList: ListWithTotal<Chat> = ListWithTotal(listOf(), 0)
 
     override suspend fun sendMessage(
         id: Long,
@@ -37,9 +37,8 @@ class MessengerRepoImpl(
     }
 
     override suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?> = callForResult {
-        messengerService.forwardMessage(chatId,messageId)
+        messengerService.forwardMessage(chatId, messageId)
     }
-
 
 
     override suspend fun replyMessage(
@@ -59,16 +58,16 @@ class MessengerRepoImpl(
     override fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> {
         return if (!fromSocket)
             totalPagingSource(
-            maxPageSize = PAGE_SIZE,
-            loadPageService = { pageNumber, pageSize ->
-                currrentList = messengerService.getChats(
-                    query = query,
-                    page = pageNumber,
-                    limit = pageSize
-                )
-                currrentList
-            }
-        )
+                maxPageSize = PAGE_SIZE,
+                loadPageService = { pageNumber, pageSize ->
+                    currrentList = messengerService.getChats(
+                        query = query,
+                        page = pageNumber,
+                        limit = pageSize
+                    )
+                    currrentList
+                }
+            )
         else
             totalPagingSource(PAGE_SIZE) { _, _ -> currrentList }
     }
@@ -104,8 +103,8 @@ class MessengerRepoImpl(
         messengerService.deleteChat(id)
     }
 
-    override suspend fun deleteMessage(messageId: Long, chatId: Long) = callForResult {
-        messengerService.deleteMessage(messageId, chatId)
+    override suspend fun deleteMessage(messageId: Long, chatId: Long, fromAll: Boolean) = callForResult {
+        messengerService.deleteMessage(messageId, chatId, fromAll)
     }
 
     override fun getClientSocket(

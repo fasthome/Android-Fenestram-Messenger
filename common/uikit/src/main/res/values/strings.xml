@@ -28,5 +28,8 @@
     <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
     <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
     <string name="common_allow_permission">Разрешить</string>
+    <string name="common_delete_message_title">Вы уверены, что хотите\nудалить сообщение?</string>
+    <string name="common_delete_message_from_self">Удалить только у меня</string>
+    <string name="common_delete_message_from_all">Удалить у всех</string>
 
 </resources>

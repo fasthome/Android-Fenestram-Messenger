@@ -164,8 +164,8 @@ class MessengerInteractor(
 
     suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
 
-    suspend fun deleteMessage(messageId: Long, chatId: Long) =
-        messageRepo.deleteMessage(messageId, chatId)
+    suspend fun deleteMessage(messageId: Long, chatId: Long, fromAll: Boolean) =
+        messageRepo.deleteMessage(messageId, chatId, fromAll)
 
 
     fun getMessengerPageItems(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> =
@@ -178,7 +178,7 @@ class MessengerInteractor(
         newMessagesCount: Int,
         id: Long
     ): CallResult<MessagesPage> {
-        if(isResumed) page = 0
+        if (isResumed) page = 0
         page++
         return if (newMessagesCount != 0) {
             page += newMessagesCount / (page * PAGE_SIZE)
@@ -192,7 +192,7 @@ class MessengerInteractor(
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
     suspend fun uploadDocument(chatId: Long, documentBytes: ByteArray, name: String) =
-        messageRepo.uploadDocument(chatId = chatId,documentBytes, name)
+        messageRepo.uploadDocument(chatId = chatId, documentBytes, name)
 
     suspend fun getDocument(storagePath: String, progressListener: ProgressListener) =
         messageRepo.getDocument(storagePath, progressListener)

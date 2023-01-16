@@ -40,7 +40,7 @@ interface MessengerRepo {
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
     suspend fun getMessagesFromChat(id: Long, limit: Int, page: Int): CallResult<MessagesPage>
     suspend fun deleteChat(id: Long): CallResult<Unit>
-    suspend fun deleteMessage(messageId: Long, chatId: Long): CallResult<Unit>
+    suspend fun deleteMessage(messageId: Long, chatId: Long, fromAll: Boolean): CallResult<Unit>
 
     fun closeSocket()
 

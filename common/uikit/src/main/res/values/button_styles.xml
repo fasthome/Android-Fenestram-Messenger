@@ -30,6 +30,10 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="Button.Dialog.Accept.Red">
+        <item name="android:backgroundTint">@color/red_dark</item>
+    </style>
+
     <style name="CornersShapeRounded10">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeBottomRight">10dp</item>

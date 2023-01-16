@@ -87,7 +87,7 @@ class ConversationViewModel(
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
             is ImageViewerContract.Result.Delete -> {
-                deleteMessage(result.messageId)
+                sendEvent(ConversationEvent.ShowDeleteMessageDialog(result.messageId))
             }
             is ImageViewerContract.Result.Forward -> {
                 openChatSelectorForForward(
@@ -1121,14 +1121,15 @@ class ConversationViewModel(
     }
 
     fun onDeleteMessageClicked(conversationViewItem: ConversationViewItem.Self) {
-        deleteMessage(conversationViewItem.id)
+        sendEvent(ConversationEvent.ShowDeleteMessageDialog(conversationViewItem.id))
     }
 
-    private fun deleteMessage(messageId: Long) {
+    fun deleteMessage(messageId: Long, fromAll: Boolean) {
         viewModelScope.launch {
             messengerInteractor.deleteMessage(
                 messageId = messageId,
-                chatId = chatId ?: return@launch
+                chatId = chatId ?: return@launch,
+                fromAll = fromAll
             ).onSuccess {
                 updateState { state ->
                     val messages: MutableMap<String, ConversationViewItem> = mutableMapOf()
