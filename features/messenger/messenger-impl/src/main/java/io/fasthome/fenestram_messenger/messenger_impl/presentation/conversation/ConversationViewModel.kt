@@ -1052,9 +1052,9 @@ class ConversationViewModel(
                 )
             }
             is ConversationViewItem.Self.Document -> {
-                /*sendFiles(
-                    listOf(AttachedFile.Document(selfViewItem.file ?: return))
-                )*/ //TODO: !!!
+                sendFiles(
+                    selfViewItem.files?.map { AttachedFile.Document(it) } ?: return
+                )
             }
         }
     }
