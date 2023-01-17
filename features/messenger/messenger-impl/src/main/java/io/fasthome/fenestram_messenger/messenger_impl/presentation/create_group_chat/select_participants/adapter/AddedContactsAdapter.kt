@@ -4,6 +4,8 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderAddedContactBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
 import io.fasthome.fenestram_messenger.util.*
@@ -33,5 +35,9 @@ fun createAddedContactsAdapterDelegate(
         }
         bindWithBinding {
             contactName.setPrintableText(item.userName)
+            contactAvatar.loadCircle(
+                url = item.avatar,
+                placeholderRes = R.drawable.ic_avatar_placeholder
+            )
         }
     }
