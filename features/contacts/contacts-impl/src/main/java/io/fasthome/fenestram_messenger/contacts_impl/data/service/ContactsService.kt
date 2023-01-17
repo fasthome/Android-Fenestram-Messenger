@@ -32,8 +32,7 @@ class ContactsService(
     suspend fun sendContacts(contacts: List<Contact>) {
         return client
             .runPost<SendContactsRequest, BaseResponse<Unit>>(
-                path = environment.endpoints.baseUrl + "api/v2/contacts",
-                useBaseUrl = false,
+                path = "contacts",
                 body = SendContactsRequest(contactsMapper.contactListToRequest(contacts))
             )
             .requireData()
@@ -44,7 +43,7 @@ class ContactsService(
             contacts = contactIds
         )
         return client.runDelete<DeleteContactsRequest, BaseResponse<Unit>>(
-            path = environment.endpoints.baseUrl + "api/v2/contacts",
+            path = "contacts",
             useBaseUrl = false,
             body = body
         ).requireData()

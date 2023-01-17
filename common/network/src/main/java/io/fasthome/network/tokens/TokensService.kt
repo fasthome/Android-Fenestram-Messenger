@@ -18,10 +18,9 @@ class TokensService(
             "refresh_token" to refreshToken.s,
         )
         return client.runSubmitForm<BaseResponse<RefreshTokenResponse>>(
-            path = environment.endpoints.baseUrl + "api/v2/authorization/refresh",
+            path = "authorization/refresh",
             params = params,
             encodeInQuery = false,
-            useBaseUrl = false
         ).requireData()
     }
 }
