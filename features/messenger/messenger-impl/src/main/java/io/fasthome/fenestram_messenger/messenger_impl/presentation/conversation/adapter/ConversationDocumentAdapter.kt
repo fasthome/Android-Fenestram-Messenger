@@ -3,20 +3,16 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ItemDocumentBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.network.client.ProgressListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class ConversationDocumentAdapter(
-    //---Клики по сообщениям с документами---//
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) : AsyncListDifferDelegationAdapter<MetaInfo>(
     AdapterUtil.diffUtilItemCallbackEquals(

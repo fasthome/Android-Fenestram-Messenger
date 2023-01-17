@@ -239,7 +239,6 @@ fun Message.toConversationViewItem(
                         files = null,
                         path = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        // TODO: Content содержит список документов, изменить когда появится возможность отсылать несколько документов
                         metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
                     )
                 }
