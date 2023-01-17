@@ -92,8 +92,8 @@ class ConversationFragment :
             vm.onImageClicked(conversationViewItem = it)
         }, onUserTagClicked = { userTag ->
             vm.onUserTagClicked(userTag)
-        }, onDownloadDocument = { item, progressListener ->
-            vm.onDownloadDocument(item = item, progressListener = progressListener)
+        }, onDownloadDocument = { meta, progressListener ->
+            vm.onDownloadDocument(meta = meta, progressListener = progressListener)
         }, onSelfMessageLongClicked = {
             vm.onSelfMessageLongClicked(it)
         }, onReceiveMessageLongClicked = {

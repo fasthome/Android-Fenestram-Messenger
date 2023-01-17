@@ -162,12 +162,12 @@ class MessengerRepoImpl(
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
 
-    override suspend fun uploadDocument(
+    override suspend fun uploadDocuments(
         chatId: Long,
-        documentBytes: ByteArray,
-        guid: String
+        documentBytes: List<ByteArray>,
+        guid: List<String>
     ): CallResult<SendMessageResponse> = callForResult {
-        messengerService.uploadDocument(documentBytes, guid, chatId)
+        messengerService.uploadDocuments(documentBytes, guid, chatId)
     }
 
     override suspend fun getDocument(

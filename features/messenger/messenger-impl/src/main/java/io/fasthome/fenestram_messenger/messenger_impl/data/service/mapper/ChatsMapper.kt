@@ -19,7 +19,7 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
 
     fun toMessage(messageResponse: MessageResponseWithChatId): Message = Message(
         id = messageResponse.id,
-        text = messageResponse.text,
+        text = messageResponse.text ?: "",
         userSenderId = messageResponse.initiatorId,
         messageType = messageResponse.type,
         date = messageResponse.date.let(NetworkMapperUtil::parseZonedDateTime)

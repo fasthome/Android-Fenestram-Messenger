@@ -23,7 +23,7 @@ interface ConversationTextItem {
 
 interface ConversationDocumentItem {
     val userName: PrintableText
-    val metaInfo: MetaInfo?
+    val metaInfo: List<MetaInfo>
 }
 
 sealed interface ConversationViewItem {
@@ -44,7 +44,7 @@ sealed interface ConversationViewItem {
 
     sealed class Self : ConversationViewItem {
         abstract val localId: String
-        abstract val metaInfo: MetaInfo?
+        abstract val metaInfo: List<MetaInfo>
 
         data class Text(
             override val id: Long,
@@ -59,7 +59,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            override val metaInfo: MetaInfo? = null,
+            override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self(), ConversationTextItem
 
         data class TextReplyOnImage(
@@ -75,7 +75,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            override val metaInfo: MetaInfo? = null,
+            override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self(), ConversationTextItem
 
         data class Forward(
@@ -91,7 +91,7 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
             val forwardMessage: ConversationViewItem,
-            override val metaInfo: MetaInfo? = null,
+            override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self()
 
         data class Image(
@@ -107,7 +107,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
-            override val metaInfo: MetaInfo? = null,
+            override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self(), ConversationImageItem
 
         data class Document(
@@ -118,13 +118,13 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             override val timeVisible: Boolean,
-            val file: File?,
-            val path: String?,
+            val files: List<File>?,
+            val path: List<String>?,
             override val nickname: String? = null,
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
-            override val metaInfo: MetaInfo?
+            override val metaInfo: List<MetaInfo>
         ) : Self(), ConversationDocumentItem
     }
 
@@ -196,7 +196,7 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
-            override val metaInfo: MetaInfo?
+            override val metaInfo: List<MetaInfo>
         ) : Receive(), ConversationDocumentItem
     }
 
@@ -288,7 +288,7 @@ sealed interface ConversationViewItem {
             var path: String? = null,
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
-            override val metaInfo: MetaInfo?
+            override val metaInfo: List<MetaInfo> = emptyList()
         ) : Group(userName, avatar, phone, userId), ConversationDocumentItem
     }
 

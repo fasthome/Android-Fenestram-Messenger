@@ -113,17 +113,19 @@ class NetworkClient(
 
     suspend inline fun <reified Response> runSubmitFormWithDocument(
         path: String,
-        binaryData: ByteArray,
-        filename: String,
+        binaryDatas: List<ByteArray>,
+        filename: List<String>,
         params: Map<String, Any?> = emptyMap(),
         useBaseUrl: Boolean = true,
     ): Response {
         return httpClient.submitFormWithBinaryData(
             url = buildUrl(path, useBaseUrl),
             formData = formData {
-                append("documents", binaryData, Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=$filename")
-                })
+                binaryDatas.forEachIndexed { i, bytes ->
+                    append("documents", bytes, Headers.build {
+                        append(HttpHeaders.ContentDisposition, "filename=${filename[i]}")
+                    })
+                }
             }
         ) {
             params.forEach { (t, u) -> parameter(t, u) }
