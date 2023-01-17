@@ -3,6 +3,5 @@ package io.fasthome.fenestram_messenger.core.environment
 class Endpoints(
     val baseUrl : String,
     val apiBaseUrl: String,
-    val refreshTokenUrl: String,
     val policyUrl : String
 )

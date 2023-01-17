@@ -42,7 +42,7 @@ object NetworkModule {
                 SimpleNetworkClientFactory(
                     httpClientEngine = get(),
                     environment = get(),
-                    baseUrl = get<Environment>().endpoints.refreshTokenUrl,
+                    baseUrl = get<Environment>().endpoints.apiBaseUrl,
                     networkLogger = get(),
                     forceLogoutManager = lazy { get() }
                 )

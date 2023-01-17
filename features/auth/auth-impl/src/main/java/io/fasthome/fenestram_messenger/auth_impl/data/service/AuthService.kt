@@ -36,9 +36,8 @@ class AuthService(
 
     suspend fun login(phoneNumber: String, code: String): LoginResult {
         val response: BaseResponse<LoginResponse> = client.runPost(
-            path = environment.endpoints.baseUrl + "api/v2/authorization/login",
+            path = "authorization/login",
             body = LoginRequest(phoneNumber, code),
-            useBaseUrl = false
         )
 
         return loginMapper.responseToLogInResult(response)
