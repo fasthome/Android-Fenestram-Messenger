@@ -90,8 +90,12 @@ class ConversationViewModel(
                 deleteMessage(result.messageId)
             }
             is ImageViewerContract.Result.Forward -> {
-                openChatSelectorForForward(MessageInfo(id = result.messageId,
-                    type = MessageType.Image), result.username)
+                openChatSelectorForForward(
+                    MessageInfo(
+                        id = result.messageId,
+                        type = MessageType.Image
+                    ), result.username
+                )
             }
         }
     }
@@ -695,7 +699,7 @@ class ConversationViewModel(
             val prevTag = text.getOrNull(selectionStart - 2)
             val canShowTagList = if (prevTag == null) text.startsWith('@') else prevTag == ' '
             if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
-                users = chatUsers.filter { it.nickname.isNotEmpty() }
+                users = chatUsers.filter { it.nickname.isNotEmpty() && it.id != selfUserId }
             } else {
                 val tagPos = text.lastIndexOf('@')
                 val nickname = text.substring(tagPos, selectionStart)
@@ -706,7 +710,7 @@ class ConversationViewModel(
                         it.nickname.contains(
                             nickname.getNicknameFromLink(),
                             true
-                        )
+                        ) && it.id != selfUserId
                     }
                 }
             }
@@ -1013,8 +1017,10 @@ class ConversationViewModel(
         updateState { state ->
             when (state.inputMessageMode) {
                 is InputMessageMode.Default -> {
-                    return@updateState state.copy(inputMessageMode = state.inputMessageMode.copy(
-                        attachedFiles = state.inputMessageMode.attachedFiles.filter { it != attachedFile }))
+                    return@updateState state.copy(
+                        inputMessageMode = state.inputMessageMode.copy(
+                            attachedFiles = state.inputMessageMode.attachedFiles.filter { it != attachedFile })
+                    )
                 }
                 else -> return@updateState state
             }
