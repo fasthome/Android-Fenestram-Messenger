@@ -44,7 +44,6 @@ class ContactsService(
         )
         return client.runDelete<DeleteContactsRequest, BaseResponse<Unit>>(
             path = "contacts",
-            useBaseUrl = false,
             body = body
         ).requireData()
     }
