@@ -220,6 +220,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
+                replyImage.isVisible = false
                 renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
@@ -290,6 +291,8 @@ fun createConversationSelfForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
+                    forwardImage.isVisible = false
+                    messageContent.isVisible = false
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
@@ -500,6 +503,8 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
+                    forwardImage.isVisible = false
+                    messageContent.isVisible = false
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
@@ -558,6 +563,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
+                replyImage.isVisible = false
                 renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
@@ -681,6 +687,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
+                replyImage.isVisible = false
                 renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
@@ -801,6 +808,8 @@ fun createConversationGroupForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
+                    forwardImage.isVisible = false
+                    messageContent.isVisible = false
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
