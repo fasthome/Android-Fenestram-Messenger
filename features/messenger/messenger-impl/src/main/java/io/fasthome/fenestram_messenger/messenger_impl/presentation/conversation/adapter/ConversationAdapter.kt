@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -220,11 +221,11 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
-                replyImage.isVisible = false
                 renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
-                    replyUserName = it.userName
+                    replyUserName = it.userName,
+                    replyImage = replyImage
                 )
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
@@ -291,12 +292,12 @@ fun createConversationSelfForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
-                    forwardImage.isVisible = false
-                    messageContent.isVisible = false
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
-                        forwardUserName = forwardMessage.userName
+                        forwardUserName = forwardMessage.userName,
+                        forwardImage = forwardImage,
+                        forwardText = messageContent
                     )
                     createDocumentAdapter(
                         recyclerViewDocuments = rvDocs,
@@ -503,12 +504,12 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
-                    forwardImage.isVisible = false
-                    messageContent.isVisible = false
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
-                        forwardUserName = forwardMessage.userName
+                        forwardUserName = forwardMessage.userName,
+                        forwardImage = forwardImage,
+                        forwardText = messageContent
                     )
                     createDocumentAdapter(
                         recyclerViewDocuments = rvDocs,
@@ -563,11 +564,11 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
-                replyImage.isVisible = false
                 renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
-                    replyUserName = it.userName
+                    replyUserName = it.userName,
+                    replyImage = replyImage
                 )
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
@@ -687,11 +688,11 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
-                replyImage.isVisible = false
                 renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
-                    replyUserName = it.userName
+                    replyUserName = it.userName,
+                    replyImage = replyImage
                 )
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
@@ -808,12 +809,12 @@ fun createConversationGroupForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
-                    forwardImage.isVisible = false
-                    messageContent.isVisible = false
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
-                        forwardUserName = forwardMessage.userName
+                        forwardUserName = forwardMessage.userName,
+                        forwardImage = forwardImage,
+                        forwardText = messageContent
                     )
                     createDocumentAdapter(
                         recyclerViewDocuments = rvDocs,
@@ -937,7 +938,11 @@ private fun renderForward(
     forwardDocumentContent: LinearLayout,
     forwardMessageName: TextView,
     forwardUserName: PrintableText,
+    forwardImage: ImageView,
+    forwardText:TextView
 ) {
+    forwardText.isVisible = false
+    forwardImage.isVisible = false
     forwardDocumentContent.isVisible = true
     forwardMessageName.setPrintableText(
         PrintableText.StringResource(
@@ -951,7 +956,9 @@ private fun renderReply(
     replyDocumentContent: LinearLayout,
     replyMessageName: TextView,
     replyUserName: PrintableText,
+    replyImage: ImageView
 ) {
+    replyImage.isVisible = false
     replyDocumentContent.isVisible = true
     replyMessageName.setPrintableText(
         PrintableText.StringResource(
