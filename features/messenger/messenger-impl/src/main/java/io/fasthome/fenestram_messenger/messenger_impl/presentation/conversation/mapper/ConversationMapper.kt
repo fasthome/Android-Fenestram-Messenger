@@ -629,7 +629,7 @@ fun createDocumentMessage(document: List<String>, file: List<File>) = Conversati
     timeVisible = true,
     path = null,
     userName = PrintableText.EMPTY,
-    metaInfo = emptyList()
+    metaInfo = file.map { MetaInfo(it) }
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

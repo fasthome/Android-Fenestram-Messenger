@@ -67,6 +67,7 @@ private fun renderDocument(
     fileSize.isVisible = true
 
     val documentLoadClickListener = {
+        if(!metaInfo.url.isNullOrEmpty())
         onDownloadDocument(metaInfo) { progress, loadedBytesSize, fullBytesSize, isReady ->
             renderDownloadListener(
                 progressBar = progressBar,

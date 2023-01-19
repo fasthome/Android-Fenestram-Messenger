@@ -4,6 +4,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.fileSizeInMb
+import io.fasthome.fenestram_messenger.util.getPrettySize
 import java.io.File
 import java.time.ZonedDateTime
 
@@ -343,5 +345,11 @@ data class MetaInfo(
         content.extension,
         content.size,
         content.url
+    )
+    constructor(file: File) : this(
+        PrintableText.Raw(file.name),
+        file.extension,
+        fileSizeInMb(file.length()),
+        null
     )
 }
