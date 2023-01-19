@@ -1,10 +1,11 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
-import android.view.View
-import android.widget.ProgressBar
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
@@ -16,9 +17,6 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.links.addCommonLinks
 import io.fasthome.network.client.ProgressListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
 
 class ConversationAdapter(
     //---Клик для открытия профиля по нажатию на обращение к пользователю---//
@@ -34,7 +32,7 @@ class ConversationAdapter(
     onImageClicked: (ConversationViewItem) -> Unit,
 
     //---Клики по сообщениям с документами---//
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 
     //---Клики по сообщениям с изображениями---//
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
@@ -191,14 +189,14 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     onImageClicked: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
         ConversationItemSelfTextReplyImageBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -223,19 +221,16 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
-                renderDocument(
+                renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
-                    goneViews = listOf(
-                        replyImage
-                    ),
-                    metaInfo = it.metaInfo,
-                    progressBar = progressBar,
                     replyUserName = it.userName,
-                    fileName = fileName,
-                    fileSize = fileSize,
-                    document = it,
-                    onDownloadDocument = onDownloadDocument
+                    replyImage = replyImage
+                )
+                createDocumentAdapter(
+                    recyclerViewDocuments = rvDocs,
+                    onDownloadDocument = onDownloadDocument,
+                    it.metaInfo
                 )
             }
 
@@ -255,14 +250,14 @@ fun createConversationSelfForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
         ConversationItemSelfForwardTextBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -281,7 +276,7 @@ fun createConversationSelfForwardAdapterDelegate(
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
-                    replyDocumentContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
                     forwardImage.isVisible = false
                     ivArrow.isVisible = true
                 }
@@ -293,26 +288,21 @@ fun createConversationSelfForwardAdapterDelegate(
                     ivArrow.isVisible = false
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
-                    replyDocumentContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
-                    renderDocument(
-                        forwardDocumentContent = replyDocumentContent,
+                    renderForward(
+                        forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
                         forwardUserName = forwardMessage.userName,
-                        goneViews = listOf(
-                            ivArrow,
-                            messageContent,
-                            forwardImage
-                        ),
-                        metaInfo = forwardMessage.metaInfo,
-                        progressBar = progressBar,
-                        replyUserName = forwardMessage.userName,
-                        fileName = fileName,
-                        fileSize = fileSize,
-                        document = forwardMessage,
-                        onDownloadDocument = onDownloadDocument
+                        forwardImage = forwardImage,
+                        forwardText = messageContent
+                    )
+                    createDocumentAdapter(
+                        recyclerViewDocuments = rvDocs,
+                        onDownloadDocument = onDownloadDocument,
+                        forwardMessage.metaInfo
                     )
                 }
             }
@@ -336,7 +326,7 @@ fun createConversationSelfTextAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -372,7 +362,7 @@ fun createConversationSelfImageAdapterDelegate(
 ) {
     binding.root.setTouchListener(
         onReplyMessage = {
-            if(item.sentStatus.canSwipe())
+            if (item.sentStatus.canSwipe())
                 onReplyMessageImage(item)
         },
     )
@@ -395,16 +385,16 @@ fun createConversationSelfImageAdapterDelegate(
 }
 
 fun createConversationSelfDocumentAdapterDelegate(
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
-    onSelfDocumentLongClicked: (ConversationViewItem.Self) -> Unit
+    onSelfDocumentLongClicked: (ConversationViewItem.Self) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
         ConversationItemSelfDocumentBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessageDocument(item)
             },
         )
@@ -412,17 +402,11 @@ fun createConversationSelfDocumentAdapterDelegate(
             onSelfDocumentLongClicked(item)
         }
         bindWithBinding {
-            renderDocument(
-                metaInfo = item.metaInfo,
-                progressBar = progressBar,
-                fileName = fileName,
-                fileSize = fileSize,
-                document = item,
-                startDownloadView = documentBg,
-                documentFile = item.file,
-                onDownloadDocument = onDownloadDocument
+            createDocumentAdapter(
+                recyclerViewDocuments = rvDocs,
+                onDownloadDocument = onDownloadDocument,
+                item.metaInfo
             )
-
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
             sendTimeView.isVisible = item.timeVisible
@@ -444,7 +428,7 @@ fun createConversationReceiveTextAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -477,16 +461,16 @@ fun createConversationReceiveForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
         ConversationItemReceiveForwardTextBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
-                onReplyMessage(item)
-                             },
+                if (item.sentStatus.canSwipe())
+                    onReplyMessage(item)
+            },
         )
         binding.contentLayout.onClick {
             onReceiveForwardLongClicked(item)
@@ -503,7 +487,7 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
-                    replyDocumentContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
                     forwardImage.isVisible = false
                     ivArrow.isVisible = true
                     messageContent.isVisible = true
@@ -512,7 +496,7 @@ fun createConversationReceiveForwardAdapterDelegate(
                     ivArrow.isVisible = false
                     messageContent.isVisible = false
                     forwardImage.isVisible = true
-                    replyDocumentContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
                     forwardAuthorName.text = getString(
                         R.string.forward_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName)
@@ -520,22 +504,17 @@ fun createConversationReceiveForwardAdapterDelegate(
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
-                    renderDocument(
-                        forwardDocumentContent = replyDocumentContent,
+                    renderForward(
+                        forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
                         forwardUserName = forwardMessage.userName,
-                        goneViews = listOf(
-                            ivArrow,
-                            messageContent,
-                            forwardImage
-                        ),
-                        metaInfo = forwardMessage.metaInfo,
-                        progressBar = progressBar,
-                        replyUserName = forwardMessage.userName,
-                        fileName = fileName,
-                        fileSize = fileSize,
-                        document = forwardMessage,
-                        onDownloadDocument = onDownloadDocument
+                        forwardImage = forwardImage,
+                        forwardText = messageContent
+                    )
+                    createDocumentAdapter(
+                        recyclerViewDocuments = rvDocs,
+                        onDownloadDocument = onDownloadDocument,
+                        forwardMessage.metaInfo
                     )
                 }
             }
@@ -553,14 +532,14 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
     onImageClicked: (ConversationViewItem) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
         ConversationItemReceiveTextReplyImageBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -585,19 +564,16 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
-                renderDocument(
+                renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
-                    goneViews = listOf(
-                        replyImage
-                    ),
-                    metaInfo = it.metaInfo,
-                    progressBar = progressBar,
                     replyUserName = it.userName,
-                    fileName = fileName,
-                    fileSize = fileSize,
-                    document = it,
-                    onDownloadDocument = onDownloadDocument
+                    replyImage = replyImage
+                )
+                createDocumentAdapter(
+                    recyclerViewDocuments = rvDocs,
+                    onDownloadDocument = onDownloadDocument,
+                    it.metaInfo
                 )
             }
             messageContent.setPrintableText(item.content)
@@ -622,7 +598,7 @@ fun createConversationReceiveImageAdapterDelegate(
         }
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessageImage(item)
             },
         )
@@ -640,16 +616,16 @@ fun createConversationReceiveImageAdapterDelegate(
     }
 
 fun createConversationReceiveDocumentAdapterDelegate(
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
-    onReceiveDocumentLongClicked: (ConversationViewItem.Receive) -> Unit
+    onReceiveDocumentLongClicked: (ConversationViewItem.Receive) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
         ConversationItemReceiveDocumentBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessageDocument(item)
             },
         )
@@ -657,14 +633,10 @@ fun createConversationReceiveDocumentAdapterDelegate(
             onReceiveDocumentLongClicked(item)
         }
         bindWithBinding {
-            renderDocument(
-                metaInfo = item.metaInfo,
-                progressBar = progressBar,
-                fileName = fileName,
-                fileSize = fileSize,
-                document = item,
-                startDownloadView = documentBg,
-                onDownloadDocument = onDownloadDocument
+            createDocumentAdapter(
+                recyclerViewDocuments = rvDocs,
+                onDownloadDocument = onDownloadDocument,
+                item.metaInfo
             )
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
@@ -681,14 +653,14 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onProfileClicked: (ConversationViewItem.Group) -> Unit,
     viewBinderHelper: ViewBinderHelper,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.TextReplyOnImage, ConversationItemGroupTextReplyImageBinding>(
         ConversationItemGroupTextReplyImageBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -716,19 +688,16 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
-                renderDocument(
+                renderReply(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
-                    goneViews = listOf(
-                        replyImage
-                    ),
-                    metaInfo = it.metaInfo,
-                    progressBar = progressBar,
                     replyUserName = it.userName,
-                    fileName = fileName,
-                    fileSize = fileSize,
-                    document = it,
-                    onDownloadDocument = onDownloadDocument
+                    replyImage = replyImage
+                )
+                createDocumentAdapter(
+                    recyclerViewDocuments = rvDocs,
+                    onDownloadDocument = onDownloadDocument,
+                    it.metaInfo
                 )
             }
             username.setPrintableText(item.userName)
@@ -752,7 +721,7 @@ fun createConversationGroupTextAdapterDelegate(
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -793,14 +762,14 @@ fun createConversationGroupForwardAdapterDelegate(
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onImageClicked: (ConversationViewItem) -> Unit,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
         ConversationItemGroupForwardTextBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessage(item)
             },
         )
@@ -824,7 +793,7 @@ fun createConversationGroupForwardAdapterDelegate(
                     forwardAuthorName.setPrintableText(item.forwardMessage.userName)
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
-                    replyDocumentContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
                     forwardImage.isVisible = false
                     ivArrow.isVisible = true
                 }
@@ -834,28 +803,23 @@ fun createConversationGroupForwardAdapterDelegate(
                         getPrintableRawText(item.forwardMessage.userName)
                     )
                     ivArrow.isVisible = false
-                    replyDocumentContent.isVisible = false
-                    messageContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
+                    forwardDocumentContent.isVisible = false
                     forwardImage.isVisible = true
                     forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
-                    renderDocument(
-                        forwardDocumentContent = replyDocumentContent,
+                    renderForward(
+                        forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
                         forwardUserName = forwardMessage.userName,
-                        goneViews = listOf(
-                            ivArrow,
-                            messageContent,
-                            forwardImage
-                        ),
-                        metaInfo = forwardMessage.metaInfo,
-                        progressBar = progressBar,
-                        replyUserName = forwardMessage.userName,
-                        fileName = fileName,
-                        fileSize = fileSize,
-                        document = forwardMessage,
-                        onDownloadDocument = onDownloadDocument
+                        forwardImage = forwardImage,
+                        forwardText = messageContent
+                    )
+                    createDocumentAdapter(
+                        recyclerViewDocuments = rvDocs,
+                        onDownloadDocument = onDownloadDocument,
+                        forwardMessage.metaInfo
                     )
                 }
             }
@@ -884,7 +848,7 @@ fun createConversationGroupImageAdapterDelegate(
         }
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessageImage(item)
             },
         )
@@ -904,16 +868,16 @@ fun createConversationGroupImageAdapterDelegate(
 
 fun createConversationGroupDocumentAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit,
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
-    onGroupDocumentLongClicked: (ConversationViewItem.Group) -> Unit
+    onGroupDocumentLongClicked: (ConversationViewItem.Group) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
         ConversationItemGroupDocumentBinding::inflate
     ) {
         binding.root.setTouchListener(
             onReplyMessage = {
-                if(item.sentStatus.canSwipe())
+                if (item.sentStatus.canSwipe())
                     onReplyMessageDocument(item)
             },
         )
@@ -925,14 +889,10 @@ fun createConversationGroupDocumentAdapterDelegate(
             onGroupDocumentLongClicked(item)
         }
         bindWithBinding {
-            renderDocument(
-                metaInfo = item.metaInfo,
-                progressBar = progressBar,
-                fileName = fileName,
-                fileSize = fileSize,
-                document = item,
-                startDownloadView = documentBg,
-                onDownloadDocument = onDownloadDocument
+            createDocumentAdapter(
+                recyclerViewDocuments = rvDocs,
+                onDownloadDocument = onDownloadDocument,
+                item.metaInfo
             )
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
@@ -974,109 +934,55 @@ private fun SwipeRevealLayout.setTouchListener(
     })
 }
 
-private fun renderDocument(
-    //поля для ответа на документ
-    replyDocumentContent: ConstraintLayout? = null,
-    replyMessageName: TextView? = null,
-    replyUserName: PrintableText? = null,
-
-    //поля для пересланного документа
-    forwardDocumentContent: ConstraintLayout? = null,
-    forwardMessageName: TextView? = null,
-    forwardUserName: PrintableText? = null,
-
-    //поле для клика скачивания
-    startDownloadView: View? = null,
-
-    //поля для скрытия view при отображении документа
-    goneViews: List<View>? = null,
-
-    //мета документа
-    metaInfo: MetaInfo?,
-
-    progressBar: ProgressBar,
-    fileName: TextView,
-    fileSize: TextView,
-
-    document: ConversationDocumentItem,
-    documentFile: File? = null,
-    onDownloadDocument: (item: ConversationDocumentItem, progressListener: ProgressListener) -> Unit
+private fun renderForward(
+    forwardDocumentContent: LinearLayout,
+    forwardMessageName: TextView,
+    forwardUserName: PrintableText,
+    forwardImage: ImageView,
+    forwardText:TextView
 ) {
-    goneViews?.forEach {
-        it.isVisible = false
-    }
-
-    replyDocumentContent?.isVisible = true
-    replyMessageName?.setPrintableText(
-        PrintableText.StringResource(
-            R.string.reply_document_ph,
-            getPrintableRawText(replyUserName)
-        )
-    )
-
-    forwardDocumentContent?.isVisible = true
-    forwardMessageName?.setPrintableText(
+    forwardText.isVisible = false
+    forwardImage.isVisible = false
+    forwardDocumentContent.isVisible = true
+    forwardMessageName.setPrintableText(
         PrintableText.StringResource(
             R.string.forward_file_from_ph,
             getPrintableRawText(forwardUserName)
         )
     )
+}
 
-    if (metaInfo != null) {
-        fileSize.setPrintableText(getPrettySize(metaInfo.size))
-        fileName.setPrintableTextOrGone(metaInfo.name)
-    } else {
-        if (documentFile != null) {
-            fileSize.setPrintableText(getPrettySize(documentFile.length()))
-            fileName.setPrintableTextOrGone(PrintableText.Raw(documentFile.name))
-        } else {
-            fileSize.isVisible = false
-        }
-    }
+private fun renderReply(
+    replyDocumentContent: LinearLayout,
+    replyMessageName: TextView,
+    replyUserName: PrintableText,
+    replyImage: ImageView
+) {
+    replyImage.isVisible = false
+    replyDocumentContent.isVisible = true
+    replyMessageName.setPrintableText(
+        PrintableText.StringResource(
+            R.string.reply_document_ph,
+            getPrintableRawText(replyUserName)
+        )
+    )
+}
 
-    progressBar.isVisible = false
-    fileSize.isVisible = true
-
-    val documentLoadClickListener = {
-        onDownloadDocument(document) { progress, loadedBytesSize, fullBytesSize, isReady ->
-            renderDownloadListener(
-                progressBar = progressBar,
-                progress = progress,
-                loadedBytesSize = loadedBytesSize,
-                fullBytesSize = fullBytesSize,
-                metaInfo = metaInfo,
-                fileSize = fileSize,
-                isReady = isReady
-            )
-        }
-    }
-    replyDocumentContent?.onClick(documentLoadClickListener)
-    startDownloadView?.onClick(documentLoadClickListener)
-    forwardDocumentContent?.onClick(documentLoadClickListener)
+private fun createDocumentAdapter(
+    recyclerViewDocuments: RecyclerView,
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    items: List<MetaInfo>,
+) {
+    val adapterDocument = ConversationDocumentAdapter(
+        onDownloadDocument = onDownloadDocument
+    )
+    recyclerViewDocuments.adapter = adapterDocument
+    val linearLayoutManager =
+        LinearLayoutManager(recyclerViewDocuments.context, LinearLayoutManager.VERTICAL, true)
+    recyclerViewDocuments.layoutManager = linearLayoutManager
+    recyclerViewDocuments.itemAnimator = null
+    recyclerViewDocuments.isNestedScrollingEnabled = false
+    adapterDocument.items = items
 }
 
 private fun SentStatus.canSwipe() = this != SentStatus.Error && this != SentStatus.Loading
-
-private suspend inline fun renderDownloadListener(
-    progressBar: ProgressBar,
-    progress: Int,
-    metaInfo: MetaInfo?,
-    fileSize: TextView,
-    isReady: Boolean,
-    loadedBytesSize: Long,
-    fullBytesSize: Long
-) {
-    withContext(Dispatchers.Main) {
-        progressBar.isVisible = !isReady
-        progressBar.progress = progress
-
-        metaInfo?.let { meta ->
-            if (isReady) {
-                fileSize.setPrintableText(getPrettySize(fullBytesSize))
-            } else {
-                fileSize.setPrintableText(getLoadedFileSize(loadedBytesSize, fullBytesSize))
-            }
-
-        }
-    }
-}

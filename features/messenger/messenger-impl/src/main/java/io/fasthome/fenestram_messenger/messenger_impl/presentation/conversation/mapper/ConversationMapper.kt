@@ -236,11 +236,10 @@ fun Message.toConversationViewItem(
                         id = id,
                         localId = UUID.randomUUID().toString(),
                         timeVisible = true,
-                        file = null,
+                        files = null,
                         path = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        // TODO: Content содержит список документов, изменить когда появится возможность отсылать несколько документов
-                        metaInfo = content?.firstOrNull()?.let { MetaInfo(it) }
+                        metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
                     )
                 }
 
@@ -349,7 +348,7 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
-                            metaInfo = content?.firstOrNull()?.let { MetaInfo(it) }
+                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
                         )
                     }
 
@@ -408,7 +407,7 @@ fun Message.toConversationViewItem(
                                     isEdited = isEdited,
                                     nickname = initiator?.nickname,
                                     messageType = messageType,
-                                    replyMessage = replyMessage?.toConversationViewItem(
+                                    replyMessage = replyMessage.toConversationViewItem(
                                         selfUserId,
                                         isGroup,
                                         profileImageUrlConverter
@@ -446,7 +445,7 @@ fun Message.toConversationViewItem(
                             id = id,
                             timeVisible = true,
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.firstOrNull()?.let { MetaInfo(it) }
+                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
                         )
                     }
 
@@ -619,20 +618,18 @@ fun createImageMessage(image: String?, loadableContent: Content, userName: Strin
         userName = PrintableText.Raw(userName ?: "")
     )
 
-fun createDocumentMessage(document: String?, file: File) = ConversationViewItem.Self.Document(
-    content = document ?: run {
-        file.extension
-    },
+fun createDocumentMessage(document: List<String>, file: List<File>) = ConversationViewItem.Self.Document(
+    content = "",
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
     date = ZonedDateTime.now(),
     id = 0,
     localId = UUID.randomUUID().toString(),
-    file = file,
+    files = file,
     timeVisible = true,
     path = null,
     userName = PrintableText.EMPTY,
-    metaInfo = null
+    metaInfo = file.map { MetaInfo(it) }
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(

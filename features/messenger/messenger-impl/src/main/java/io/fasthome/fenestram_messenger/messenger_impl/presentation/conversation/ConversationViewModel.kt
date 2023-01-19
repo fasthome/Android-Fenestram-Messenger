@@ -374,7 +374,6 @@ class ConversationViewModel(
     }
 
     fun addMessageToConversation(mess: String) {
-
         val fileState = currentViewState.inputMessageMode as? InputMessageMode.Default
         fileState?.let {
             if (it.attachedFiles.isNotEmpty()) {
@@ -410,16 +409,18 @@ class ConversationViewModel(
     private fun sendFiles(attachedFiles: List<AttachedFile>) {
         val messages = currentViewState.messages
 
-        val tempFileMessages = attachedFiles.map {
-            when (it) {
-                is AttachedFile.Image -> createImageMessage(
-                    null,
-                    it.content,
-                    getPrintableRawText(currentViewState.userName)
-                )
-                is AttachedFile.Document -> createDocumentMessage(null, it.file)
-            }
+        val files = attachedFiles.filterIsInstance<AttachedFile.Document>()
+        val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
+
+        val imageMessages = attachedFiles.filterIsInstance<AttachedFile.Image>().map {
+            createImageMessage(
+                null,
+                it.content,
+                getPrintableRawText(currentViewState.userName)
+            )
         }
+
+        val tempFileMessages = listOf(fileMessage) + imageMessages
 
         updateState { state ->
             state.copy(inputMessageMode = InputMessageMode.Default())
@@ -435,16 +436,10 @@ class ConversationViewModel(
                     }).plus(messages)
                 )
             }
-            tempFileMessages.forEach { tempMessage ->
-                when (tempMessage) {
-                    is ConversationViewItem.Self.Image -> {
-                        sendImage(tempMessage)
-                    }
-                    is ConversationViewItem.Self.Document -> {
-                        sendDocument(tempMessage)
-                    }
-                    is ConversationViewItem.Self.Text -> Unit
-                }
+
+            sendDocument(fileMessage)
+            imageMessages.forEach { tempMessage ->
+                sendImage(tempMessage)
             }
         }
         sendEvent(ConversationEvent.UpdateScrollPosition(0))
@@ -479,11 +474,12 @@ class ConversationViewModel(
         )
     }
 
-    private suspend fun sendDocument(tempMessage: ConversationViewItem.Self.Document) {
-        val result = messengerInteractor.uploadDocument(
+    private suspend fun sendDocument(conversationViewItem: ConversationViewItem.Self.Document) {
+        var tempMessage = conversationViewItem
+        val result = messengerInteractor.uploadDocuments(
             chatId ?: return,
-            tempMessage.file?.readBytes() ?: return,
-            tempMessage.file.name
+            conversationViewItem.files?.map { it.readBytes() } ?: return,
+            conversationViewItem.files.map { it.name ?: UUID.randomUUID().toString() }
         )
 
         when (result) {
@@ -491,18 +487,11 @@ class ConversationViewModel(
                 updateStatus(tempMessage, SentStatus.Error)
             }
             is CallResult.Success -> {
+                tempMessage =
+                    tempMessage.copy(metaInfo = result.data.message?.content?.map { MetaInfo(it) }
+                        ?: return)
                 updateStatus(
-                    tempMessage.copy(
-                        metaInfo = MetaInfo(
-                            name = PrintableText.Raw(tempMessage.file.name),
-                            extension = tempMessage.file.extension,
-                            /**
-                             * Здесь отправляется значения именно в мегабайтах, т.к. с сервера приходят тоже в мегабайтах, под мегабайты подстроены дальнешие конвертации
-                             */
-                            size = fileSizeInMb(tempMessage.file.length()),
-                            url = result.data.message?.content?.firstOrNull()?.url
-                        )
-                    ),
+                    tempMessage,
                     SentStatus.Received,
                     result.data.message?.content?.firstOrNull()?.url,
                     result.data.message?.id
@@ -1070,7 +1059,7 @@ class ConversationViewModel(
             }
             is ConversationViewItem.Self.Document -> {
                 sendFiles(
-                    listOf(AttachedFile.Document(selfViewItem.file ?: return))
+                    selfViewItem.files?.map { AttachedFile.Document(it) } ?: return
                 )
             }
         }
@@ -1201,10 +1190,10 @@ class ConversationViewModel(
     }
 
     fun onDownloadDocument(
-        item: ConversationDocumentItem,
+        meta: MetaInfo,
         progressListener: ProgressListener,
     ) {
-        val documentLink = item.metaInfo?.url.toString()
+        val documentLink = meta.url.toString()
         downloadFileJob = viewModelScope.launch {
             messengerInteractor.getDocument(
                 storagePath = documentLink,
@@ -1217,7 +1206,7 @@ class ConversationViewModel(
                 copyDocumentToDownloadsUseCase.invoke(
                     loadedDocument.byteArray,
                     PrintableText.Raw(documentLink),
-                    extension = item.metaInfo?.extension ?: "txt"
+                    extension = meta.extension
                 ).onSuccess { uri ->
                     openFileLauncher.launch(OpenFileNavigationContract.Params(uri))
                 }

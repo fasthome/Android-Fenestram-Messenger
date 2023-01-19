@@ -67,10 +67,10 @@ interface MessengerRepo {
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit>
-    suspend fun uploadDocument(
+    suspend fun uploadDocuments(
         chatId: Long,
-        documentBytes: ByteArray,
-        guid: String
+        documentBytes: List<ByteArray>,
+        guid: List<String>
     ): CallResult<SendMessageResponse>
 
     interface SocketMessageCallback {
