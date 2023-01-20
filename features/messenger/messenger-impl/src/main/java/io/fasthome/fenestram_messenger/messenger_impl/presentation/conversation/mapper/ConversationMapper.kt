@@ -23,7 +23,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 const val MESSAGE_TYPE_TEXT = "text"
 const val MESSAGE_TYPE_SYSTEM = "system"
-const val MESSAGE_TYPE_IMAGE = "image"
+const val MESSAGE_TYPE_IMAGE = "images"
 const val MESSAGE_TYPE_DOCUMENT = "documents"
 const val MESSAGE_TYPE_VOICE = "voices"
 const val MESSAGE_TYPE_IMAGES = "images"
@@ -223,7 +223,8 @@ fun Message.toConversationViewItem(
                             isGroup,
                             profileImageUrlConverter
                         ),
-                        userName = PrintableText.Raw(getName(initiator))
+                        userName = PrintableText.Raw(getName(initiator)),
+                        metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
                     )
                 }
 
@@ -331,7 +332,8 @@ fun Message.toConversationViewItem(
                                 selfUserId,
                                 isGroup,
                                 profileImageUrlConverter
-                            )
+                            ),
+                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
                         )
                     }
 
@@ -432,7 +434,8 @@ fun Message.toConversationViewItem(
                                 isGroup,
                                 profileImageUrlConverter
                             ),
-                            userName = PrintableText.Raw(getName(initiator))
+                            userName = PrintableText.Raw(getName(initiator)),
+                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
                         )
                     }
 
@@ -602,9 +605,9 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     userName = PrintableText.EMPTY
 )
 
-fun createImageMessage(image: String?, loadableContent: Content, userName: String?) =
+fun createImageMessage(loadableContent: List<Content>, userName: String?) =
     ConversationViewItem.Self.Image(
-        content = image ?: "",
+        content = "",
         time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
         sentStatus = SentStatus.Loading,
         date = ZonedDateTime.now(),
@@ -613,9 +616,9 @@ fun createImageMessage(image: String?, loadableContent: Content, userName: Strin
         loadableContent = loadableContent,
         timeVisible = true,
         nickname = userName,
-        messageType = "image",
+        messageType = "images",
         replyMessage = null,
-        userName = PrintableText.Raw(userName ?: "")
+        userName = PrintableText.Raw(userName ?: ""),
     )
 
 fun createDocumentMessage(document: List<String>, file: List<File>) = ConversationViewItem.Self.Document(

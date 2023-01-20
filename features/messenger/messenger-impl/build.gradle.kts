@@ -24,6 +24,7 @@ dependencies {
     implementation(project(Modules.Common.component))
     implementation(project(Modules.Common.uikit))
 
+    implementation(Deps.flexbox)
     implementation(Deps.AndroidX.paging)
     implementation(Deps.socketIO) {
         exclude(group = "org.json", module = "json")

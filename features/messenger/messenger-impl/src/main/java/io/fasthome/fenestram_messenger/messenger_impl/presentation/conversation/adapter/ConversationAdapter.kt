@@ -1,17 +1,21 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
+import android.graphics.Rect
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.*
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
+import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
@@ -375,8 +379,8 @@ fun createConversationSelfImageAdapterDelegate(
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-
-        messageContent.loadRounded(item.content)
+        createImageAdapter(messageContent,{},item.metaInfo)
+        //messageContent.loadRounded(item.metaInfo.first().url)
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
         status.setImageResource(item.statusIcon)
@@ -939,7 +943,7 @@ private fun renderForward(
     forwardMessageName: TextView,
     forwardUserName: PrintableText,
     forwardImage: ImageView,
-    forwardText:TextView
+    forwardText: TextView,
 ) {
     forwardText.isVisible = false
     forwardImage.isVisible = false
@@ -956,7 +960,7 @@ private fun renderReply(
     replyDocumentContent: LinearLayout,
     replyMessageName: TextView,
     replyUserName: PrintableText,
-    replyImage: ImageView
+    replyImage: ImageView,
 ) {
     replyImage.isVisible = false
     replyDocumentContent.isVisible = true
@@ -966,6 +970,54 @@ private fun renderReply(
             getPrintableRawText(replyUserName)
         )
     )
+}
+
+private fun createImageAdapter(
+    imageRecyclerView: RecyclerView,
+    onImageClicked: (ConversationViewItem) -> Unit,
+    items: List<MetaInfo>,
+) {
+    val adapterImage = ConversationImageAdapter(
+        onImageClick = {
+            // TODO:!!!
+        }
+    )
+    imageRecyclerView.adapter = adapterImage
+    val flexboxManager = FlexboxLayoutManager(imageRecyclerView.context).apply {
+        flexWrap = FlexWrap.WRAP
+        alignItems = AlignItems.STRETCH
+        flexDirection = FlexDirection.ROW
+    }
+
+    val glm = GridLayoutManager(imageRecyclerView.context, 3)
+    glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int): Int {
+            return if (position % 3 == 2) {
+                3
+            } else when (position % 4) {
+                1, 3 -> 1
+                0, 2 -> 2
+                else ->                     //never gonna happen
+                    -1
+            }
+        }
+    }
+    imageRecyclerView.layoutManager = glm
+
+    /*val linearLayoutManager =
+        LinearLayoutManager(imageRecyclerView.context, LinearLayoutManager.VERTICAL, true)*/
+   // imageRecyclerView.layoutManager = flexboxManager
+    imageRecyclerView.itemAnimator = null
+    imageRecyclerView.isNestedScrollingEnabled = false
+    adapterImage.items = items
+    imageRecyclerView.addItemDecoration(SpacingItemDecoration { index, itemCount ->
+        Rect(
+            2.dp,
+            2.dp,
+            2.dp,
+            2.dp,
+        )
+    })
 }
 
 private fun createDocumentAdapter(

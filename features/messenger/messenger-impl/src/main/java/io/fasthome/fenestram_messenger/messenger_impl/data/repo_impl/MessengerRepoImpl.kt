@@ -170,6 +170,16 @@ class MessengerRepoImpl(
         messengerService.uploadDocuments(documentBytes, guid, chatId)
     }
 
+    override suspend fun uploadImages(
+        chatId: Long,
+        documentBytes: List<ByteArray>,
+        filename: List<String>,
+    ): CallResult<SendMessageResponse>  = callForResult {
+        messengerService.uploadImages(documentBytes, chatId,filename)
+    }
+
+
+
     override suspend fun getDocument(
         storagePath: String,
         progressListener: ProgressListener

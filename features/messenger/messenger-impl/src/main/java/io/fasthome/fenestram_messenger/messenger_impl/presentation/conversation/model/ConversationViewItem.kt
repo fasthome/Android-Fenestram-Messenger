@@ -15,6 +15,7 @@ interface ConversationImageItem {
     val id: Long
     val userName: PrintableText
     val content: String
+    val metaInfo: List<MetaInfo>
 }
 
 interface ConversationTextItem {
@@ -96,7 +97,7 @@ sealed interface ConversationViewItem {
             override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self()
 
-        data class Image(
+        data class  Image(
             override val id: Long,
             override val content: String,
             override val time: PrintableText,
@@ -104,7 +105,7 @@ sealed interface ConversationViewItem {
             override var sentStatus: SentStatus,
             override val localId: String,
             override val timeVisible: Boolean,
-            val loadableContent: Content? = null,
+            val loadableContent: List<Content>? = null,
             override val nickname: String?,
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
@@ -184,6 +185,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val metaInfo: List<MetaInfo>,
         ) : Receive(), ConversationImageItem
 
         data class Document(
@@ -273,6 +275,7 @@ sealed interface ConversationViewItem {
             override val timeVisible: Boolean,
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
+            override val metaInfo: List<MetaInfo>,
         ) : Group(userName, avatar, phone, userId), ConversationImageItem
 
         data class Document(

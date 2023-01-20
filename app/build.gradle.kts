@@ -151,6 +151,7 @@ dependencies {
     implementation(Deps.playCore)
     implementation(Deps.gson)
     implementation(Deps.materialCalendar)
+    implementation(Deps.flexbox)
 
     implementation(Deps.Koin.core)
 

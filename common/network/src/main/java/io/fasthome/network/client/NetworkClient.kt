@@ -1,10 +1,12 @@
 package io.fasthome.network.client
 
+import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import java.util.*
 
 class NetworkClient(
     @PublishedApi
@@ -123,6 +125,27 @@ class NetworkClient(
             formData = formData {
                 binaryDatas.forEachIndexed { i, bytes ->
                     append("documents", bytes, Headers.build {
+                        append(HttpHeaders.ContentDisposition, "filename=${filename[i]}")
+                    })
+                }
+            }
+        ) {
+            params.forEach { (t, u) -> parameter(t, u) }
+        }
+    }
+
+    suspend inline fun <reified Response> runSubmitFormWithImages(
+        path: String,
+        binaryDatas: List<ByteArray>,
+        filename: List<String>,
+        params: Map<String, Any?> = emptyMap(),
+        useBaseUrl: Boolean = true,
+    ): Response {
+        return httpClient.submitFormWithBinaryData(
+            url = buildUrl(path, useBaseUrl),
+            formData = formData {
+                binaryDatas.forEachIndexed { i, bytes ->
+                    append("images", bytes, Headers.build {
                         append(HttpHeaders.ContentDisposition, "filename=${filename[i]}")
                     })
                 }
