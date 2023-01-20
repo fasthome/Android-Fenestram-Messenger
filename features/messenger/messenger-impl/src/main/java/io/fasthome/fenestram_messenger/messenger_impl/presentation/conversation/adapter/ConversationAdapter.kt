@@ -1,26 +1,28 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
-import android.graphics.Rect
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.*
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.imageAdapter.ConversationImageAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.imageAdapter.createAdapterItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
-import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.links.addCommonLinks
 import io.fasthome.network.client.ProgressListener
+
 
 class ConversationAdapter(
     //---Клик для открытия профиля по нажатию на обращение к пользователю---//
@@ -379,7 +381,7 @@ fun createConversationSelfImageAdapterDelegate(
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-        createImageAdapter(messageContent,{},item.metaInfo)
+        createImageAdapter(messageContent, {}, item.metaInfo)
         //messageContent.loadRounded(item.metaInfo.first().url)
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
@@ -983,41 +985,13 @@ private fun createImageAdapter(
         }
     )
     imageRecyclerView.adapter = adapterImage
-    val flexboxManager = FlexboxLayoutManager(imageRecyclerView.context).apply {
-        flexWrap = FlexWrap.WRAP
-        alignItems = AlignItems.STRETCH
-        flexDirection = FlexDirection.ROW
-    }
+    val flexboxManager =
+        FlexboxLayoutManager(imageRecyclerView.context, FlexDirection.ROW, FlexWrap.WRAP)
 
-    val glm = GridLayoutManager(imageRecyclerView.context, 3)
-    glm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-        override fun getSpanSize(position: Int): Int {
-            return if (position % 3 == 2) {
-                3
-            } else when (position % 4) {
-                1, 3 -> 1
-                0, 2 -> 2
-                else ->                     //never gonna happen
-                    -1
-            }
-        }
-    }
-    imageRecyclerView.layoutManager = glm
-
-    /*val linearLayoutManager =
-        LinearLayoutManager(imageRecyclerView.context, LinearLayoutManager.VERTICAL, true)*/
-   // imageRecyclerView.layoutManager = flexboxManager
+    imageRecyclerView.layoutManager = flexboxManager
     imageRecyclerView.itemAnimator = null
     imageRecyclerView.isNestedScrollingEnabled = false
-    adapterImage.items = items
-    imageRecyclerView.addItemDecoration(SpacingItemDecoration { index, itemCount ->
-        Rect(
-            2.dp,
-            2.dp,
-            2.dp,
-            2.dp,
-        )
-    })
+    adapterImage.items = items.createAdapterItems()
 }
 
 private fun createDocumentAdapter(

@@ -141,15 +141,16 @@ class NetworkClient(
         params: Map<String, Any?> = emptyMap(),
         useBaseUrl: Boolean = true,
     ): Response {
+        val fd = formData {
+            binaryDatas.forEachIndexed { i, bytes ->
+                append("images", bytes, Headers.build {
+                    append(HttpHeaders.ContentDisposition, "filename=${filename[i]}.jpeg")
+                })
+            }
+        }
         return httpClient.submitFormWithBinaryData(
             url = buildUrl(path, useBaseUrl),
-            formData = formData {
-                binaryDatas.forEachIndexed { i, bytes ->
-                    append("images", bytes, Headers.build {
-                        append(HttpHeaders.ContentDisposition, "filename=${filename[i]}")
-                    })
-                }
-            }
+            formData = fd
         ) {
             params.forEach { (t, u) -> parameter(t, u) }
         }
