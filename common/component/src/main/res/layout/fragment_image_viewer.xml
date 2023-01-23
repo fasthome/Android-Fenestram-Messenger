@@ -7,20 +7,16 @@
     android:background="@color/background_0"
     android:fitsSystemWindows="true">
 
-    <io.fasthome.fenestram_messenger.uikit.custom_view.ZoomableImageView
-        android:id="@+id/image"
+    <io.fasthome.fenestram_messenger.uikit.custom_view.RecyclerViewWithToggle
+        android:id="@+id/rv_images"
+        tools:listitem="@layout/item_image_viewer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="0.5"
-        android:background="@color/dark2"
+        android:background="@color/dark2_50"
         android:gravity="start|center_vertical"
         android:minHeight="51dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,9 +34,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
+        <TextView
+            android:id="@+id/tv_counter"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            tools:text="1 из 3"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
             android:layout_weight="1" />
 
         <ImageButton

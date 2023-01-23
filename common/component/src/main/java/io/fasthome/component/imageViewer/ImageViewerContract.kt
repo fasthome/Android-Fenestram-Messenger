@@ -1,6 +1,5 @@
 package io.fasthome.component.imageViewer
 
-import android.graphics.Bitmap
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -11,22 +10,28 @@ object ImageViewerContract :
         ImageViewerDialog::class) {
 
     sealed class ImageViewerParams() : Parcelable {
-        abstract val imageUrl: String?
-        abstract val imageBitmap: Bitmap?
+        abstract val imageViewerModel: List<ImageViewerModel>
 
         @Parcelize
         data class ImageParams(
-            override val imageUrl: String?,
-            override val imageBitmap: Bitmap?,
-        ) : ImageViewerParams()
+            val imageModel: ImageViewerModel,
+        ) : ImageViewerParams() {
+            override val imageViewerModel: List<ImageViewerModel> = listOf(imageModel)
+        }
+
+        @Parcelize
+        data class ImagesParams(
+            override val imageViewerModel: List<ImageViewerModel>,
+            val currentImagePosition: Int,
+        ) : ImageViewerParams() {
+        }
 
         @Parcelize
         data class MessageImageParams(
-            override val imageUrl: String?,
-            override val imageBitmap: Bitmap?,
+            override val imageViewerModel: List<ImageViewerModel>,
             val messageId: Long,
             val canDelete: Boolean,
-            val username: PrintableText
+            val username: PrintableText,
         ) : ImageViewerParams()
 
     }
@@ -43,7 +48,7 @@ object ImageViewerContract :
         @Parcelize
         class Forward(
             override val messageId: Long,
-            val username: PrintableText
+            val username: PrintableText,
         ) : Result()
     }
 }

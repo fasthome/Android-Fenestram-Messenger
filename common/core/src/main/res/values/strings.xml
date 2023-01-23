@@ -7,4 +7,5 @@
     <string name="common_file">Файл</string>
     <string name="common_delete_chat">Удалить</string>
     <string name="debug_menu">Debug menu</string>
+    <string name="common_value_from_value_ph">%1$d из %2$d</string>
 </resources>

@@ -16,10 +16,12 @@ enum class ImageItemSizeEnum(@DimenRes val dimenResSize: Int?) {
 fun List<MetaInfo>.createAdapterItems() = when (size) {
     1 -> this.map { ImageAdapterItem(it, ImageItemSizeEnum.BIG_SIZE) }
     2, 4 -> this.map { ImageAdapterItem(it, ImageItemSizeEnum.MEDIUM_SIZE) }
+    5 -> this.mapIndexed { index, metaInfo ->  ImageAdapterItem(metaInfo, if (index in 0..1) ImageItemSizeEnum.MEDIUM_SIZE else ImageItemSizeEnum.AUTO) }
     3, 6, 9 -> this.mapIndexed { index, metaInfo ->
         ImageAdapterItem(metaInfo,
             if (index == 0) ImageItemSizeEnum.BIG_SIZE else ImageItemSizeEnum.AUTO)
     }
+    10 -> this.mapIndexed { index, metaInfo ->  ImageAdapterItem(metaInfo, if (index in 0..3) ImageItemSizeEnum.MEDIUM_SIZE else ImageItemSizeEnum.AUTO) }
     else -> this.map { ImageAdapterItem(it, ImageItemSizeEnum.AUTO) }
 }
 

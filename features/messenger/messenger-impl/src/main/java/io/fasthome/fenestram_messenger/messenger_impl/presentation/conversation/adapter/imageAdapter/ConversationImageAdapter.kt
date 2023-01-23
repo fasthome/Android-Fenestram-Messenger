@@ -5,7 +5,6 @@ import com.google.android.flexbox.AlignItems
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
-import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderImageBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.util.*
@@ -30,7 +29,7 @@ fun createImageAdapterDelegate(onImageClick: (meta: MetaInfo) -> Unit) =
         }
         bindWithBinding {
             ivImage.loadRounded(item.metaInfo.url, radius = 8.dp)
-            if(item.size.dimenResSize != null) {
+            if (item.size.dimenResSize != null) {
                 val minSize = context.resources.getDimension(item.size.dimenResSize!!).toInt()
                 ivImage.minimumWidth = minSize
                 ivImage.minimumHeight = minSize

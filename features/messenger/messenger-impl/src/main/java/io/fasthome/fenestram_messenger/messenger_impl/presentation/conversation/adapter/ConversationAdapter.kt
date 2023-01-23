@@ -36,6 +36,7 @@ class ConversationAdapter(
 
     //---Клик для открытия картинки---//
     onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
 
     //---Клики по сообщениям с документами---//
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
@@ -82,7 +83,7 @@ class ConversationAdapter(
                 onUserTagClicked = onUserTagClicked
             ),
             createConversationSelfImageAdapterDelegate(
-                onImageClicked = onImageClicked,
+                onImageClicked = onImagesClicked,
                 onSelfImageLongClicked = onSelfImageLongClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessageImage = onReplyMessage
@@ -359,7 +360,7 @@ fun createConversationSelfTextAdapterDelegate(
     }
 
 fun createConversationSelfImageAdapterDelegate(
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImageClicked: (List<MetaInfo>, Int) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
@@ -375,14 +376,15 @@ fun createConversationSelfImageAdapterDelegate(
     binding.contentLayout.onClick {
         onSelfImageLongClicked(item)
     }
-    binding.messageContent.onClick {
-        onImageClicked(item)
-    }
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-        createImageAdapter(messageContent, {}, item.metaInfo)
-        //messageContent.loadRounded(item.metaInfo.first().url)
+        createImageAdapter(
+            imageRecyclerView = messageContent,
+            items = item.metaInfo,
+            onImageClicked = { imageMeta, pos ->
+                onImageClicked(imageMeta,pos)
+            })
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
         status.setImageResource(item.statusIcon)
@@ -976,12 +978,12 @@ private fun renderReply(
 
 private fun createImageAdapter(
     imageRecyclerView: RecyclerView,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImageClicked: (List<MetaInfo>, Int) -> Unit,
     items: List<MetaInfo>,
 ) {
     val adapterImage = ConversationImageAdapter(
-        onImageClick = {
-            // TODO:!!!
+        onImageClick = { imageMeta->
+            onImageClicked(items, items.indexOf(imageMeta))
         }
     )
     imageRecyclerView.adapter = adapterImage

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Matrix
 import android.graphics.PointF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -21,6 +22,12 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     private var matrixGeneral: Matrix? = null
     private var onDownSwipe: (() -> Unit)? = null
     private var onAlphaChanged: ((alpha: Float) -> Unit)? = null
+
+    /**
+     * Включение/Выключение сколла [RecyclerViewWithToggle],
+     * обязательный параметр при использовании RecyclerView (необходимо заменить на [RecyclerViewWithToggle])
+     */
+    private var onScrollToggle: ((state: Boolean) -> Unit)? = null
     private val canSwipe: Boolean
         get() = onDownSwipe != null
     private var matrixValues: FloatArray? = null
@@ -68,6 +75,8 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
             mode = ZOOM
+            recyclerScrollToggle(false)
+
             return true
         }
 
@@ -92,8 +101,14 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                     detector.focusX, detector.focusY)
             }
             fixTranslation()
+
+            recyclerScrollToggle(true)
             return true
         }
+    }
+
+    fun recyclerScrollToggle(state: Boolean) {
+        onScrollToggle?.invoke(state && saveScale == SWIPE_SCALE)
     }
 
     private fun fitToScreen() {
@@ -166,6 +181,10 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         onAlphaChanged = onChanged
     }
 
+    fun setOnScrollToggleListener(onScroll: ((state: Boolean) -> Unit)?) {
+        onScrollToggle = onScroll
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         viewWidth = MeasureSpec.getSize(widthMeasureSpec)
@@ -180,6 +199,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
      */
     override fun onTouch(view: View?, event: MotionEvent): Boolean {
         if (view == null) return false
+        recyclerScrollToggle(false)
         scaleDetector!!.onTouchEvent(event)
         gestureDetector!!.onTouchEvent(event)
         val currentPoint = PointF(event.x, event.y)
@@ -192,15 +212,19 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 centerY = event.rawY
             }
             MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
-                if (saveScale == SWIPE_SCALE && canSwipe) {
+                Log.d("ZoomableImageView", "canSwipe: ${saveScale == SWIPE_SCALE && canSwipe}, event Y: ${event.rawY}, dY: $dY")
+                if (saveScale == SWIPE_SCALE && canSwipe && event.rawY !in (dY*-1)-10..(dY*-1)+10) {
                     view.animate()
                         .y(event.rawY + dY)
                         .setDuration(0)
                         .start()
 
-                    val newAlpha = if (event.rawY < centerY) event.rawY / centerY else centerY / event.rawY
+                    val newAlpha =
+                        if (event.rawY < centerY) event.rawY / centerY else centerY / event.rawY
                     view.alpha = newAlpha
                     onAlphaChanged?.invoke(newAlpha)
+                } else {
+                    recyclerScrollToggle(true)
                 }
                 val dx = currentPoint.x - lastPoint.x
                 val dy = currentPoint.y - lastPoint.y
@@ -209,6 +233,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                 matrixGeneral!!.postTranslate(fixTransX, fixTransY)
                 fixTranslation()
                 lastPoint[currentPoint.x] = currentPoint.y
+               // recyclerScrollToggle(true)
             }
             MotionEvent.ACTION_POINTER_UP -> mode = NONE
 
@@ -218,6 +243,8 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                         val middleTopCenter = centerY / 4
                         if (event.rawY !in centerY - middleTopCenter..centerY + middleTopCenter) {
                             onDownSwipe?.invoke()
+                        } else {
+                            recyclerScrollToggle(true)
                         }
                     }
                     view.animate()
@@ -227,14 +254,15 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
                         .start()
                     onAlphaChanged?.invoke(1f)
                 }
-                if(saveScale < SWIPE_SCALE) {
+                if (saveScale < SWIPE_SCALE) {
                     view.animate()
                         .y(startY)
                         .setDuration(100)
                         .alpha(1f)
                         .withEndAction {
-                        fitToScreen()
-                    }
+                            fitToScreen()
+                            recyclerScrollToggle(true)
+                        }
                         .start()
                     onAlphaChanged?.invoke(1f)
 
@@ -284,7 +312,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
     }
 
     override fun onDoubleTap(motionEvent: MotionEvent): Boolean {
-        if(saveScale == SWIPE_SCALE) {
+        if (saveScale == SWIPE_SCALE) {
             saveScale = 2f
             if (origWidth * saveScale <= viewWidth
                 || origHeight * saveScale <= viewHeight
@@ -298,6 +326,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
             fixTranslation()
         } else {
             fitToScreen()
+            recyclerScrollToggle(true)
         }
         return true
     }
@@ -313,8 +342,27 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
         const val DRAG = 1
         const val ZOOM = 2
 
+        /**
+         * Стандартное приближение изображения
+         * Функции [onDownSwipe] и горизонтальный свайп между изображениями
+         * работают только при условии, что актуальное значение приближения равно [SWIPE_SCALE]
+         */
         const val SWIPE_SCALE = 1f
+
+        /**
+         * Минимальное разрешенное приближение изображения
+         */
         const val MIN_SCALE = -2f
+
+        /**
+         * Максимальное разрешенное приближение изображения
+         */
         const val MAX_SCALE = 4f
+
+        /**
+         * Чувсвительность горизонтального свайпа, значение для комфортного использования: ~10-20
+         * Используется для различения свайпа для закрытия [onDownSwipe] и свайпа между изображениями
+         */
+        const val SWIPE_SENSITIVITY = 15
     }
 }

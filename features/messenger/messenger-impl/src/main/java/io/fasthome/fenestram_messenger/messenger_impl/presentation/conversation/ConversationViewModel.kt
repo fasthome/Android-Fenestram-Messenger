@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -1084,6 +1085,18 @@ class ConversationViewModel(
         }
     }
 
+    fun onImagesClicked(
+        meta: List<MetaInfo>,
+        currImagePosition: Int
+    ) {
+        if(meta.isEmpty() || chatId == null) return
+        val imageParams = ImageViewerContract.ImageViewerParams.ImagesParams(
+            imageViewerModel = meta.map { ImageViewerModel(it.url, null) },
+            currentImagePosition = currImagePosition
+        )
+        imageViewerLauncher.launch(imageParams)
+    }
+
     fun onImageClicked(
         url: String? = null,
         bitmap: Bitmap? = null,
@@ -1091,14 +1104,12 @@ class ConversationViewModel(
     ) {
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                imageUrl = url,
-                imageBitmap = bitmap
+                ImageViewerModel(url,bitmap)
             )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
-                    imageUrl = mess.content as? String,
-                    imageBitmap = bitmap,
+                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String,bitmap)),
                     messageId = mess.id,
                     canDelete = conversationViewItem.canDelete(),
                     username = conversationViewItem.userName
