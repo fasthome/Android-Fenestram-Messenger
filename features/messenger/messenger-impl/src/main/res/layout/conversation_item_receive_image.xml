@@ -26,26 +26,24 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-        <ImageView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/message_content"
-            android:layout_width="0dp"
-            android:layout_height="180dp"
-            android:layout_marginEnd="180dp"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="@font/geometria"
-            android:maxEms="16"
-            android:minWidth="48dp"
-            android:minHeight="24dp"
-            android:paddingStart="12dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/message_rectangle_receive"
+            android:padding="3dp"
             app:barrierMargin="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_min="@dimen/image_min_size"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="TouchTargetSizeCheck" />
+            app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
+            app:layout_constraintWidth_min="@dimen/image_min_size"
+            tools:ignore="TouchTargetSizeCheck"
+            tools:itemCount="1"
+            tools:listitem="@layout/holder_image" />
 
         <TextView
             android:id="@+id/send_time_view"

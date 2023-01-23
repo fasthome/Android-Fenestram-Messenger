@@ -88,10 +88,7 @@ class ConversationFragment :
         viewBinderHelper = ViewBinderHelper(),
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
-        }, onImageClicked = {
-            //vm.onImageClicked(conversationViewItem = it)
-        },
-        onImagesClicked = { metaInfo, currPos ->
+        }, onImagesClicked = { metaInfo, currPos ->
             vm.onImagesClicked(metaInfo,currPos)
         }, onUserTagClicked = { userTag ->
             vm.onUserTagClicked(userTag)

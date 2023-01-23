@@ -4,8 +4,10 @@
     <dimen name="input_message_edit_mode_padding">15dp</dimen>
     <dimen name="input_message_min_height">43dp</dimen>
 
-    <dimen name="image_min_size">95dp</dimen>
-    <dimen name="image_big_min_size">210dp</dimen>
-    <dimen name="image_medium_min_size">140dp</dimen>
-    <dimen name="image_recycler_max_width">310dp</dimen>
+    <!-- Менять данные размеры только пропорционально image_min_size! -->
+    <dimen name="image_min_size">80dp</dimen>
+    <dimen name="image_big_min_size">177dp</dimen>
+    <dimen name="image_medium_min_size">120dp</dimen>
+    <dimen name="image_recycler_max_width">270dp</dimen>
+    <dimen name="image_recycler_ll_max_width">294dp</dimen>
 </resources>

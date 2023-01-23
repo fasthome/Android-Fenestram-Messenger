@@ -99,24 +99,29 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/reply_image"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_images"
+                android:layout_marginStart="4dp"
                 android:layout_width="wrap_content"
-                android:layout_height="180dp"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/geometria"
-                android:maxEms="16"
-                android:minWidth="48dp"
-                android:minHeight="24dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:padding="3dp"
                 app:barrierMargin="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHeight_min="@dimen/image_min_size"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/blue_line"
+                app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
+                app:layout_constraintWidth_min="@dimen/image_min_size"
                 tools:ignore="TouchTargetSizeCheck"
-                tools:visibility="gone" />
+                tools:itemCount="4"
+                app:spanCount="2"
+                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:layout_constraintHeight_min="@dimen/image_medium_min_size"
+                tools:layout_constraintWidth_min="@dimen/image_medium_min_size"
+                tools:listitem="@layout/holder_image"/>
+
 
             <TextView
                 android:id="@+id/message_content"

@@ -17,7 +17,8 @@ fun List<MetaInfo>.createAdapterItems() = when (size) {
     1 -> this.map { ImageAdapterItem(it, ImageItemSizeEnum.BIG_SIZE) }
     2, 4 -> this.map { ImageAdapterItem(it, ImageItemSizeEnum.MEDIUM_SIZE) }
     5 -> this.mapIndexed { index, metaInfo ->  ImageAdapterItem(metaInfo, if (index in 0..1) ImageItemSizeEnum.MEDIUM_SIZE else ImageItemSizeEnum.AUTO) }
-    3, 6, 9 -> this.mapIndexed { index, metaInfo ->
+    3 -> this.mapIndexed { index, metaInfo ->  ImageAdapterItem(metaInfo, if (index == 0) ImageItemSizeEnum.BIG_SIZE else ImageItemSizeEnum.MEDIUM_SIZE) }
+    6, 9 -> this.mapIndexed { index, metaInfo ->
         ImageAdapterItem(metaInfo,
             if (index == 0) ImageItemSizeEnum.BIG_SIZE else ImageItemSizeEnum.AUTO)
     }
