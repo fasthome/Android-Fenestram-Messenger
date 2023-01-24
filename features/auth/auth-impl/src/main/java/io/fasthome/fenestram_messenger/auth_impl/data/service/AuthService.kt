@@ -3,6 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.auth_impl.data.service
 
+import com.bumptech.glide.load.model.Headers
 import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.CodeMapper
 import io.fasthome.fenestram_messenger.auth_impl.data.service.mapper.LoginMapper
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.CodeRequest
@@ -12,8 +13,11 @@ import io.fasthome.fenestram_messenger.auth_impl.domain.entity.CodeResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.network.client.NetworkClientFactory
+import io.fasthome.network.model.BaseMessageResponse
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.tokens.TokensRepo
+import java.util.Collections.singletonList
+import java.util.Collections.singletonMap
 
 class AuthService(
     clientFactory: NetworkClientFactory,
@@ -41,5 +45,15 @@ class AuthService(
         )
 
         return loginMapper.responseToLogInResult(response)
+    }
+
+    suspend fun logoutAccount(): BaseMessageResponse? {
+        val response: BaseResponse<BaseMessageResponse> = client.runPost(
+            path = "authorization/logout",
+            body = Unit,
+            customHeaders = mapOf("Authorization" to "Bearer ${tokensRepo.getAccessToken().s}")
+        )
+
+        return response.data
     }
 }
