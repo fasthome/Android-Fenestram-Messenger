@@ -50,6 +50,8 @@ class AuthInteractor(
 
     suspend fun setUserPhone(phone : String) = authRepo.setUserPhone(phone)
 
+    suspend fun logout() = authRepo.logout()
+
     companion object {
         suspend fun onLoginResultSuccess(
             tokensRepo: TokensRepo,

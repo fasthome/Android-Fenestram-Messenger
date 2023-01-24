@@ -19,4 +19,5 @@ interface AuthRepo {
     suspend fun getUserPhone(): CallResult<String?>
     suspend fun setUserCode(code : String)
     suspend fun setUserPhone(phone : String)
+    suspend fun logout()
 }
