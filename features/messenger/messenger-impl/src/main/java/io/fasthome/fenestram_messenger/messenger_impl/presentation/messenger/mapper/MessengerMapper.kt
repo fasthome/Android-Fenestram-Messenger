@@ -29,7 +29,7 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
                     null
                 )
             )
-        } ?: chat.messages.lastOrNull()?.let { message ->
+        } ?: chat.messages.firstOrNull()?.let { message ->
             when (message.messageType) {
                 MESSAGE_TYPE_TEXT -> {
                     LastMessage.Text(PrintableText.Raw(message.text))
@@ -50,7 +50,7 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
         } ?: LastMessage.Text(PrintableText.EMPTY)
 
         val sentStatus = if (chat.pendingMessages == 0L) {
-            if (chat.messages[0].usersHaveRead.isNullOrEmpty()) SentStatus.Received else SentStatus.Read
+            if (chat.messages.firstOrNull()?.usersHaveRead.isNullOrEmpty()) SentStatus.Received else SentStatus.Read
         } else {
             SentStatus.None
         }

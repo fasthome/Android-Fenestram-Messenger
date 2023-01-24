@@ -29,6 +29,8 @@ interface MessengerRepo {
 
     fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat>
 
+    fun getCachedPages(): TotalPagingSource<Int, Chat>
+
     suspend fun postChats(
         name: String,
         users: List<Long>,

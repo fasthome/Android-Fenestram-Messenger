@@ -15,29 +15,28 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
     fun responseToGetChatsResult(response: GetChatsResponse): List<Chat> {
         response.data?.let { list ->
             return list.map { chat ->
-                val lastMessage = chat.message
+                val lastMessage = chat.message?.firstOrNull()
                 Chat(
                     id = chat.id,
                     users = chat.users,
                     name = chat.name ?: "",
                     messages = listOfNotNull(lastMessage?.let {
                         Message(
-                            id = lastMessage[0].id,
-                            text = lastMessage[0].text,
-                            userSenderId = lastMessage[0].initiatorId,
-                            messageType = lastMessage[0].type,
-                            date = lastMessage[0].date.let(NetworkMapperUtil::parseZonedDateTime),
+                            id = lastMessage.id,
+                            text = lastMessage.text,
+                            userSenderId = lastMessage.initiatorId,
+                            messageType = lastMessage.type,
+                            date = lastMessage.date.let(NetworkMapperUtil::parseZonedDateTime),
                             initiator = null,
                             isDate = false,
                             replyMessage = null,
-                            isEdited = lastMessage[0].isEdited,
-                            messageStatus = lastMessage[0].messageStatus,
-                            usersHaveRead = lastMessage[0].usersHaveRead,
+                            isEdited = lastMessage.isEdited,
+                            messageStatus = lastMessage.messageStatus,
+                            usersHaveRead = lastMessage.usersHaveRead,
                             forwardedMessages = null,
                             content = null
                         )
-                    }
-                    ),
+                    }),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
                     avatar = chat.avatar,
                     isGroup = chat.isGroup,

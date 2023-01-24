@@ -20,10 +20,12 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.*
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class MessengerViewModel(
     router: ContractRouter,
@@ -79,6 +81,21 @@ class MessengerViewModel(
             isSelectMode = params.chatSelectionMode,
             scrolledDown = false
         )
+    }
+
+    //TODO оставил функцию, если после теста возникнет потребность выгружать сначала кешированные сообщения, потом из сети. Удалить после теста если будет не нужна!
+    fun fetchCachedChats() {
+//        val cachedPager = Pager(
+//            config = PagingConfig(pageSize = PagingDataViewModelHelper.PAGE_SIZE),
+//            pagingSourceFactory = {
+//                messengerInteractor.fetchCachedItems().pagingSource
+//            },
+//        )
+//        cachedPager.flow.collectWhenViewActive().onEach { cachedPagingData ->
+//            sendEvent(MessengerEvent.InitialItems(cachedPagingData.map {
+//                messengerMapper.toMessengerViewItem(it)
+//            }))
+//        }.launchIn(viewModelScope)
     }
 
     fun fetchChats(): Flow<PagingData<MessengerViewItem>> {

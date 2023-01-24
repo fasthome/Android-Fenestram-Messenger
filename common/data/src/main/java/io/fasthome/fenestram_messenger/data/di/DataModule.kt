@@ -3,6 +3,8 @@ package io.fasthome.fenestram_messenger.data.di
 import io.fasthome.fenestram_messenger.data.*
 import io.fasthome.fenestram_messenger.data.core.CoreRepo
 import io.fasthome.fenestram_messenger.data.core.CoreRepoImpl
+import io.fasthome.fenestram_messenger.data.db.DatabaseFactory
+import io.fasthome.fenestram_messenger.data.db.SimpleDbFactory
 import io.fasthome.fenestram_messenger.data.file.*
 import io.fasthome.fenestram_messenger.data.prefs.InMemoryKeyValueStorage
 import io.fasthome.fenestram_messenger.data.prefs.PreferenceKeyValueStorage
@@ -17,7 +19,8 @@ object DataModule {
         listOf(
             createKeyValue(),
             createFile(),
-            createExt()
+            createExt(),
+            createDatabase()
         )
 
     private fun createKeyValue() = module {
@@ -59,6 +62,13 @@ object DataModule {
 
     private fun createExt() = module {
         single(::StorageUrlConverter)
+    }
+
+    private fun createDatabase() = module {
+        single(
+            ::SimpleDbFactory,
+            named(StorageQualifier.Simple)
+        ) bindSafe DatabaseFactory::class
     }
 
 }
