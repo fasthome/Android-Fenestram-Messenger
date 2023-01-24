@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.personality_data.UserDetail
@@ -39,7 +40,7 @@ class ProfileViewModel(
     private val profileInteractor: ProfileInteractor,
     private val profileImageUtil: ProfileImageUtil,
     private val personalityInterface: PersonalityInterface,
-    private val profileImageUrlConverter: StorageUrlConverter
+    private val profileImageUrlConverter: StorageUrlConverter,
 ) : BaseViewModel<ProfileState, ProfileEvent>(router, requestParams) {
 
     private val settingsLauncher = registerScreen(settingsFeature.settingsNavigationContract)
@@ -203,8 +204,8 @@ class ProfileViewModel(
             if (currentViewState.avatarUrl != null || currentViewState.avatarBitmap != null) {
                 imageViewerLauncher.launch(
                     ImageViewerContract.ImageViewerParams.ImageParams(
-                        currentViewState.avatarUrl,
-                        currentViewState.avatarBitmap
+                        ImageViewerModel(currentViewState.avatarUrl,
+                            currentViewState.avatarBitmap)
                     )
                 )
             }

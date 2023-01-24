@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -407,20 +408,23 @@ class ConversationViewModel(
     }
 
     private fun sendFiles(attachedFiles: List<AttachedFile>) {
-        val messages = currentViewState.messages
+        var tempFileMessages: List<ConversationViewItem.Self> = emptyList()
+        viewModelScope.launch {
+            val files = attachedFiles.filterIsInstance<AttachedFile.Document>()
+            if (files.isNotEmpty()) {
+                val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
+                tempFileMessages = tempFileMessages + fileMessage
+                sendDocument(fileMessage)
+            }
 
-        val files = attachedFiles.filterIsInstance<AttachedFile.Document>()
-        val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
-
-        val imageMessages = attachedFiles.filterIsInstance<AttachedFile.Image>().map {
-            createImageMessage(
-                null,
-                it.content,
-                getPrintableRawText(currentViewState.userName)
-            )
+            val images = attachedFiles.filterIsInstance<AttachedFile.Image>()
+            if (images.isNotEmpty()) {
+                val imageMessage = createImageMessage(images.map { it.content },
+                    getPrintableRawText(currentViewState.userName))
+                tempFileMessages = tempFileMessages + imageMessage
+                sendImages(imageMessage)
+            }
         }
-
-        val tempFileMessages = listOf(fileMessage) + imageMessages
 
         updateState { state ->
             state.copy(inputMessageMode = InputMessageMode.Default())
@@ -433,32 +437,38 @@ class ConversationViewModel(
                         it.localId
                     }, {
                         it
-                    }).plus(messages)
+                    }).plus(currentViewState.messages)
                 )
-            }
-
-            sendDocument(fileMessage)
-            imageMessages.forEach { tempMessage ->
-                sendImage(tempMessage)
             }
         }
         sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
-    private suspend fun sendImage(tempMessage: ConversationViewItem.Self.Image) {
-        var fileStoragePath: String?
-        val byteArray = when (val content = tempMessage.loadableContent) {
-            is Content.FileContent -> content.file.readBytes()
-            is Content.LoadableContent -> content.load()?.array
-            null -> return
+    private suspend fun sendImages(conversationViewItem: ConversationViewItem.Self.Image) {
+        var tempMessage = conversationViewItem
+        if (tempMessage.loadableContent == null) return
+        var byteArrays: List<ByteArray> = emptyList()
+        var filename: List<String> = emptyList()
+
+        conversationViewItem.loadableContent?.map { content ->
+            when (content) {
+                is Content.FileContent -> {
+                    byteArrays = byteArrays + content.file.readBytes()
+                    filename = filename + content.file.name
+                }
+                is Content.LoadableContent -> {
+                    content.load()?.array ?: return
+                    filename = filename + UUID.randomUUID().toString()
+                }
+            }
         }
-        val result = messengerInteractor.uploadProfileImage(
-            byteArray ?: return
+
+        val result = messengerInteractor.uploadImages(
+            chatId = chatId ?: return,
+            imagesBytes = byteArrays,
+            filename = filename
         )
-        result.getOrNull()?.imagePath.let {
-            fileStoragePath = it
-            it
-        }
+
         when (result) {
             is CallResult.Error -> {
                 updateState { state ->
@@ -466,12 +476,19 @@ class ConversationViewModel(
                     state
                 }
             }
+            is CallResult.Success -> {
+                tempMessage =
+                    tempMessage.copy(metaInfo = result.data.message?.content?.map {
+                        MetaInfo(name = PrintableText.Raw(it.name), extension = it.extension, size = it.size, url = storageUrlConverter.convert(it.url))
+                    } ?: return)
+                updateStatus(
+                    tempMessage,
+                    SentStatus.Received,
+                    result.data.message?.content?.firstOrNull()?.url,
+                    result.data.message?.id
+                )
+            }
         }
-        sendMessage(
-            text = fileStoragePath ?: return,
-            messageType = MessageType.Image,
-            existMessage = tempMessage
-        )
     }
 
     private suspend fun sendDocument(conversationViewItem: ConversationViewItem.Self.Document) {
@@ -562,7 +579,7 @@ class ConversationViewModel(
     ) {
         messengerInteractor.emitChatListeners(chatId, null)
         viewModelScope.launch {
-            var tempMessage = when (messageType) {
+            val tempMessage = when (messageType) {
                 MessageType.Text -> {
                     createTextMessage(text)
                 }
@@ -593,28 +610,16 @@ class ConversationViewModel(
                 is CallResult.Success -> {
                     tempMessage.userName =
                         PrintableText.Raw(sendMessageResponse.data.userName ?: "")
-                    when (messageType) {
-                        MessageType.Text -> {
-                            updateStatus(
-                                tempMessage,
-                                SentStatus.Received,
-                                id = sendMessageResponse.data.id
-                            )
-                        }
-                        MessageType.Image -> {
-                            updateStatus(
-                                tempMessage,
-                                SentStatus.Received,
-                                storageUrlConverter.convert(text),
-                                sendMessageResponse.data.id
-                            )
-                        }
+                    if (messageType == MessageType.Text) {
+                        updateStatus(
+                            tempMessage,
+                            SentStatus.Received,
+                            id = sendMessageResponse.data.id
+                        )
                     }
-
                 }
             }
         }
-
         sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
@@ -1050,11 +1055,7 @@ class ConversationViewModel(
             }
             is ConversationViewItem.Self.Image -> {
                 sendFiles(
-                    listOf(
-                        AttachedFile.Image(
-                            selfViewItem.loadableContent ?: return
-                        )
-                    )
+                    selfViewItem.loadableContent?.map { AttachedFile.Image(it) } ?: return
                 )
             }
             is ConversationViewItem.Self.Document -> {
@@ -1073,6 +1074,18 @@ class ConversationViewModel(
         }
     }
 
+    fun onImagesClicked(
+        meta: List<MetaInfo>,
+        currImagePosition: Int,
+    ) {
+        if (meta.isEmpty() || chatId == null) return
+        val imageParams = ImageViewerContract.ImageViewerParams.ImagesParams(
+            imageViewerModel = meta.map { ImageViewerModel(it.url, null) },
+            currentImagePosition = currImagePosition
+        )
+        imageViewerLauncher.launch(imageParams)
+    }
+
     fun onImageClicked(
         url: String? = null,
         bitmap: Bitmap? = null,
@@ -1080,14 +1093,12 @@ class ConversationViewModel(
     ) {
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                imageUrl = url,
-                imageBitmap = bitmap
+                ImageViewerModel(url, bitmap)
             )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
-                    imageUrl = mess.content as? String,
-                    imageBitmap = bitmap,
+                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String, bitmap)),
                     messageId = mess.id,
                     canDelete = conversationViewItem.canDelete(),
                     username = conversationViewItem.userName

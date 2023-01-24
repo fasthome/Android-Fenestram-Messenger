@@ -90,6 +90,7 @@ object Deps {
     const val dotsindicator = "com.tbuonomo:dotsindicator:4.2"
 
     const val materialCalendar = "com.github.prolificinteractive:material-calendarview:2.0.0"
+    const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
 
     object Tools {
         const val desugar = "com.android.tools:desugar_jdk_libs:${Versions.Tools.desugar}"

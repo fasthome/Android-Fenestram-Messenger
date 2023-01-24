@@ -44,6 +44,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_max="@dimen/image_recycler_ll_max_width"
             tools:ignore="TouchTargetSizeCheck">
 
             <TextView
@@ -82,17 +83,23 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/reply_image"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_images"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="4dp"
-                android:maxWidth="300dp"
-                android:visibility="gone"
-                android:minWidth="200dp"
-                android:minHeight="175dp"
-                android:scaleType="fitCenter" />
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/message_rectangle_self"
+                android:padding="3dp"
+                app:barrierMargin="5dp"
+                app:layout_constraintHeight_min="@dimen/image_min_size"
+                app:layout_constraintWidth_min="@dimen/image_min_size"
+                app:spanCount="2"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:itemCount="4"
+                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:layout_constraintHeight_min="@dimen/image_medium_min_size"
+                tools:layout_constraintWidth_min="@dimen/image_medium_min_size"
+                tools:listitem="@layout/holder_image" />
 
             <TextView
                 android:id="@+id/message_content"

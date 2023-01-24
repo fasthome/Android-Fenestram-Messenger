@@ -5,7 +5,7 @@ package io.fasthome.fenestram_messenger.messenger_api.entity
 
 enum class MessageType (val type : String){
     Text(type = "text"),
-    Image(type = "image"),
+    Image(type = "images"),
     Document(type = "documents"),
     Unknown(type = "unknown")
 }

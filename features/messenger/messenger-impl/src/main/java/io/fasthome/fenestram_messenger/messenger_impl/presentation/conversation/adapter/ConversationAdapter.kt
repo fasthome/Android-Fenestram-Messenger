@@ -1,22 +1,27 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
-import android.widget.ImageView
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.imageAdapter.ConversationImageAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.imageAdapter.createAdapterItems
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.links.addCommonLinks
 import io.fasthome.network.client.ProgressListener
+
 
 class ConversationAdapter(
     //---Клик для открытия профиля по нажатию на обращение к пользователю---//
@@ -29,7 +34,7 @@ class ConversationAdapter(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
 
     //---Клик для открытия картинки---//
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
 
     //---Клики по сообщениям с документами---//
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
@@ -76,7 +81,7 @@ class ConversationAdapter(
                 onUserTagClicked = onUserTagClicked
             ),
             createConversationSelfImageAdapterDelegate(
-                onImageClicked = onImageClicked,
+                onImageClicked = onImagesClicked,
                 onSelfImageLongClicked = onSelfImageLongClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessageImage = onReplyMessage
@@ -88,7 +93,7 @@ class ConversationAdapter(
             ),
             createConversationSelfTextReplyImageAdapterDelegate(
                 onSelfTextReplyImageLongClicked = onSelfTextReplyImageLongClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onUserTagClicked = onUserTagClicked,
@@ -98,7 +103,7 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onSelfForwardLongClicked = onSelfForwardLongClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 onUserTagClicked = onUserTagClicked,
                 onDownloadDocument = onDownloadDocument
             ),
@@ -119,20 +124,20 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onReceiveForwardLongClicked = onReceiveForwardLongClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 onUserTagClicked = onUserTagClicked,
                 onDownloadDocument = onDownloadDocument
             ),
             createConversationReceiveTextReplyImageAdapterDelegate(
                 onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onUserTagClicked = onUserTagClicked,
                 onDownloadDocument = onDownloadDocument
             ),
             createConversationReceiveImageAdapterDelegate(
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReceiveImageLongClicked = onReceiveImageLongClicked,
                 onReplyMessageImage = onReplyMessage
@@ -147,7 +152,7 @@ class ConversationAdapter(
             ),
             createConversationGroupImageAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessageImage = onReplyMessage,
                 onGroupImageLongClicked = onGroupImageLongClicked
@@ -162,14 +167,14 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onGroupForwardLongClicked = onGroupForwardLongClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 onUserTagClicked = onUserTagClicked,
                 onDownloadDocument = onDownloadDocument,
                 onGroupProfileItemClicked = onGroupProfileItemClicked
             ),
             createConversationGroupTextReplyImageAdapterDelegate(
                 onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
-                onImageClicked = onImageClicked,
+                onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onProfileClicked = onGroupProfileItemClicked,
@@ -186,7 +191,7 @@ class ConversationAdapter(
 fun createConversationSelfTextReplyImageAdapterDelegate(
     onUserTagClicked: (String) -> Unit,
     onSelfTextReplyImageLongClicked: (ConversationViewItem.Self.TextReplyOnImage) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
@@ -203,20 +208,20 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
         binding.contentLayout.onClick {
             onSelfTextReplyImageLongClicked(item)
         }
-        binding.replyImage.onClick {
-            (item.replyMessage as? ConversationImageItem)?.let {
-                onImageClicked(item)
-            }
-        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
 
             (item.replyMessage as? ConversationImageItem)?.let {
-                replyImage.isVisible = true
+                rvImages.isVisible = true
+                createImageAdapter(
+                    imageRecyclerView = rvImages,
+                    items = it.metaInfo,
+                    onImageClicked = { imageMeta, pos ->
+                        onImagesClicked(imageMeta, pos)
+                    })
                 replyMessageName.text =
                     context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
-                replyImage.loadRounded(it.content, radius = 8)
                 binding.replyDocumentContent.isVisible = false
 
             }
@@ -225,7 +230,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
                     replyUserName = it.userName,
-                    replyImage = replyImage
+                    replyImages = rvImages
                 )
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
@@ -249,7 +254,7 @@ fun createConversationSelfForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
@@ -264,11 +269,6 @@ fun createConversationSelfForwardAdapterDelegate(
         binding.contentLayout.onClick {
             onSelfForwardLongClicked(item)
         }
-        binding.forwardImage.onClick {
-            (item.forwardMessage as? ConversationImageItem)?.let {
-                onImageClicked(item.forwardMessage)
-            }
-        }
         bindWithBinding {
             val forwardMessage = item.forwardMessage
             when (forwardMessage) {
@@ -277,7 +277,7 @@ fun createConversationSelfForwardAdapterDelegate(
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
                     forwardDocumentContent.isVisible = false
-                    forwardImage.isVisible = false
+                    rvImages.isVisible = false
                     ivArrow.isVisible = true
                 }
                 is ConversationImageItem -> {
@@ -287,16 +287,21 @@ fun createConversationSelfForwardAdapterDelegate(
                     )
                     ivArrow.isVisible = false
                     messageContent.isVisible = false
-                    forwardImage.isVisible = true
+                    rvImages.isVisible = true
+                    createImageAdapter(
+                        imageRecyclerView = rvImages,
+                        items = forwardMessage.metaInfo,
+                        onImageClicked = { imageMeta, pos ->
+                            onImagesClicked(imageMeta, pos)
+                        })
                     forwardDocumentContent.isVisible = false
-                    forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
                         forwardUserName = forwardMessage.userName,
-                        forwardImage = forwardImage,
+                        forwardImages = rvImages,
                         forwardText = messageContent
                     )
                     createDocumentAdapter(
@@ -353,7 +358,7 @@ fun createConversationSelfTextAdapterDelegate(
     }
 
 fun createConversationSelfImageAdapterDelegate(
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImageClicked: (List<MetaInfo>, Int) -> Unit,
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
@@ -369,14 +374,15 @@ fun createConversationSelfImageAdapterDelegate(
     binding.contentLayout.onClick {
         onSelfImageLongClicked(item)
     }
-    binding.messageContent.onClick {
-        onImageClicked(item)
-    }
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
-
-        messageContent.loadRounded(item.content)
+        createImageAdapter(
+            imageRecyclerView = messageContent,
+            items = item.metaInfo,
+            onImageClicked = { imageMeta, pos ->
+                onImageClicked(imageMeta, pos)
+            })
         sendTimeView.setPrintableText(item.time)
         sendTimeView.isVisible = item.timeVisible
         status.setImageResource(item.statusIcon)
@@ -460,7 +466,7 @@ fun createConversationReceiveForwardAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
@@ -475,11 +481,6 @@ fun createConversationReceiveForwardAdapterDelegate(
         binding.contentLayout.onClick {
             onReceiveForwardLongClicked(item)
         }
-        binding.forwardImage.onClick {
-            (item.forwardMessage as? ConversationImageItem)?.let {
-                onImageClicked(item.forwardMessage)
-            }
-        }
         bindWithBinding {
             val forwardMessage = item.forwardMessage
             when (forwardMessage) {
@@ -488,27 +489,32 @@ fun createConversationReceiveForwardAdapterDelegate(
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
                     forwardDocumentContent.isVisible = false
-                    forwardImage.isVisible = false
+                    rvImages.isVisible = false
                     ivArrow.isVisible = true
                     messageContent.isVisible = true
                 }
                 is ConversationImageItem -> {
                     ivArrow.isVisible = false
                     messageContent.isVisible = false
-                    forwardImage.isVisible = true
+                    rvImages.isVisible = true
+                    createImageAdapter(
+                        imageRecyclerView = rvImages,
+                        items = forwardMessage.metaInfo,
+                        onImageClicked = { imageMeta, pos ->
+                            onImagesClicked(imageMeta, pos)
+                        })
                     forwardDocumentContent.isVisible = false
                     forwardAuthorName.text = getString(
                         R.string.forward_image_from_ph,
                         getPrintableRawText(item.forwardMessage.userName)
                     )
-                    forwardImage.loadRounded(item.forwardMessage.content as String)
                 }
                 is ConversationDocumentItem -> {
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
                         forwardUserName = forwardMessage.userName,
-                        forwardImage = forwardImage,
+                        forwardImages = rvImages,
                         forwardText = messageContent
                     )
                     createDocumentAdapter(
@@ -529,7 +535,7 @@ fun createConversationReceiveForwardAdapterDelegate(
 fun createConversationReceiveTextReplyImageAdapterDelegate(
     onUserTagClicked: (String) -> Unit,
     onReceiveTextReplyImageLongClicked: (ConversationViewItem.Receive.TextReplyOnImage) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
@@ -546,20 +552,20 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
         binding.contentLayout.onClick {
             onReceiveTextReplyImageLongClicked(item)
         }
-        binding.replyImage.onClick {
-            (item.replyMessage as? ConversationImageItem)?.let {
-                onImageClicked(item)
-            }
-        }
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
 
             (item.replyMessage as? ConversationImageItem)?.let {
-                replyImage.isVisible = true
+                rvImages.isVisible = true
+                createImageAdapter(
+                    imageRecyclerView = rvImages,
+                    items = it.metaInfo,
+                    onImageClicked = { imageMeta, pos ->
+                        onImagesClicked(imageMeta, pos)
+                    })
                 replyMessageName.text =
                     context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
-                replyImage.loadRounded(it.content, radius = 8)
                 binding.replyDocumentContent.isVisible = false
 
             }
@@ -568,7 +574,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
                     replyUserName = it.userName,
-                    replyImage = replyImage
+                    replyImages = rvImages
                 )
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
@@ -585,7 +591,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
 
 
 fun createConversationReceiveImageAdapterDelegate(
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReceiveImageLongClicked: (ConversationViewItem.Receive.Image) -> Unit,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
@@ -593,9 +599,6 @@ fun createConversationReceiveImageAdapterDelegate(
     adapterDelegateViewBinding<ConversationViewItem.Receive.Image, ConversationItemReceiveImageBinding>(
         ConversationItemReceiveImageBinding::inflate
     ) {
-        binding.messageContent.onClick {
-            onImageClicked(item)
-        }
         binding.root.setTouchListener(
             onReplyMessage = {
                 if (item.sentStatus.canSwipe())
@@ -606,10 +609,15 @@ fun createConversationReceiveImageAdapterDelegate(
             onReceiveImageLongClicked(item)
         }
         bindWithBinding {
+            createImageAdapter(
+                imageRecyclerView = messageContent,
+                items = item.metaInfo,
+                onImageClicked = { imageMeta, pos ->
+                    onImagesClicked(imageMeta, pos)
+                })
+
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
-
-            messageContent.loadRounded(item.content)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
         }
@@ -649,7 +657,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
 fun createConversationGroupTextReplyImageAdapterDelegate(
     onUserTagClicked: (String) -> Unit,
     onGroupTextReplyImageLongClicked: (ConversationViewItem.Group.TextReplyOnImage) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     onProfileClicked: (ConversationViewItem.Group) -> Unit,
     viewBinderHelper: ViewBinderHelper,
@@ -667,11 +675,6 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
         binding.contentLayout.onClick {
             onGroupTextReplyImageLongClicked(item)
         }
-        binding.replyImage.onClick {
-            (item.replyMessage as? ConversationImageItem)?.let {
-                onImageClicked(item)
-            }
-        }
         binding.avatar.onClick {
             onProfileClicked(item)
         }
@@ -680,11 +683,17 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
             viewBinderHelper.setOpenOnlyOne(true)
 
             (item.replyMessage as? ConversationImageItem)?.let {
-                replyImage.isVisible = true
+                rvImages.isVisible = true
+                createImageAdapter(
+                    imageRecyclerView = rvImages,
+                    items = it.metaInfo,
+                    onImageClicked = { imageMeta, pos ->
+                        onImagesClicked(imageMeta, pos)
+                    })
                 replyMessageName.text =
                     context.getString(R.string.reply_image_for_ph, getPrintableRawText(it.userName))
-                replyImage.loadRounded(it.content, radius = 8)
                 binding.replyDocumentContent.isVisible = false
+
 
             }
             (item.replyMessage as? ConversationDocumentItem)?.let {
@@ -692,7 +701,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
                     replyDocumentContent = replyDocumentContent,
                     replyMessageName = replyMessageName,
                     replyUserName = it.userName,
-                    replyImage = replyImage
+                    replyImages = rvImages
                 )
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
@@ -761,7 +770,7 @@ fun createConversationGroupForwardAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     onGroupForwardLongClicked: (ConversationViewItem.Group.Forward) -> Unit,
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
@@ -776,11 +785,6 @@ fun createConversationGroupForwardAdapterDelegate(
         binding.contentLayout.onClick {
             onGroupForwardLongClicked(item)
         }
-        binding.forwardImage.onClick {
-            (item.forwardMessage as? ConversationImageItem)?.let {
-                onImageClicked(item.forwardMessage)
-            }
-        }
         binding.avatar.onClick {
             onGroupProfileItemClicked(item)
         }
@@ -794,7 +798,7 @@ fun createConversationGroupForwardAdapterDelegate(
                     messageContent.setPrintableText(item.forwardMessage.content as PrintableText)
                     messageContent.addCommonLinks(onUserTagClicked)
                     forwardDocumentContent.isVisible = false
-                    forwardImage.isVisible = false
+                    rvImages.isVisible = false
                     ivArrow.isVisible = true
                 }
                 is ConversationImageItem -> {
@@ -805,15 +809,20 @@ fun createConversationGroupForwardAdapterDelegate(
                     ivArrow.isVisible = false
                     forwardDocumentContent.isVisible = false
                     forwardDocumentContent.isVisible = false
-                    forwardImage.isVisible = true
-                    forwardImage.loadRounded(item.forwardMessage.content as String)
+                    rvImages.isVisible = true
+                    createImageAdapter(
+                        imageRecyclerView = rvImages,
+                        items = forwardMessage.metaInfo,
+                        onImageClicked = { imageMeta, pos ->
+                            onImagesClicked(imageMeta, pos)
+                        })
                 }
                 is ConversationDocumentItem -> {
                     renderForward(
                         forwardDocumentContent = forwardDocumentContent,
                         forwardMessageName = forwardAuthorName,
                         forwardUserName = forwardMessage.userName,
-                        forwardImage = forwardImage,
+                        forwardImages = rvImages,
                         forwardText = messageContent
                     )
                     createDocumentAdapter(
@@ -832,7 +841,7 @@ fun createConversationGroupForwardAdapterDelegate(
 
 fun createConversationGroupImageAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
-    onImageClicked: (ConversationViewItem) -> Unit,
+    onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
     onGroupImageLongClicked: (ConversationViewItem.Group.Image) -> Unit,
@@ -842,9 +851,6 @@ fun createConversationGroupImageAdapterDelegate(
     ) {
         binding.avatar.onClick {
             onGroupProfileItemClicked(item)
-        }
-        binding.messageContent.onClick {
-            onImageClicked(item)
         }
         binding.root.setTouchListener(
             onReplyMessage = {
@@ -859,7 +865,12 @@ fun createConversationGroupImageAdapterDelegate(
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
             username.setPrintableText(item.userName)
-            messageContent.loadRounded(item.content)
+            createImageAdapter(
+                imageRecyclerView = messageContent,
+                items = item.metaInfo,
+                onImageClicked = { imageMeta, pos ->
+                    onImagesClicked(imageMeta, pos)
+                })
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
@@ -938,11 +949,11 @@ private fun renderForward(
     forwardDocumentContent: LinearLayout,
     forwardMessageName: TextView,
     forwardUserName: PrintableText,
-    forwardImage: ImageView,
-    forwardText:TextView
+    forwardImages: RecyclerView,
+    forwardText: TextView,
 ) {
     forwardText.isVisible = false
-    forwardImage.isVisible = false
+    forwardImages.isVisible = false
     forwardDocumentContent.isVisible = true
     forwardMessageName.setPrintableText(
         PrintableText.StringResource(
@@ -956,9 +967,9 @@ private fun renderReply(
     replyDocumentContent: LinearLayout,
     replyMessageName: TextView,
     replyUserName: PrintableText,
-    replyImage: ImageView
+    replyImages: RecyclerView,
 ) {
-    replyImage.isVisible = false
+    replyImages.isVisible = false
     replyDocumentContent.isVisible = true
     replyMessageName.setPrintableText(
         PrintableText.StringResource(
@@ -966,6 +977,27 @@ private fun renderReply(
             getPrintableRawText(replyUserName)
         )
     )
+}
+
+private fun createImageAdapter(
+    imageRecyclerView: RecyclerView,
+    onImageClicked: (List<MetaInfo>, Int) -> Unit,
+    items: List<MetaInfo>,
+) {
+    Log.d("ConversationAdapter", "createImageAdapter items: $items")
+    val adapterImage = ConversationImageAdapter(
+        onImageClick = { imageMeta ->
+            onImageClicked(items, items.indexOf(imageMeta))
+        }
+    )
+    imageRecyclerView.adapter = adapterImage
+    val flexboxManager =
+        FlexboxLayoutManager(imageRecyclerView.context, FlexDirection.ROW, FlexWrap.WRAP)
+
+    imageRecyclerView.layoutManager = flexboxManager
+    imageRecyclerView.itemAnimator = null
+    imageRecyclerView.isNestedScrollingEnabled = false
+    adapterImage.items = items.createAdapterItems()
 }
 
 private fun createDocumentAdapter(

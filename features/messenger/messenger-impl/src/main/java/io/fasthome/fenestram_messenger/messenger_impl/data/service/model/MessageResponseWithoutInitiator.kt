@@ -27,5 +27,8 @@ class MessageResponseWithoutInitiator(
     val messageStatus: String,
 
     @SerialName("users_have_read")
-    val usersHaveRead: List<Long?>?
+    val usersHaveRead: List<Long?>?,
+
+    @SerialName("content")
+    val content: List<ContentResponse>
 )

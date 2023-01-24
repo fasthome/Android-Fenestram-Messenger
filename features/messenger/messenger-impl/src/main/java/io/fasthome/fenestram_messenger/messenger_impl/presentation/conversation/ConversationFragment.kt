@@ -88,8 +88,8 @@ class ConversationFragment :
         viewBinderHelper = ViewBinderHelper(),
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
-        }, onImageClicked = {
-            vm.onImageClicked(conversationViewItem = it)
+        }, onImagesClicked = { metaInfo, currPos ->
+            vm.onImagesClicked(metaInfo,currPos)
         }, onUserTagClicked = { userTag ->
             vm.onUserTagClicked(userTag)
         }, onDownloadDocument = { meta, progressListener ->
@@ -576,7 +576,7 @@ class ConversationFragment :
                     is ConversationImageItem -> {
                         replyImage.isVisible = true
                         tvEditMessageTitle.isVisible = false
-                        replyImage.loadRounded(message.content, radius = 8)
+                        replyImage.loadRounded(message.metaInfo.firstOrNull()?.url, radius = 8)
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
                         tvTextToEdit.text =
                             getString(

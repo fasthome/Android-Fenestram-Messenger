@@ -34,7 +34,7 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                             messageStatus = lastMessage.messageStatus,
                             usersHaveRead = lastMessage.usersHaveRead,
                             forwardedMessages = null,
-                            content = null
+                            content = lastMessage[0].content
                         )
                     }),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
@@ -79,7 +79,7 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                 replyMessage = if (replyMessage != null) responseToMessage(replyMessage) else null,
                 usersHaveRead = usersHaveRead,
                 forwardedMessages = forwardedMessages.map { responseToMessage(it) },
-                content = content
+                content = content ?: emptyList()
             )
         }
     }

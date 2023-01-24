@@ -75,6 +75,12 @@ interface MessengerRepo {
         guid: List<String>
     ): CallResult<SendMessageResponse>
 
+    suspend fun uploadImages(
+        chatId: Long,
+        imagesBytes: List<ByteArray>,
+        filename: List<String>,
+    ): CallResult<SendMessageResponse>
+
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)
         fun onNewMessageAction(messageAction: MessageActionResponse)

@@ -42,7 +42,8 @@
             android:paddingBottom="5dp"
             app:barrierMargin="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="@dimen/image_recycler_ll_max_width">
 
             <TextView
                 android:id="@+id/reply_message_name"
@@ -80,15 +81,20 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/reply_image"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_images"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="300dp"
-                android:minWidth="200dp"
-                android:minHeight="175dp"
-                android:scaleType="fitCenter"
-                tools:visibility="gone" />
+                android:layout_marginEnd="10dp"
+                android:padding="3dp"
+                app:barrierMargin="5dp"
+                app:layout_constraintHeight_min="@dimen/image_min_size"
+                app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
+                app:layout_constraintWidth_min="@dimen/image_min_size"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:itemCount="1"
+                tools:listitem="@layout/holder_image" />
+
 
             <TextView
                 android:id="@+id/message_content"

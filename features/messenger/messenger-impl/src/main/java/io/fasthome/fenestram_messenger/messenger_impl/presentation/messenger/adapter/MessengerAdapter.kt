@@ -91,8 +91,12 @@ fun createMessengerAdapter(
                 groupPicture.isVisible = item.isGroup
                 when (item.lastMessage) {
                     is LastMessage.Image -> {
-                        lastMessage.setText(R.string.messenger_image)
-                        image.loadRounded(profileImageUrlConverter.convert(item.lastMessage.imageUrl))
+                        image.loadRounded(profileImageUrlConverter.convert(item.lastMessage.imageUrl.firstOrNull()?.url))
+                        if(item.lastMessage.imageUrl.isNotEmpty()) {
+                            lastMessage.text = image.context.resources.getQuantityString(R.plurals.image_quantity, item.lastMessage.imageUrl.size,item.lastMessage.imageUrl.size)
+                        } else {
+                            lastMessage.setText(R.string.messenger_image)
+                        }
                         image.isVisible = true
                         statusDots.setPrintableText(PrintableText.EMPTY)
                     }

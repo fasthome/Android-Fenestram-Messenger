@@ -14,13 +14,15 @@ class ImageViewerViewModel(
     override fun createInitialState(): ImageViewerState {
         val fromConversationParams =
             params as? ImageViewerContract.ImageViewerParams.MessageImageParams
+        val someImagesConversationParams =
+            params as? ImageViewerContract.ImageViewerParams.ImagesParams
         return ImageViewerState(
-            imageUrl = params.imageUrl,
-            imageBitmap = params.imageBitmap,
             messageId = fromConversationParams?.messageId,
             canDelete = fromConversationParams?.canDelete ?: false,
             canForward = fromConversationParams != null,
-            username = fromConversationParams?.username
+            username = fromConversationParams?.username,
+            currPhotoPosition = someImagesConversationParams?.currentImagePosition,
+            imagesViewerModel = params.imageViewerModel
         )
     }
 

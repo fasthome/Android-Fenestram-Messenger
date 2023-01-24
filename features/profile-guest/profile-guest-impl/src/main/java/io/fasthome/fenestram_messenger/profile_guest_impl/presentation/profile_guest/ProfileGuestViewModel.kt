@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.imageViewer.ImageViewerContract
+import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.component.pick_file.ProfileImageUtil
@@ -206,10 +207,12 @@ class ProfileGuestViewModel(
                     )
                 }
             } else if (currentViewState.editMode && !params.isGroup) {
-                val readPermissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
-                val writePermissionGranted = permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
+                val readPermissionGranted =
+                    permissionInterface.request(Manifest.permission.READ_CONTACTS)
+                val writePermissionGranted =
+                    permissionInterface.request(Manifest.permission.WRITE_CONTACTS)
                 val currentName = getPrintableRawText(currentViewState.userName)
-                
+
                 if (newName != currentName && writePermissionGranted && readPermissionGranted) {
                     contactsFeature.updateContactName(params.userPhone, currentName, newName)
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
@@ -244,8 +247,8 @@ class ProfileGuestViewModel(
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
                 imageViewerLauncher.launch(
                     ImageViewerContract.ImageViewerParams.ImageParams(
-                        currentViewState.userAvatar,
-                        currentViewState.avatarBitmap
+                        ImageViewerModel(currentViewState.userAvatar,
+                            currentViewState.avatarBitmap)
                     )
                 )
             }
