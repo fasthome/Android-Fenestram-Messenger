@@ -95,7 +95,7 @@ object ChatDbMapper {
                 size = contentDb.size,
                 url = contentDb.url
             )
-        }
+        } ?: emptyList()
     )
 
     fun mapUserToTable(user: User?) = if (user == null) null else UserDb(
