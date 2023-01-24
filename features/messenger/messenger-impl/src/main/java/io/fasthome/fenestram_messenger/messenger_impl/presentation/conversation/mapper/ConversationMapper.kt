@@ -619,6 +619,7 @@ fun createImageMessage(loadableContent: List<Content>, userName: String?) =
         messageType = "images",
         replyMessage = null,
         userName = PrintableText.Raw(userName ?: ""),
+        metaInfo = loadableContent.map { MetaInfo() }
     )
 
 fun createDocumentMessage(document: List<String>, file: List<File>) = ConversationViewItem.Self.Document(

@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mo
 
 import androidx.annotation.DrawableRes
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -25,7 +26,7 @@ sealed class LastMessage {
 
     data class Text(val text: PrintableText) : LastMessage()
     data class UserStatus(val status: PrintableText) : LastMessage()
-    data class Image(val imageUrl: String) : LastMessage()
+    data class Image(val imageUrl: List<MetaInfo>) : LastMessage()
     object Document : LastMessage()
 
 }

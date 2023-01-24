@@ -213,7 +213,7 @@ class ZoomableImageView : AppCompatImageView, View.OnTouchListener,
             }
             MotionEvent.ACTION_MOVE -> if (mode == DRAG) {
                 Log.d("ZoomableImageView", "canSwipe: ${saveScale == SWIPE_SCALE && canSwipe}, event Y: ${event.rawY}, dY: $dY")
-                if (saveScale == SWIPE_SCALE && canSwipe && event.rawY !in (dY*-1)-10..(dY*-1)+10) {
+                if (saveScale == SWIPE_SCALE && canSwipe && event.rawY !in (dY*-1)-SWIPE_SENSITIVITY..(dY*-1)+SWIPE_SENSITIVITY) {
                     view.animate()
                         .y(event.rawY + dY)
                         .setDuration(0)

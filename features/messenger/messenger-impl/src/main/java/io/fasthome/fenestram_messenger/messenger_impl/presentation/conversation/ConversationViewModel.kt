@@ -450,7 +450,7 @@ class ConversationViewModel(
         var byteArrays: List<ByteArray> = emptyList()
         var filename: List<String> = emptyList()
 
-            conversationViewItem.loadableContent?.map { content ->
+        conversationViewItem.loadableContent?.map { content ->
             when (content) {
                 is Content.FileContent -> {
                     byteArrays = byteArrays + content.file.readBytes()
@@ -478,8 +478,9 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(metaInfo = result.data.message?.content?.map { MetaInfo(it) }
-                        ?: return)
+                    tempMessage.copy(metaInfo = result.data.message?.content?.map {
+                        MetaInfo(name = PrintableText.Raw(it.name), extension = it.extension, size = it.size, url = storageUrlConverter.convert(it.url))
+                    } ?: return)
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
@@ -609,28 +610,16 @@ class ConversationViewModel(
                 is CallResult.Success -> {
                     tempMessage.userName =
                         PrintableText.Raw(sendMessageResponse.data.userName ?: "")
-                    when (messageType) {
-                        MessageType.Text -> {
-                            updateStatus(
-                                tempMessage,
-                                SentStatus.Received,
-                                id = sendMessageResponse.data.id
-                            )
-                        }
-                        MessageType.Image -> {
-                            updateStatus(
-                                tempMessage,
-                                SentStatus.Received,
-                                storageUrlConverter.convert(text),
-                                sendMessageResponse.data.id
-                            )
-                        }
+                    if (messageType == MessageType.Text) {
+                        updateStatus(
+                            tempMessage,
+                            SentStatus.Received,
+                            id = sendMessageResponse.data.id
+                        )
                     }
-
                 }
             }
         }
-
         sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
@@ -1087,9 +1076,9 @@ class ConversationViewModel(
 
     fun onImagesClicked(
         meta: List<MetaInfo>,
-        currImagePosition: Int
+        currImagePosition: Int,
     ) {
-        if(meta.isEmpty() || chatId == null) return
+        if (meta.isEmpty() || chatId == null) return
         val imageParams = ImageViewerContract.ImageViewerParams.ImagesParams(
             imageViewerModel = meta.map { ImageViewerModel(it.url, null) },
             currentImagePosition = currImagePosition
@@ -1104,12 +1093,12 @@ class ConversationViewModel(
     ) {
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                ImageViewerModel(url,bitmap)
+                ImageViewerModel(url, bitmap)
             )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
-                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String,bitmap)),
+                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String, bitmap)),
                     messageId = mess.id,
                     canDelete = conversationViewItem.canDelete(),
                     username = conversationViewItem.userName

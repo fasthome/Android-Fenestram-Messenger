@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -983,6 +984,7 @@ private fun createImageAdapter(
     onImageClicked: (List<MetaInfo>, Int) -> Unit,
     items: List<MetaInfo>,
 ) {
+    Log.d("ConversationAdapter", "createImageAdapter items: $items")
     val adapterImage = ConversationImageAdapter(
         onImageClick = { imageMeta ->
             onImageClicked(items, items.indexOf(imageMeta))
