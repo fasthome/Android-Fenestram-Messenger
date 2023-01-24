@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerServ
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.storage.ChatStorage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
@@ -56,7 +57,11 @@ object MessengerModule {
                 fileStorageFactory = get(named(StorageQualifier.Simple)),
             )
         }
-
+        single {
+            ChatStorage(
+                databaseFactory = get(named(StorageQualifier.Simple)),
+            )
+        }
         factory { MessengerSocket(get<Environment>().endpoints.baseUrl) }
         singleAuthorizedService(::MessengerService)
     }

@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlin-kapt`
     `kotlinx-serialization`
 }
 
@@ -28,6 +29,7 @@ dependencies {
     implementation(Deps.socketIO) {
         exclude(group = "org.json", module = "json")
     }
+    kapt(Deps.Room.compiler)
 
 
 }

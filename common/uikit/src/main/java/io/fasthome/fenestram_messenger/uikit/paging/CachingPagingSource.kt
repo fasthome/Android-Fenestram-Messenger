@@ -24,21 +24,17 @@ fun <T : Any> cachingPagingSource(
     return SuspendPagingSource(
         maxPageSize = maxPageSize,
         loadPage = { pageNumber: Int, pageSize: Int ->
-            val isInitialPage = pageNumber == 0
-
             suspend fun fromService() = callForResult {
                 loadPageService(pageNumber, pageSize)
                     .also {
-                        if (isInitialPage) {
-                            removeFromStorage()
-                        }
+                        removeFromStorage()
                         savePageStorage(it)
                     }
             }
 
             suspend fun fromStorage(): CallResult<List<T>> {
                 val cached = loadPageStorage(pageNumber, pageSize)
-                return if (isInitialPage && cached.isEmpty()) {
+                return if (cached.isEmpty()) {
                     CallResult.Error(EmptyCacheException())
                 } else {
                     CallResult.Success(cached)

@@ -3,8 +3,8 @@ package io.fasthome.fenestram_messenger.uikit.paging
 import androidx.paging.*
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrNull
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PagingDataViewModelHelper {
     private var source: TotalPagingSource<*, *>? = null

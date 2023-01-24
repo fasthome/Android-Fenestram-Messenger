@@ -7,11 +7,13 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerServ
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SendMessageResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
+import io.fasthome.fenestram_messenger.messenger_impl.data.storage.ChatStorage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
+import io.fasthome.fenestram_messenger.uikit.paging.totalCachingPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
@@ -20,11 +22,12 @@ import io.fasthome.network.tokens.AccessToken
 
 class MessengerRepoImpl(
     private val messengerService: MessengerService,
+    private val chatStorage: ChatStorage,
     private val socket: MessengerSocket,
-    private val storageUrlConverter: StorageUrlConverter
+    private val storageUrlConverter: StorageUrlConverter,
 ) : MessengerRepo {
 
-    private var currrentList:  ListWithTotal<Chat> = ListWithTotal(listOf(), 0)
+    private var currrentList: ListWithTotal<Chat> = ListWithTotal(listOf(), 0)
 
     override suspend fun sendMessage(
         id: Long,
@@ -37,9 +40,8 @@ class MessengerRepoImpl(
     }
 
     override suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?> = callForResult {
-        messengerService.forwardMessage(chatId,messageId)
+        messengerService.forwardMessage(chatId, messageId)
     }
-
 
 
     override suspend fun replyMessage(
@@ -57,20 +59,37 @@ class MessengerRepoImpl(
     }
 
     override fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> {
-        return if (!fromSocket)
-            totalPagingSource(
-            maxPageSize = PAGE_SIZE,
-            loadPageService = { pageNumber, pageSize ->
-                currrentList = messengerService.getChats(
-                    query = query,
-                    page = pageNumber,
-                    limit = pageSize
-                )
-                currrentList
-            }
-        )
-        else
+        return if (!fromSocket) {
+            totalCachingPagingSource(
+                maxPageSize = PAGE_SIZE,
+                loadPageService = { pageNumber, pageSize ->
+                    currrentList =
+                        messengerService.getChats(
+                            query = query,
+                            page = pageNumber,
+                            limit = pageSize
+                        )
+                    currrentList
+                },
+                loadPageStorage = { pageNumber, pageSize ->
+                    chatStorage.getChats()
+                },
+                loadTotalCountStorage = { -1 },
+                removeFromStorage = { chatStorage.deleteChats() },
+                savePageStorage = {
+                    chatStorage.saveChats(it)
+                },
+            )
+        }else{
             totalPagingSource(PAGE_SIZE) { _, _ -> currrentList }
+        }
+    }
+
+    override fun getCachedPages(): TotalPagingSource<Int, Chat> {
+        return totalPagingSource(PAGE_SIZE, loadPageService = { pageNumber, pageSize ->
+            val items = chatStorage.getChats()
+            ListWithTotal(items, pageSize)
+        })
     }
 
     override suspend fun postChats(

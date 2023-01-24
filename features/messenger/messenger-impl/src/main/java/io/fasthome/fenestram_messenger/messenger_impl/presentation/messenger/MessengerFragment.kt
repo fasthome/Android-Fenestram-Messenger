@@ -26,17 +26,11 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 
 class MessengerFragment :
@@ -91,13 +85,6 @@ class MessengerFragment :
                 return true
             }
         })
-        messageAdapter.addOnPagesUpdatedListener {
-            if (messageAdapter.itemCount == 0) {
-                toggleEmptyView()
-            }
-
-            if (lastScrollPosition == 0) binding.chatList.smoothScrollToPosition(0)
-        }
         val linearLayoutManager =
             LinearLayoutManager(requireContext())
         chatList.layoutManager = linearLayoutManager
@@ -121,26 +108,20 @@ class MessengerFragment :
             vm.exitToConversation()
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            vm.fetchChats()
-                .distinctUntilChanged()
-                .collectWhenStarted(this@MessengerFragment) {
-                    messageAdapter.submitData(it)
-                }
+        messageAdapter.addOnPagesUpdatedListener {
+            toggleEmptyView()
 
-            messageAdapter.loadStateFlow
-                .collectWhenStarted(this@MessengerFragment) { loadStates ->
-                    if (loadStates.refresh is LoadState.Loading) {
-                        binding.chatLoadProgress.alpha = 1f
-                    } else {
-                        binding.chatLoadProgress.alpha = 0f
-                        toggleEmptyView()
-                    }
-                }
+            if (lastScrollPosition == 0) binding.chatList.smoothScrollToPosition(0)
         }
+        subscribeChats()
 
         fabActionListener = {
             vm.onCreateChatClicked()
+        }
+
+        swipeRefresh.setOnRefreshListener {
+            subscribeChats()
+            swipeRefresh.isRefreshing = false
         }
     }
 
@@ -205,6 +186,22 @@ class MessengerFragment :
         vm.unsubscribeMessages()
     }
 
+    private fun subscribeChats() {
+        vm.fetchChats()
+            .distinctUntilChanged()
+            .collectWhenStarted(this@MessengerFragment) {
+                subscribeLoader()
+                messageAdapter.submitData(it)
+            }
+    }
+
+    private fun subscribeLoader() {
+        messageAdapter.loadStateFlow
+            .onEach { loadStates ->
+                binding.chatProgress.alpha = if (loadStates.refresh is LoadState.Loading) 1.0f else 0.0f
+            }.launchIn(this.lifecycleScope)
+    }
+
     private fun toggleToolbar(visible: Boolean, @StringRes text: Int? = null) {
         with(binding) {
             toolbar.isVisible = visible
@@ -224,11 +221,8 @@ class MessengerFragment :
     }
 
     private fun toggleEmptyView() = with(binding) {
-        if (llEmptyView.alpha == 1f && messageAdapter.itemCount != 0) {
-            llEmptyView.alpha = 0f
-        } else if (llEmptyView.alpha == 0f && messageAdapter.itemCount == 0) {
-            llEmptyView.alpha = 1f
-        }
+        emptyImage.isVisible = messageAdapter.itemCount == 0
+        emptyText.isVisible = messageAdapter.itemCount == 0
     }
 
 }

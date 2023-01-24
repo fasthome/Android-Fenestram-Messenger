@@ -51,24 +51,30 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chat_list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
-        android:clipToPadding="false"
-        android:paddingBottom="80dp"
+        app:layout_constraintTop_toBottomOf="@+id/chats_sv"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chats_sv"
+        android:layout_marginTop="16dp"
         app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/messanger_chat_item" />
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:clipToPadding="false"
+            android:paddingBottom="80dp"
+            tools:listitem="@layout/messanger_chat_item" />
 
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <TextView
         android:id="@+id/app_name_header"
         style="@style/Text.White.Semibold.28sp"
@@ -82,13 +88,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/chat_load_progress"
+        android:id="@+id/chat_progress"
         android:layout_width="20dp"
         android:layout_height="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="24dp"
         android:alpha="0"
-        android:layout_margin="24dp"/>
+        android:contentDescription="Прогресс загрузки чатов"
+        tools:ignore="HardcodedText" />
 
 
     <LinearLayout
@@ -100,24 +108,27 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chat_list"
-        android:alpha="0"
+        app:layout_constraintTop_toTopOf="@+id/swipe_refresh"
         app:layout_constraintVertical_bias="0.25">
 
         <ImageView
+            android:id="@+id/empty_image"
             android:layout_width="280dp"
             android:layout_height="280dp"
             android:background="@drawable/image_general_chat_empty"
-            android:contentDescription="@string/messenger_empty_view" />
+            android:contentDescription="@string/messenger_empty_view"
+            android:visibility="gone"/>
 
         <TextView
+            android:id="@+id/empty_text"
             style="@style/EmptyViewText"
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="22dp"
-            android:text="@string/messenger_empty_view" />
+            android:text="@string/messenger_empty_view"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
