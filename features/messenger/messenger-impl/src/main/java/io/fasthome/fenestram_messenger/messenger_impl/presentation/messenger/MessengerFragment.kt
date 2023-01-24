@@ -12,7 +12,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,16 +25,11 @@ import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBindin
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.collectLatestWhenStarted
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -224,10 +218,12 @@ class MessengerFragment :
     }
 
     private fun toggleEmptyView() = with(binding) {
-        if (llEmptyView.alpha == 1f && messageAdapter.itemCount != 0) {
-            llEmptyView.alpha = 0f
-        } else if (llEmptyView.alpha == 0f && messageAdapter.itemCount == 0) {
-            llEmptyView.alpha = 1f
+        CoroutineScope(Dispatchers.Main).launch {
+            if (llEmptyView.alpha == 1f && messageAdapter.itemCount != 0) {
+                llEmptyView.alpha = 0f
+            } else if (llEmptyView.alpha == 0f && messageAdapter.itemCount == 0) {
+                llEmptyView.alpha = 1f
+            }
         }
     }
 
