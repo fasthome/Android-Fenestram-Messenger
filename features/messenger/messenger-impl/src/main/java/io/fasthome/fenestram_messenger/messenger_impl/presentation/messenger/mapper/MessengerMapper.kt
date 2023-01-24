@@ -39,7 +39,7 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
                     LastMessage.Text(PrintableText.Raw(message.text))
                 }
                 MESSAGE_TYPE_IMAGE -> {
-                    LastMessage.Image(imageUrl = message.content?.map { MetaInfo(it) }?: emptyList())
+                    LastMessage.Image(imageUrl = message.content.map { MetaInfo(it) })
                 }
                 MESSAGE_TYPE_DOCUMENT -> {
                     LastMessage.Document

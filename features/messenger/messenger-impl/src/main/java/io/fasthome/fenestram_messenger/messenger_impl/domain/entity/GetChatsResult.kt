@@ -33,7 +33,7 @@ data class Message(
     val replyMessage: Message?,
     val usersHaveRead: List<Long?>?,
     val forwardedMessages: List<Message>?,
-    val content: List<ContentResponse>?
+    val content: List<ContentResponse>
 ) : Parcelable {
     companion object {
         fun onlyDate(date: ZonedDateTime) = Message(
@@ -50,7 +50,7 @@ data class Message(
             replyMessage = null,
             usersHaveRead = null,
             forwardedMessages = emptyList(),
-            content = null
+            content = emptyList()
         )
     }
 }

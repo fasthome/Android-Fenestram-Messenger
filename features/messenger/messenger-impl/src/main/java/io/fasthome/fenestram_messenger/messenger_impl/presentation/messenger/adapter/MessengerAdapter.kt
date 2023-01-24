@@ -93,7 +93,7 @@ fun createMessengerAdapter(
                     is LastMessage.Image -> {
                         image.loadRounded(profileImageUrlConverter.convert(item.lastMessage.imageUrl.firstOrNull()?.url))
                         if(item.lastMessage.imageUrl.isNotEmpty()) {
-                            lastMessage.text = image.context.resources.getQuantityText(R.plurals.image_quantity, item.lastMessage.imageUrl.size)
+                            lastMessage.text = image.context.resources.getQuantityString(R.plurals.image_quantity, item.lastMessage.imageUrl.size,item.lastMessage.imageUrl.size)
                         } else {
                             lastMessage.setText(R.string.messenger_image)
                         }
