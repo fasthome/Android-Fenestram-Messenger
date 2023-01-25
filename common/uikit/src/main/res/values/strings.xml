@@ -27,6 +27,7 @@
     <string name="common_save">Сохранить</string>
     <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
     <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
+    <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
     <string name="common_allow_permission">Разрешить</string>
 
 </resources>

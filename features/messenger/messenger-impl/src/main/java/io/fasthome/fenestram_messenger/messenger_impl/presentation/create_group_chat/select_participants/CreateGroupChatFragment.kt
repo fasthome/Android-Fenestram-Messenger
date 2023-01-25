@@ -9,6 +9,7 @@ import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import io.fasthome.component.permission.PermissionComponentContract
+import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
 import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateGroupChatBinding
@@ -24,6 +25,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.renderLoadingState
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class CreateGroupChatFragment :
     BaseFragment<CreateGroupChatState, CreateGroupChatEvent>(R.layout.fragment_create_group_chat) {
@@ -82,6 +84,7 @@ class CreateGroupChatFragment :
     @SuppressLint("NotifyDataSetChanged")
     override fun renderState(state: CreateGroupChatState) = with(binding) {
         noPermissionContainer.isVisible = false
+        emptyContainer.isVisible = false
 
         renderLoadingState(
             loadingState = state.loadingState,
@@ -126,6 +129,10 @@ class CreateGroupChatFragment :
         when (throwable) {
             is PermissionDeniedException -> {
                 noPermissionContainer.isVisible = true
+            }
+            is EmptySearchException -> {
+                emptyContainer.isVisible = true
+                contactsEmptyText.setPrintableText(errorInfo.description)
             }
             else -> {
                 vm.onOtherError(throwable)

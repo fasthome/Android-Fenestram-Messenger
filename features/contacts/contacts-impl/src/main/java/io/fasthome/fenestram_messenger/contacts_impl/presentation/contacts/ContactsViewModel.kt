@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.Co
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.mapper.ContactsMapper
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
 import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
+import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
 import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -19,10 +20,8 @@ import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.uikit.R
+import io.fasthome.fenestram_messenger.util.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -121,8 +120,11 @@ class ContactsViewModel(
             updateState { state ->
                 state.copy(
                     loadingState = LoadingState.Error(
-                        error = ErrorInfo.createEmpty(),
-                        throwable = EmptyResponseException()
+                        error = ErrorInfo(
+                            PrintableText.EMPTY,
+                            PrintableText.StringResource(R.string.contacts_empty_view, query)
+                        ),
+                        throwable = EmptySearchException()
                     )
                 )
             }
