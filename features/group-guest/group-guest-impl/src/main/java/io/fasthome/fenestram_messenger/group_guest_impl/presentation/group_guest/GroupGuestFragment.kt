@@ -9,6 +9,8 @@ import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.fasthome.fenestram_messenger.group_guest_impl.R
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.FragmentAddUserBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest.adapter.ContactsAdapter
@@ -17,7 +19,6 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
 
 class GroupGuestFragment :
     BaseFragment<GroupGuestState, GroupGuestEvent>(R.layout.fragment_add_user) {
@@ -72,8 +73,23 @@ class GroupGuestFragment :
                 )
                 Toast.makeText(requireContext(), "Ссылка скопирована", Toast.LENGTH_SHORT).show()
             }
+            is GroupGuestEvent.Loading -> {
+                binding.addButton.loading(event.isLoading)
+            }
         }
     }
 
+    private fun FloatingActionButton.loading(isLoad: Boolean?) {
+        if (isLoad == null) {
+            return
+        }
+        binding.progress.isVisible = isLoad
+        this.isEnabled = !isLoad
+        if (isLoad) {
+            this.setImageDrawable(null)
+        } else {
+            this.setImageResource(R.drawable.ic_add_button)
+        }
+    }
 
 }

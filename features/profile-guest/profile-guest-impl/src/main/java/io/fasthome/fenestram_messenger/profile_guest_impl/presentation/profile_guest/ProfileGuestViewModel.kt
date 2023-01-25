@@ -176,6 +176,7 @@ class ProfileGuestViewModel(
 
     fun onEditClicked(newName: String) {
         viewModelScope.launch {
+            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
             if (newName.isEmpty()) {
                 return@launch
             }
@@ -234,6 +235,7 @@ class ProfileGuestViewModel(
                         profileGuestStatus = EditTextStatus.Editable
                     )
                 }
+            sendEvent(ProfileGuestEvent.Loading(isLoading = false))
         }
     }
 

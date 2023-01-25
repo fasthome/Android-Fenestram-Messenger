@@ -31,7 +31,9 @@ class ActionHandler(
             }
         }
         "image/jpeg",
-        "image/png" -> {
+        "image/jpg",
+        "image/png",
+        "image/*" -> {
             val items = intent.clipData
             if (items?.itemCount != null && items.itemCount > 0) {
                 val extraImage = items.getItemAt(0)

@@ -84,6 +84,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_guest_edit"
+                app:layout_constraintEnd_toEndOf="@+id/profile_guest_edit"
+                app:layout_constraintStart_toStartOf="@+id/profile_guest_edit"
+                app:layout_constraintTop_toTopOf="@+id/profile_guest_edit" />
+
             <TextView
                 android:id="@+id/profile_guest_phone"
                 style="@style/Text.Blue"
@@ -147,9 +157,9 @@
             <include
                 android:id="@+id/recent_files_header"
                 layout="@layout/recent_files_header"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/participants_container" />
@@ -157,11 +167,11 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recent_files_list"
                 android:layout_width="match_parent"
-                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:maxHeight="120dp"
                 android:nestedScrollingEnabled="false"
                 android:paddingTop="10dp"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -172,8 +182,8 @@
                 android:id="@+id/recent_images_header"
                 layout="@layout/recent_images_header"
                 android:layout_width="match_parent"
-                android:visibility="gone"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recent_files_list" />
@@ -183,9 +193,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxHeight="120dp"
-                android:visibility="gone"
                 android:paddingStart="25dp"
                 android:paddingEnd="25dp"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

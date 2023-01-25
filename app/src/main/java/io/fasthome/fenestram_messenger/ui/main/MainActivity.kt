@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.ui.main
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.terrakok.cicerone.NavigatorHolder
@@ -128,6 +129,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_SEND) {
+            //TODO логи не убирать пока не закончатся тесты шаринга
+            Log.d("INTENTTEST", "handleIntent: extras size ${intent.extras?.size()}")
+            Log.d("INTENTTEST", "handleIntent: clip count ${intent.clipData?.itemCount}")
+            Log.d("INTENTTEST", "handleIntent: type ${intent.type}")
             val actionResult = actionHandler.handle(intent)
             if (actionResult != null) {
                 vm.onAppStarted(openMode = MainActivityViewModel.OpenMode.FromAction, actionResult)

@@ -68,6 +68,7 @@ class GroupGuestViewModel(
     }
 
     fun onAddClick() {
+        sendEvent(GroupGuestEvent.Loading(isLoading = true))
         val usersId = currentViewState.addedContacts.mapNotNull { if (it is AddContactViewItem.AddContact) it.userId else null }
 
         viewModelScope.launch {
@@ -83,6 +84,8 @@ class GroupGuestViewModel(
                 )
             else
                 exitWithResult(GroupGuestContract.createResult(GroupGuestContract.Result.Canceled))
+
+            sendEvent(GroupGuestEvent.Loading(isLoading = false))
         }
     }
 
