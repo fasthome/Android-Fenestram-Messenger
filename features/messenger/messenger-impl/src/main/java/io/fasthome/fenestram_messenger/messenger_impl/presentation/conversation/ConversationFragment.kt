@@ -472,6 +472,9 @@ class ConversationFragment :
                 binding.userStatusView.setPrintableText(event.userStatus)
                 binding.userStatusDots.setPrintableText(event.userStatusDots)
             }
+            is ConversationEvent.ToggleToolbarClickable -> {
+                binding.profileToolBar.isEnabled = event.clickable
+            }
         }
     }
 

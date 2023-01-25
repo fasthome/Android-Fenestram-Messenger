@@ -27,4 +27,6 @@ sealed interface ConversationEvent {
         ConversationEvent
 
     class DotsEvent(val userStatus : PrintableText, val userStatusDots : PrintableText) : ConversationEvent
+
+    class ToggleToolbarClickable(val clickable : Boolean) : ConversationEvent
 }

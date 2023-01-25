@@ -82,6 +82,7 @@ class ConversationViewModel(
     private var selfUserId: Long? = null
     private var loadItemsJob by switchJob()
     private var downloadFileJob by switchJob()
+    private var profileOpenJob by switchJob()
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
 
@@ -419,8 +420,10 @@ class ConversationViewModel(
 
             val images = attachedFiles.filterIsInstance<AttachedFile.Image>()
             if (images.isNotEmpty()) {
-                val imageMessage = createImageMessage(images.map { it.content },
-                    getPrintableRawText(currentViewState.userName))
+                val imageMessage = createImageMessage(
+                    images.map { it.content },
+                    getPrintableRawText(currentViewState.userName)
+                )
                 tempFileMessages = tempFileMessages + imageMessage
                 sendImages(imageMessage)
             }
@@ -479,7 +482,12 @@ class ConversationViewModel(
             is CallResult.Success -> {
                 tempMessage =
                     tempMessage.copy(metaInfo = result.data.message?.content?.map {
-                        MetaInfo(name = PrintableText.Raw(it.name), extension = it.extension, size = it.size, url = storageUrlConverter.convert(it.url))
+                        MetaInfo(
+                            name = PrintableText.Raw(it.name),
+                            extension = it.extension,
+                            size = it.size,
+                            url = storageUrlConverter.convert(it.url)
+                        )
                     } ?: return)
                 updateStatus(
                     tempMessage,
@@ -713,7 +721,8 @@ class ConversationViewModel(
     }
 
     fun onUserClicked(editMode: Boolean) {
-        viewModelScope.launch {
+        sendEvent(ConversationEvent.ToggleToolbarClickable(clickable = false))
+        profileOpenJob = viewModelScope.launch {
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
@@ -733,6 +742,7 @@ class ConversationViewModel(
                         )
                     )
                 }
+            sendEvent(ConversationEvent.ToggleToolbarClickable(clickable = true))
         }
     }
 
