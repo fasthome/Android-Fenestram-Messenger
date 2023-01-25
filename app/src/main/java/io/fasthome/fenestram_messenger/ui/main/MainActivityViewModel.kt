@@ -130,6 +130,7 @@ class MainActivityViewModel(
                                 birth = birth,
                                 email = email,
                                 avatar = avatar,
+                                isEdit = false
                             )
                         )
                     else {

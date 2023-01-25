@@ -1,11 +1,11 @@
 package io.fasthome.component.imageViewer
 
-import android.graphics.Bitmap
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ImageViewerModel(
     val imageUrl: String?,
-    val imageBitmap: Bitmap?,
+    val imageContent: Content?,
 ) : Parcelable

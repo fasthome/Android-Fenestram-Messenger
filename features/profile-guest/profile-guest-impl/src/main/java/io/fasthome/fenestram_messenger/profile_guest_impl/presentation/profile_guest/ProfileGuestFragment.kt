@@ -14,6 +14,7 @@ import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.setContent
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BottomSheetDismissListener
@@ -215,10 +216,7 @@ class ProfileGuestFragment :
             }
 
             when {
-                state.avatarBitmap != null -> profileGuestAvatar.loadCircle(
-                    bitmap = state.avatarBitmap,
-                    placeholderRes = R.drawable.ic_avatar_placeholder
-                )
+                state.avatarContent != null -> profileGuestAvatar.setContent(state.avatarContent)
                 state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
                     url = state.userAvatar,
                     placeholderRes = R.drawable.ic_avatar_placeholder

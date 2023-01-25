@@ -22,6 +22,7 @@ import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.uikit.R
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
@@ -44,9 +45,11 @@ class ContactsViewModel(
     private val conversationLauncher =
         registerScreen(messengerFeature.conversationNavigationContract) { }
 
+    private var contactsJob by switchJob()
+
     @SuppressLint("MissingPermission")
     fun requestPermissionAndLoadContacts() {
-        viewModelScope.launch {
+        contactsJob = viewModelScope.launch {
             updateState { state ->
                 state.copy(loadingState = LoadingState.Loading)
             }

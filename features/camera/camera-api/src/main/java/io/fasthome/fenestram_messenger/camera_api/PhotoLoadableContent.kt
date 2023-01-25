@@ -1,6 +1,5 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
+package io.fasthome.fenestram_messenger.camera_api
 
-import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.android.ByteArrayWrapper
 import io.fasthome.fenestram_messenger.util.getOrNull
@@ -14,9 +13,9 @@ data class PhotoLoadableContent(
 ) : Content.LoadableContent, KoinComponent {
 
     override suspend fun load(): ByteArrayWrapper? {
-        val messengerInteractor = get<MessengerInteractor>()
+        val filesRepo = get<FilesRepo>()
 
-        val fileData = messengerInteractor.getFile(itemId).getOrNull()
+        val fileData = filesRepo.getFile(itemId).getOrNull()
 
         return fileData?.byteArrayWrapper
     }

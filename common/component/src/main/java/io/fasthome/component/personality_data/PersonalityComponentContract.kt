@@ -4,6 +4,7 @@
 package io.fasthome.component.personality_data
 
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import io.fasthome.fenestram_messenger.navigation.contract.ComponentFragmentContract
 import kotlinx.android.parcel.Parcelize
 

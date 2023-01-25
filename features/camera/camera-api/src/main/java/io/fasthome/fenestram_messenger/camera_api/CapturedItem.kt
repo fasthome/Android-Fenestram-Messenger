@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
+package io.fasthome.fenestram_messenger.camera_api
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
