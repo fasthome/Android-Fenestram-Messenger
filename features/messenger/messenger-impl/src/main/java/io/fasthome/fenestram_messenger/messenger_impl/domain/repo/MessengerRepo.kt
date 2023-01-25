@@ -87,5 +87,6 @@ interface MessengerRepo {
         fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse)
         fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage)
         fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse)
+        fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse)
     }
 }

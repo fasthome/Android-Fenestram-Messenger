@@ -42,10 +42,12 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
@@ -89,7 +91,7 @@ class ConversationFragment :
         onGroupProfileItemClicked = {
             vm.onGroupProfileClicked(it)
         }, onImagesClicked = { metaInfo, currPos ->
-            vm.onImagesClicked(metaInfo,currPos)
+            vm.onImagesClicked(metaInfo, currPos)
         }, onUserTagClicked = { userTag ->
             vm.onUserTagClicked(userTag)
         }, onDownloadDocument = { meta, progressListener ->
@@ -366,6 +368,13 @@ class ConversationFragment :
                 }
             }
             ConversationEvent.InvalidateList -> conversationAdapter.notifyDataSetChanged()
+            ConversationEvent.ShowChatDeletedDialog -> {
+                this.showMessage(Message.Dialog(
+                    messageText = PrintableText.StringResource(R.string.conversation_deleted_chat),
+                    actionText = PrintableText.StringResource(R.string.back_to_chats),
+                ),
+                    onCloseClick = { vm.exitToMessenger() })
+            }
             ConversationEvent.ShowSelectFromDialog ->
                 SelectFromConversation
                     .create(
@@ -414,7 +423,8 @@ class ConversationFragment :
                 tagsAdapter.items = event.users
                 when (vm.viewState.value.inputMessageMode) {
                     is InputMessageMode.Reply,
-                    is InputMessageMode.Edit -> {
+                    is InputMessageMode.Edit,
+                    -> {
                         binding.chatUserTagsContainer.setPadding(
                             0,
                             0,
@@ -527,7 +537,7 @@ class ConversationFragment :
 
     private fun renderStateForwardMode(
         isForwardMode: Boolean,
-        messageToForward: MessengerFeature.ForwardMessage? = null
+        messageToForward: MessengerFeature.ForwardMessage? = null,
     ) {
         with(binding) {
             switchInputPlate(isForwardMode)
@@ -555,7 +565,8 @@ class ConversationFragment :
                 when (message) {
                     is ConversationViewItem.Self.Forward,
                     is ConversationViewItem.Group.Forward,
-                    is ConversationViewItem.Receive.Forward -> {
+                    is ConversationViewItem.Receive.Forward,
+                    -> {
                         replyImage.isVisible = false
                         tvEditMessageTitle.isVisible = false
                         tvTextToEdit.setTextAppearance(R.style.Text_Blue_14sp)
