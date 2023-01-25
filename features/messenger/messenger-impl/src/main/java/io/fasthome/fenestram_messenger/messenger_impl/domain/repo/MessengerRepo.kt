@@ -81,11 +81,14 @@ interface MessengerRepo {
         filename: List<String>,
     ): CallResult<SendMessageResponse>
 
+    suspend fun clearChats()
+
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)
         fun onNewMessageAction(messageAction: MessageActionResponse)
         fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse)
         fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage)
         fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse)
+        fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse)
     }
 }

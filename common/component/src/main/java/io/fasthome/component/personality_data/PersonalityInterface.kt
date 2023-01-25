@@ -3,8 +3,7 @@
  */
 package io.fasthome.component.personality_data
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import kotlinx.coroutines.flow.Flow
 
 interface PersonalityInterface {
@@ -13,15 +12,7 @@ interface PersonalityInterface {
     fun getFields() : UserDetail
     fun setFields(userDetail: UserDetail)
 
-    fun runEdit(edit : Boolean)
+    fun invalidateState()
 }
-
-@Parcelize
-class UserDetail(
-    val name : String,
-    val mail : String,
-    val birthday : String,
-    val nickname : String
-) : Parcelable
 
 enum class FillState { Empty, Filled, Error }

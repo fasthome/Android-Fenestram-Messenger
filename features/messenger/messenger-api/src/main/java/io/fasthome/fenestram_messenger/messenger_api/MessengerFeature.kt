@@ -25,8 +25,6 @@ interface MessengerFeature {
         chatChangesCallback: (ChatChanges) -> Unit
     )
 
-    suspend fun clearFileStorage()
-
     suspend fun deleteChat(id: Long): CallResult<Unit>
 
     suspend fun sendMessage(
@@ -36,6 +34,8 @@ interface MessengerFeature {
         localId: String,
         authorId: Long,
     ): CallResult<SendMessageResult>
+
+    suspend fun clearChats()
 
     /**
      * @param chatSelectionMode если true, то экран мессенджера используется для выбора куда переслать сообщение

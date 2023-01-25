@@ -122,7 +122,8 @@ class DebugViewModel(
                 nickname = personalData?.nickname,
                 birth = personalData?.birth,
                 email = personalData?.email,
-                avatar = personalData?.avatar
+                avatar = personalData?.avatar,
+                isEdit = false
             )
         )
     }

@@ -105,7 +105,7 @@ internal fun FragmentManager.onFabUpdateIcon(@DrawableRes iconRes: Int? = null, 
         it is FabConsumer
     }
 
-fun Fragment.showMessage(message: Message, onCloseClick: () -> Unit = {}, onRetryClick: () -> Unit = {}): Unit =
+fun Fragment.showMessage(message: Message, onCloseClick: () -> Unit = {}, onRetryClick: (() -> Unit)? = null): Unit =
     when (message) {
         is Message.Alert -> {
             val tag = message.id

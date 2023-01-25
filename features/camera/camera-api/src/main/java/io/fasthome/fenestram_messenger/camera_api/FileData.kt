@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.domain.entity
+package io.fasthome.fenestram_messenger.camera_api
 
 import io.fasthome.fenestram_messenger.util.android.ByteArrayWrapper
 

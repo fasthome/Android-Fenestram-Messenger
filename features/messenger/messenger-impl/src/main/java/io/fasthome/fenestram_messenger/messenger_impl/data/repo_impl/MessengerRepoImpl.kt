@@ -141,7 +141,8 @@ class MessengerRepoImpl(
             messageActionCallback = { callback.onNewMessageAction(this) },
             messageStatusCallback = { callback.onNewMessageStatus(this) },
             messageDeletedCallback = { callback.onMessageDeleted(this) },
-            chatChangesCallback = { callback.onNewChatChanges(this) }
+            chatChangesCallback = { callback.onNewChatChanges(this) },
+            chatDeletedCallback = { callback.onDeletedChatCallback(this) }
         )
     }
 
@@ -197,7 +198,7 @@ class MessengerRepoImpl(
         messengerService.uploadImages(documentBytes, chatId,filename)
     }
 
-
+    override suspend fun clearChats() = chatStorage.deleteChats()
 
     override suspend fun getDocument(
         storagePath: String,

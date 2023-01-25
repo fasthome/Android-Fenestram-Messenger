@@ -8,12 +8,13 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 sealed interface ConversationEvent {
     object OpenMenuEvent : ConversationEvent
     class ShowDeleteChatDialog(val id: Long) : ConversationEvent
+    object ShowChatDeletedDialog : ConversationEvent
     class UpdateScrollPosition(val scrollPosition: Int) : ConversationEvent
     object InvalidateList : ConversationEvent
     object ShowSelectFromDialog : ConversationEvent
     class ShowUsersTags(val users: List<User>) : ConversationEvent
     class ShowPersonDetailDialog(val selectedPerson: PersonDetail) : ConversationEvent
-    class UpdateInputUserTag(val nickname: String): ConversationEvent
+    class UpdateInputUserTag(val nickname: String) : ConversationEvent
     class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) :
         ConversationEvent
 
@@ -26,9 +27,10 @@ sealed interface ConversationEvent {
     class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group) :
         ConversationEvent
 
-    class DotsEvent(val userStatus : PrintableText, val userStatusDots : PrintableText) : ConversationEvent
+    class DotsEvent(val userStatus: PrintableText, val userStatusDots: PrintableText) :
+        ConversationEvent
 
-    class ToggleToolbarClickable(val clickable : Boolean) : ConversationEvent
+    class ToggleToolbarClickable(val clickable: Boolean) : ConversationEvent
 
     class ExtraText(val text : String) : ConversationEvent
 }

@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.Manifest
-import android.graphics.Bitmap
 import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
@@ -12,10 +11,7 @@ import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.camera_api.CameraFeature
-import io.fasthome.fenestram_messenger.camera_api.CameraParams
-import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
-import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
+import io.fasthome.fenestram_messenger.camera_api.*
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
@@ -86,6 +82,7 @@ class ConversationViewModel(
     private var profileOpenJob by switchJob()
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
+    private var userDeleteChat: Boolean = false
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -766,11 +763,12 @@ class ConversationViewModel(
     private suspend fun subscribeMessages(isResumed: Boolean, chatId: Long, selfUserId: Long) {
         loadPage(isResumed)
         messengerInteractor.getMessagesFromChat(
-            chatId,
-            selfUserId,
-            { onNewMessageStatus(it) },
-            { onMessagesDeletedCallback(it) },
-            { onChatChangesCallback(it) }
+            id = chatId,
+            selfUserId = selfUserId,
+            onNewMessageStatusCallback = { onNewMessageStatus(it) },
+            onMessageDeletedCallback = { onMessagesDeletedCallback(it) },
+            onNewChatChangesCallback = { onChatChangesCallback(it) },
+            onChatDeletedCallback = { onChatDeletedCallback(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -949,6 +947,13 @@ class ConversationViewModel(
         }
     }
 
+    private fun onChatDeletedCallback(deletedChatId:Long) {
+        if(chatId == deletedChatId && !userDeleteChat)
+        sendEvent(
+            ConversationEvent.ShowChatDeletedDialog
+        )
+    }
+
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
         sendEvent(
             ConversationEvent.ShowPersonDetailDialog(
@@ -1007,7 +1012,7 @@ class ConversationViewModel(
         viewModelScope.launch {
 
             val content = fileCapturedItem.id.let {
-                messengerInteractor.saveFile(it, tempFile)
+                features.cameraFeature.saveFile(it, tempFile)
 
                 PhotoLoadableContent(it)
             }
@@ -1052,6 +1057,7 @@ class ConversationViewModel(
     }
 
     fun deleteChat(id: Long) {
+        userDeleteChat = true
         viewModelScope.launch {
             if (messengerInteractor.deleteChat(id).successOrSendError() != null)
                 exitWithResult(
@@ -1059,6 +1065,7 @@ class ConversationViewModel(
                         ConversationNavigationContract.Result.ChatDeleted(id)
                     )
                 )
+            userDeleteChat = false
         }
     }
 
@@ -1110,17 +1117,16 @@ class ConversationViewModel(
 
     fun onImageClicked(
         url: String? = null,
-        bitmap: Bitmap? = null,
         conversationViewItem: ConversationViewItem? = null,
     ) {
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                ImageViewerModel(url, bitmap)
+                ImageViewerModel(url, null)
             )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
-                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String, bitmap)),
+                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String, null)),
                     messageId = mess.id,
                     canDelete = conversationViewItem.canDelete(),
                     username = conversationViewItem.userName

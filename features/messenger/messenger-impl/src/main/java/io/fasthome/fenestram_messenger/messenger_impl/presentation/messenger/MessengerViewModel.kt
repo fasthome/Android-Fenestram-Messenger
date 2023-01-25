@@ -20,6 +20,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -185,7 +186,8 @@ class MessengerViewModel(
     private suspend fun subscribeMessages() {
         messengerInteractor.getNewMessages(
             { onNewMessageStatus(it) },
-            { onChatChangesCallback(it) })
+            { onChatChangesCallback(it) },
+            { onChatDeletedCallback(it) })
             .collectWhenViewActive()
             .onEach { message ->
                 loadDataHelper.invalidateSource()
@@ -212,6 +214,22 @@ class MessengerViewModel(
 
     private fun onChatChangesCallback(chatChanges: ChatChanges) {
         //TODO изменение имени и аватара чата
+    }
+
+    private fun onChatDeletedCallback(chatId: Long) {
+        viewModelScope.launch {
+            updateState {
+                val chats = mutableListOf<MessengerViewItem>()
+                currentViewState.messengerViewItems.forEach { item ->
+                    if (item.id != chatId)
+                        chats.add(item)
+                }
+                it.copy(messengerViewItems = chats)
+            }
+            loadDataHelper.invalidateSource()
+            delay(300)
+            sendEvent(MessengerEvent.Invalidate())
+        }
     }
 
     private fun subscribeMessageActions() {
@@ -245,17 +263,7 @@ class MessengerViewModel(
     fun deleteChat(id: Long) {
         viewModelScope.launch {
             if (messengerInteractor.deleteChat(id).successOrSendError() != null)
-                updateState {
-                    val chats = mutableListOf<MessengerViewItem>()
-                    currentViewState.messengerViewItems.forEach { item ->
-                        if (item.id != id)
-                            chats.add(item)
-                    }
-                    it.copy(messengerViewItems = chats)
-                }
-            loadDataHelper.invalidateSource()
-            delay(300)
-            sendEvent(MessengerEvent.Invalidate())
+                onChatDeletedCallback(id)
         }
     }
 

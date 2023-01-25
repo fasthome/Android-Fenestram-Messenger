@@ -29,5 +29,6 @@
     <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
     <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
     <string name="common_allow_permission">Разрешить</string>
+    <string name="common_edit">Редактирование</string>
 
 </resources>
