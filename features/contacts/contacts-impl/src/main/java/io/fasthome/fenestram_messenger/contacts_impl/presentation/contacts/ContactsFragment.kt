@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.ContactsAdapter
 import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
+import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
 import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -23,6 +24,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.renderLoadingState
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
 class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts),
@@ -79,6 +81,7 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     override fun renderState(state: ContactsState) = with(binding) {
         noPermissionContainer.isVisible = false
         errorContainer.isVisible = false
+        emptyContainer.isVisible = false
 
         renderLoadingState(
             loadingState = state.loadingState,
@@ -107,6 +110,10 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
             }
             is EmptyResponseException -> {
                 errorContainer.isVisible = true
+            }
+            is EmptySearchException -> {
+                emptyContainer.isVisible = true
+                contactsEmptySearchText.setPrintableText(errorInfo.description)
             }
             else -> {
                 vm.onOtherError(throwable)

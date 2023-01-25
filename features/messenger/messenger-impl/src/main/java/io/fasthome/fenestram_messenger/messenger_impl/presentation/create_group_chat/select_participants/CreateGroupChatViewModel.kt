@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
 import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -155,6 +156,22 @@ class CreateGroupChatViewModel(
             state.copy(
                 loadingState = LoadingState.Success(filteredContacts.map(::mapToContactViewItem))
             )
+        }
+        if (filteredContacts.isEmpty()) {
+            updateState { state ->
+                state.copy(
+                    loadingState = LoadingState.Error(
+                        error = ErrorInfo(
+                            PrintableText.EMPTY,
+                            PrintableText.StringResource(
+                                io.fasthome.fenestram_messenger.uikit.R.string.contacts_empty_view,
+                                text
+                            )
+                        ),
+                        throwable = EmptySearchException()
+                    )
+                )
+            }
         }
     }
 
