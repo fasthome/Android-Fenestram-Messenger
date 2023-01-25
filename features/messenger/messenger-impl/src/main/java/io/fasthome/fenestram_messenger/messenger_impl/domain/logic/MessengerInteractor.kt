@@ -221,4 +221,6 @@ class MessengerInteractor(
     fun clearLastInstance() {
         page = 0
     }
+
+    suspend fun clearChats() = messageRepo.clearChats()
 }

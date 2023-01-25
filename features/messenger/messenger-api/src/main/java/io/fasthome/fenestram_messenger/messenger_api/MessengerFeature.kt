@@ -36,6 +36,8 @@ interface MessengerFeature {
         authorId: Long,
     ): CallResult<SendMessageResult>
 
+    suspend fun clearChats()
+
     /**
      * @param chatSelectionMode если true, то экран мессенджера используется для выбора куда переслать сообщение
      * @param forwardMessage пересылаемое сообщение

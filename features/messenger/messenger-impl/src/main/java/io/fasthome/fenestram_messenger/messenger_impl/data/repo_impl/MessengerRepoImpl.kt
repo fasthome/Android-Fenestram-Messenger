@@ -197,7 +197,7 @@ class MessengerRepoImpl(
         messengerService.uploadImages(documentBytes, chatId,filename)
     }
 
-
+    override suspend fun clearChats() = chatStorage.deleteChats()
 
     override suspend fun getDocument(
         storagePath: String,

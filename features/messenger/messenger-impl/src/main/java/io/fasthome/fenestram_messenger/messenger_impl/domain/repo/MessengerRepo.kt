@@ -81,6 +81,8 @@ interface MessengerRepo {
         filename: List<String>,
     ): CallResult<SendMessageResponse>
 
+    suspend fun clearChats()
+
     interface SocketMessageCallback {
         fun onNewMessage(message: MessageResponseWithChatId)
         fun onNewMessageAction(messageAction: MessageActionResponse)

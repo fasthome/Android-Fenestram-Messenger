@@ -14,6 +14,7 @@ class ClearUserDataUseCase(
     suspend fun invoke() {
         userStorage.clearPrefs()
         coreStorage.clearPrefs()
+        messengerFeature.clearChats()
         messengerFeature.clearFileStorage()
         tokensRepo.clearTokens()
     }
