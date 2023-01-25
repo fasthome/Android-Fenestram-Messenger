@@ -28,7 +28,7 @@ interface AuthFeature {
 
     suspend fun isUserAuthorized(): CallResult<Boolean>
 
-    suspend fun logout(): CallResult<Unit>
+    suspend fun logout(needRequest: Boolean = true): CallResult<Unit>
 
     suspend fun login(phone: String, code: String) : CallResult<Unit>
 

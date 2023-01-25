@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.settings_impl.data.service
 
 import io.fasthome.network.client.NetworkClientFactory
+import io.fasthome.network.model.BaseMessageResponse
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
 
@@ -13,7 +14,7 @@ class SettingsService (clientFactory: NetworkClientFactory) {
 
     suspend fun deleteAccount(userId : Long) =
         client
-            .runDelete<BaseResponse<Unit>>(
+            .runDelete<BaseResponse<BaseMessageResponse>>(
                 path = "users/$userId"
             )
             .requireData()

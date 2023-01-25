@@ -59,13 +59,15 @@ class AuthFeatureImpl(
 
     override suspend fun isUserAuthorized() = authInteractor.isUserAuthorized()
 
-    override suspend fun logout(): CallResult<Unit> {
-        val result = callForResult {
-            authInteractor.logout()
-        }.onSuccess {
-            return logoutManager.logout()
-        }
-        return result
+    override suspend fun logout(needRequest: Boolean): CallResult<Unit> {
+        if(needRequest) {
+            val result = callForResult {
+                authInteractor.logout()
+            }.onSuccess {
+                return logoutManager.logout()
+            }
+            return result
+        } else return logoutManager.logout()
     }
 
     override suspend fun login(phone: String, code: String): CallResult<Unit> {
