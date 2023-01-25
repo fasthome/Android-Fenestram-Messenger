@@ -31,4 +31,6 @@ sealed interface ConversationEvent {
         ConversationEvent
 
     class ToggleToolbarClickable(val clickable: Boolean) : ConversationEvent
+
+    class ExtraText(val text : String) : ConversationEvent
 }

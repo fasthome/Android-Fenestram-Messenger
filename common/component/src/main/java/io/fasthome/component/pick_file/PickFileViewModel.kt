@@ -1,6 +1,7 @@
 package io.fasthome.component.pick_file
 
 import android.Manifest
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
@@ -81,6 +82,18 @@ class PickFileViewModel(
 
     override fun resultEvents(): Flow<PickFileInterface.ResultEvent> =
         resultEventsChannel.receiveAsFlow()
+
+    override fun processUri(uri: Uri) {
+        viewModelScope.launch {
+            val file by lazy { File(fileSystemInterface.cacheDir, "temp_file_" + UUID.randomUUID()) }
+            pickImageOperations.processImage(
+                uri = uri,
+                tempFile = file,
+                compressToSize = (currentMimeType as PickFileComponentParams.MimeType.Image).compressToSize,
+            )
+            resultEventsChannel.trySend(PickFileInterface.ResultEvent.PickedImage(file))
+        }
+    }
 
     override fun pickFile(mimeType: PickFileComponentParams.MimeType?) {
         viewModelScope.launch {

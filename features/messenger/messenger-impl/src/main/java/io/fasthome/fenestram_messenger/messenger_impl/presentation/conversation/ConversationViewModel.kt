@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.camera_api.*
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_api.entity.ActionMessageBlank
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
@@ -224,6 +225,17 @@ class ConversationViewModel(
             params.forwardMessage?.let {
                 updateState { state ->
                     state.copy(inputMessageMode = InputMessageMode.Forward(it))
+                }
+            }
+
+            params.actionMessageBlank?.let {
+                when(it){
+                    is ActionMessageBlank.Image -> {
+                        pickFileInterface.processUri(it.uri)
+                    }
+                    is ActionMessageBlank.Text -> {
+                        sendEvent(ConversationEvent.ExtraText(it.text))
+                    }
                 }
             }
         }

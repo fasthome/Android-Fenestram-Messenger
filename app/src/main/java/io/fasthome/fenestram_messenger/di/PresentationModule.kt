@@ -7,6 +7,7 @@ import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.ContractRouterImpl
 import io.fasthome.fenestram_messenger.navigation.CustomCicerone
 import io.fasthome.fenestram_messenger.presentation.base.AppFeature
+import io.fasthome.fenestram_messenger.ui.main.ActionHandler
 import io.fasthome.fenestram_messenger.ui.main.MainActivityViewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -30,5 +31,7 @@ object PresentationModule {
     private fun createMainActivityModule() = module {
         viewModel(::MainActivityViewModel)
         factory(MainActivityViewModel::Features)
+
+        factory(::ActionHandler)
     }
 }

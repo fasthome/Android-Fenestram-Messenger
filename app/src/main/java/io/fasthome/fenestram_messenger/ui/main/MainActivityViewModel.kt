@@ -96,18 +96,23 @@ class MainActivityViewModel(
         return MainActivityState(false)
     }
 
-    fun onAppStarted(fromPush: Boolean, deepLinkResult: IDeepLinkResult?) {
+    fun onAppStarted(openMode : OpenMode, deepLinkResult: IDeepLinkResult?) {
         viewModelScope.launch {
             when (val isAuthedResult = features.authFeature.isUserAuthorized()) {
                 is CallResult.Success -> when {
                     !isAuthedResult.data -> openSplashAndAuth()
                     isResumed -> return@launch
                     else -> {
-                        if (!fromPush)
-                            checkPersonalData()
-                        else {
-                            openAuthedRootScreen()
-                            this@MainActivityViewModel.deepLinkResult = deepLinkResult
+                        when(openMode){
+                            OpenMode.Default -> checkPersonalData()
+                            OpenMode.FromPush -> {
+                                openAuthedRootScreen()
+                                this@MainActivityViewModel.deepLinkResult = deepLinkResult
+                            }
+                            OpenMode.FromAction -> {
+                                openAuthedRootScreen()
+                                this@MainActivityViewModel.deepLinkResult = deepLinkResult
+                            }
                         }
                     }
                 }
@@ -218,5 +223,9 @@ class MainActivityViewModel(
 
         object GuestModeRootNavigationContract :
             NavigationContract<NoParams, NoResult>(Fragment::class)
+    }
+
+    enum class OpenMode {
+        Default, FromPush, FromAction
     }
 }

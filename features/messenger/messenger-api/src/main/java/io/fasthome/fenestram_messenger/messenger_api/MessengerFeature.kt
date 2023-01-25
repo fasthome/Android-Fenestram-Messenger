@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_api
 
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.messenger_api.entity.ActionMessageBlank
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
@@ -43,7 +44,8 @@ interface MessengerFeature {
     @Parcelize
     data class MessengerParams(
         val chatSelectionMode: Boolean = false,
-        val forwardMessage: ForwardMessage? = null
+        val forwardMessage: ForwardMessage? = null,
+        val newMessage : ActionMessageBlank? = null
     ) : Parcelable
 
     @Parcelize
