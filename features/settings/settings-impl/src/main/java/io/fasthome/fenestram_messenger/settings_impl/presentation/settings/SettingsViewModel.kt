@@ -34,9 +34,9 @@ class SettingsViewModel(
         sendEvent(SettingsEvent.Logout)
     }
 
-    fun logout() {
+    fun logout(needRequest: Boolean = true) {
         viewModelScope.launch {
-            features.authFeature.logout().withErrorHandled {}
+            features.authFeature.logout(needRequest).withErrorHandled {}
         }
     }
 
@@ -68,7 +68,7 @@ class SettingsViewModel(
     fun deleteAccount(){
         viewModelScope.launch {
             settingsRepo.deleteAccount().withErrorHandled(ShowErrorType.Dialog) {
-                logout()
+                logout(false)
             }
         }
     }
