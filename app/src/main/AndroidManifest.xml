@@ -51,8 +51,6 @@
                     android:name="android.intent.action.SEND"/>
                 <category
                     android:name="android.intent.category.DEFAULT"/>
-                <category
-                    android:name="android.intent.category.OPENABLE"/>
                 <data android:mimeType="text/plain"/>
                 <data android:mimeType="image/*"/>
             </intent-filter>
