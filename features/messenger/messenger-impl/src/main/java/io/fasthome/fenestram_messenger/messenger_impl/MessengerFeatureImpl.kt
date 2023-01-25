@@ -22,7 +22,8 @@ class MessengerFeatureImpl(
             {
                 MessengerNavigationContract.Params(
                     chatSelectionMode = it.chatSelectionMode,
-                    forwardMessage = it.forwardMessage
+                    forwardMessage = it.forwardMessage,
+                    actionMessageBlank = it.newMessage
                 )
             },
             resultMapper = { it }

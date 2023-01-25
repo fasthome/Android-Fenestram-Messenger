@@ -1,5 +1,6 @@
 package io.fasthome.component.pick_file
 
+import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
@@ -16,4 +17,6 @@ interface PickFileInterface {
     fun launchCamera()
 
     fun resultEvents(): Flow<ResultEvent>
+
+    fun processUri(uri : Uri)
 }

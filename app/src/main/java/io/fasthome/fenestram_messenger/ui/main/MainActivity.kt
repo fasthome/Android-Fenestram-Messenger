@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private val router: ContractRouter by inject()
     private val authFeature: AuthFeature by inject()
     private val pushFeature: PushFeature by inject()
+    private val actionHandler: ActionHandler by inject()
 
     private val vm: MainActivityViewModel by getKoin().viewModel(
         owner = { ViewModelOwner.from(this, this) },
@@ -62,8 +63,8 @@ class MainActivity : AppCompatActivity() {
 
         lifecycle.doOnStartStop(onStart = vm::onViewActive, onStop = vm::onViewInactive)
 
-        vm.viewEvent.collectWhenStarted(this) { event->
-            when(event) {
+        vm.viewEvent.collectWhenStarted(this) { event ->
+            when (event) {
                 is BaseViewEvent.ScreenEvent -> {
                     handleEvent(event.event)
                 }
@@ -75,8 +76,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleEvent(event: MainActivityEvent) {
-        when(event){
-            is MainActivityEvent.StartSplashEvent-> {
+        when (event) {
+            is MainActivityEvent.StartSplashEvent -> {
                 startActivity(Intent(this, SplashActivity::class.java))
             }
         }
@@ -126,10 +127,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(intent: Intent) {
-        val pushClickResult = pushFeature.handlePushClick(intent)
-        if (pushClickResult != null)
-            vm.onAppStarted(true, pushClickResult)
-        else
-            vm.onAppStarted(false, null)
+        if (intent.action == Intent.ACTION_SEND) {
+            val actionResult = actionHandler.handle(intent)
+            if (actionResult != null) {
+                vm.onAppStarted(openMode = MainActivityViewModel.OpenMode.FromAction, actionResult)
+            } else {
+                vm.onAppStarted(openMode = MainActivityViewModel.OpenMode.Default, null)
+            }
+        } else {
+            val pushClickResult = pushFeature.handlePushClick(intent)
+            if (pushClickResult != null)
+                vm.onAppStarted(openMode = MainActivityViewModel.OpenMode.FromPush, pushClickResult)
+            else
+                vm.onAppStarted(openMode = MainActivityViewModel.OpenMode.Default, null)
+        }
     }
 }

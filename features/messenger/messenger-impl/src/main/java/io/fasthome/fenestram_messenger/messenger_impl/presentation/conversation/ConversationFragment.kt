@@ -475,6 +475,9 @@ class ConversationFragment :
             is ConversationEvent.ToggleToolbarClickable -> {
                 binding.profileToolBar.isEnabled = event.clickable
             }
+            is ConversationEvent.ExtraText -> {
+                binding.inputMessage.setText(event.text)
+            }
         }
     }
 

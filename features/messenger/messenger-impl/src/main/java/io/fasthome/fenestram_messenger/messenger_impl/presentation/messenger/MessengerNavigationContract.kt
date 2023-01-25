@@ -5,9 +5,9 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
+import io.fasthome.fenestram_messenger.messenger_api.entity.ActionMessageBlank
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
-import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 object MessengerNavigationContract :
@@ -16,7 +16,8 @@ object MessengerNavigationContract :
     @Parcelize
     data class Params(
         val chatSelectionMode: Boolean = false,
-        val forwardMessage: MessengerFeature.ForwardMessage? = null
+        val forwardMessage: MessengerFeature.ForwardMessage? = null,
+        val actionMessageBlank : ActionMessageBlank? = null
     ) : Parcelable
 
 }

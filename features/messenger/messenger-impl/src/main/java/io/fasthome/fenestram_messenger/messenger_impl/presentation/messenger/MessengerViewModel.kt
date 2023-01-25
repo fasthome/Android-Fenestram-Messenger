@@ -131,10 +131,12 @@ class MessengerViewModel(
              * Если мы пересылаем сообщение, backStack должен быть очищен, чтобы не вернуться по кнопке назад в предыдущие чаты
              */
             router.backTo(null)
+
             conversationLauncher.launch(
                 ConversationNavigationContract.Params(
                     fromContacts = false,
                     chat = messengerViewItem.originalChat,
+                    actionMessageBlank = params.actionMessageBlank,
                     forwardMessage = params.forwardMessage
                 )
             )
