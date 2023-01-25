@@ -144,7 +144,7 @@ open class BottomSheetFragment(
             fragmentInstance = contentClazz.java.newInstance()
             fragmentInstance?.arguments = this@BottomSheetFragment.arguments
             childFragmentManager.commitNow {
-                add(R.id.content, fragmentInstance ?: return@commitNow, CONTENT_TAG)
+                replace(R.id.content, fragmentInstance ?: return@commitNow, CONTENT_TAG)
             }
         }
 
