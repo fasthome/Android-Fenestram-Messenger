@@ -2,6 +2,7 @@ package io.fasthome.fenestram_messenger.auth_impl.presentation.welcome
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -26,6 +27,8 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
         debug.onClick {
             vm.debugClicked()
         }
@@ -49,7 +52,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
             color = ContextCompat.getColor(requireContext(), R.color.blue)
         )
 
-        rules.onClick{
+        rules.onClick {
             vm.rulesClicked()
         }
     }
