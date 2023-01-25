@@ -1,11 +1,11 @@
 /**
  * Created by Dmitry Popov on 10.10.2022.
  */
-package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
+package io.fasthome.fenestram_messenger.camera_impl.data.repo_impl
 
-import io.fasthome.fenestram_messenger.messenger_impl.data.db.CameraFileStorage
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.FileData
-import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
+import io.fasthome.fenestram_messenger.camera_api.FileData
+import io.fasthome.fenestram_messenger.camera_api.FilesRepo
+import io.fasthome.fenestram_messenger.camera_impl.data.storage.CameraFileStorage
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.android.wrap
 import io.fasthome.fenestram_messenger.util.callForResult

@@ -60,8 +60,6 @@ class MessengerFeatureImpl(
         }
     }
 
-    override suspend fun clearFileStorage() = messengerInteractor.clearFiles()
-
     override suspend fun deleteChat(id: Long) = messengerInteractor.deleteChat(id)
 
     override suspend fun sendMessage(

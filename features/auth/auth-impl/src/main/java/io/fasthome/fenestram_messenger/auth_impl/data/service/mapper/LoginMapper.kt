@@ -1,8 +1,8 @@
 package io.fasthome.fenestram_messenger.auth_impl.data.service.mapper
 
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import io.fasthome.fenestram_messenger.auth_impl.data.service.model.LoginResponse
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.LoginResult
-import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UserDetail
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.tokens.AccessToken

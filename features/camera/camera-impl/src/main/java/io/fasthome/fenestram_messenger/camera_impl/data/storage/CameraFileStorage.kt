@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.data.db
+package io.fasthome.fenestram_messenger.camera_impl.data.storage
 
 import io.fasthome.fenestram_messenger.data.FileStorage
 import java.io.File

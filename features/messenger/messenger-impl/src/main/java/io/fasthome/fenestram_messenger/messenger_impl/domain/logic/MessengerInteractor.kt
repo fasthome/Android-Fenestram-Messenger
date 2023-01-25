@@ -1,12 +1,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 
 import android.util.Log
+import io.fasthome.fenestram_messenger.camera_api.CameraFeature
 import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
-import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.FilesRepo
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
@@ -18,15 +18,14 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import java.io.File
 import java.util.*
 
 class MessengerInteractor(
     private val messageRepo: MessengerRepo,
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
-    private val filesRepo: FilesRepo,
-    private val userStorage: UserStorage
+    private val userStorage: UserStorage,
+    private val cameraFeature: CameraFeature
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -205,16 +204,6 @@ class MessengerInteractor(
 
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String) =
         messageRepo.editMessage(chatId = chatId, messageId = messageId, newText = newText)
-
-    suspend fun getFile(itemId: String): CallResult<FileData?> =
-        filesRepo.getFile(itemId)
-
-
-    suspend fun saveFile(itemId: String, tempFile: File) {
-        filesRepo.saveFile(itemId = itemId, tempFile.readBytes(), tempFile.name)
-    }
-
-    suspend fun clearFiles() = filesRepo.clearFiles()
 
     suspend fun getUserId() = userStorage.getUserId()
 

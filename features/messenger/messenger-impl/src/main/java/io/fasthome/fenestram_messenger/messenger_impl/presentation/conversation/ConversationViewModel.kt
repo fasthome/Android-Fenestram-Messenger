@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import android.Manifest
-import android.graphics.Bitmap
 import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
@@ -12,10 +11,7 @@ import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.camera_api.CameraFeature
-import io.fasthome.fenestram_messenger.camera_api.CameraParams
-import io.fasthome.fenestram_messenger.camera_api.ConfirmParams
-import io.fasthome.fenestram_messenger.camera_api.ConfirmResult
+import io.fasthome.fenestram_messenger.camera_api.*
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
@@ -995,7 +991,7 @@ class ConversationViewModel(
         viewModelScope.launch {
 
             val content = fileCapturedItem.id.let {
-                messengerInteractor.saveFile(it, tempFile)
+                features.cameraFeature.saveFile(it, tempFile)
 
                 PhotoLoadableContent(it)
             }
@@ -1098,17 +1094,16 @@ class ConversationViewModel(
 
     fun onImageClicked(
         url: String? = null,
-        bitmap: Bitmap? = null,
         conversationViewItem: ConversationViewItem? = null,
     ) {
         val imageParams =
             if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                ImageViewerModel(url, bitmap)
+                ImageViewerModel(url, null)
             )
             else {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
-                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String, bitmap)),
+                    imageViewerModel = listOf(ImageViewerModel(mess.content as? String, null)),
                     messageId = mess.id,
                     canDelete = conversationViewItem.canDelete(),
                     username = conversationViewItem.userName

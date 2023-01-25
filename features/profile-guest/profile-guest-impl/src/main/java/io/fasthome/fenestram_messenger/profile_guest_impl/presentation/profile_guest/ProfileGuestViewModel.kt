@@ -1,18 +1,19 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
 import android.Manifest
+import android.os.Parcelable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
-import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
-import io.fasthome.fenestram_messenger.mvi.Message
+import io.fasthome.fenestram_messenger.mvi.provideSavedState
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -23,26 +24,32 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
 class ProfileGuestViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ProfileGuestNavigationContract.Params,
-    private val permissionInterface: PermissionInterface,
-    private val groupParticipantsInterface: GroupParticipantsInterface,
-    private val messengerFeature: MessengerFeature,
-    private val contactsFeature: ContactsFeature,
     private val profileGuestInteractor: ProfileGuestInteractor,
     private val profileImageUrlConverter: StorageUrlConverter,
+    private val savedStateHandle: SavedStateHandle,
+    private val features : Features,
+    private val permissionInterface: PermissionInterface,
+    private val groupParticipantsInterface: GroupParticipantsInterface,
     private val pickFileInterface: PickFileInterface,
-    private val profileImageUtil: ProfileImageUtil,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
+
+    class Features (
+        val messengerFeature: MessengerFeature,
+        val contactsFeature: ContactsFeature,
+            )
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
 
@@ -76,22 +83,11 @@ class ProfileGuestViewModel(
                 when (it) {
                     PickFileInterface.ResultEvent.PickCancelled -> Unit
                     is PickFileInterface.ResultEvent.PickedImage -> {
-                        val bitmap = profileImageUtil.getPhoto(it.tempFile)
-                        if (bitmap != null) {
-                            updateState { state ->
-                                state.copy(
-                                    avatarBitmap = bitmap,
-                                    chatImageFile = it.tempFile
-                                )
-                            }
-                        } else {
-                            showMessage(Message.PopUp(PrintableText.StringResource(R.string.common_unable_to_download)))
-                            updateState { state ->
-                                state.copy(
-                                    avatarBitmap = null,
-                                    chatImageFile = null
-                                )
-                            }
+                        updateState { state ->
+                            state.copy(
+                                avatarContent = Content.FileContent(it.tempFile),
+                                chatImageFile = it.tempFile
+                            )
                         }
                     }
                 }
@@ -100,20 +96,28 @@ class ProfileGuestViewModel(
     }
 
 
-    override fun createInitialState() = ProfileGuestState(
-        userName = PrintableText.Raw(params.userName),
-        userNickname = PrintableText.Raw(params.userNickname),
-        userAvatar = params.userAvatar,
-        recentFiles = listOf(),
-        recentImages = listOf(),
-        isGroup = params.isGroup,
-        userPhone = PrintableText.Raw(params.userPhone),
-        editMode = params.editMode,
-        avatarBitmap = null,
-        chatImageFile = null,
-        participantsQuantity = params.groupParticipantsParams.participants.size,
-        profileGuestStatus = EditTextStatus.Idle
-    )
+    override fun createInitialState() : ProfileGuestState{
+        val savedState = savedStateHandle.provideSavedState {
+            SavedState(
+                runEdit = currentViewState.editMode,
+                avatarContent = currentViewState.avatarContent
+            )
+        }
+        return ProfileGuestState(
+            userName = PrintableText.Raw(params.userName),
+            userNickname = PrintableText.Raw(params.userNickname),
+            userAvatar = params.userAvatar,
+            recentFiles = listOf(),
+            recentImages = listOf(),
+            isGroup = params.isGroup,
+            userPhone = PrintableText.Raw(params.userPhone),
+            editMode = savedState?.runEdit ?: params.editMode,
+            avatarContent = savedState?.avatarContent,
+            chatImageFile = null,
+            participantsQuantity = params.groupParticipantsParams.participants.size,
+            profileGuestStatus = EditTextStatus.Idle
+        )
+    }
 
 
     fun fetchFilesAndPhotos() {
@@ -214,7 +218,7 @@ class ProfileGuestViewModel(
                 val currentName = getPrintableRawText(currentViewState.userName)
 
                 if (newName != currentName && writePermissionGranted && readPermissionGranted) {
-                    contactsFeature.updateContactName(params.userPhone, currentName, newName)
+                    features.contactsFeature.updateContactName(params.userPhone, currentName, newName)
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
                 }
                 updateState { state ->
@@ -235,7 +239,7 @@ class ProfileGuestViewModel(
 
     fun deleteChat(id: Long) {
         viewModelScope.launch {
-            if (messengerFeature.deleteChat(id).successOrSendError() != null)
+            if (features.messengerFeature.deleteChat(id).successOrSendError() != null)
                 router.backTo(null)
         }
     }
@@ -244,11 +248,11 @@ class ProfileGuestViewModel(
         if (currentViewState.editMode && params.isGroup) {
             pickFileInterface.pickFile()
         } else {
-            if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarBitmap != null) {
+            if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarContent != null) {
                 imageViewerLauncher.launch(
                     ImageViewerContract.ImageViewerParams.ImageParams(
                         ImageViewerModel(currentViewState.userAvatar,
-                            currentViewState.avatarBitmap)
+                            currentViewState.avatarContent)
                     )
                 )
             }
@@ -270,4 +274,10 @@ class ProfileGuestViewModel(
             )
         }
     }
+
+    @Parcelize
+    class SavedState(
+        val avatarContent : Content?,
+        val runEdit : Boolean
+    ) : Parcelable
 }

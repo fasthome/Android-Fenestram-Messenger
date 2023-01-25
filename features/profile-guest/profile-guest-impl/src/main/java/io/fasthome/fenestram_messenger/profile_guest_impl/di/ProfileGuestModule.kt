@@ -42,6 +42,8 @@ object ProfileGuestModule {
     }
 
     private fun createPresentationModule() = module {
+        factory(ProfileGuestViewModel::Features)
+
         viewModel(::ProfileGuestViewModel)
         viewModel(::ProfileGuestFilesViewModel)
         viewModel(::ProfileGuestImagesViewModel)

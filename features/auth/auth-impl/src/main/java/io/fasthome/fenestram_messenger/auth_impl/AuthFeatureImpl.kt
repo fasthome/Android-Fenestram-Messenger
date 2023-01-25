@@ -4,7 +4,7 @@
 package io.fasthome.fenestram_messenger.auth_impl
 
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UserDetail
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigator
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
@@ -36,7 +36,8 @@ class AuthFeatureImpl(
                         nickname = it.nickname ?: "",
                         birth = it.birth ?: "",
                         profileImageUrl = it.avatar ?: ""
-                    )
+                    ),
+                    isEdit = it.isEdit
                 )
             },
             resultMapper = { it }

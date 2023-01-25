@@ -8,6 +8,7 @@ import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.settings_api.SettingsInterface
 import io.fasthome.fenestram_messenger.settings_impl.domain.repo.SettingsRepo
 import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.infoapp.InfoappNavigationContact
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ class SettingsViewModel(
     requestParams: RequestParams,
     private val features: Features,
     private val settingsRepo: SettingsRepo
-) : BaseViewModel<SettingsState, SettingsEvent>(router, requestParams) {
+) : BaseViewModel<SettingsState, SettingsEvent>(router, requestParams), SettingsInterface {
 
     class Features(
         val authFeature: AuthFeature,
