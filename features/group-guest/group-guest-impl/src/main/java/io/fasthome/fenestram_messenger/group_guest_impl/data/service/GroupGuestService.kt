@@ -2,7 +2,9 @@ package io.fasthome.fenestram_messenger.group_guest_impl.data.service
 
 import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.group_guest_impl.data.service.mapper.AddUsersToChatMapper
+import io.fasthome.fenestram_messenger.group_guest_impl.data.service.model.AddUsersToChatRequest
 import io.fasthome.fenestram_messenger.group_guest_impl.data.service.model.AddUsersToChatResponse
+import io.fasthome.fenestram_messenger.group_guest_impl.data.service.model.RemoveUsersInChatRequest
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
@@ -14,7 +16,7 @@ class GroupGuestService(
 ) {
     private val client = clientFactory.create()
 
-    suspend fun addUsersToChat(idChat: Long?, usersId: List<Long>?): List<ParticipantsViewItem> {
+    suspend fun addUsersToChat(idChat: Long?, usersId: AddUsersToChatRequest): List<ParticipantsViewItem> {
         val response: BaseResponse<AddUsersToChatResponse> = client.runPatch(
             path = "chats/$idChat/add-user",
             body = usersId
@@ -23,10 +25,10 @@ class GroupGuestService(
         return addUsersToChatMapper.responseToParticipantsViewItem(response)
     }
 
-    suspend fun deleteUserFromChat(idChat: Long, idUser: Long): List<ParticipantsViewItem> {
+    suspend fun deleteUserFromChat(idChat: Long, usersId: RemoveUsersInChatRequest): List<ParticipantsViewItem> {
         val response: BaseResponse<AddUsersToChatResponse> = client.runPatch(
             path = "chats/$idChat/remove-user",
-            body = listOf(idUser)
+            body = usersId
         )
 
         return addUsersToChatMapper.responseToParticipantsViewItem(response)

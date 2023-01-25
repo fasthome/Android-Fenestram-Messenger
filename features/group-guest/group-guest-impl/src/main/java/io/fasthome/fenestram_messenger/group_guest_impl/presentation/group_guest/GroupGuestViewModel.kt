@@ -68,8 +68,8 @@ class GroupGuestViewModel(
     }
 
     fun onAddClick() {
-        val usersId =
-            currentViewState.addedContacts.mapNotNull { if (it is AddContactViewItem.AddContact) it.userId else null }
+        val usersId = currentViewState.addedContacts.mapNotNull { if (it is AddContactViewItem.AddContact) it.userId else null }
+
         viewModelScope.launch {
             val usersAdded = groupGuestInteractor.addUsersToChat(
                 params.chatId,
