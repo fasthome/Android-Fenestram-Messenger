@@ -73,7 +73,8 @@ class MessengerInteractor(
         selfUserId: Long,
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
         onMessageDeletedCallback: (List<Long>) -> Unit,
-        onNewChatChangesCallback: (ChatChanges) -> Unit
+        onNewChatChangesCallback: (ChatChanges) -> Unit,
+        onChatDeletedCallback: (Long) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -100,6 +101,10 @@ class MessengerInteractor(
 
                 override fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse) {
                     onNewChatChangesCallback(chatsMapper.toChatChanges(chatChangesResponse))
+                }
+
+                override fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse) {
+                    onChatDeletedCallback(chatDeletedChat.chatId)
                 }
 
             })
@@ -132,7 +137,8 @@ class MessengerInteractor(
 
     suspend fun getNewMessages(
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
-        onNewChatChangesCallback: (ChatChanges) -> Unit
+        onNewChatChangesCallback: (ChatChanges) -> Unit,
+        onChatDeletedCallback: (Long) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = null,
@@ -155,6 +161,10 @@ class MessengerInteractor(
 
                 override fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse) {
                     onNewChatChangesCallback(chatsMapper.toChatChanges(chatChangesResponse))
+                }
+
+                override fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse) {
+                    onChatDeletedCallback(chatDeletedChat.chatId)
                 }
             },
             selfUserId = null

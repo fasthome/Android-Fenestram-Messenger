@@ -28,7 +28,8 @@ class MessengerSocket(private val baseUrl: String) {
         messageActionCallback: MessageActionResponse.() -> Unit,
         messageStatusCallback: MessageStatusResponse.() -> Unit,
         messageDeletedCallback: SocketDeleteMessage.() -> Unit,
-        chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit
+        chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit,
+        chatDeletedCallback: SocketDeletedChat.SocketDeletedResponse.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -87,6 +88,11 @@ class MessengerSocket(private val baseUrl: String) {
                 }
             }
 
+            socket?.on("deleteChat") {
+                Log.d(this.javaClass.simpleName, "deleteChat: " + it[0].toString())
+                val deletedChat = json.decodeFromString<SocketDeletedChat>(it[0].toString())
+                chatDeletedCallback(deletedChat.data)
+            }
         } catch (e: Exception) {
         }
     }

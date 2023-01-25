@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.mvi
 
 import android.app.Dialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import io.fasthome.fenestram_messenger.core.ui.dialog.DialogBuilder
 import io.fasthome.fenestram_messenger.mvi.databinding.DialogErrorBinding
@@ -15,7 +16,7 @@ object ErrorDialog {
         titleText: PrintableText?,
         messageText: PrintableText,
         onCloseClick: () -> Unit,
-        onRetryClick: () -> Unit
+        onRetryClick: (() -> Unit)?
     ): Dialog {
         val errorBinding = DialogErrorBinding.inflate(fragment.layoutInflater)
 
@@ -34,9 +35,9 @@ object ErrorDialog {
                 onCloseClick()
                 dialog.dismiss()
             }
-
+            retry.isVisible = onRetryClick != null
             retry.onClick {
-                onRetryClick()
+                onRetryClick?.invoke()
                 dialog.dismiss()
             }
 

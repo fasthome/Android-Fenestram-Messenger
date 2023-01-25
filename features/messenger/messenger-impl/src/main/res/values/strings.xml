@@ -19,6 +19,7 @@
 
     <string name="messenger_empty_view">Здесь будет отображаться список ваших чатов</string>
     <string name="messenger_max_attach">Максимальное количество прикреляемых файлов - 10</string>
+    <string name="conversation_deleted_chat">Собеседник удалил чат</string>
     <string name="conversation_delete_from_chat">Удалить и выйти</string>
     <string name="conversation_delete_from_contacts">Очистить чат</string>
     <string name="conversation_edit">Редактировать</string>
@@ -30,6 +31,7 @@
     <string name="messenger_create_group_chat">Создать групповой чат</string>
     <string name="messenger_create_private_chat">Создать личный чат</string>
     <string name="messenger_create_chat_cancel">Отмена</string>
+    <string name="back_to_chats">Вернуться к списку чатов</string>
     <string name="messenger_search_contacts">Поиск контакта</string>
     <string name="messenger_edited">изменено</string>
     <string name="forward_file_from_ph">Пересланный файл\nот %1$s</string>

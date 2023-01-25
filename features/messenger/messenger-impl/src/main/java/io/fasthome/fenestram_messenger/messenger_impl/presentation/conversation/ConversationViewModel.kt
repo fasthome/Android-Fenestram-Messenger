@@ -85,6 +85,7 @@ class ConversationViewModel(
     private var profileOpenJob by switchJob()
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
+    private var userDeleteChat: Boolean = false
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -754,11 +755,12 @@ class ConversationViewModel(
     private suspend fun subscribeMessages(isResumed: Boolean, chatId: Long, selfUserId: Long) {
         loadPage(isResumed)
         messengerInteractor.getMessagesFromChat(
-            chatId,
-            selfUserId,
-            { onNewMessageStatus(it) },
-            { onMessagesDeletedCallback(it) },
-            { onChatChangesCallback(it) }
+            id = chatId,
+            selfUserId = selfUserId,
+            onNewMessageStatusCallback = { onNewMessageStatus(it) },
+            onMessageDeletedCallback = { onMessagesDeletedCallback(it) },
+            onNewChatChangesCallback = { onChatChangesCallback(it) },
+            onChatDeletedCallback = { onChatDeletedCallback(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -937,6 +939,13 @@ class ConversationViewModel(
         }
     }
 
+    private fun onChatDeletedCallback(deletedChatId:Long) {
+        if(chatId == deletedChatId && !userDeleteChat)
+        sendEvent(
+            ConversationEvent.ShowChatDeletedDialog
+        )
+    }
+
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
         sendEvent(
             ConversationEvent.ShowPersonDetailDialog(
@@ -1040,6 +1049,7 @@ class ConversationViewModel(
     }
 
     fun deleteChat(id: Long) {
+        userDeleteChat = true
         viewModelScope.launch {
             if (messengerInteractor.deleteChat(id).successOrSendError() != null)
                 exitWithResult(
@@ -1047,6 +1057,7 @@ class ConversationViewModel(
                         ConversationNavigationContract.Result.ChatDeleted(id)
                     )
                 )
+            userDeleteChat = false
         }
     }
 
