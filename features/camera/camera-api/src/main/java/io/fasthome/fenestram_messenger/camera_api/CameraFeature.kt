@@ -7,6 +7,7 @@ import android.os.Parcelable
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.util.CallResult
 import kotlinx.parcelize.Parcelize
 import java.io.File
 
@@ -15,6 +16,12 @@ interface CameraFeature {
     val cameraNavigationContract: NavigationContractApi<CameraParams, CameraResult>
 
     val confirmNavigationContract: NavigationContractApi<ConfirmParams, ConfirmResult>
+
+    suspend fun clearFileStorage()
+
+    suspend fun saveFile(id: String, tempFile: File) : CallResult<Unit>
+
+
 }
 
 @Parcelize

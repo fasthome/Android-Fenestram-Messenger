@@ -3,6 +3,7 @@
  */
 package io.fasthome.fenestram_messenger.auth_impl.domain.entity
 
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import io.fasthome.network.tokens.AccessToken
 import io.fasthome.network.tokens.RefreshToken
 

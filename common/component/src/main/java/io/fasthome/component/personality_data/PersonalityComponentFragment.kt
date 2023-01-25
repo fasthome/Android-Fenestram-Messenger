@@ -64,22 +64,34 @@ class PersonalityComponentFragment :
         )
 
         nameInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.UsernameKey, it.toString())
+            it?.let {
+                vm.onFieldChanged(EditTextKey.UsernameKey, it.toString())
+            }
         }
         mailInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.MailKey, it.toString())
-
+            it?.let {
+                vm.onFieldChanged(EditTextKey.MailKey, it.toString())
+            }
         }
         userNameInput.doAfterTextChanged {
-            if(it.toString().contains(' ')) {
+            if (it.toString().contains(' ')) {
                 userNameInput.lastCharFocus()
             }
-            vm.onFieldChanged(EditTextKey.NicknameKey, userNameInput.text.toString())
+            it?.let {
+                vm.onFieldChanged(EditTextKey.NicknameKey, userNameInput.text.toString())
+            }
         }
         birthdateInput.doAfterTextChanged {
-            vm.onFieldChanged(EditTextKey.BirthdateKey, it.toString())
+            it?.let {
+                vm.onFieldChanged(EditTextKey.BirthdateKey, it.toString())
+            }
         }
         HooliDatePicker(birthdateInput).registerDatePicker(childFragmentManager)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.invalidateState()
     }
 
     override fun renderState(state: PersonalityState) = with(binding) {

@@ -4,16 +4,19 @@ package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 import android.os.Bundle
 import android.view.View
 import com.instabug.library.Instabug
+import io.fasthome.fenestram_messenger.navigation.contract.InterfaceFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.settings_api.SettingsInterface
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentSettingsBinding
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 
 
-class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fragment_settings) {
+class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fragment_settings),
+    InterfaceFragment<SettingsInterface> {
 
     override val vm: SettingsViewModel by viewModel()
 
@@ -21,10 +24,6 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-
-        hooliToolbar.setOnButtonClickListener {
-            onBackPressed()
-        }
 
         tvExitProfile.onClick {
             vm.onLogoutClicked()
@@ -75,4 +74,6 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
             }
         }
     }
+
+    override fun getInterface(): SettingsInterface = vm
 }

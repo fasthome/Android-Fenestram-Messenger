@@ -24,8 +24,6 @@ interface MessengerFeature {
         chatChangesCallback: (ChatChanges) -> Unit
     )
 
-    suspend fun clearFileStorage()
-
     suspend fun deleteChat(id: Long): CallResult<Unit>
 
     suspend fun sendMessage(

@@ -6,6 +6,7 @@ package io.fasthome.component.personality_data
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.R
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -54,11 +55,14 @@ class PersonalityComponentViewModel(
     override fun getFields(): UserDetail {
         val fields = currentViewState.fields
         return UserDetail(
+            id = 0,
+            phone = "",
+            profileImageUrl = null,
             name = fields[EditTextKey.UsernameKey]!!.validateText?.let { getPrintableRawText(it) }
                 ?: "",
-            mail = fields[EditTextKey.MailKey]!!.validateText?.let { getPrintableRawText(it) }
+            email = fields[EditTextKey.MailKey]!!.validateText?.let { getPrintableRawText(it) }
                 ?: "",
-            birthday = fields[EditTextKey.BirthdateKey]!!.validateText?.let { getPrintableRawText(it) }
+            birth = fields[EditTextKey.BirthdateKey]!!.validateText?.let { getPrintableRawText(it) }
                 ?: "",
             nickname = fields[EditTextKey.NicknameKey]!!.validateText?.let { getPrintableRawText(it) }
                 ?: "",
@@ -73,8 +77,10 @@ class PersonalityComponentViewModel(
         createInitialState()
     }
 
-    override fun runEdit(edit: Boolean) {
-        sendEvent(PersonalityEvent.RunEdit(edit))
+    override fun invalidateState() {
+        updateState {
+            createInitialState()
+        }
     }
 
     override fun createInitialState(): PersonalityState {
@@ -94,8 +100,8 @@ class PersonalityComponentViewModel(
                 ),
                 EditTextKey.MailKey to Field(
                     key = EditTextKey.MailKey,
-                    text = PrintableText.Raw(userDetail?.mail ?: ""),
-                    visibilityIcon = userDetail?.mail?.isNotEmpty() ?: false,
+                    text = PrintableText.Raw(userDetail?.email ?: ""),
+                    visibilityIcon = userDetail?.email?.isNotEmpty() ?: false,
                     error = null,
                     validateText = null
                 ),
@@ -108,8 +114,8 @@ class PersonalityComponentViewModel(
                 ),
                 EditTextKey.BirthdateKey to Field(
                     key = EditTextKey.BirthdateKey,
-                    text = PrintableText.Raw(userDetail?.birthday ?: ""),
-                    visibilityIcon = userDetail?.birthday?.isNotEmpty() ?: false,
+                    text = PrintableText.Raw(userDetail?.birth ?: ""),
+                    visibilityIcon = userDetail?.birth?.isNotEmpty() ?: false,
                     error = null,
                     validateText = null
                 )
@@ -162,6 +168,9 @@ class PersonalityComponentViewModel(
                     }
                     inputText.length in 2..15 -> {
                         isValid = true
+                        userDetail = userDetail?.copy(
+                            name = inputText
+                        )
                         errorPrintableText = PrintableText.StringResource(
                             R.string.personality_incorrect_name
                         )
@@ -185,6 +194,9 @@ class PersonalityComponentViewModel(
                     }
                     inputText.length in PersonalityComponentFragment.MIN_SYMBOLS_NICKNAME..PersonalityComponentFragment.MAX_SYMBOLS_NICKNAME -> {
                         isValid = true
+                        userDetail = userDetail?.copy(
+                            nickname = inputText
+                        )
                         errorPrintableText = PrintableText.StringResource(
                             R.string.personality_incorrect_length_nickname
                         )
@@ -199,12 +211,22 @@ class PersonalityComponentViewModel(
             }
             EditTextKey.BirthdateKey -> {
                 isValid = inputText.isNotEmpty()
+                if(isValid){
+                    userDetail = userDetail?.copy(
+                        birth = inputText
+                    )
+                }
                 errorPrintableText = PrintableText.StringResource(
                     R.string.personality_incorrect_birthday
                 )
             }
             EditTextKey.MailKey -> {
                 isValid = inputText.matches(REGEX_EMAIL_PATTERN)
+                if(isValid){
+                    userDetail = userDetail?.copy(
+                        email = inputText
+                    )
+                }
                 errorPrintableText = PrintableText.StringResource(
                     R.string.personality_incorrect_mail
                 )

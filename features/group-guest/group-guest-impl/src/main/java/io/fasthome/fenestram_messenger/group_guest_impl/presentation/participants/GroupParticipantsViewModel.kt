@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
-import android.graphics.Bitmap
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.imageViewer.ImageViewerModel
@@ -153,8 +152,8 @@ class GroupParticipantsViewModel(
     }
 
 
-    fun onImageClicked(url: String? = null, bitmap: Bitmap? = null) {
-        imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(ImageViewerModel(url, bitmap)))
+    fun onImageClicked(url: String? = null) {
+        imageViewerLauncher.launch(ImageViewerContract.ImageViewerParams.ImageParams(ImageViewerModel(url, null)))
     }
 
     fun onLaunchConversationClicked(personDetail: PersonDetail) {
