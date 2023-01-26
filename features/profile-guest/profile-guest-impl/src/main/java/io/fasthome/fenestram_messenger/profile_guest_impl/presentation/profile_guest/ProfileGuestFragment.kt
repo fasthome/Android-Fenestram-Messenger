@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -218,7 +219,7 @@ class ProfileGuestFragment :
             }
 
             when {
-                state.avatarContent != null -> profileGuestAvatar.setContent(state.avatarContent)
+                state.avatarContent != null -> profileGuestAvatar.setContent(state.avatarContent, CircleCrop())
                 state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
                     url = state.userAvatar,
                     placeholderRes = R.drawable.ic_avatar_placeholder

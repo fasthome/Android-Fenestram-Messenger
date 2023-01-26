@@ -469,7 +469,7 @@ class ConversationViewModel(
                     filename = filename + content.file.name
                 }
                 is Content.LoadableContent -> {
-                    content.load()?.array ?: return
+                    byteArrays = byteArrays + (content.load()?.array?: byteArrayOf())
                     filename = filename + UUID.randomUUID().toString()
                 }
             }
