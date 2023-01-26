@@ -18,7 +18,7 @@
     <string name="contact_add_second_name_label">Фамилия</string>
     <string name="contact_add_number_label">Номер телефона</string>
 
-    <string name="contact_add_name_invalid">Не добавлено имя</string>
+    <string name="contact_add_name_invalid">Имя не может быть пустым</string>
     <string name="contact_add_number_invalid">Некорректный номер телефона</string>
     <string name="contact_add_number_empty">Не добавлен номер телефона</string>
     <string name="contact_add_first_name_hint">(обязательно)</string>

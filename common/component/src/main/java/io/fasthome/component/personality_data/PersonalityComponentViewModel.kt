@@ -175,16 +175,28 @@ class PersonalityComponentViewModel(
                             R.string.personality_incorrect_name
                         )
                     }
-                    else -> {
+                    inputText.length == 1 -> {
                         isValid = false
                         errorPrintableText = PrintableText.StringResource(
                             R.string.personality_incorrect_length_name
+                        )
+                    }
+                    else -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_empty_name_error
                         )
                     }
                 }
             }
             EditTextKey.NicknameKey -> {
                 when {
+                    inputText.isEmpty() -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_empty_nickname_error
+                        )
+                    }
                     users?.any { user -> user.nickname?.let { it == inputText } ?: false }
                         ?: false -> {
                         isValid = false
@@ -201,17 +213,23 @@ class PersonalityComponentViewModel(
                             R.string.personality_incorrect_length_nickname
                         )
                     }
-                    else -> {
+                    inputText.isNotEmpty() -> {
                         isValid = false
                         errorPrintableText = PrintableText.StringResource(
                             R.string.personality_incorrect_length_nickname
+                        )
+                    }
+                    else -> {
+                        isValid = false
+                        errorPrintableText = PrintableText.StringResource(
+                            R.string.personality_incorrect_nickname
                         )
                     }
                 }
             }
             EditTextKey.BirthdateKey -> {
                 isValid = inputText.isNotEmpty()
-                if(isValid){
+                if (isValid) {
                     userDetail = userDetail?.copy(
                         birth = inputText
                     )
@@ -222,7 +240,7 @@ class PersonalityComponentViewModel(
             }
             EditTextKey.MailKey -> {
                 isValid = inputText.matches(REGEX_EMAIL_PATTERN)
-                if(isValid){
+                if (isValid) {
                     userDetail = userDetail?.copy(
                         email = inputText
                     )
@@ -257,7 +275,9 @@ class PersonalityComponentViewModel(
         updateState { state ->
             val fields = state.fields.toMutableMap()
             fields[editTextKey] = fields[editTextKey]!!.copy(
-                error = ifOrNull(!isValid && needValidate && inputText.isNotEmpty()) {
+                error = ifOrNull(
+                    !isValid && needValidate && checkInputText(inputText, editTextKey)
+                ) {
                     errorPrintableText
                 },
                 visibilityIcon = isValid && needValidate,
@@ -270,6 +290,10 @@ class PersonalityComponentViewModel(
             )
         }
     }
+
+    private fun checkInputText(inputText: String, editTextKey: EditTextKey): Boolean = inputText.isNotEmpty() ||
+            (editTextKey == EditTextKey.UsernameKey && !userDetail?.name.isNullOrEmpty()) ||
+            (editTextKey == EditTextKey.NicknameKey && !userDetail?.nickname.isNullOrEmpty())
 
     companion object {
         private const val VALIDATE_DELAY_MILLIS = 300L
