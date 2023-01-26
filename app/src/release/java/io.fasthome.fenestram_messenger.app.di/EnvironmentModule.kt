@@ -15,15 +15,12 @@ object EnvironmentModule {
 
             val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_PROD + "api/${BuildConfig.PROD_API_VERSION}/"
 
-            val refreshTokenUrl = BuildConfig.REFRESH_TOKEN_URL_PROD + "api/${BuildConfig.PROD_API_VERSION}/"
-
             val policyUrl = BuildConfig.POLICY_RULES_URL
 
             Environment(
                 endpoints = Endpoints(
                     baseUrl = BuildConfig.MAIN_API_BASE_URL_PROD,
                     apiBaseUrl = apiBaseUrl,
-                    refreshTokenUrl = refreshTokenUrl,
                     policyUrl = policyUrl
                 ),
                 isDebug = BuildConfig.IS_DEBUG,
