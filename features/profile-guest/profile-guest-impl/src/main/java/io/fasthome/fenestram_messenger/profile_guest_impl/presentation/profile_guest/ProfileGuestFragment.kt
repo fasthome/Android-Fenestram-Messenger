@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -31,10 +33,8 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.model.Bytes
-import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
 
 class ProfileGuestFragment :
@@ -86,6 +86,24 @@ class ProfileGuestFragment :
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
         profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
+        profileGuestName.setOnClickListener { it ->
+            if (!vm.isEditMode()) {
+                if (vm.isGroup()) (it as EditText).copyTextToClipBoard(resources.getString(R.string.common_chat_name_copied))
+                else (it as EditText).copyTextToClipBoard(resources.getString(R.string.common_name_copied))
+            }
+        }
+
+        profileGuestNickname.setOnClickListener { it ->
+            if (!(vm.isEditMode() || vm.isGroup())) {
+                (it as TextView).copyTextToClipBoard(resources.getString(R.string.common_nickname_copied))
+            }
+        }
+
+        profileGuestPhone.setOnClickListener { it ->
+            if (!vm.isEditMode()) {
+                (it as TextView).copyTextToClipBoard(resources.getString(R.string.common_phone_copied))
+            }
+        }
 
 //        vm.fetchFilesAndPhotos()
 
@@ -145,7 +163,9 @@ class ProfileGuestFragment :
             profileGuestPhone.isVisible = !state.isGroup
             profileGuestContainer.isVisible = !state.editMode
             pickPhotoIcon.isVisible = state.editMode && state.isGroup
-            profileGuestName.isEnabled = state.editMode
+            profileGuestName.isFocusable = state.editMode
+            profileGuestName.isFocusableInTouchMode = state.editMode
+            profileGuestName.isCursorVisible = state.editMode
 
             profileGuestName.background.setTint(
                 ContextCompat.getColor(
@@ -216,6 +236,7 @@ class ProfileGuestFragment :
                 )
                 profileGuestPhone.setPrintableText(state.userPhone)
                 profileGuestName.setPrintableText(state.userName)
+                requireActivity().hideKeyboard(true)
             }
 
             when {
