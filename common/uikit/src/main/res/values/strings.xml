@@ -30,5 +30,6 @@
     <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
     <string name="common_allow_permission">Разрешить</string>
     <string name="common_edit">Редактирование</string>
+    <string name="common_empty_chat_name">Название чата не может быть пустым</string>
 
 </resources>

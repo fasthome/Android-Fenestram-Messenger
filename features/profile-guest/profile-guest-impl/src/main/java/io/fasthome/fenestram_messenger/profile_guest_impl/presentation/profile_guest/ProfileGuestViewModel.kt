@@ -40,16 +40,16 @@ class ProfileGuestViewModel(
     private val profileGuestInteractor: ProfileGuestInteractor,
     private val profileImageUrlConverter: StorageUrlConverter,
     private val savedStateHandle: SavedStateHandle,
-    private val features : Features,
+    private val features: Features,
     private val permissionInterface: PermissionInterface,
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val pickFileInterface: PickFileInterface,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
-    class Features (
+    class Features(
         val messengerFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
-            )
+    )
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
 
@@ -96,7 +96,7 @@ class ProfileGuestViewModel(
     }
 
 
-    override fun createInitialState() : ProfileGuestState{
+    override fun createInitialState(): ProfileGuestState {
         val savedState = savedStateHandle.provideSavedState {
             SavedState(
                 runEdit = currentViewState.editMode,
@@ -176,10 +176,10 @@ class ProfileGuestViewModel(
 
     fun onEditClicked(newName: String) {
         viewModelScope.launch {
-            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
             if (newName.isEmpty()) {
                 return@launch
             }
+            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
 
             if (currentViewState.editMode && params.isGroup) {
                 if (newName != getPrintableRawText(currentViewState.userName) &&
@@ -253,8 +253,10 @@ class ProfileGuestViewModel(
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarContent != null) {
                 imageViewerLauncher.launch(
                     ImageViewerContract.ImageViewerParams.ImageParams(
-                        ImageViewerModel(currentViewState.userAvatar,
-                            currentViewState.avatarContent)
+                        ImageViewerModel(
+                            currentViewState.userAvatar,
+                            currentViewState.avatarContent
+                        )
                     )
                 )
             }
@@ -279,7 +281,7 @@ class ProfileGuestViewModel(
 
     @Parcelize
     class SavedState(
-        val avatarContent : Content?,
-        val runEdit : Boolean
+        val avatarContent: Content?,
+        val runEdit: Boolean
     ) : Parcelable
 }
