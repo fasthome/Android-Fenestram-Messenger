@@ -5,6 +5,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -104,9 +106,11 @@ class CreateGroupChatFragment :
 
         if (state.addedContacts.isEmpty()) next.hide() else next.show()
 
+        Handler(Looper.getMainLooper()).postDelayed({
+            listAddedInChat.isVisible = state.addedContacts.isNotEmpty() && state.isGroupChat
+        }, 100)
+        
         contactsAdapter.notifyDataSetChanged()
-
-        listAddedInChat.isVisible = (state.addedContacts.isNotEmpty() && state.isGroupChat)
 
         if (state.isGroupChat) {
             addedContactsAdapter.items = state.addedContacts
