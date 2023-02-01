@@ -3,8 +3,11 @@
  */
 package io.fasthome.fenestram_messenger.util
 
+import android.content.ContentResolver
+import android.net.Uri
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.InputStream
 
 fun createFile(parent : File, fileName : String) : File {
@@ -81,3 +84,7 @@ fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
         }
     }
 }
+
+@Throws(IOException::class)
+fun readBytes(contentResolver: ContentResolver, uri: Uri): ByteArray? =
+    contentResolver.openInputStream(uri)?.buffered()?.use { it.readBytes() }

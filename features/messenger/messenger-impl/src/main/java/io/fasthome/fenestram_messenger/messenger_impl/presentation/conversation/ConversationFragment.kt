@@ -189,6 +189,9 @@ class ConversationFragment :
         inputMessage.doAfterTextChanged { text ->
             vm.fetchTags(text.toString(), inputMessage.selectionStart)
         }
+        inputMessage.setInputContentListener { content->
+            vm.contentInserted(content)
+        }
 
         sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
