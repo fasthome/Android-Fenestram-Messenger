@@ -22,6 +22,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.ProfileGu
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
@@ -279,9 +280,19 @@ class ProfileGuestViewModel(
         }
     }
 
-    fun isEditMode() = currentViewState.editMode
+    fun copyText(text: String, textViewKey: TextViewKey) {
+        if (currentViewState.editMode) return
 
-    fun isGroup() = currentViewState.isGroup
+        val toastMessage = when {
+            textViewKey == TextViewKey.Nickname && !currentViewState.isGroup -> PrintableText.StringResource(R.string.common_nickname_copied)
+            textViewKey == TextViewKey.Phone -> PrintableText.StringResource(R.string.common_phone_copied)
+            textViewKey == TextViewKey.Name && currentViewState.isGroup -> PrintableText.StringResource(R.string.common_chat_name_copied)
+            textViewKey == TextViewKey.Name && !currentViewState.isGroup -> PrintableText.StringResource(R.string.common_name_copied)
+            else -> return
+        }
+
+        sendEvent(ProfileGuestEvent.CopyText(text, toastMessage))
+    }
 
     @Parcelize
     class SavedState(

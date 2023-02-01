@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -33,6 +31,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import org.koin.android.ext.android.inject
@@ -86,23 +85,16 @@ class ProfileGuestFragment :
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
         profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
-        profileGuestName.setOnClickListener { it ->
-            if (!vm.isEditMode()) {
-                if (vm.isGroup()) (it as EditText).copyTextToClipBoard(resources.getString(R.string.common_chat_name_copied))
-                else (it as EditText).copyTextToClipBoard(resources.getString(R.string.common_name_copied))
-            }
+        profileGuestName.setOnClickListener {
+            vm.copyText(profileGuestName.text.toString(), TextViewKey.Name)
         }
 
-        profileGuestNickname.setOnClickListener { it ->
-            if (!(vm.isEditMode() || vm.isGroup())) {
-                (it as TextView).copyTextToClipBoard(resources.getString(R.string.common_nickname_copied))
-            }
+        profileGuestNickname.setOnClickListener {
+            vm.copyText(profileGuestNickname.text.toString(), TextViewKey.Nickname)
         }
 
-        profileGuestPhone.setOnClickListener { it ->
-            if (!vm.isEditMode()) {
-                (it as TextView).copyTextToClipBoard(resources.getString(R.string.common_phone_copied))
-            }
+        profileGuestPhone.setOnClickListener {
+            vm.copyText(profileGuestPhone.text.toString(), TextViewKey.Phone)
         }
 
 //        vm.fetchFilesAndPhotos()
@@ -276,6 +268,9 @@ class ProfileGuestFragment :
                 .show()
             is ProfileGuestEvent.Loading -> {
                 binding.profileGuestEdit.loading(event.isLoading)
+            }
+            is ProfileGuestEvent.CopyText -> {
+                copyTextToClipBoard(event.text, event.toastMessage)
             }
         }
     }
