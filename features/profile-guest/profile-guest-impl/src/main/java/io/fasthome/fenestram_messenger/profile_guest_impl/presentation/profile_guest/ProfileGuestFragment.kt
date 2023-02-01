@@ -151,9 +151,18 @@ class ProfileGuestFragment :
                 ContextCompat.getColor(
                     requireContext(),
                     when (state.profileGuestStatus) {
-                        EditTextStatus.Idle -> R.color.dark1
-                        EditTextStatus.Editable -> R.color.white
-                        EditTextStatus.Error -> R.color.red
+                        EditTextStatus.Idle -> {
+                            profileGuestNameError.isVisible = false
+                            R.color.dark1
+                        }
+                        EditTextStatus.Editable -> {
+                            profileGuestNameError.isVisible = false
+                            R.color.white
+                        }
+                        EditTextStatus.Error -> {
+                            profileGuestNameError.isVisible = true
+                            R.color.red
+                        }
                     }
                 )
             )
