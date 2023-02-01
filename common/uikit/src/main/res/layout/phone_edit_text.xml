@@ -8,29 +8,36 @@
 
     <EditText
         android:id="@+id/phone_input"
+        style="@style/Text.Gray.16sp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/rounded_border"
-        android:fontFamily="@font/geometria"
         android:importantForAutofill="no"
         android:inputType="phone"
         android:padding="10dp"
         android:text="@string/common_country_code_text"
-        android:textColor="@color/gray1"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/country_name"
+        style="@style/Text.Gray.16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:fontFamily="@font/geometria"
-        android:textColor="@color/gray1"
-        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@id/phone_input"
+        app:layout_constraintTop_toBottomOf="@id/phone_input" />
+
+    <TextView
+        android:id="@+id/error_label"
+        style="@style/Text.Red.16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/common_phone_number_error"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/phone_input"
         app:layout_constraintTop_toBottomOf="@id/phone_input" />
 
 </merge>

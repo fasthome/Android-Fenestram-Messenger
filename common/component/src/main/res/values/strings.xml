@@ -8,13 +8,15 @@
     <string name="personality_empty_nickname">Введите ваш никнейм</string>
     <string name="personality_empty_birthdate">дд.мм.гггг</string>
     <string name="personality_empty_email">Введите адрес вашей эл.почты</string>
+    <string name="personality_empty_name_error">Поле имя не может быть пустым</string>
+    <string name="personality_empty_nickname_error">Поле никнейм не может быть пустым</string>
 
     <string name="personality_incorrect_name">Некорректное имя</string>
-    <string name="personality_incorrect_length_name">Некорректная длина имени</string>
+    <string name="personality_incorrect_length_name">Длина имени должна быть больше одного символа</string>
     <string name="personality_incorrect_birthday">Укажите дату рождения</string>
     <string name="personality_incorrect_mail">Некорректная эл. почта</string>
     <string name="personality_incorrect_nickname">Некорректный никнейм</string>
-    <string name="personality_incorrect_length_nickname">Некорректная длина никнейма</string>
+    <string name="personality_incorrect_length_nickname">Длина никнейма должна быть больше одного символа</string>
     <string name="personality_same_nickname">Никнейм занят</string>
     <string name="camera_permission_denied">Требуется доступ к камере</string>
     <string name="camera_capture_error">Ошибка фотографирования</string>
