@@ -1,7 +1,6 @@
 package io.fasthome.fenestram_messenger.uikit.custom_view
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.*
 import android.util.AttributeSet
@@ -9,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import io.fasthome.fenestram_messenger.uikit.R
 import io.fasthome.fenestram_messenger.uikit.databinding.PhoneEditTextBinding
@@ -40,7 +40,7 @@ class PhoneEditText : ConstraintLayout {
 
     private fun setupFilters() {
         with(binding.phoneInput) {
-            binding.phoneInput.filters = arrayOf(PhoneNumberInputFilter())
+            binding.phoneInput.filters = arrayOf(PhoneNumberInputFilter(), InputFilter.LengthFilter(16))
             addTextChangedListener(phoneNumberInputManager)
             addTextChangedListener(PhoneNumberFormattingTextWatcher())
         }
@@ -63,8 +63,15 @@ class PhoneEditText : ConstraintLayout {
     fun setBackground(resId: Int) {
         binding.phoneInput.setBackgroundResource(resId)
     }
+
     fun setBackgroundDrawable(@DrawableRes resId: Int) {
         binding.phoneInput.setBackgroundResource(resId)
+    }
+
+    fun setErrorLabelVisibility(isVisible: Boolean) = with(binding) {
+        if (countryName.text != resources.getString(R.string.common_phone_number_country_error)) {
+            errorLabel.isVisible = isVisible
+        }
     }
 
     inner class PhoneNumberInputManager : TextWatcher {
@@ -91,7 +98,7 @@ class PhoneEditText : ConstraintLayout {
             } else {
                 val country = countryIsoCode?.let {
                     Locale("", it).displayCountry
-                } ?: "Некорректный код страны"
+                } ?: resources.getString(R.string.common_phone_number_country_error)
                 binding.countryName.text = country
             }
         }
@@ -125,7 +132,8 @@ class PhoneEditText : ConstraintLayout {
             dstart: Int,
             dend: Int
         ): CharSequence? {
-            return if (source.toString().matches(Regex("^[\\+]?[\\d\\s\\-]*")))
+            return if (source.toString().matches(Regex("^[\\+]?[\\d\\s\\-]*"))
+            )
                 source
             else
                 source?.dropLast(1)

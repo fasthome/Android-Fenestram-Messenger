@@ -10,10 +10,10 @@ import io.fasthome.fenestram_messenger.uikit.databinding.ViewDialogContentBindin
 
 
 class DialogBuilder(fragment: Fragment) {
+
     private val activity = fragment.requireActivity()
     private val dialog = Dialog(activity, R.style.SheetDialog)
     private val binding = ViewDialogContentBinding.inflate(activity.layoutInflater)
-
     val customViewContainer = binding.customViewContainer
 
     init {

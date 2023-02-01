@@ -11,7 +11,10 @@ class SpacesToUnderscoresInputFilter : InputFilter {
         dest: Spanned?,
         dstart: Int,
         dend: Int
-    ): CharSequence {
-        return source.toString().replace(' ','_')
+    ): CharSequence? {
+        return if (source.toString().contains(' '))
+            source.toString().replace(' ', '_')
+        else
+            null
     }
 }

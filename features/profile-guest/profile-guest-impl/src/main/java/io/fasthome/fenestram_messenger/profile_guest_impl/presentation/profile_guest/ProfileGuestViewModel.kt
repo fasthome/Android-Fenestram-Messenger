@@ -177,10 +177,10 @@ class ProfileGuestViewModel(
 
     fun onEditClicked(newName: String) {
         viewModelScope.launch {
-            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
             if (newName.isEmpty()) {
                 return@launch
             }
+            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
 
             if (currentViewState.editMode && params.isGroup) {
                 if (newName != getPrintableRawText(currentViewState.userName) &&

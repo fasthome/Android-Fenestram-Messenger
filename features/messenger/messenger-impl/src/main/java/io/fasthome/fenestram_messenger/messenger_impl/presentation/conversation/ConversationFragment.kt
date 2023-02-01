@@ -449,7 +449,7 @@ class ConversationFragment :
 
                     text = text.substring(0, tagCharIndex) + event.nickname + text.substring(
                         tagCharIndex
-                    )
+                    ) + " "
                 }
                 binding.inputMessage.setText(text)
                 binding.inputMessage.lastCharFocus()
