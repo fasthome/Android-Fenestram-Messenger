@@ -4,14 +4,12 @@
 package io.fasthome.fenestram_messenger.messenger_api
 
 import android.os.Parcelable
-import io.fasthome.fenestram_messenger.messenger_api.entity.ActionMessageBlank
-import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
-import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
-import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
+import io.fasthome.fenestram_messenger.messenger_api.entity.*
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
+import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
 interface MessengerFeature {
@@ -36,6 +34,10 @@ interface MessengerFeature {
     ): CallResult<SendMessageResult>
 
     suspend fun clearChats()
+
+    suspend fun fetchUnreadCount() : CallResult<Badge>
+
+    fun subscribeUnreadCount() : Flow<Badge>
 
     /**
      * @param chatSelectionMode если true, то экран мессенджера используется для выбора куда переслать сообщение

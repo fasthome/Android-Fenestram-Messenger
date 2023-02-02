@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
@@ -142,7 +143,8 @@ class MessengerRepoImpl(
             messageStatusCallback = { callback.onNewMessageStatus(this) },
             messageDeletedCallback = { callback.onMessageDeleted(this) },
             chatChangesCallback = { callback.onNewChatChanges(this) },
-            chatDeletedCallback = { callback.onDeletedChatCallback(this) }
+            chatDeletedCallback = { callback.onDeletedChatCallback(this) },
+            unreadCountCallback = { callback.onUnreadMessage(this) }
         )
     }
 
@@ -199,6 +201,8 @@ class MessengerRepoImpl(
     }
 
     override suspend fun clearChats() = chatStorage.deleteChats()
+
+    override suspend fun fetchUnreadCount(): CallResult<Badge> = callForResult { messengerService.fetchUnreadCount() }
 
     override suspend fun getDocument(
         storagePath: String,
