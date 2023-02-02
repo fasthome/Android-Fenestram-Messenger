@@ -31,11 +31,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.koin.android.ext.android.inject
 import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
-import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
 open class BottomSheetFragment(
-    private val contentClazz: KClass<out Fragment>,
+    private val contentClazz: KClass<out BaseFragment<*, *>>,
     private val config: Config = Config(Fullscreen, true),
 ) : Fragment(R.layout.fragment_bottom_sheet), ModalWindow, BackPressConsumer {
 
@@ -62,9 +61,9 @@ open class BottomSheetFragment(
 
     private val router: ContractRouter by inject()
     private val binding by fragmentViewBinding(FragmentBottomSheetBinding::bind)
-    private var fragmentInstance: Fragment? = null
+    private var fragmentInstance: BaseFragment<*, *>? = null
 
-    private var currentState: State? = null
+    private var currentState: BottomSheetState? = null
     private var dismissed: Boolean = false
 
     private var _behavior: BottomSheetBehavior<FragmentContainerView>? = null
@@ -72,7 +71,7 @@ open class BottomSheetFragment(
 
     private val stateCallback = StateChangeListener { newState ->
         currentState = newState
-        if (newState == State.HIDDEN) {
+        if (newState == BottomSheetState.HIDDEN) {
             if (fragmentInstance is BottomSheetDismissListener) {
                 (fragmentInstance as BottomSheetDismissListener).onDismiss()
             } else {
@@ -82,10 +81,11 @@ open class BottomSheetFragment(
     }
 
     private val slideCallback = SlideChangeListener { slideOffset ->
-        binding.root.background.alpha =
-            (State.EXPANDED.alpha + State.EXPANDED.alpha * slideOffset)
-                .roundToInt()
-                .coerceIn(State.HIDDEN.alpha, State.EXPANDED.alpha)
+        fragmentInstance?.handleSlideCallback(slideOffset)
+//        binding.root.background.alpha =
+//            (BottomSheetState.EXPANDED.alpha + BottomSheetState.EXPANDED.alpha * slideOffset)
+//                .roundToInt()
+//                .coerceIn(BottomSheetState.HIDDEN.alpha, BottomSheetState.EXPANDED.alpha)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,14 +99,14 @@ open class BottomSheetFragment(
             }
             consumeRestoredStateForKey(KEY_SAVED_STATE)?.let { saved ->
                 if (saved.getBoolean(KEY_DISMISSED)) {
-                    currentState = State.HIDDEN
+                    currentState = BottomSheetState.HIDDEN
                     if (fragmentInstance is BottomSheetDismissListener) {
                         (fragmentInstance as BottomSheetDismissListener).onDismiss()
                     } else {
                         router.exit()
                     }
                 } else {
-                    currentState = saved.getSerializable(KEY_BEHAVIOR_STATE) as? State
+                    currentState = saved.getSerializable(KEY_BEHAVIOR_STATE) as? BottomSheetState
                 }
             }
         }
@@ -116,7 +116,7 @@ open class BottomSheetFragment(
         super.onViewCreated(view, savedInstanceState)
 
         binding.root.apply {
-            background.alpha = (currentState ?: State.HIDDEN).alpha
+//            background.alpha = (currentState ?: State.HIDDEN).alpha
             if (config.canceledOnTouchOutside) setOnClickListener { router.exit() }
         }
 
@@ -124,8 +124,8 @@ open class BottomSheetFragment(
             currentState
                 ?.let { setState(it) }
                 ?: let {
-                    currentState = State.COLLAPSED
-                    setState(State.HIDDEN)
+                    currentState = BottomSheetState.COLLAPSED
+                    setState(BottomSheetState.HIDDEN)
                 }
             addBottomSheetCallback(stateCallback)
             addBottomSheetCallback(slideCallback)
@@ -167,7 +167,7 @@ open class BottomSheetFragment(
     override suspend fun dismiss() {
         when {
             dismissed -> throw CancellationException()
-            currentState == State.HIDDEN -> return
+            currentState == BottomSheetState.HIDDEN -> return
             else -> {
                 dismissed = true
                 viewLifecycleOwner.lifecycleScope
@@ -179,14 +179,14 @@ open class BottomSheetFragment(
 
     private suspend fun performDismiss() = suspendCancellableCoroutine<Unit> { continuation ->
         val listener = StateChangeListener { newState ->
-            if (newState == State.HIDDEN) continuation.resume(Unit)
+            if (newState == BottomSheetState.HIDDEN) continuation.resume(Unit)
         }
         behavior.apply {
             removeBottomSheetCallback(stateCallback)
             addBottomSheetCallback(listener)
             isHideable = true
             isDraggable = false
-            setState(State.HIDDEN)
+            setState(BottomSheetState.HIDDEN)
         }
         continuation.invokeOnCancellation { behavior.removeBottomSheetCallback(listener) }
     }
@@ -194,7 +194,7 @@ open class BottomSheetFragment(
     override fun onBackPressed(): Boolean =
         childFragmentManager.onBackPressed()
 
-    private enum class State(val flag: Int, val alpha: Int) {
+    enum class BottomSheetState(val flag: Int, val alpha: Int) {
         HIDDEN(BottomSheetBehavior.STATE_HIDDEN, 0),
         COLLAPSED(BottomSheetBehavior.STATE_COLLAPSED, 255),
         EXPANDED(BottomSheetBehavior.STATE_EXPANDED, 255)
@@ -274,7 +274,7 @@ open class BottomSheetFragment(
         }
     }
 
-    private fun BottomSheetBehavior<*>.setState(state: State) {
+    private fun BottomSheetBehavior<*>.setState(state: BottomSheetState) {
         this.state = state.flag
     }
 
@@ -283,10 +283,10 @@ open class BottomSheetFragment(
     }
 
     private class StateChangeListener(
-        val block: (newState: State) -> Unit,
+        val block: (newState: BottomSheetState) -> Unit,
     ) : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
-            State.values().find { it.flag == newState }?.let(block)
+            BottomSheetState.values().find { it.flag == newState }?.let(block)
         }
 
         override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit

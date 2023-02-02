@@ -30,6 +30,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentT
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -84,6 +85,8 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
+
+    private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract)
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -1018,9 +1021,10 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        sendEvent(ConversationEvent.ShowSelectFromDialog(attachedContent =
-        (currentViewState.inputMessageMode as InputMessageMode.Default).attachedFiles.filterIsInstance<AttachedFile.Image>()
-            .map { it.content }))
+        fileSelectorLauncher.launch()
+//        sendEvent(ConversationEvent.ShowSelectFromDialog(attachedContent =
+//        (currentViewState.inputMessageMode as InputMessageMode.Default).attachedFiles.filterIsInstance<AttachedFile.Image>()
+//            .map { it.content }))
     }
 
     private fun openCameraFragment() {

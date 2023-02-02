@@ -63,4 +63,6 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
 
     protected abstract fun renderState(state: State)
     protected abstract fun handleEvent(event: Event)
+
+    open fun handleSlideCallback(offset : Float){}
 }
