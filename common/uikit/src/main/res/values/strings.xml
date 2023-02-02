@@ -13,6 +13,8 @@
     <string name="common_welcome_message_label">Добро пожаловать\nв Hoolichat!</string>
     <string name="common_hoolichat_label">hoolichat</string>
     <string name="common_phone_number_label">Номер телефона</string>
+    <string name="common_phone_number_error">Неверный формат ввода номера</string>
+    <string name="common_phone_number_country_error">Некорректный код страны</string>
     <string name="common_country_code_text">+7</string>
     <string name="common_send_code_button">Отправить код</string>
     <string name="common_input_code_label">Введите код из СМС</string>
@@ -33,5 +35,10 @@
     <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
     <string name="common_allow_permission">Разрешить</string>
     <string name="common_edit">Редактирование</string>
+    <string name="common_name_copied">Имя пользователя скопировано</string>
+    <string name="common_chat_name_copied">Имя чата скопировано</string>
+    <string name="common_nickname_copied">Никнейм пользователя скопирован</string>
+    <string name="common_phone_copied">Телефон пользователя скопирован</string>
+    <string name="common_empty_chat_name">Название чата не может быть пустым</string>
 
 </resources>

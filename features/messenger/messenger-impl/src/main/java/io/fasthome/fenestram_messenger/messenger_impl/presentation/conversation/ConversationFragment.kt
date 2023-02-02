@@ -189,6 +189,9 @@ class ConversationFragment :
         inputMessage.doAfterTextChanged { text ->
             vm.fetchTags(text.toString(), inputMessage.selectionStart)
         }
+        inputMessage.setInputContentListener { content->
+            vm.contentInserted(content)
+        }
 
         sendButton.onClick() {
             vm.addMessageToConversation(inputMessage.text.toString())
@@ -463,7 +466,7 @@ class ConversationFragment :
 
                     text = text.substring(0, tagCharIndex) + event.nickname + text.substring(
                         tagCharIndex
-                    )
+                    ) + " "
                 }
                 binding.inputMessage.setText(text)
                 binding.inputMessage.lastCharFocus()

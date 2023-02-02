@@ -333,7 +333,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatEditText
+    <io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.InputMessageView
         android:id="@+id/input_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

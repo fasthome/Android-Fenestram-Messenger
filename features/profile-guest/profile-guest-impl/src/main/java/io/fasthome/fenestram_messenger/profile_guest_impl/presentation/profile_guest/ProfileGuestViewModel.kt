@@ -22,6 +22,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.ProfileGu
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
@@ -40,16 +41,16 @@ class ProfileGuestViewModel(
     private val profileGuestInteractor: ProfileGuestInteractor,
     private val profileImageUrlConverter: StorageUrlConverter,
     private val savedStateHandle: SavedStateHandle,
-    private val features : Features,
+    private val features: Features,
     private val permissionInterface: PermissionInterface,
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val pickFileInterface: PickFileInterface,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
-    class Features (
+    class Features(
         val messengerFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
-            )
+    )
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
 
@@ -96,7 +97,7 @@ class ProfileGuestViewModel(
     }
 
 
-    override fun createInitialState() : ProfileGuestState{
+    override fun createInitialState(): ProfileGuestState {
         val savedState = savedStateHandle.provideSavedState {
             SavedState(
                 runEdit = currentViewState.editMode,
@@ -176,10 +177,10 @@ class ProfileGuestViewModel(
 
     fun onEditClicked(newName: String) {
         viewModelScope.launch {
-            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
             if (newName.isEmpty()) {
                 return@launch
             }
+            sendEvent(ProfileGuestEvent.Loading(isLoading = true))
 
             if (currentViewState.editMode && params.isGroup) {
                 if (newName != getPrintableRawText(currentViewState.userName) &&
@@ -253,8 +254,10 @@ class ProfileGuestViewModel(
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarContent != null) {
                 imageViewerLauncher.launch(
                     ImageViewerContract.ImageViewerParams.ImageParams(
-                        ImageViewerModel(currentViewState.userAvatar,
-                            currentViewState.avatarContent)
+                        ImageViewerModel(
+                            currentViewState.userAvatar,
+                            currentViewState.avatarContent
+                        )
                     )
                 )
             }
@@ -277,9 +280,23 @@ class ProfileGuestViewModel(
         }
     }
 
+    fun copyText(text: String, textViewKey: TextViewKey) {
+        if (currentViewState.editMode) return
+
+        val toastMessage = when {
+            textViewKey == TextViewKey.Nickname && !currentViewState.isGroup -> PrintableText.StringResource(R.string.common_nickname_copied)
+            textViewKey == TextViewKey.Phone -> PrintableText.StringResource(R.string.common_phone_copied)
+            textViewKey == TextViewKey.Name && currentViewState.isGroup -> PrintableText.StringResource(R.string.common_chat_name_copied)
+            textViewKey == TextViewKey.Name && !currentViewState.isGroup -> PrintableText.StringResource(R.string.common_name_copied)
+            else -> return
+        }
+
+        sendEvent(ProfileGuestEvent.CopyText(text, toastMessage))
+    }
+
     @Parcelize
     class SavedState(
-        val avatarContent : Content?,
-        val runEdit : Boolean
+        val avatarContent: Content?,
+        val runEdit: Boolean
     ) : Parcelable
 }

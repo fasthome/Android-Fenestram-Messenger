@@ -49,10 +49,12 @@ class ContactAddViewModel(
     }
 
     fun onNameTextChanged(firstName: String, isValid: Boolean) {
-        if (firstName.isNotEmpty() && isValid) {
-            updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
-        } else {
-            updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameIdle) }
+        when {
+            firstName.trim().isEmpty() -> updateState {
+                ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameEmptyAndNumberCorrect)
+            }
+            firstName.isNotEmpty() && isValid -> updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameFilledAndNumberCorrect) }
+            else -> updateState { ContactAddState.ContactAddStatus(ContactAddFragment.EditTextStatus.NameIdle) }
         }
     }
 
