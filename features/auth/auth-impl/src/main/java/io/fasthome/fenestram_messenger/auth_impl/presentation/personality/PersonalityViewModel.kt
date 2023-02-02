@@ -166,14 +166,6 @@ class PersonalityViewModel(
                                     it
                                 }
                         }
-                        is Content.GalleryContent -> {
-                            profileFeature.uploadProfileImage(
-                                galleryOperations.getFileFromGalleryUri(avatarContent.galleryImageUri).readBytes()
-                            ).getOrNull()?.profileImagePath.let {
-                                avatarUrl = profileImageUrlConverter.convert(it)
-                                it
-                            }
-                        }
                     }
                 }
                 !avatarUrl.isNullOrEmpty() -> {

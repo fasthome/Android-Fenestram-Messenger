@@ -203,7 +203,6 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
             when (content) {
                 is Content.FileContent -> content.file
                 is Content.LoadableContent -> content
-                is Content.GalleryContent -> content.galleryImageUri
             }
         )
         .transform(*transformations)

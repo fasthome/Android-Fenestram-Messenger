@@ -498,12 +498,6 @@ class ConversationViewModel(
                     byteArrays = byteArrays + (content.load()?.array ?: byteArrayOf())
                     filename = filename + UUID.randomUUID().toString()
                 }
-                is Content.GalleryContent -> {
-                    byteArrays =
-                        byteArrays + galleryOperations.getFileFromGalleryUri(content.galleryImageUri)
-                            .readBytes()
-                    filename = filename + UUID.randomUUID().toString()
-                }
             }
         }
 

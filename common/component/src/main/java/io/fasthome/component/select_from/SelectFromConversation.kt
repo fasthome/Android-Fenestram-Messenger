@@ -16,6 +16,7 @@ import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.component.gallery.GalleryOperationsImpl
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import io.fasthome.fenestram_messenger.util.onClick
 
 object SelectFromConversation {
@@ -31,7 +32,7 @@ object SelectFromConversation {
         onSendMessageClicked: (text: String) -> Unit,
         onAttachFiles: (attachedImage: List<Content>) -> Unit
     ): Dialog {
-        val attachedContentGalleryUri = attachedContent.filterIsInstance<Content.GalleryContent>().map { it.galleryImageUri }
+        val attachedContentGalleryUri = attachedContent.filterIsInstance<UriLoadableContent>().map { it.uri }
         val binding = ConversationSelectFromBinding.inflate(fragment.layoutInflater)
         val selectedList = attachedContent.toMutableList()
         val listAllImages = mutableListOf<GalleryImage>()
@@ -85,7 +86,7 @@ object SelectFromConversation {
                     onImageClicked(uri)
                 },
                 onCheckImage = { image ->
-                    if (image.isChecked) selectedList.add(Content.GalleryContent(image.uri)) else selectedList.removeIf { (it as? Content.GalleryContent)?.galleryImageUri == image.uri }
+                    if (image.isChecked) selectedList.add(UriLoadableContent(image.uri)) else selectedList.removeIf { (it as? UriLoadableContent)?.uri == image.uri }
                     onAttachFiles(selectedList)
                     if (selectedList.isNotEmpty()) {
                         buildedDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
