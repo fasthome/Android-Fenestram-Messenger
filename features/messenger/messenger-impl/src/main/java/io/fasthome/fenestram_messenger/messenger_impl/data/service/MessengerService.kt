@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.service
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
@@ -171,6 +172,17 @@ class MessengerService(
                 path = "chats/message/$chatId/$messageId",
                 body = EditMessageRequest(newText)
             )
+    }
+
+    suspend fun fetchUnreadCount(): Badge {
+        val response: BaseResponse<BadgeResponse> =
+            client.runGet(
+                path = "chats/total_pending_messages",
+            )
+
+        return response.requireData().let {
+            Badge(count = it.totalPending)
+        }
     }
 
 }
