@@ -23,8 +23,7 @@ object ImageViewerContract :
         data class ImagesParams(
             override val imageViewerModel: List<ImageViewerModel>,
             val currentImagePosition: Int,
-        ) : ImageViewerParams() {
-        }
+        ) : ImageViewerParams()
 
         @Parcelize
         data class MessageImageParams(

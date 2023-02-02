@@ -21,6 +21,7 @@ class ConfirmPhotoViewModel(
         val file = when (val content = params.content) {
             is Content.FileContent -> content.file
             is Content.LoadableContent -> null
+            is Content.GalleryContent -> null
         }
 
         file?.let { exitWithResult(ConfirmResult.Action.Confirm(it)) }

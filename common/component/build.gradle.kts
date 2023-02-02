@@ -17,6 +17,8 @@ dependencies {
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
 
+    implementation(Deps.flexbox)
+
     api(Deps.AndroidX.Camera.core)
     api(Deps.AndroidX.Camera.camera2)
     api(Deps.AndroidX.Camera.lifecycle)

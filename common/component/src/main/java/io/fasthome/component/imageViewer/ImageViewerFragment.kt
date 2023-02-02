@@ -1,6 +1,7 @@
 package io.fasthome.component.imageViewer
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -57,22 +58,53 @@ class ImageViewerFragment :
             binding.tvCounter.text = getString(R.string.common_value_from_value_ph,
                 (state.currPhotoPosition ?: 0) + 1,
                 state.imagesViewerModel.size)
-            binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    val pos =
-                        (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
-                            ?: return
-                    binding.tvCounter.text = getString(R.string.common_value_from_value_ph,
-                        pos + 1,
-                        state.imagesViewerModel.size)
+        }
+
+        binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                val pos =
+                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
+                        ?: return
+                binding.tvCounter.text = getString(R.string.common_value_from_value_ph,
+                    pos + 1,
+                    state.imagesViewerModel.size)
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val pos =
+                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
+                        ?: return
+                val cursorPosition =
+                    adapterImages.items.getOrNull(pos)?.imageGallery?.cursorPosition
+                if (cursorPosition != null) {
+                    when (pos) {
+                        0 -> {
+                            adapterImages.items =
+                                vm.loadBeforeImages(cursorPosition) + adapterImages.items
+                            Log.d("ImageViewerFragment", "onScrolled: loadBeforeImages")
+                        }
+                        adapterImages.itemCount -> {
+                            adapterImages.items =
+                                adapterImages.items + vm.loadAfterImages(cursorPosition)
+                            Log.d("ImageViewerFragment", "onScrolled: loadAfterImages")
+                        }
+                    }
                 }
-            })
+            }
+        })
+
+        val galleryImage = state.imagesViewerModel.firstOrNull()?.imageGallery
+        if (galleryImage == null) {
+            adapterImages.items = state.imagesViewerModel
+            binding.rvImages.scrollToPosition(state.currPhotoPosition ?: 0)
+        } else {
+            val images = vm.getImageFirstStart(galleryImage)
+            adapterImages.items = images
+            binding.rvImages.scrollToPosition(images.indexOfFirst { it.imageGallery?.cursorPosition == galleryImage.cursorPosition })
         }
-        adapterImages.items = state.imagesViewerModel
-        if (state.imagesViewerModel.isNotEmpty()) state.currPhotoPosition?.let {
-            binding.rvImages.scrollToPosition(it)
-        }
+
         binding.ibDelete.isVisible = state.canDelete
         binding.ibForward.isVisible = state.canForward
         binding.ibDelete.onClick {

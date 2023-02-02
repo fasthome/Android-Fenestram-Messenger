@@ -375,10 +375,11 @@ class ConversationFragment :
                 ),
                     onCloseClick = { vm.exitToMessenger() })
             }
-            ConversationEvent.ShowSelectFromDialog ->
+            is ConversationEvent.ShowSelectFromDialog ->
                 SelectFromConversation
                     .create(
                         fragment = this,
+                        attachedContent = event.attachedContent,
                         fromCameraClicked = {
                             vm.selectFromCamera()
                         },
@@ -387,7 +388,20 @@ class ConversationFragment :
                         },
                         attachFileClicked = {
                             vm.selectAttachFile()
-                        })
+                        },
+                        onLoadImages = { page ->
+                            return@create vm.getImagesOnPage(page)
+                        },
+                        onImageClicked = {
+                            vm.onImageClicked(galleryImage = it)
+                        },
+                        onSendMessageClicked = { text ->
+                            vm.addMessageToConversation(text)
+                        },
+                        onAttachFiles = {
+                            vm.addGalleryImagesToAttach(it)
+                        }
+                    )
                     .show()
             is ConversationEvent.ShowPersonDetailDialog ->
                 if (!PersonDetailDialog.isShowing()) {

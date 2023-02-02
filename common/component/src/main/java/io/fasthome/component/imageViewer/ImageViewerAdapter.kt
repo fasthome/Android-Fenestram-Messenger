@@ -4,6 +4,7 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.component.databinding.ItemImageViewerBinding
+import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.core.ui.extensions.setContent
 import io.fasthome.fenestram_messenger.util.AdapterUtil
@@ -17,7 +18,7 @@ class ImageViewerAdapter(
     onToggleScroll: (Boolean) -> Unit,
 ) : AsyncListDifferDelegationAdapter<ImageViewerModel>(
     AdapterUtil.diffUtilItemCallbackEquals(
-        ImageViewerModel::imageUrl
+        ImageViewerModel::imageGallery
     ), AdapterUtil.adapterDelegatesManager(
         createImageAdapterDelegate(onDownSwipe, onRootAlphaChanged, onToggleScroll)
     )
@@ -47,6 +48,9 @@ fun createImageAdapterDelegate(
                 }
                 item.imageUrl?.let {
                     loadRounded(it, radius = 1, transform = FitCenter())
+                }
+                item.imageGallery?.let {
+                    loadRounded(it.uri, radius = 1.dp, transform = FitCenter())
                 }
             }
         }

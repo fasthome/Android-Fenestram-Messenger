@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="messageHint">Ваше сообщение</string>
+    <string name="common_selected">Выбрано </string>
+    <string name="images">Изображения</string>
     <string name="common_skip_button">Пропустить</string>
     <string name="common_done_b">Готово</string>
     <string name="common_cancel_b">Отмена</string>

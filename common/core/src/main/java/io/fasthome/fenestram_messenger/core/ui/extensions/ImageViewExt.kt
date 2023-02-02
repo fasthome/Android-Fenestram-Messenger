@@ -6,10 +6,14 @@ package io.fasthome.fenestram_messenger.core.ui.extensions
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Registry
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.Transformation
@@ -29,6 +33,7 @@ import io.fasthome.fenestram_messenger.util.dp
 import org.koin.core.component.KoinComponent
 import java.nio.ByteBuffer
 
+
 @GlideModule
 class AppGlideModule : AppGlideModule(), KoinComponent {
 
@@ -41,7 +46,7 @@ fun ImageView.loadRounded(
     url: String?,
     placeholderRes: Int? = null,
     radius: Int = 5.dp,
-    transform: BitmapTransformation? = CenterCrop()
+    transform: BitmapTransformation? = CenterCrop(),
 ) {
     var plcRes = placeholderRes
     if (plcRes == null) {
@@ -57,10 +62,57 @@ fun ImageView.loadRounded(
 }
 
 fun ImageView.loadRounded(
+    uri: Uri?,
+    placeholderRes: Int? = null,
+    radius: Int = 5.dp,
+    transform: BitmapTransformation? = CenterCrop(),
+    progressBar: ProgressBar? = null,
+    sizeMultiplier: Float = 1f
+) {
+    progressBar?.isVisible = true
+    var plcRes = placeholderRes
+    if (plcRes == null) {
+        plcRes = R.drawable.shape_placeholder_gray
+    }
+
+    Glide
+        .with(this)
+        .load(uri)
+        .sizeMultiplier(sizeMultiplier)
+        .transform(transform, RoundedCorners(radius))
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .listener(object: RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean,
+            ): Boolean {
+                progressBar?.isVisible = false
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean,
+            ): Boolean {
+                progressBar?.isVisible = false
+                return false
+            }
+
+        })
+        .placeholder(plcRes)
+        .into(this)
+}
+
+fun ImageView.loadRounded(
     bitmap: Bitmap?,
     placeholderRes: Int? = null,
     radius: Int = 5.dp,
-    transform: BitmapTransformation? = CenterCrop()
+    transform: BitmapTransformation? = CenterCrop(),
 ) {
     var plcRes = placeholderRes
     if (plcRes == null) {
@@ -99,7 +151,7 @@ fun ImageView.loadCircle(
                     e: GlideException?,
                     model: Any?,
                     target: Target<Drawable>?,
-                    isFirstResource: Boolean
+                    isFirstResource: Boolean,
                 ): Boolean {
                     onLoadFailed()
                     return false
@@ -110,7 +162,7 @@ fun ImageView.loadCircle(
                     model: Any?,
                     target: Target<Drawable>?,
                     dataSource: DataSource?,
-                    isFirstResource: Boolean
+                    isFirstResource: Boolean,
                 ): Boolean {
                     onResourceReady()
                     return false
@@ -123,7 +175,7 @@ fun ImageView.loadCircle(
 
 fun ImageView.loadCircle(
     @DrawableRes imageRes: Int?,
-    placeholderRes: Int = R.drawable.shape_placeholder_gray
+    placeholderRes: Int = R.drawable.shape_placeholder_gray,
 ) {
     checkNotNull(imageRes)
     Glide
@@ -151,6 +203,7 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
             when (content) {
                 is Content.FileContent -> content.file
                 is Content.LoadableContent -> content
+                is Content.GalleryContent -> content.galleryImageUri
             }
         )
         .transform(*transformations)

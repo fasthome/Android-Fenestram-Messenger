@@ -4,6 +4,8 @@ import android.Manifest
 import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.gallery.GalleryImage
+import io.fasthome.component.gallery.GalleryOperations
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
@@ -19,7 +21,6 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.ActionMessageBlank
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
-import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
@@ -30,7 +31,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInte
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
-import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -65,6 +65,7 @@ class ConversationViewModel(
     private val storageUrlConverter: StorageUrlConverter,
     private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
     private val permissionInterface: PermissionInterface,
+    private val galleryOperations: GalleryOperations,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     class Features(
@@ -229,7 +230,7 @@ class ConversationViewModel(
             }
 
             params.actionMessageBlank?.let {
-                when(it){
+                when (it) {
                     is ActionMessageBlank.Image -> {
                         pickFileInterface.processUri(it.uri)
                     }
@@ -369,19 +370,41 @@ class ConversationViewModel(
         }
     }
 
-    private fun attachContentFile(content: Content) {
+    fun addGalleryImagesToAttach(galleryImages: List<Content>) {
         updateState { state ->
+            val attachedImages = galleryImages.map { AttachedFile.Image(it) }
+            val newAttachedFiles =
+                (((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles)
+                    ?: emptyList()).filterIsInstance<AttachedFile.Document>() + attachedImages
+
             state.copy(
                 inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
-                        ?: emptyList()).plus(
-                        AttachedFile.Image(
-                            content = content
-                        )
-                    )
+                    attachedFiles = newAttachedFiles
                 )
             )
         }
+    }
+
+    private fun attachContentFile(content: Content) {
+        val attachedFile = AttachedFile.Image(content)
+        updateState { state ->
+            val newAttachedFiles =
+                (((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles)
+                    ?: emptyList()) + attachedFile
+            state.copy(
+                inputMessageMode = InputMessageMode.Default(
+                    attachedFiles = newAttachedFiles
+                )
+            )
+
+        }
+    }
+
+    fun addMessageWithGalleryImages(mess: String, galleryImage: List<GalleryImage>) {
+        if (galleryImage.isNotEmpty()) sendFiles(galleryImage.map {
+            AttachedFile.Image(Content.FileContent(galleryOperations.getFileFromGalleryImage(it)))
+        })
+        addMessageToConversation(mess)
     }
 
     fun addMessageToConversation(mess: String) {
@@ -469,7 +492,13 @@ class ConversationViewModel(
                     filename = filename + content.file.name
                 }
                 is Content.LoadableContent -> {
-                    byteArrays = byteArrays + (content.load()?.array?: byteArrayOf())
+                    byteArrays = byteArrays + (content.load()?.array ?: byteArrayOf())
+                    filename = filename + UUID.randomUUID().toString()
+                }
+                is Content.GalleryContent -> {
+                    byteArrays =
+                        byteArrays + galleryOperations.getFileFromGalleryUri(content.galleryImageUri)
+                            .readBytes()
                     filename = filename + UUID.randomUUID().toString()
                 }
             }
@@ -947,11 +976,11 @@ class ConversationViewModel(
         }
     }
 
-    private fun onChatDeletedCallback(deletedChatId:Long) {
-        if(chatId == deletedChatId && !userDeleteChat)
-        sendEvent(
-            ConversationEvent.ShowChatDeletedDialog
-        )
+    private fun onChatDeletedCallback(deletedChatId: Long) {
+        if (chatId == deletedChatId && !userDeleteChat)
+            sendEvent(
+                ConversationEvent.ShowChatDeletedDialog
+            )
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
@@ -989,11 +1018,9 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        if ((currentViewState.inputMessageMode as? InputMessageMode.Default)?.attachedFiles?.size == 10) {
-            showMessage(Message.PopUp(PrintableText.StringResource(R.string.messenger_max_attach)))
-            return
-        }
-        sendEvent(ConversationEvent.ShowSelectFromDialog)
+        sendEvent(ConversationEvent.ShowSelectFromDialog(attachedContent =
+        (currentViewState.inputMessageMode as InputMessageMode.Default).attachedFiles.filterIsInstance<AttachedFile.Image>()
+            .map { it.content }))
     }
 
     private fun openCameraFragment() {
@@ -1031,6 +1058,10 @@ class ConversationViewModel(
 
     fun selectAttachFile() {
         pickFileInterface.pickFile(PickFileComponentParams.MimeType.Document())
+    }
+
+    fun getImagesOnPage(page: Int): List<GalleryImage> {
+        return galleryOperations.getGalleryImages(page)
     }
 
 
@@ -1115,15 +1146,26 @@ class ConversationViewModel(
         imageViewerLauncher.launch(imageParams)
     }
 
+
     fun onImageClicked(
         url: String? = null,
         conversationViewItem: ConversationViewItem? = null,
+        galleryImage: GalleryImage? = null,
     ) {
-        val imageParams =
-            if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                ImageViewerModel(url, null)
-            )
-            else {
+        val imageParams = when {
+            url != null -> {
+                ImageViewerContract.ImageViewerParams.ImageParams(
+                    ImageViewerModel(url, null)
+                )
+            }
+            galleryImage != null -> {
+                ImageViewerContract.ImageViewerParams.ImageParams(
+                    imageModel = ImageViewerModel(
+                        null, null, imageGallery = galleryImage
+                    )
+                )
+            }
+            chatId != null && conversationViewItem != null -> {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
                     imageViewerModel = listOf(ImageViewerModel(mess.content as? String, null)),
@@ -1132,7 +1174,10 @@ class ConversationViewModel(
                     username = conversationViewItem.userName
                 )
             }
-
+            else -> {
+                return
+            }
+        }
         imageViewerLauncher.launch(imageParams)
     }
 
