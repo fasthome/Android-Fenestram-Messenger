@@ -21,7 +21,6 @@ import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
-import io.fasthome.component.select_from.SelectFromConversation
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
@@ -378,34 +377,6 @@ class ConversationFragment :
                 ),
                     onCloseClick = { vm.exitToMessenger() })
             }
-            is ConversationEvent.ShowSelectFromDialog ->
-                SelectFromConversation
-                    .create(
-                        fragment = this,
-                        attachedContent = event.attachedContent,
-                        fromCameraClicked = {
-                            vm.selectFromCamera()
-                        },
-                        fromGalleryClicked = {
-                            vm.selectFromGallery()
-                        },
-                        attachFileClicked = {
-                            vm.selectAttachFile()
-                        },
-                        onLoadImages = { page ->
-                            return@create vm.getImagesOnPage(page)
-                        },
-                        onImageClicked = {
-                            vm.onImageClicked(galleryImage = it)
-                        },
-                        onSendMessageClicked = { text ->
-                            vm.addMessageToConversation(text)
-                        },
-                        onAttachFiles = {
-                            vm.addGalleryImagesToAttach(it)
-                        }
-                    )
-                    .show()
             is ConversationEvent.ShowPersonDetailDialog ->
                 if (!PersonDetailDialog.isShowing()) {
                     PersonDetailDialog

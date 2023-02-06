@@ -1,18 +1,19 @@
 package io.fasthome.component.imageViewer
 
 import io.fasthome.component.gallery.GalleryImage
-import io.fasthome.component.gallery.GalleryOperations
-import io.fasthome.component.gallery.GalleryOperationsImpl
-import io.fasthome.component.gallery.GalleryOperationsImpl.Companion.IMAGES_COUNT_MEDIUM_PAGE
+import io.fasthome.component.gallery.GalleryRepository
+import io.fasthome.component.gallery.GalleryRepositoryImpl.Companion.IMAGES_COUNT_MEDIUM_PAGE
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.util.map
+import io.fasthome.fenestram_messenger.util.onSuccess
 
 class ImageViewerViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ImageViewerContract.ImageViewerParams,
-    private val galleryOperations: GalleryOperations,
+    private val galleryRepository: GalleryRepository,
 ) : BaseViewModel<ImageViewerState, ImageViewerEvent>(
     router, requestParams
 ) {
@@ -33,25 +34,45 @@ class ImageViewerViewModel(
 
     fun getImageFirstStart(galleryImage: GalleryImage): List<ImageViewerModel> {
         val afterImages = loadAfterImages(galleryImage.cursorPosition)
-        val beforeImages = loadBeforeImages(galleryImage.cursorPosition-1)
+        val beforeImages = loadBeforeImages(galleryImage.cursorPosition - 1)
         return beforeImages + afterImages
     }
 
-    fun loadAfterImages(cursorPosition: Int) = galleryOperations.getGalleryImagesAfter(cursorPosition, IMAGES_COUNT_MEDIUM_PAGE).map { ImageViewerModel(null,null,it) }
+    fun loadAfterImages(cursorPosition: Int): List<ImageViewerModel> {
+        galleryRepository.getGalleryImagesAfter(cursorPosition, IMAGES_COUNT_MEDIUM_PAGE)
+            .onSuccess { images ->
+                return images.map { ImageViewerModel(null, null, it) }
+            }
+        return emptyList()
+    }
 
-    fun loadBeforeImages(cursorPosition: Int) = galleryOperations.getGalleryImagesBefore(cursorPosition,IMAGES_COUNT_MEDIUM_PAGE).map { ImageViewerModel(null,null,it) }
+    fun loadBeforeImages(cursorPosition: Int): List<ImageViewerModel> {
+        galleryRepository.getGalleryImagesBefore(cursorPosition, IMAGES_COUNT_MEDIUM_PAGE)
+            .onSuccess { images ->
+                return images.map { ImageViewerModel(null, null, it) }
+            }
+        return emptyList()
+    }
 
     fun onDeleteImage() {
-        exitWithResult(ImageViewerContract.createResult(ImageViewerContract.Result.Delete(
-            messageId = currentViewState.messageId ?: return
-        )))
+        exitWithResult(
+            ImageViewerContract.createResult(
+                ImageViewerContract.Result.Delete(
+                    messageId = currentViewState.messageId ?: return
+                )
+            )
+        )
     }
 
     fun onForwardImage() {
-        exitWithResult(ImageViewerContract.createResult(ImageViewerContract.Result.Forward(
-            messageId = currentViewState.messageId ?: return,
-            username = currentViewState.username ?: return
-        )))
+        exitWithResult(
+            ImageViewerContract.createResult(
+                ImageViewerContract.Result.Forward(
+                    messageId = currentViewState.messageId ?: return,
+                    username = currentViewState.username ?: return
+                )
+            )
+        )
     }
 
     override fun onBackPressed(): Boolean {

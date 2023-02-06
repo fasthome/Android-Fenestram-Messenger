@@ -3,7 +3,7 @@ package io.fasthome.component.di
 import io.fasthome.component.camera.CameraComponentViewModel
 import io.fasthome.component.camera.CameraImageOperations
 import io.fasthome.component.camera.CameraImageOperationsImpl
-import io.fasthome.component.gallery.GalleryOperations
+import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.permission.PermissionViewModel
 import io.fasthome.component.personality_data.PersonalityComponentViewModel
 import io.fasthome.component.pick_file.*
@@ -20,7 +20,7 @@ object ComponentModule {
         viewModel(::PersonalityComponentViewModel)
         viewModel(::CameraComponentViewModel)
 
-        factory(::GalleryOperationsImpl) bindSafe GalleryOperations::class
+        factory(::GalleryRepositoryImpl) bindSafe GalleryRepository::class
         factory(::CameraImageOperationsImpl) bindSafe CameraImageOperations::class
         factory(::PickImageOperationsImpl) bindSafe PickImageOperations::class
         factory(::PickFileOperationsImpl) bindSafe PickFileOperations::class

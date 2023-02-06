@@ -85,7 +85,7 @@ class ImageViewerFragment :
                                 vm.loadBeforeImages(cursorPosition) + adapterImages.items
                             Log.d("ImageViewerFragment", "onScrolled: loadBeforeImages")
                         }
-                        adapterImages.itemCount -> {
+                        adapterImages.itemCount-1 -> {
                             adapterImages.items =
                                 adapterImages.items + vm.loadAfterImages(cursorPosition)
                             Log.d("ImageViewerFragment", "onScrolled: loadAfterImages")

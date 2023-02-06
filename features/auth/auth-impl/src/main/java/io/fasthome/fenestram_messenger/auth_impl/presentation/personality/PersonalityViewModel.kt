@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import io.fasthome.component.camera.CameraComponentParams
-import io.fasthome.component.gallery.GalleryOperations
+import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.personality_data.FillState
 import io.fasthome.component.personality_data.PersonalityInterface
 import io.fasthome.component.pick_file.PickFileInterface
@@ -46,7 +46,7 @@ class PersonalityViewModel(
     private val cameraFeature: CameraFeature,
     private val profileImageUrlConverter: StorageUrlConverter,
     private val savedStateHandle: SavedStateHandle,
-    private val galleryOperations: GalleryOperations
+    private val galleryRepository: GalleryRepository
 ) : BaseViewModel<PersonalityState, PersonalityEvent>(router, requestParams) {
 
     private var avatarUrl: String? = null

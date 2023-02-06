@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.gallery.GalleryImage
-import io.fasthome.component.gallery.GalleryOperations
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.imageViewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
@@ -66,7 +65,6 @@ class ConversationViewModel(
     private val storageUrlConverter: StorageUrlConverter,
     private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
     private val permissionInterface: PermissionInterface,
-    private val galleryOperations: GalleryOperations,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
     class Features(
@@ -86,7 +84,22 @@ class ConversationViewModel(
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
 
-    private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract)
+    private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
+        when(result) {
+            is FileSelectorNavigationContract.Result.Attach -> {
+                addGalleryImagesToAttach(result.images)
+            }
+            FileSelectorNavigationContract.Result.OpenCamera -> {
+                selectFromCamera()
+            }
+            FileSelectorNavigationContract.Result.OpenFiles -> {
+                selectAttachFile()
+            }
+            FileSelectorNavigationContract.Result.OpenGallery -> {
+                selectFromGallery()
+            }
+        }
+    }
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -403,13 +416,6 @@ class ConversationViewModel(
         }
     }
 
-    fun addMessageWithGalleryImages(mess: String, galleryImage: List<GalleryImage>) {
-        if (galleryImage.isNotEmpty()) sendFiles(galleryImage.map {
-            AttachedFile.Image(Content.FileContent(galleryOperations.getFileFromGalleryImage(it)))
-        })
-        addMessageToConversation(mess)
-    }
-
     fun addMessageToConversation(mess: String) {
         val fileState = currentViewState.inputMessageMode as? InputMessageMode.Default
         fileState?.let {
@@ -446,31 +452,33 @@ class ConversationViewModel(
     private fun sendFiles(attachedFiles: List<AttachedFile>) {
         var tempFileMessages: List<ConversationViewItem.Self> = emptyList()
         viewModelScope.launch {
-            val files = attachedFiles.filterIsInstance<AttachedFile.Document>()
-            if (files.isNotEmpty()) {
-                val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
-                tempFileMessages = tempFileMessages + fileMessage
-                sendDocument(fileMessage)
+            val allFiles = attachedFiles.filterIsInstance<AttachedFile.Document>()
+            val chunkedFiles = allFiles.chunked(10)
+            val allImages = attachedFiles.filterIsInstance<AttachedFile.Image>()
+            val chunkedImages = allImages.chunked(10)
+
+            chunkedFiles.forEach { files ->
+                if (files.isNotEmpty()) {
+                    val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
+                    tempFileMessages = tempFileMessages + fileMessage
+                    sendDocument(fileMessage)
+                }
             }
 
-            val images = attachedFiles.filterIsInstance<AttachedFile.Image>()
-            if (images.isNotEmpty()) {
-                val imageMessage = createImageMessage(
-                    images.map { it.content },
-                    getPrintableRawText(currentViewState.userName)
-                )
-                tempFileMessages = tempFileMessages + imageMessage
-                sendImages(imageMessage)
+            chunkedImages.forEach { images ->
+                if (images.isNotEmpty()) {
+                    val imageMessage = createImageMessage(
+                        images.map { it.content },
+                        getPrintableRawText(currentViewState.userName)
+                    )
+                    tempFileMessages = tempFileMessages + imageMessage
+
+                    sendImages(imageMessage)
+                }
             }
-        }
-
-        updateState { state ->
-            state.copy(inputMessageMode = InputMessageMode.Default())
-        }
-
-        viewModelScope.launch {
             updateState { state ->
                 state.copy(
+                    inputMessageMode = InputMessageMode.Default(),
                     messages = tempFileMessages.reversed().associateBy({
                         it.localId
                     }, {
@@ -1057,11 +1065,6 @@ class ConversationViewModel(
     fun selectAttachFile() {
         pickFileInterface.pickFile(PickFileComponentParams.MimeType.Document())
     }
-
-    fun getImagesOnPage(page: Int): List<GalleryImage> {
-        return galleryOperations.getGalleryImages(page)
-    }
-
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->

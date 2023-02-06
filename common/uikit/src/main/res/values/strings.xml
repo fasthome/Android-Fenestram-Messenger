@@ -29,6 +29,8 @@
     <string name="common_retry">Повторить</string>
     <string name="common_unable_to_download">Невозможно загрузить данный файл</string>
     <string name="common_accept">Подтвердить</string>
+    <string name="common_select_image">Выберите изображение</string>
+    <string name="common_attach">Прикрепить</string>
     <string name="common_save">Сохранить</string>
     <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
     <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
