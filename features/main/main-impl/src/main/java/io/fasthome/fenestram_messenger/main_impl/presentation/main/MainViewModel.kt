@@ -23,9 +23,11 @@ import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.util.onSuccess
-import java.util.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 class MainViewModel(
     router: ContractRouter,
@@ -41,7 +43,8 @@ class MainViewModel(
         val contactsFeature: ContactsFeature,
         val profileFeature: ProfileFeature,
         val debugFeature: DebugFeature,
-        val pushFeature: PushFeature
+        val pushFeature: PushFeature,
+        val messengerFeature: MessengerFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -63,6 +66,16 @@ class MainViewModel(
         viewModelScope.launch {
             updateFbToken()
 
+            features.messengerFeature.subscribeUnreadCount()
+                .collectWhenViewActive()
+                .onEach { badge->
+                    sendEvent(
+                        MainEvent.UpdateBadge(
+                            count = badge.count.toInt()
+                        )
+                    )
+                }
+                .launchIn(viewModelScope)
             outerTabNavigator.tabToOpenFlow
                 .collectWhenViewActive()
                 .collect { newTab ->
@@ -114,7 +127,12 @@ class MainViewModel(
 
     fun buildFragment(type: MainFeature.TabType): Fragment {
         return when (type) {
-            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams(MessengerFeature.MessengerParams(chatSelectionMode = false, forwardMessage = null))
+            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams(
+                MessengerFeature.MessengerParams(
+                    chatSelectionMode = false,
+                    forwardMessage = null
+                )
+            )
                 .createFragment()
             MainFeature.TabType.Contacts -> features.contactsFeature.contactsNavigationContract.createParams()
                 .createFragment()
@@ -127,6 +145,19 @@ class MainViewModel(
 
     fun debugClicked() {
         debugLauncher.launch(NoParams)
+    }
+
+    fun fetchUnreadCount(){
+        viewModelScope.launch {
+            features.messengerFeature
+                .fetchUnreadCount().onSuccess { badge ->
+                    sendEvent(
+                        MainEvent.UpdateBadge(
+                            count = badge.count.toInt()
+                        )
+                    )
+                }
+        }
     }
 
     private suspend fun updateFbToken() {
