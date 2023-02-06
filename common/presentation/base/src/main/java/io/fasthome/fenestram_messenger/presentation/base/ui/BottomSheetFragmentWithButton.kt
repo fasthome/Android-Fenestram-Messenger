@@ -54,7 +54,7 @@ open class BottomSheetFragmentWithButton(
                             }
                         }
                         is FileSelectorButtonEvent.SheetCloseEvent -> {
-                            this@BottomSheetFragmentWithButton.onDestroy()
+                            this@BottomSheetFragmentWithButton.dismiss()
                         }
                     }
                 }

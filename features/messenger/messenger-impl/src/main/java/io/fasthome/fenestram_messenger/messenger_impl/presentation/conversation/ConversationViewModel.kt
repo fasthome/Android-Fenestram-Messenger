@@ -390,8 +390,8 @@ class ConversationViewModel(
         updateState { state ->
             val attachedImages = galleryImages.map { AttachedFile.Image(it) }
             val newAttachedFiles =
-                (((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles)
-                    ?: emptyList()).filterIsInstance<AttachedFile.Document>() + attachedImages
+                ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                    ?: emptyList()) + attachedImages
 
             state.copy(
                 inputMessageMode = InputMessageMode.Default(
