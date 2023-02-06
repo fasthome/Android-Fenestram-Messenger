@@ -41,6 +41,7 @@ fun createImageAdapterDelegate(
             }
             binding.cbSelect.isChecked = item.isChecked
             binding.ivImage.loadRounded(uri = item.uri, radius = 2.dp, sizeMultiplier = .7f)
+            binding.cbSelect.increaseHitArea(8.dp)
             binding.cbSelect.onClick {
                 item.isChecked = binding.cbSelect.isChecked
                 onCheckImage(item)

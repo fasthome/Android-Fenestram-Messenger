@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/shape_background_dark1_12"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:ignore="MissingDefaultResource">
 
     <LinearLayout
@@ -13,8 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0"
+        android:paddingTop="12dp"
         android:background="@color/dark1"
-        android:paddingTop="32dp"
         android:visibility="visible"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -50,7 +51,6 @@
             android:layout_width="64dp"
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
             android:background="@drawable/shape_bottom_sheet_strip"
             app:layout_constraintEnd_toEndOf="parent"
