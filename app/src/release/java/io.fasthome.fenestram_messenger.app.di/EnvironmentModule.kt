@@ -24,7 +24,8 @@ object EnvironmentModule {
                     policyUrl = policyUrl
                 ),
                 isDebug = BuildConfig.IS_DEBUG,
-                apiVersion = BuildConfig.PROD_API_VERSION
+                apiVersion = BuildConfig.PROD_API_VERSION,
+                appVersion = BuildConfig.VERSION_NAME
             )
         }
     }
