@@ -62,7 +62,7 @@
             android:id="@+id/from_gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="18dp"
             android:background="@drawable/shape_button_circle"
             android:padding="16dp"
             android:src="@drawable/ic_add_image"
@@ -92,9 +92,25 @@
             app:layout_constraintEnd_toStartOf="@id/from_gallery"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/from_gallery"
-            app:srcCompat="@drawable/ic_add_file" />
+            app:srcCompat="@drawable/ic_file_32" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_empty_view"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="@string/empty_gallery"
+        android:textColor="@color/hint_text_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_action_buttons" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_images"
@@ -112,5 +128,5 @@
         tools:itemCount="25"
         tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/item_image_select_from"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,6 +29,10 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentT
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toAttachedImages
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContentUriList
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContents
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toFiles
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -67,6 +71,10 @@ class ConversationViewModel(
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
+    companion object {
+        private const val MAX_ATTACHMENTS = 10
+    }
+
     class Features(
         val profileGuestFeature: ProfileGuestFeature,
         val authFeature: AuthFeature,
@@ -85,18 +93,18 @@ class ConversationViewModel(
     private var userDeleteChat: Boolean = false
 
     private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
-        when(result) {
+        when (result) {
             is FileSelectorNavigationContract.Result.Attach -> {
-                addGalleryImagesToAttach(result.images)
+                addContentImagesToAttach(result.images)
             }
             FileSelectorNavigationContract.Result.OpenCamera -> {
-                selectFromCamera()
+                sendEvent(ConversationEvent.OpenCamera)
             }
             FileSelectorNavigationContract.Result.OpenFiles -> {
-                selectAttachFile()
+                sendEvent(ConversationEvent.OpenFilePicker)
             }
             FileSelectorNavigationContract.Result.OpenGallery -> {
-                selectFromGallery()
+                sendEvent(ConversationEvent.OpenImagePicker)
             }
         }
     }
@@ -386,9 +394,9 @@ class ConversationViewModel(
         }
     }
 
-    fun addGalleryImagesToAttach(galleryImages: List<Content>) {
+    private fun addContentImagesToAttach(attachedContent: List<Content>) {
         updateState { state ->
-            val attachedImages = galleryImages.map { AttachedFile.Image(it) }
+            val attachedImages = attachedContent.toAttachedImages()
             val newAttachedFiles =
                 ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
                     ?: emptyList()) + attachedImages
@@ -401,20 +409,7 @@ class ConversationViewModel(
         }
     }
 
-    private fun attachContentFile(content: Content) {
-        val attachedFile = AttachedFile.Image(content)
-        updateState { state ->
-            val newAttachedFiles =
-                (((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles)
-                    ?: emptyList()) + attachedFile
-            state.copy(
-                inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = newAttachedFiles
-                )
-            )
-
-        }
-    }
+    private fun attachContentFile(content: Content) = addContentImagesToAttach(listOf(content))
 
     fun addMessageToConversation(mess: String) {
         val fileState = currentViewState.inputMessageMode as? InputMessageMode.Default
@@ -453,13 +448,13 @@ class ConversationViewModel(
         var tempFileMessages: List<ConversationViewItem.Self> = emptyList()
         viewModelScope.launch {
             val allFiles = attachedFiles.filterIsInstance<AttachedFile.Document>()
-            val chunkedFiles = allFiles.chunked(10)
+            val chunkedFiles = allFiles.chunked(MAX_ATTACHMENTS)
             val allImages = attachedFiles.filterIsInstance<AttachedFile.Image>()
-            val chunkedImages = allImages.chunked(10)
+            val chunkedImages = allImages.chunked(MAX_ATTACHMENTS)
 
-            chunkedFiles.forEach { files ->
-                if (files.isNotEmpty()) {
-                    val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
+            chunkedFiles.forEach { attachedDocument ->
+                if (attachedDocument.isNotEmpty()) {
+                    val fileMessage = createDocumentMessage(emptyList(), attachedDocument.toFiles())
                     tempFileMessages = tempFileMessages + fileMessage
                     sendDocument(fileMessage)
                 }
@@ -468,7 +463,7 @@ class ConversationViewModel(
             chunkedImages.forEach { images ->
                 if (images.isNotEmpty()) {
                     val imageMessage = createImageMessage(
-                        images.map { it.content },
+                        images.toContents(),
                         getPrintableRawText(currentViewState.userName)
                     )
                     tempFileMessages = tempFileMessages + imageMessage
@@ -1023,10 +1018,13 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        fileSelectorLauncher.launch()
-//        sendEvent(ConversationEvent.ShowSelectFromDialog(attachedContent =
-//        (currentViewState.inputMessageMode as InputMessageMode.Default).attachedFiles.filterIsInstance<AttachedFile.Image>()
-//            .map { it.content }))
+        val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return
+        val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
+        fileSelectorLauncher.launch(
+            FileSelectorNavigationContract.Params(
+                selectedImages = allImages.toContentUriList()
+            )
+        )
     }
 
     private fun openCameraFragment() {

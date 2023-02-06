@@ -7,7 +7,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class GalleryImage(
     val uri: Uri,
-    val cursorPosition: Int,
-    var isChecked: Boolean = false
+    val cursorPosition: Int
 ) : Parcelable {
 }

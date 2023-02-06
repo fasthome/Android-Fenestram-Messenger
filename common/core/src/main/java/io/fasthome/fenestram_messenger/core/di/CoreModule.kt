@@ -5,6 +5,7 @@ import io.fasthome.fenestram_messenger.core.time.TimeProvider
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.util.view_action.BottomViewAction
+import io.fasthome.fenestram_messenger.util.view_action.FileSelectorButtonEvent
 import org.koin.dsl.module
 
 object CoreModule{
@@ -13,7 +14,7 @@ object CoreModule{
         factory (::RealTimeProvider) bindSafe TimeProvider::class
 
         single {
-            BottomViewAction<String>()
+            BottomViewAction<FileSelectorButtonEvent>()
         }
     }
 

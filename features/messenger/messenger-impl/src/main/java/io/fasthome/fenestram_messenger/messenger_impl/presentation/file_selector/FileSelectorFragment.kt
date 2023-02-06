@@ -4,7 +4,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
@@ -14,9 +13,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentFileSelectorBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
-import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
@@ -29,15 +27,14 @@ class FileSelectorFragment :
 
     private val binding by fragmentViewBinding(FragmentFileSelectorBinding::bind)
 
-    private val selectedList = mutableListOf<Content>()
+    private var recyclerY = 0f
 
     private val adapterImage = FileSelectorAdapter(
         onImageClick = { galleryImage ->
             vm.onImageClicked(galleryImage)
         },
         onCheckImage = { image ->
-            if (image.isChecked) selectedList.add(UriLoadableContent(image.uri)) else selectedList.removeIf { (it as? UriLoadableContent)?.uri == image.uri }
-            vm.onAttachFiles(selectedList)
+            vm.onAttachFiles(image)
         }
     )
 
@@ -47,17 +44,14 @@ class FileSelectorFragment :
         setupAdapter()
         fromGallery.onClick {
             vm.fromGalleryClicked()
-            vm.onBackPressed()
         }
 
         fromCamera.onClick {
             vm.fromCameraClicked()
-            vm.onBackPressed()
         }
 
         attachFile.onClick {
             vm.attachFileClicked()
-            vm.onBackPressed()
         }
 
         ibCancel.onClick {
@@ -68,6 +62,7 @@ class FileSelectorFragment :
 
     override fun renderState(state: FileSelectorState) {
         binding.rvImages.isVisible = state.images.isNotEmpty()
+        binding.tvEmptyView.isVisible = state.images.isEmpty()
     }
 
     private fun subscribeImages() {
@@ -78,12 +73,8 @@ class FileSelectorFragment :
             }
     }
 
-    override fun handleEvent(event: FileSelectorEvent) {
+    override fun handleEvent(event: FileSelectorEvent) = noEventsExpected()
 
-    }
-
-
-    private var recyclerY = 0f
     override fun handleSlideCallback(offset: Float) {
         if (offset !in 0f..1f) return
         binding.toolbar.alpha = offset

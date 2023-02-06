@@ -326,6 +326,9 @@ class ConversationFragment :
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
+            is ConversationEvent.OpenFilePicker -> vm.selectAttachFile()
+            is ConversationEvent.OpenCamera -> vm.selectFromCamera()
+            is ConversationEvent.OpenImagePicker -> vm.selectFromGallery()
             is ConversationEvent.OpenMenuEvent -> {
                 val menuBinding = DeleteChatMenuBinding.inflate(layoutInflater)
                 val popupMenu = PopupMenu.create(menuBinding.conversationMenu)

@@ -78,10 +78,6 @@ open class BaseBottomSheetFragment(
 
     private val slideCallback = SlideChangeListener { slideOffset ->
         fragmentInstance?.handleSlideCallback(slideOffset)
-//        binding.root.background.alpha =
-//            (BottomSheetState.EXPANDED.alpha + BottomSheetState.EXPANDED.alpha * slideOffset)
-//                .roundToInt()
-//                .coerceIn(BottomSheetState.HIDDEN.alpha, BottomSheetState.EXPANDED.alpha)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,10 +154,8 @@ open class BaseBottomSheetFragment(
             }
         }
     }
-
     fun onViewCreated(rootView: View, contentView: FragmentContainerView) {
         rootView.apply {
-//            background.alpha = (currentState ?: State.HIDDEN).alpha
             if (config.canceledOnTouchOutside) setOnClickListener { router.exit() }
         }
         contentView.apply {
@@ -179,7 +173,9 @@ open class BaseBottomSheetFragment(
 
     private suspend fun performDismiss() = suspendCancellableCoroutine<Unit> { continuation ->
         val listener = StateChangeListener { newState ->
-            if (newState == BottomSheetState.HIDDEN) continuation.resume(Unit)
+            if (newState == BottomSheetState.HIDDEN) {
+                continuation.resume(Unit)
+            }
         }
         behavior.apply {
             removeBottomSheetCallback(stateCallback)

@@ -1,7 +1,6 @@
 package io.fasthome.component.imageViewer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,7 +10,6 @@ import io.fasthome.component.R
 import io.fasthome.component.databinding.FragmentImageViewerBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.onClick
 
@@ -55,9 +53,11 @@ class ImageViewerFragment :
     override fun renderState(state: ImageViewerState) {
         binding.tvCounter.isVisible = state.imagesViewerModel.size > 1
         if (state.imagesViewerModel.size > 1) {
-            binding.tvCounter.text = getString(R.string.common_value_from_value_ph,
+            binding.tvCounter.text = getString(
+                R.string.common_value_from_value_ph,
                 (state.currPhotoPosition ?: 0) + 1,
-                state.imagesViewerModel.size)
+                state.imagesViewerModel.size
+            )
         }
 
         binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -66,32 +66,19 @@ class ImageViewerFragment :
                 val pos =
                     (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
                         ?: return
-                binding.tvCounter.text = getString(R.string.common_value_from_value_ph,
+                binding.tvCounter.text = getString(
+                    R.string.common_value_from_value_ph,
                     pos + 1,
-                    state.imagesViewerModel.size)
+                    state.imagesViewerModel.size
+                )
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val pos =
+                val firstVisible =
                     (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
                         ?: return
-                val cursorPosition =
-                    adapterImages.items.getOrNull(pos)?.imageGallery?.cursorPosition
-                if (cursorPosition != null) {
-                    when (pos) {
-                        0 -> {
-                            adapterImages.items =
-                                vm.loadBeforeImages(cursorPosition) + adapterImages.items
-                            Log.d("ImageViewerFragment", "onScrolled: loadBeforeImages")
-                        }
-                        adapterImages.itemCount-1 -> {
-                            adapterImages.items =
-                                adapterImages.items + vm.loadAfterImages(cursorPosition)
-                            Log.d("ImageViewerFragment", "onScrolled: loadAfterImages")
-                        }
-                    }
-                }
+                vm.loadMoreImages(firstVisible)
             }
         })
 
@@ -100,9 +87,7 @@ class ImageViewerFragment :
             adapterImages.items = state.imagesViewerModel
             binding.rvImages.scrollToPosition(state.currPhotoPosition ?: 0)
         } else {
-            val images = vm.getImageFirstStart(galleryImage)
-            adapterImages.items = images
-            binding.rvImages.scrollToPosition(images.indexOfFirst { it.imageGallery?.cursorPosition == galleryImage.cursorPosition })
+            vm.getImageFirstStart(galleryImage)
         }
 
         binding.ibDelete.isVisible = state.canDelete
@@ -115,5 +100,12 @@ class ImageViewerFragment :
         }
     }
 
-    override fun handleEvent(event: ImageViewerEvent) = noEventsExpected()
+    override fun handleEvent(event: ImageViewerEvent) {
+        when (event) {
+            is ImageViewerEvent.GalleryImagesEvent -> {
+                adapterImages.items = event.galleryImages
+                event.cursorToScrollPos?.let { binding.rvImages.scrollToPosition(it) }
+            }
+        }
+    }
 }

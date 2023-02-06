@@ -7,8 +7,8 @@ import androidx.lifecycle.lifecycleScope
 import io.fasthome.fenestram_messenger.presentation.base.R
 import io.fasthome.fenestram_messenger.presentation.base.databinding.FragmentBottomSheetWithButtonBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.util.view_action.BottomViewAction
 import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.view_action.BottomViewAction
 import io.fasthome.fenestram_messenger.util.view_action.FileSelectorButtonEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,18 +53,14 @@ open class BottomSheetFragmentWithButton(
                                 binding.includeBottomInput.btnAttach.setText(R.string.common_select_image)
                             }
                         }
-                        is FileSelectorButtonEvent.SheetCloseEvent -> {
-                            this@BottomSheetFragmentWithButton.dismiss()
-                        }
                     }
                 }
             }
         }
     }
 
-    override fun onPause() {
-        this.onDestroy()
-        super.onPause()
+    override suspend fun dismiss() {
+        onBackPressed()
     }
-
 }
+

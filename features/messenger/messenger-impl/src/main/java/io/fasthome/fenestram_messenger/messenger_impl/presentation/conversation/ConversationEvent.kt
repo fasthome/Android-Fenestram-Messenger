@@ -10,6 +10,9 @@ sealed interface ConversationEvent {
     object OpenMenuEvent : ConversationEvent
     class ShowDeleteChatDialog(val id: Long) : ConversationEvent
     object ShowChatDeletedDialog : ConversationEvent
+    object OpenFilePicker : ConversationEvent
+    object OpenCamera: ConversationEvent
+    object OpenImagePicker: ConversationEvent
     class UpdateScrollPosition(val scrollPosition: Int) : ConversationEvent
     object InvalidateList : ConversationEvent
     class ShowSelectFromDialog(val attachedContent: List<Content>) : ConversationEvent
