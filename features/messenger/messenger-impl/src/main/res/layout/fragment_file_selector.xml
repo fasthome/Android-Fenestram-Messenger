@@ -21,6 +21,7 @@
 
         <ImageButton
             android:id="@+id/ib_cancel"
+            android:stateListAnimator="@null"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginHorizontal="16dp"

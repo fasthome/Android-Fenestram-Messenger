@@ -61,7 +61,7 @@ class FileSelectorFragment :
         }
 
         ibCancel.onClick {
-            vm.onBackPressed()
+            vm.exitNoResult()
         }
         subscribeImages()
     }

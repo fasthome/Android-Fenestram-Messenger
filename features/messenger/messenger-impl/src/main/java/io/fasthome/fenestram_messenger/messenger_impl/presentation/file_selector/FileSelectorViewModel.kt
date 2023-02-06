@@ -100,6 +100,7 @@ class FileSelectorViewModel(
         exitWithResult(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenCamera))
     }
 
+    fun exitNoResult() = exitWithoutResult()
     fun attachFileClicked() {
         exitWithResult(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenFiles))
     }
