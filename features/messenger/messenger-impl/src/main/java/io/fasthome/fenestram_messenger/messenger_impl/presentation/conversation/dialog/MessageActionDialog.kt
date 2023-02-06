@@ -5,12 +5,15 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DialogMessageActionMenuBinding
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.ReactionsAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ReactionViewItem
 
 
 object MessageActionDialog {
 
     fun create(
         fragment: Fragment,
+        permittedReactions: List<ReactionViewItem>,
         onDelete: (() -> Unit)? = null,
         onEdit: (() -> Unit)? = null,
         onCopy: (() -> Unit)? = null,
@@ -18,6 +21,7 @@ object MessageActionDialog {
         onForward: (() -> Unit)? = null
     ): Dialog {
         val binding = DialogMessageActionMenuBinding.inflate(fragment.layoutInflater)
+        val reactionsAdapter = ReactionsAdapter(onItemClicked = {})
 
         with(binding) {
             deleteMessage.isVisible = onDelete != null
@@ -25,6 +29,8 @@ object MessageActionDialog {
             copyMessageText.isVisible = onCopy != null
             replyMessage.isVisible = onReply != null
             forwardMessage.isVisible = onForward != null
+            listReactions.adapter = reactionsAdapter
+            reactionsAdapter.items = permittedReactions
 
             val dialog = BottomSheetDialogBuilder(fragment)
                 .addCustomView(root)

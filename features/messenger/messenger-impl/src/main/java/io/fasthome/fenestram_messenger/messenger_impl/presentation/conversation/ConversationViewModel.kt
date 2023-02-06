@@ -83,6 +83,7 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
+    private var permittedReactions = listOf<ReactionViewItem>()
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -229,7 +230,7 @@ class ConversationViewModel(
             }
 
             params.actionMessageBlank?.let {
-                when(it){
+                when (it) {
                     is ActionMessageBlank.Image -> {
                         pickFileInterface.processUri(it.uri)
                     }
@@ -469,7 +470,7 @@ class ConversationViewModel(
                     filename = filename + content.file.name
                 }
                 is Content.LoadableContent -> {
-                    byteArrays = byteArrays + (content.load()?.array?: byteArrayOf())
+                    byteArrays = byteArrays + (content.load()?.array ?: byteArrayOf())
                     filename = filename + UUID.randomUUID().toString()
                 }
             }
@@ -735,6 +736,7 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
+                    permittedReactions = chat.permittedReactions.map { ReactionViewItem(it) }
                     val selfUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
@@ -801,6 +803,7 @@ class ConversationViewModel(
                 if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
+                        permittedReactions = it.permittedReactions.map { reaction -> ReactionViewItem(reaction) }
                         updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
@@ -833,6 +836,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
+            permittedReactions = it.permittedReactions.map { reaction -> ReactionViewItem(reaction) }
             updateState { state ->
                 state.copy(
                     avatar = it.avatar,
@@ -947,11 +951,11 @@ class ConversationViewModel(
         }
     }
 
-    private fun onChatDeletedCallback(deletedChatId:Long) {
-        if(chatId == deletedChatId && !userDeleteChat)
-        sendEvent(
-            ConversationEvent.ShowChatDeletedDialog
-        )
+    private fun onChatDeletedCallback(deletedChatId: Long) {
+        if (chatId == deletedChatId && !userDeleteChat)
+            sendEvent(
+                ConversationEvent.ShowChatDeletedDialog
+            )
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
@@ -1142,7 +1146,7 @@ class ConversationViewModel(
             SentStatus.Sent,
             SentStatus.Received,
             SentStatus.Read,
-            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
             SentStatus.Loading -> Unit
             SentStatus.None -> Unit
         }
@@ -1189,39 +1193,39 @@ class ConversationViewModel(
     }
 
     fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveForwardLongClicked(conversationViewItem: ConversationViewItem.Receive.Forward) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupForwardLongClicked(conversationViewItem: ConversationViewItem.Group.Forward) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupDocumentLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onSelfDocumentLongClicked(conversationViewItem: ConversationViewItem.Self) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveDocumentLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onTypingMessage() {
