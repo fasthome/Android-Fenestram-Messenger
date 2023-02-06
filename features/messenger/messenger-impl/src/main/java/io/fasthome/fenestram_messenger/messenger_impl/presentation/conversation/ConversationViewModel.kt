@@ -1301,4 +1301,8 @@ class ConversationViewModel(
     fun onViewStopped() {
         loadItemsJob = null
     }
+
+    fun contentInserted(content: Content) {
+        attachContentFile(content)
+    }
 }

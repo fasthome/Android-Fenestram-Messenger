@@ -30,8 +30,8 @@ android {
         getByName(BuildType.release) {
             booleanBuildConfigField("IS_DEBUG", false)
 
-            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://dev.hooliphone.ru/")
-            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://hooliphone.ru/")
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://dev.hoolichat.ru/")
+            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://prod.hoolichat.ru/")
 
             stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
             stringBuildConfigField("INSTABUG_APP_TOKEN_BETA", "5622f3685b90aca197ee34b9b3a612fb")
@@ -47,8 +47,8 @@ android {
         getByName(BuildType.debug) {
             booleanBuildConfigField("IS_DEBUG", true)
 
-            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://dev.hooliphone.ru/")
-            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://hooliphone.ru/")
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://dev.hoolichat.ru/")
+            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://prod.hoolichat.ru/")
             stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
             stringBuildConfigField("INSTABUG_APP_TOKEN_BETA", "5622f3685b90aca197ee34b9b3a612fb")
 

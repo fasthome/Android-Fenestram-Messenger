@@ -3,5 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.main_impl.presentation.main
 
-class MainEvent {
+sealed interface MainEvent {
+    class UpdateBadge(val count : Int) : MainEvent
 }

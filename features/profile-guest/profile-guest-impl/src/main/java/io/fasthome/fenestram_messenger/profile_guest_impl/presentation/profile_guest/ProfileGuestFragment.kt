@@ -31,10 +31,9 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
+import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.model.Bytes
-import io.fasthome.fenestram_messenger.util.setPrintableText
 import org.koin.android.ext.android.inject
 
 class ProfileGuestFragment :
@@ -86,6 +85,17 @@ class ProfileGuestFragment :
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
         profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
+        profileGuestName.setOnClickListener {
+            vm.copyText(profileGuestName.text.toString(), TextViewKey.Name)
+        }
+
+        profileGuestNickname.setOnClickListener {
+            vm.copyText(profileGuestNickname.text.toString(), TextViewKey.Nickname)
+        }
+
+        profileGuestPhone.setOnClickListener {
+            vm.copyText(profileGuestPhone.text.toString(), TextViewKey.Phone)
+        }
 
 //        vm.fetchFilesAndPhotos()
 
@@ -145,15 +155,26 @@ class ProfileGuestFragment :
             profileGuestPhone.isVisible = !state.isGroup
             profileGuestContainer.isVisible = !state.editMode
             pickPhotoIcon.isVisible = state.editMode && state.isGroup
-            profileGuestName.isEnabled = state.editMode
+            profileGuestName.isFocusable = state.editMode
+            profileGuestName.isFocusableInTouchMode = state.editMode
+            profileGuestName.isCursorVisible = state.editMode
 
             profileGuestName.background.setTint(
                 ContextCompat.getColor(
                     requireContext(),
                     when (state.profileGuestStatus) {
-                        EditTextStatus.Idle -> R.color.dark1
-                        EditTextStatus.Editable -> R.color.white
-                        EditTextStatus.Error -> R.color.red
+                        EditTextStatus.Idle -> {
+                            profileGuestNameError.isVisible = false
+                            R.color.dark1
+                        }
+                        EditTextStatus.Editable -> {
+                            profileGuestNameError.isVisible = false
+                            R.color.white
+                        }
+                        EditTextStatus.Error -> {
+                            profileGuestNameError.isVisible = true
+                            R.color.red
+                        }
                     }
                 )
             )
@@ -216,6 +237,7 @@ class ProfileGuestFragment :
                 )
                 profileGuestPhone.setPrintableText(state.userPhone)
                 profileGuestName.setPrintableText(state.userName)
+                requireActivity().hideKeyboard(true)
             }
 
             when {
@@ -255,6 +277,9 @@ class ProfileGuestFragment :
                 .show()
             is ProfileGuestEvent.Loading -> {
                 binding.profileGuestEdit.loading(event.isLoading)
+            }
+            is ProfileGuestEvent.CopyText -> {
+                copyTextToClipBoard(event.text, event.toastMessage)
             }
         }
     }

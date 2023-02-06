@@ -29,7 +29,8 @@ class MessengerSocket(private val baseUrl: String) {
         messageStatusCallback: MessageStatusResponse.() -> Unit,
         messageDeletedCallback: SocketDeleteMessage.() -> Unit,
         chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit,
-        chatDeletedCallback: SocketDeletedChat.SocketDeletedResponse.() -> Unit
+        chatDeletedCallback: SocketDeletedChat.SocketDeletedResponse.() -> Unit,
+        unreadCountCallback: BadgeResponse.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -55,8 +56,8 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.on("receiveForwardMessage") {
                 Log.d(this.javaClass.simpleName, "receiveForwardMessage: " + it[0].toString())
                 val message = json.decodeFromString<SocketForwardMessage>(it[0].toString())
-                    messageCallback(messageToMessageResponse(message.message))
-                }
+                messageCallback(messageToMessageResponse(message.message))
+            }
 
             socket?.on("receiveMessageAction") {
                 Log.d(this.javaClass.simpleName, "receiveMessageAction: " + it[0].toString())
@@ -92,6 +93,12 @@ class MessengerSocket(private val baseUrl: String) {
                 Log.d(this.javaClass.simpleName, "deleteChat: " + it[0].toString())
                 val deletedChat = json.decodeFromString<SocketDeletedChat>(it[0].toString())
                 chatDeletedCallback(deletedChat.data)
+            }
+
+            socket?.on("receiveTotalPendingMessages") {
+                Log.d(this.javaClass.simpleName, "receiveTotalPendingMessages: " + it[0].toString())
+                val unreadCount = json.decodeFromString<BadgeResponse>(it[0].toString())
+                unreadCountCallback(unreadCount)
             }
         } catch (e: Exception) {
         }
