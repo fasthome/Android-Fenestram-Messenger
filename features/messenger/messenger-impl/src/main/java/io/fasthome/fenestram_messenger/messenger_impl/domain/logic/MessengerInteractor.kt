@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 import android.util.Log
 import io.fasthome.fenestram_messenger.camera_api.CameraFeature
 import io.fasthome.fenestram_messenger.data.UserStorage
+import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
@@ -25,7 +26,8 @@ class MessengerInteractor(
     private val tokensRepo: TokensRepo,
     private val chatsMapper: ChatsMapper,
     private val userStorage: UserStorage,
-    private val cameraFeature: CameraFeature
+    private val cameraFeature: CameraFeature,
+    private val badgeCounter: BadgeCounter
 ) {
     private val _messagesChannel =
         Channel<Message>(
@@ -33,13 +35,17 @@ class MessengerInteractor(
             onUndeliveredElement = { message ->
                 Log.d("MessengerInteractor", "onUndeliveredElement " + message)
             })
+
     private val _newMessagesChannel =
         Channel<Message>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
     private val _messageActionsChannel =
         Channel<MessageAction>(onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private val messagesFlow: Flow<Message> = _messagesChannel.receiveAsFlow()
+
     private val newMessagesFlow: Flow<Message> = _newMessagesChannel.receiveAsFlow()
+
     val messageActionsFlow: Flow<MessageAction> = _messageActionsChannel.receiveAsFlow()
 
     suspend fun sendMessage(id: Long, text: String, type: String, localId: String, authorId: Long) =
@@ -106,6 +112,10 @@ class MessengerInteractor(
                     onChatDeletedCallback(chatDeletedChat.chatId)
                 }
 
+                override fun onUnreadMessage(badgeResponse: BadgeResponse) {
+                    badgeCounter.sendCount(Badge(count = badgeResponse.totalPending))
+                }
+
             })
 
         return messagesFlow
@@ -165,6 +175,10 @@ class MessengerInteractor(
                 override fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse) {
                     onChatDeletedCallback(chatDeletedChat.chatId)
                 }
+
+                override fun onUnreadMessage(badgeResponse: BadgeResponse) {
+                    badgeCounter.sendCount(Badge(count = badgeResponse.totalPending))
+                }
             },
             selfUserId = null
         )
@@ -206,8 +220,8 @@ class MessengerInteractor(
     suspend fun uploadDocuments(chatId: Long, documentBytes: List<ByteArray>, name: List<String>) =
         messageRepo.uploadDocuments(chatId = chatId, documentBytes, name)
 
-    suspend fun uploadImages(chatId: Long, imagesBytes: List<ByteArray>, filename: List<String>,) =
-        messageRepo.uploadImages(chatId,imagesBytes,filename)
+    suspend fun uploadImages(chatId: Long, imagesBytes: List<ByteArray>, filename: List<String>) =
+        messageRepo.uploadImages(chatId, imagesBytes, filename)
 
     suspend fun getDocument(storagePath: String, progressListener: ProgressListener) =
         messageRepo.getDocument(storagePath, progressListener)
@@ -222,4 +236,7 @@ class MessengerInteractor(
     }
 
     suspend fun clearChats() = messageRepo.clearChats()
+
+    suspend fun fetchUnreadCount() = messageRepo.fetchUnreadCount()
+
 }

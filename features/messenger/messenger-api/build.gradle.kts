@@ -7,4 +7,6 @@ dependencies {
     implementation(project(Modules.Common.util))
 
     implementation(project(Modules.Feature.contacts.api))
+
+    implementation(Deps.Coroutines.core)
 }

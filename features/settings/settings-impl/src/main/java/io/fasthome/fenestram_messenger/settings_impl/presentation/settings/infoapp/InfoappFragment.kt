@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentInfoappBinding
 import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
 class InfoappFragment : BaseFragment<InfoappState, InfoappEvent>(R.layout.fragment_infoapp) {
@@ -32,7 +33,9 @@ class InfoappFragment : BaseFragment<InfoappState, InfoappEvent>(R.layout.fragme
         }
     }
 
-    override fun renderState(state: InfoappState) = nothingToRender()
+    override fun renderState(state: InfoappState) {
+        binding.hooliVersion.setPrintableText(state.version)
+    }
 
     override fun handleEvent(event: InfoappEvent) = noEventsExpected()
 

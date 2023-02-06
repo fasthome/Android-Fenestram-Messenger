@@ -16,6 +16,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsM
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.ChatStorage
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.BadgeCounter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -59,6 +60,7 @@ object MessengerModule {
     private fun createDomainModule() = module {
         factory(::MessengerInteractor)
         factory(::CopyDocumentToDownloadsUseCase)
+        single(::BadgeCounter)
     }
 
     private fun createPresentationModule() = module {
