@@ -6,6 +6,7 @@ import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.mode
 
 object FileSelectorMapper {
     fun List<FileSelectorViewItem>.toContents() = this.map { it.content }
+    fun List<UriLoadableContent>.toFileSelectorViewItem() = this.map { FileSelectorViewItem(content = it) }
 
     fun FileSelectorViewItem.toGalleryImage() = GalleryImage(
         uri = this.content.uri,

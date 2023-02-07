@@ -10,7 +10,9 @@ import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl
 import io.fasthome.component.imageViewer.ImageViewerContract
 import io.fasthome.component.imageViewer.ImageViewerModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toListUri
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toContents
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toFileSelectorViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toGalleryImage
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
@@ -30,6 +32,7 @@ class FileSelectorViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val galleryRepository: GalleryRepository,
+    private val params: FileSelectorNavigationContract.Params,
     private val bottomViewAction: BottomViewAction<FileSelectorButtonEvent>,
     private val loadDataHelper: PagingDataViewModelHelper,
 ) : BaseViewModel<FileSelectorState, FileSelectorEvent>(router, requestParams) {
@@ -38,6 +41,8 @@ class FileSelectorViewModel(
     private var attachedImages = mutableListOf<FileSelectorViewItem>()
 
     init {
+        attachedImages.addAll(params.selectedImages.toFileSelectorViewItem())
+        sendImagesCount()
         viewModelScope.launch {
             galleryRepository.getGalleryImages(0, GalleryRepositoryImpl.IMAGES_COUNT_ON_PAGE)
                 .onSuccess { images ->
@@ -71,7 +76,7 @@ class FileSelectorViewModel(
                 }
             },
             mapDataItem = {
-                it.toViewItem()
+                it.toViewItem(params.selectedImages.toListUri())
             },
             getItemId = { it.cursorPosition.toLong() },
         ).cachedIn(viewModelScope)
@@ -83,6 +88,10 @@ class FileSelectorViewModel(
             attachedImages.add(attachedModel)
         else
             attachedImages.removeIf { it.content.uri == attachedModel.content.uri }
+        sendImagesCount()
+    }
+
+    private fun sendImagesCount() {
         bottomViewAction.sendActionToBottomView(
             FileSelectorButtonEvent.AttachCountEvent(
                 attachedImages.size

@@ -41,6 +41,7 @@ import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenFileNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
@@ -396,14 +397,25 @@ class ConversationViewModel(
 
     private fun addContentImagesToAttach(attachedContent: List<Content>) {
         updateState { state ->
-            val attachedImages = attachedContent.toAttachedImages()
-            val newAttachedFiles =
-                ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
-                    ?: emptyList()) + attachedImages
-
+            val newUriContent = attachedContent.filterIsInstance<UriLoadableContent>()
+            val newAttachFiles = mutableListOf<AttachedFile>()
+            newAttachFiles.addAll(attachedContent.toAttachedImages())
+            ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                ?: emptyList()).forEach {
+                when (it) {
+                    is AttachedFile.Document -> {
+                        newAttachFiles.add(it)
+                    }
+                    is AttachedFile.Image -> {
+                        if (it.content !is UriLoadableContent || newUriContent.isEmpty()) {
+                            newAttachFiles.add(it)
+                        }
+                    }
+                }
+            }
             state.copy(
                 inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = newAttachedFiles
+                    attachedFiles = newAttachFiles
                 )
             )
         }

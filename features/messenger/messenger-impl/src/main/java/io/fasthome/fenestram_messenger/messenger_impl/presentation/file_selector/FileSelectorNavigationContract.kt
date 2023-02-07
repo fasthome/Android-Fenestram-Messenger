@@ -3,10 +3,10 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
 
-import android.net.Uri
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import kotlinx.parcelize.Parcelize
 
 object FileSelectorNavigationContract :
@@ -14,7 +14,7 @@ object FileSelectorNavigationContract :
 
     @Parcelize
     class Params(
-        val selectedImages: List<Uri>
+        val selectedImages: List<UriLoadableContent>
     ) : Parcelable
 
     sealed class Result : Parcelable {

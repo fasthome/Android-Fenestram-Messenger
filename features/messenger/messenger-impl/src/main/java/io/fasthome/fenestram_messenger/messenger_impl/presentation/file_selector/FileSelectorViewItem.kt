@@ -7,7 +7,7 @@ import io.fasthome.fenestram_messenger.util.AnimationUtil
 data class FileSelectorViewItem(
     val content: UriLoadableContent,
     var isChecked: Boolean = false,
-    val cursorPosition: Int,
+    val cursorPosition: Int = 0,
 ) {
     fun getAnimation(): Animation {
         return if (isChecked) AnimationUtil.getScaleAnimation(

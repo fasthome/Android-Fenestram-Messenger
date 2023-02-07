@@ -23,7 +23,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 class FileSelectorFragment :
     BaseFragment<FileSelectorState, FileSelectorEvent>(R.layout.fragment_file_selector) {
 
-    override val vm: FileSelectorViewModel by viewModel()
+    override val vm: FileSelectorViewModel by viewModel(
+        getParamsInterface = FileSelectorNavigationContract.getParams
+    )
 
     private val binding by fragmentViewBinding(FragmentFileSelectorBinding::bind)
 
