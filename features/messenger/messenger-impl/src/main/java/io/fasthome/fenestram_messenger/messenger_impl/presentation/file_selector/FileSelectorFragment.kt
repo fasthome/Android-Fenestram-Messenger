@@ -81,9 +81,9 @@ class FileSelectorFragment :
         if (offset !in 0f..1f) return
         binding.toolbar.alpha = offset
         binding.toolbar.isEnabled = offset == 0f
-        binding.clActionButtons.isEnabled = offset == 1f
-        binding.clActionButtons.alpha = 1f - offset * 2.5f
-        binding.rvImages.translationY = recyclerY - (binding.clActionButtons.height / 2f * offset)
+        binding.flBtns.isEnabled = offset == 1f
+        binding.flBtns.alpha = 1f - offset * 2.5f
+        binding.rvImages.translationY = recyclerY - (binding.fromGallery.height / 1.2f * offset)
     }
 
     private fun FragmentFileSelectorBinding.setupAdapter() {

@@ -2,9 +2,7 @@ package io.fasthome.component.gallery
 
 import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.android.getFileName
@@ -22,31 +20,6 @@ class GalleryRepositoryImpl(
         const val IMAGES_COUNT_MEDIUM_PAGE = 15
     }
 
-    override suspend fun getGalleryImagesBefore(
-        afterCursorPos: Int,
-        itemsPerPage: Int,
-    ): CallResult<List<GalleryImage>> = callForResult {
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val images = mutableListOf<GalleryImage>()
-        val projection = arrayOf(MediaStore.Images.Media._ID)
-        appContext.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-            if (!cursor.moveToPosition(afterCursorPos)) cursor.moveToLast()
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            while (cursor.moveToNext() && images.size != itemsPerPage) {
-                images += GalleryImage(
-                    uri = ContentUris.withAppendedId(uri, cursor.getLong(idColumn)),
-                    cursorPosition = cursor.position
-                )
-
-            }
-        }
-        images.reversed()
-    }
-
-    override suspend fun getFileFromGalleryUri(uri: Uri): CallResult<File> =
-        getFileFromGalleryImage(GalleryImage(uri, 0))
-
-
     override suspend fun getFileFromGalleryImage(image: GalleryImage): CallResult<File> =
         callForResult {
             val tempPhotoFile by lazy {
@@ -60,28 +33,6 @@ class GalleryRepositoryImpl(
             fos.close()
             tempPhotoFile
         }
-
-
-    override suspend fun getGalleryImagesAfter(
-        afterCursorPos: Int,
-        itemsPerPage: Int,
-    ): CallResult<List<GalleryImage>> = callForResult {
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val images = mutableListOf<GalleryImage>()
-        val projection = arrayOf(MediaStore.Images.Media._ID)
-        appContext.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
-            if (!cursor.moveToPosition(afterCursorPos)) cursor.moveToLast()
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            while (cursor.moveToPrevious() && images.size != itemsPerPage) {
-                images += GalleryImage(
-                    uri = ContentUris.withAppendedId(uri, cursor.getLong(idColumn)),
-                    cursorPosition = cursor.position
-                )
-
-            }
-        }
-        images
-    }
 
     override suspend fun getGalleryImages(
         page: Int,

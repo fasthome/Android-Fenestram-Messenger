@@ -10,8 +10,11 @@ import io.fasthome.component.R
 import io.fasthome.component.databinding.FragmentImageViewerBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class ImageViewerFragment :
     BaseFragment<ImageViewerState, ImageViewerEvent>(R.layout.fragment_image_viewer) {
@@ -37,7 +40,25 @@ class ImageViewerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.ibCancel.onClick(vm::onBackPressed)
+        binding.ibDelete.onClick(vm::onDeleteImage)
+        binding.ibForward.onClick(vm::onForwardImage)
+
         setupAdapter()
+        subscribeImages()
+    }
+
+    private fun subscribeImages() {
+        adapterImages.addLoadStateListener { listener ->
+            if (listener.prepend.endOfPaginationReached && vm.scrollCursorPosition != null) {
+                binding.rvImages.scrollToPosition(vm.scrollCursorPosition!!)
+                vm.scrollCursorPosition = null
+            }
+        }
+        vm.fetchImages()
+            .distinctUntilChanged()
+            .collectWhenStarted(this@ImageViewerFragment) {
+                adapterImages.submitData(it)
+            }
     }
 
     private fun setupAdapter() {
@@ -48,6 +69,20 @@ class ImageViewerFragment :
         binding.rvImages.isNestedScrollingEnabled = false
         val snap = PagerSnapHelper()
         snap.attachToRecyclerView(binding.rvImages)
+
+        binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                val pos =
+                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
+                        ?: return
+                binding.tvCounter.text = getString(
+                    R.string.common_value_from_value_ph,
+                    pos + 1,
+                    adapterImages.itemCount
+                )
+            }
+        })
     }
 
     override fun renderState(state: ImageViewerState) {
@@ -59,53 +94,9 @@ class ImageViewerFragment :
                 state.imagesViewerModel.size
             )
         }
-
-        binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                val pos =
-                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
-                        ?: return
-                binding.tvCounter.text = getString(
-                    R.string.common_value_from_value_ph,
-                    pos + 1,
-                    state.imagesViewerModel.size
-                )
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val firstVisible =
-                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
-                        ?: return
-                vm.loadMoreImages(firstVisible)
-            }
-        })
-
-        val galleryImage = state.imagesViewerModel.firstOrNull()?.imageGallery
-        if (galleryImage == null) {
-            adapterImages.items = state.imagesViewerModel
-            binding.rvImages.scrollToPosition(state.currPhotoPosition ?: 0)
-        } else {
-            vm.getImageFirstStart(galleryImage)
-        }
-
         binding.ibDelete.isVisible = state.canDelete
         binding.ibForward.isVisible = state.canForward
-        binding.ibDelete.onClick {
-            vm.onDeleteImage()
-        }
-        binding.ibForward.onClick {
-            vm.onForwardImage()
-        }
     }
 
-    override fun handleEvent(event: ImageViewerEvent) {
-        when (event) {
-            is ImageViewerEvent.GalleryImagesEvent -> {
-                adapterImages.items = event.galleryImages
-                event.cursorToScrollPos?.let { binding.rvImages.scrollToPosition(it) }
-            }
-        }
-    }
+    override fun handleEvent(event: ImageViewerEvent) = noEventsExpected()
 }

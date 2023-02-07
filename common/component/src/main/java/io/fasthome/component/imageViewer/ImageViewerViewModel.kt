@@ -1,26 +1,32 @@
 package io.fasthome.component.imageViewer
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl.Companion.IMAGES_COUNT_MEDIUM_PAGE
+import io.fasthome.component.imageViewer.ImageViewerMapper.toImageViewerModel
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
+import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
+import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 class ImageViewerViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val params: ImageViewerContract.ImageViewerParams,
     private val galleryRepository: GalleryRepository,
+    private val loadDataHelper: PagingDataViewModelHelper,
 ) : BaseViewModel<ImageViewerState, ImageViewerEvent>(
     router, requestParams
 ) {
 
-    private var imagesFromGallery: List<ImageViewerModel> = emptyList()
-
+    var scrollCursorPosition: Int? = null
     override fun createInitialState(): ImageViewerState {
         val fromConversationParams =
             params as? ImageViewerContract.ImageViewerParams.MessageImageParams
@@ -36,51 +42,49 @@ class ImageViewerViewModel(
         )
     }
 
-    fun loadMoreImages(firstVisiblePos: Int) {
-        val cursorPosition = imagesFromGallery.getOrNull(firstVisiblePos)?.imageGallery?.cursorPosition
-        if (cursorPosition != null) {
-            when (firstVisiblePos) {
-                0 -> {
-                    loadBeforeImages(cursorPosition)
+    fun fetchImages(): Flow<PagingData<ImageViewerModel>> {
+        val imageGallery = currentViewState.imagesViewerModel.firstOrNull()?.imageGallery
+        var index = 0
+        val items = loadDataHelper.getDataFlow(
+            getItems = {
+                totalPagingSource(IMAGES_COUNT_MEDIUM_PAGE) { pageNumber, pageSize ->
+                    if (imageGallery != null) {
+                        galleryRepository.getGalleryImages(pageNumber, pageSize)
+                            .onSuccess { images ->
+                                return@totalPagingSource ListWithTotal(images, pageSize)
+                            }
+                    } else {
+                        if (pageNumber == 0 && currentViewState.imagesViewerModel.isNotEmpty()) {
+                            return@totalPagingSource ListWithTotal(
+                                currentViewState.imagesViewerModel.filterIsInstance<ImageViewerModel>(),
+                                currentViewState.imagesViewerModel.size
+                            )
+                        }
+                    }
+                    return@totalPagingSource ListWithTotal(emptyList(), pageSize)
                 }
-                imagesFromGallery.lastIndex -> {
-                    loadAfterImages(cursorPosition)
+            },
+            mapDataItem = {
+                when (it) {
+                    is GalleryImage -> {
+                        if (imageGallery != null) {
+                            if (it.cursorPosition == imageGallery.cursorPosition) {
+                                scrollCursorPosition = index
+                            }
+                            index++
+                        }
+                        it.toImageViewerModel()
+                    }
+                    else -> {
+                        it as ImageViewerModel
+                    }
                 }
-            }
-        }
-    }
-    fun getImageFirstStart(galleryImage: GalleryImage) {
-        loadBeforeImages(galleryImage.cursorPosition - 1, true)
-        loadAfterImages(galleryImage.cursorPosition)
+            },
+            getItemId = { if (it is GalleryImage) it.cursorPosition.toLong() else null },
+        ).cachedIn(viewModelScope)
+        return items
     }
 
-    private fun loadAfterImages(cursorPosition: Int) {
-        viewModelScope.launch {
-            galleryRepository.getGalleryImagesAfter(cursorPosition, IMAGES_COUNT_MEDIUM_PAGE)
-                .onSuccess { imagesGallery ->
-                    imagesFromGallery = imagesFromGallery + imagesGallery.map { ImageViewerModel(null, null, it) }
-                }
-            sendEvent(ImageViewerEvent.GalleryImagesEvent(imagesFromGallery))
-        }
-    }
-    private fun loadBeforeImages(cursorPosition: Int, needScrollAfterSet: Boolean = false) {
-        viewModelScope.launch {
-            galleryRepository.getGalleryImagesBefore(cursorPosition, IMAGES_COUNT_MEDIUM_PAGE)
-                .onSuccess { imagesGallery ->
-                    imagesFromGallery = imagesGallery.map { ImageViewerModel(null, null, it) } + imagesFromGallery
-                }
-            var scrollToPosition:Int? = null
-                if(needScrollAfterSet) {
-                currentViewState.imagesViewerModel.firstOrNull()?.imageGallery?.cursorPosition?.let { pos ->
-                    scrollToPosition = imagesFromGallery.indexOfFirst { it.imageGallery?.cursorPosition == pos }
-                }
-            }
-            sendEvent(ImageViewerEvent.GalleryImagesEvent(
-                imagesFromGallery,
-                cursorToScrollPos = scrollToPosition
-            ))
-        }
-    }
 
     fun onDeleteImage() {
         exitWithResult(
