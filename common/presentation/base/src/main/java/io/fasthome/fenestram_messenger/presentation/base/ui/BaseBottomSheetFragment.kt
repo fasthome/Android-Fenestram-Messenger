@@ -33,7 +33,7 @@ open class BaseBottomSheetFragment(
     @LayoutRes bottomSheetRes: Int,
     private val contentClazz: KClass<out BaseFragment<*, *>>,
     private val config: Config = Config(Config.Scale.Fullscreen, true),
-): Fragment(bottomSheetRes), ModalWindow, BackPressConsumer {
+) : Fragment(bottomSheetRes), ModalWindow, BackPressConsumer {
 
     private companion object {
 
@@ -56,16 +56,18 @@ open class BaseBottomSheetFragment(
         }
     }
 
-    private val router: ContractRouter by inject()
-    private var fragmentInstance: BaseFragment<*, *>? = null
+    val router: ContractRouter by inject()
+    var fragmentInstance: BaseFragment<*, *>? = null
 
-    private var currentState: BottomSheetState? = null
-    private var dismissed: Boolean = false
+    var currentState: BottomSheetState? = null
+    var dismissed: Boolean = false
 
     private var _behavior: BottomSheetBehavior<FragmentContainerView>? = null
     protected val behavior get() = checkNotNull(_behavior)
 
-    private val stateCallback = StateChangeListener { newState ->
+    var beforeDismissListener: (() -> Unit)? = null
+
+    private var stateCallback = StateChangeListener { newState ->
         currentState = newState
         if (newState == BottomSheetState.HIDDEN) {
             if (fragmentInstance is BottomSheetDismissListener) {
@@ -74,6 +76,12 @@ open class BaseBottomSheetFragment(
                 router.exit()
             }
         }
+    }
+
+    fun setStateCallback(listener: StateChangeListener) {
+        stateCallback = listener
+        /* _behavior?.addBottomSheetCallback(stateCallback)
+        _behavior?.addBottomSheetCallback(slideCallback)*/
     }
 
     private val slideCallback = SlideChangeListener { slideOffset ->
@@ -154,17 +162,25 @@ open class BaseBottomSheetFragment(
             }
         }
     }
+
     fun onViewCreated(rootView: View, contentView: FragmentContainerView) {
         rootView.apply {
-            if (config.canceledOnTouchOutside) setOnClickListener { router.exit() }
+            if (config.canceledOnTouchOutside) setOnClickListener {
+                if (beforeDismissListener == null) router.exit()
+                else beforeDismissListener?.invoke()
+            }
         }
         contentView.apply {
             layoutParams = if (config.scale == Config.Scale.FitToContent) {
-                CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
+                CoordinatorLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
             } else {
-                CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT)
+                CoordinatorLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
             }
             setBehavior(behavior)
         }
@@ -187,8 +203,13 @@ open class BaseBottomSheetFragment(
         continuation.invokeOnCancellation { behavior.removeBottomSheetCallback(listener) }
     }
 
-    override fun onBackPressed(): Boolean =
-        childFragmentManager.onBackPressed()
+    override fun onBackPressed(): Boolean {
+        if (beforeDismissListener != null) {
+            beforeDismissListener!!.invoke()
+            return true
+        }
+        return childFragmentManager.onBackPressed()
+    }
 
     enum class BottomSheetState(val flag: Int, val alpha: Int) {
         HIDDEN(BottomSheetBehavior.STATE_HIDDEN, 0),
@@ -219,7 +240,11 @@ open class BaseBottomSheetFragment(
                 is Config.Scale.Percent -> (height * scale.collapsed).toInt()
             }
 
-        override fun onInterceptTouchEvent(parent: CoordinatorLayout, child: V, event: MotionEvent): Boolean {
+        override fun onInterceptTouchEvent(
+            parent: CoordinatorLayout,
+            child: V,
+            event: MotionEvent,
+        ): Boolean {
             /**
              * Код для обработки случаев, когда во фрагменте несколько вьюшек, которые скролятся. Изначально
              * [BottomSheetBehavior] работает только с одной вьюшкой с nestedScrolling. Запоминает ее и скролит
@@ -270,7 +295,7 @@ open class BaseBottomSheetFragment(
         }
     }
 
-    private fun BottomSheetBehavior<*>.setState(state: BottomSheetState) {
+    fun BottomSheetBehavior<*>.setState(state: BottomSheetState) {
         this.state = state.flag
     }
 
@@ -278,7 +303,7 @@ open class BaseBottomSheetFragment(
         (layoutParams as CoordinatorLayout.LayoutParams).behavior = behavior
     }
 
-    private class StateChangeListener(
+    class StateChangeListener(
         val block: (newState: BottomSheetState) -> Unit,
     ) : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {

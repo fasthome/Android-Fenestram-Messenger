@@ -1,4 +1,4 @@
-package io.fasthome.component.imageViewer
+package io.fasthome.component.image_viewer
 
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners

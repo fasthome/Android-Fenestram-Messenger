@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.di
 
-import io.fasthome.component.imageViewer.ImageViewerViewModel
+import io.fasthome.component.image_viewer.ImageViewerViewModel
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe

@@ -1,4 +1,4 @@
-package io.fasthome.component.imageViewer
+package io.fasthome.component.image_viewer
 
 import android.os.Bundle
 import android.view.View

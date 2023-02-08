@@ -1,4 +1,4 @@
-package io.fasthome.component.imageViewer
+package io.fasthome.component.image_viewer
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -6,7 +6,7 @@ import androidx.paging.cachedIn
 import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl.Companion.IMAGES_COUNT_MEDIUM_PAGE
-import io.fasthome.component.imageViewer.ImageViewerMapper.toImageViewerModel
+import io.fasthome.component.image_viewer.ImageViewerMapper.toImageViewerModel
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams

@@ -3,5 +3,6 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
 
-class FileSelectorEvent {
+sealed interface FileSelectorEvent {
+    object OpenDismissDialog: FileSelectorEvent
 }

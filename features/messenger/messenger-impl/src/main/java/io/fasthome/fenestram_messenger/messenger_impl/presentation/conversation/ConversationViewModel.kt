@@ -5,8 +5,8 @@ import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.gallery.GalleryImage
-import io.fasthome.component.imageViewer.ImageViewerContract
-import io.fasthome.component.imageViewer.ImageViewerModel
+import io.fasthome.component.image_viewer.ImageViewerContract
+import io.fasthome.component.image_viewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -547,6 +547,7 @@ class ConversationViewModel(
                 )
             }
         }
+        sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
     private suspend fun sendDocument(conversationViewItem: ConversationViewItem.Self.Document) {

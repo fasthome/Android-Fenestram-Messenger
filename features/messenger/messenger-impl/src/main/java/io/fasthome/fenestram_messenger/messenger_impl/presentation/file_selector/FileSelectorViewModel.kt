@@ -8,8 +8,8 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl
-import io.fasthome.component.imageViewer.ImageViewerContract
-import io.fasthome.component.imageViewer.ImageViewerModel
+import io.fasthome.component.image_viewer.ImageViewerContract
+import io.fasthome.component.image_viewer.ImageViewerModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toListUri
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toContents
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toFileSelectorViewItem
@@ -54,12 +54,14 @@ class FileSelectorViewModel(
                 }
 
             bottomViewAction.receiveActionsToFragment().collectLatest {
-                if (it is FileSelectorButtonEvent.AttachEvent) {
-                    exitWithResult(
-                        FileSelectorNavigationContract.createResult(
-                            FileSelectorNavigationContract.Result.Attach(images = attachedImages.toContents())
+                when (it) {
+                    is FileSelectorButtonEvent.AttachEvent -> {
+                        exitWithResult(
+                            FileSelectorNavigationContract.createResult(
+                                FileSelectorNavigationContract.Result.Attach(images = attachedImages.toContents())
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -88,13 +90,14 @@ class FileSelectorViewModel(
             attachedImages.add(attachedModel)
         else
             attachedImages.removeIf { it.content.uri == attachedModel.content.uri }
-        sendImagesCount()
+
+        sendImagesCount(attachedImages.isNotEmpty())
     }
 
-    private fun sendImagesCount() {
+    private fun sendImagesCount(haveChanges: Boolean = false) {
         bottomViewAction.sendActionToBottomView(
             FileSelectorButtonEvent.AttachCountEvent(
-                attachedImages.size
+                attachedImages.size, haveChanges
             )
         )
     }
