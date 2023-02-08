@@ -80,15 +80,16 @@ open class BottomSheetFragmentWithButton(
     }
 
     private fun openResetDialog() {
-        if(!dismissed) {
+        if (!dismissed) {
             if (isHaveChanges) {
                 FileSelectorCancelDialog.create(this) {
+                    dismissed = true
                     router.exit()
                 }.show()
             } else {
+                dismissed = true
                 router.exit()
             }
-            dismissed = true
         }
     }
 

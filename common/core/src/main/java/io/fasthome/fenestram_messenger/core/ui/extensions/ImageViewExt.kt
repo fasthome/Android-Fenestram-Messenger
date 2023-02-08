@@ -13,6 +13,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Registry
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.Transformation
@@ -66,7 +67,8 @@ fun ImageView.loadRounded(
     radius: Int = 5.dp,
     transform: BitmapTransformation? = CenterCrop(),
     progressBar: ProgressBar? = null,
-    sizeMultiplier: Float = 1f
+    sizeMultiplier: Float = 1f,
+    overridePair: Pair<Int,Int>? = null
 ) {
     progressBar?.isVisible = true
     var plcRes = placeholderRes
@@ -80,7 +82,7 @@ fun ImageView.loadRounded(
         .sizeMultiplier(sizeMultiplier)
         .transform(transform, RoundedCorners(radius))
         .diskCacheStrategy(DiskCacheStrategy.ALL)
-        .listener(object: RequestListener<Drawable> {
+        .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?,
                 model: Any?,
@@ -104,7 +106,7 @@ fun ImageView.loadRounded(
 
         })
         .placeholder(plcRes)
-        .override(80.dp, 80.dp)
+        .override(overridePair)
         .into(this)
 }
 
@@ -227,4 +229,11 @@ fun loadBitmap(context: Context, url: String, placeholderRes: Int = R.drawable.i
             .submit(100, 100)
             .get()
     }
+}
+
+fun RequestBuilder<Drawable>.override(overridePair: Pair<Int, Int>?): RequestBuilder<Drawable> {
+    if(overridePair != null) {
+        return this.clone().override(overridePair.first, overridePair.second)
+    }
+    return this
 }

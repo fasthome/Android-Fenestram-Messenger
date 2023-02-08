@@ -44,15 +44,6 @@ class FileSelectorViewModel(
         attachedImages.addAll(params.selectedImages.toFileSelectorViewItem())
         sendImagesCount()
         viewModelScope.launch {
-            galleryRepository.getGalleryImages(0, GalleryRepositoryImpl.IMAGES_COUNT_ON_PAGE)
-                .onSuccess { images ->
-                    updateState {
-                        it.copy(
-                            images = images
-                        )
-                    }
-                }
-
             bottomViewAction.receiveActionsToFragment().collectLatest {
                 when (it) {
                     is FileSelectorButtonEvent.AttachEvent -> {
@@ -111,9 +102,7 @@ class FileSelectorViewModel(
         imageViewerLauncher.launch(params)
     }
 
-    override fun createInitialState(): FileSelectorState = FileSelectorState(
-        images = listOf()
-    )
+    override fun createInitialState(): FileSelectorState = FileSelectorState()
 
     fun fromGalleryClicked() {
         exitWithResult(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenGallery))

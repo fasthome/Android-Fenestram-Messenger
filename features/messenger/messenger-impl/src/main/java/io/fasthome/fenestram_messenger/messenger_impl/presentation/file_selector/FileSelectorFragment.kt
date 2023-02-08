@@ -70,13 +70,16 @@ class FileSelectorFragment :
     }
 
     override fun renderState(state: FileSelectorState) {
-        binding.rvImages.isVisible = true
-//        binding.tvEmptyView.isVisible = state.images.isEmpty()
+
     }
 
     private fun subscribeImages() {
         adapterImage.loadStateFlow.collectWhenStarted(this@FileSelectorFragment) { loadStates ->
             binding.filesProgress.isVisible = loadStates.refresh is LoadState.Loading
+        }
+        adapterImage.addOnPagesUpdatedListener {
+            binding.rvImages.isVisible = adapterImage.itemCount > 0
+            binding.tvEmptyView.isVisible = adapterImage.itemCount <= 0
         }
         vm.fetchImages()
             .distinctUntilChanged()

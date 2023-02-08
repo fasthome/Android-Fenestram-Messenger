@@ -41,7 +41,7 @@ fun createImageAdapterDelegate(
             if(item.isChecked) {
                 binding.ivImage.startAnimation(item.getAnimation())
             }
-            binding.ivImage.loadRounded(uri = item.content.uri, radius = 2.dp, sizeMultiplier = .7f)
+            binding.ivImage.loadRounded(uri = item.content.uri, radius = 2.dp, sizeMultiplier = .7f, overridePair = 80.dp to 80.dp)
             binding.cbSelect.increaseHitArea(8.dp)
             binding.cbSelect.onClick {
                 item.isChecked = binding.cbSelect.isChecked
