@@ -2,6 +2,8 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageButton
@@ -11,7 +13,12 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -41,7 +48,9 @@ class ProfileGuestFragment :
 
     private val binding by fragmentViewBinding(FragmentProfileGuestBinding::bind)
     private val recentFilesAdapter = RecentFilesAdapter()
-    private val recentImagesAdapter = RecentImagesAdapter()
+    private val recentImagesAdapter = RecentImagesAdapter(onMoreClicked = {
+        vm.onShowPhotosClicked()
+    })
 
     private val groupGuestFeature: GroupGuestFeature by inject()
 
@@ -74,7 +83,13 @@ class ProfileGuestFragment :
         super.onViewCreated(view, savedInstanceState)
         recentFilesList.adapter = recentFilesAdapter
         recentImagesList.adapter = recentImagesAdapter
-        recentImagesList.layoutManager = GridLayoutManager(context, 3)
+        recentImagesList.itemAnimator = null
+
+        val flexboxManager =
+            FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)
+
+        recentImagesList.layoutManager = flexboxManager
+        recentImagesList.supportBottomSheetScroll()
 
         recentFilesList.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean {
@@ -85,70 +100,69 @@ class ProfileGuestFragment :
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
         profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
-        profileGuestName.setOnClickListener {
+        profileGuestName.onClick {
             vm.copyText(profileGuestName.text.toString(), TextViewKey.Name)
         }
 
-        profileGuestNickname.setOnClickListener {
+        profileGuestNickname.onClick {
             vm.copyText(profileGuestNickname.text.toString(), TextViewKey.Nickname)
         }
 
-        profileGuestPhone.setOnClickListener {
+        profileGuestPhone.onClick {
             vm.copyText(profileGuestPhone.text.toString(), TextViewKey.Phone)
         }
 
-//        vm.fetchFilesAndPhotos()
-
-        recentFilesHeader.recentFilesShowAll.setOnClickListener {
+        recentFilesHeader.recentFilesShowAll.onClick {
             vm.onShowFilesClicked()
         }
-        recentImagesHeader.imagesShowAll.setOnClickListener {
+        recentImagesHeader.imagesShowAll.onClick {
             vm.onShowPhotosClicked()
         }
 
-        buttonDeleteChat.setOnClickListener {
+        buttonDeleteChat.onClick {
             vm.onDeleteChatClicked()
         }
 
-        profileGuestEdit.setOnClickListener {
+        profileGuestEdit.onClick {
             vm.onEditClicked(profileGuestName.text.toString().trim())
         }
 
-        profileGuestAvatar.setOnClickListener {
+        profileGuestAvatar.onClick {
             vm.onAvatarClicked()
         }
     }
 
     override fun renderState(state: ProfileGuestState) {
-        when {
-            state.recentFiles.size > 3 -> {
-                recentFilesAdapter.items = state.recentFiles.take(3)
-            }
-            state.recentImages.isNotEmpty() -> {
-                recentFilesAdapter.items = state.recentFiles
-            }
-            else -> {
-                //TODO Нет недавних файлов
-            }
-        }
-
-        when {
-            state.recentImages.size > 6 -> {
-                val items = state.recentImages.take(5) +
-                        RecentImagesViewItem(
-                            state.recentImages[5].image,
-                            state.recentImages.size - 5,
-                            true
-                        )
-                recentImagesAdapter.items = items
-            }
-            state.recentImages.isNotEmpty() -> {
-                recentImagesAdapter.items = state.recentImages
-            }
-            else -> {
-                //TODO Нет недавних изображений
-            }
-        }
+//        when {
+//            state.recentFiles.size > 3 -> {
+//                recentFilesAdapter.items = state.recentFiles.take(3)
+//            }
+//            state.recentImages.isNotEmpty() -> {
+//                recentFilesAdapter.items = state.recentFiles
+//            }
+//            else -> {
+//                //TODO Нет недавних файлов
+//            }
+//        }
+//
+//        when {
+//            state.recentImages.size > 6 -> {
+//                val items = state.recentImages.take(5) +
+//                        RecentImagesViewItem(
+//                            state.recentImages[5].image,
+//                            state.recentImages.size - 5,
+//                            true
+//                        )
+//                recentImagesAdapter.items = items
+//            }
+//            state.recentImages.isNotEmpty() -> {
+//                recentImagesAdapter.items = state.recentImages
+//            }
+//            else -> {
+//                //TODO Нет недавних изображений
+//            }
+//        }
+        recentImagesAdapter.items = state.recentImages
 
         with(binding) {
             participantsContainer.isVisible = state.isGroup
@@ -248,20 +262,11 @@ class ProfileGuestFragment :
                 )
                 else -> profileGuestAvatar.loadCircle(R.drawable.ic_avatar_placeholder)
             }
-
-            recentFilesHeader.recentFileCount.setPrintableText(
-                PrintableText.PluralResource(
-                    R.plurals.file_quantity,
-                    state.recentFiles.size,
-                    state.recentFiles.size
-                )
-            )
             recentImagesHeader.recentImagesCount.setPrintableText(
-                PrintableText.PluralResource(
-                    R.plurals.image_quantity,
-                    state.recentImages.size,
-                    state.recentImages.size
-                )
+                state.recentImagesCount
+            )
+            recentFilesHeader.recentFileCount.setPrintableText(
+                state.recentFilesCount
             )
         }
     }

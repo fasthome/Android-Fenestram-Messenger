@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.data.repo_impl
 
+import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.ProfileGuestService
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.UploadImageResult
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.repo.ProfileGuestRepo
@@ -24,5 +25,9 @@ class ProfileGuestRepoImpl(private val profileGuestService: ProfileGuestService)
         guid: String
     ): CallResult<UploadImageResult> = callForResult {
         profileGuestService.uploadImage(photoBytes, guid)
+    }
+
+    override suspend fun getAttachFiles(chatId: Long, messageType: MessageType) = callForResult {
+        profileGuestService.getAttachFiles(chatId = chatId, type = messageType.type)
     }
 }

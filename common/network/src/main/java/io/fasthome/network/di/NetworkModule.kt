@@ -1,10 +1,12 @@
 package io.fasthome.network.di
 
+import android.content.Context
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
+import io.fasthome.network.client.DeviceIdRepo
 import io.fasthome.network.client.JwtNetworkClientFactory
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.client.SimpleNetworkClientFactory
@@ -32,6 +34,7 @@ object NetworkModule {
                     networkLogger = get(),
                     tokensRepo = get(),
                     forceLogoutManager = lazy { get() },
+                    deviceIdRepo = get()
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.Authorized)
@@ -44,7 +47,8 @@ object NetworkModule {
                     environment = get(),
                     baseUrl = get<Environment>().endpoints.apiBaseUrl,
                     networkLogger = get(),
-                    forceLogoutManager = lazy { get() }
+                    forceLogoutManager = lazy { get() },
+                    deviceIdRepo = get()
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.RefreshToken)
@@ -58,6 +62,7 @@ object NetworkModule {
                     baseUrl = get<Environment>().endpoints.apiBaseUrl,
                     networkLogger = get(),
                     forceLogoutManager = lazy { get() },
+                    deviceIdRepo = get()
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.Unauthorized)
@@ -71,6 +76,7 @@ object NetworkModule {
         //TODO использовать StorageQualifier.Secure
         single { RefreshTokenStorage(get(named(StorageQualifier.Simple))) }
         single { AccessTokenStorage(get(named(StorageQualifier.Simple))) }
+        factory { DeviceIdRepo(get<Context>().contentResolver) }
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 

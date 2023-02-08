@@ -90,6 +90,7 @@ class PersonalityViewModel(
                             )
                         }
                     }
+                    is PickFileInterface.ResultEvent.PickedFile -> {}
                 }
             }
             .launchIn(viewModelScope)

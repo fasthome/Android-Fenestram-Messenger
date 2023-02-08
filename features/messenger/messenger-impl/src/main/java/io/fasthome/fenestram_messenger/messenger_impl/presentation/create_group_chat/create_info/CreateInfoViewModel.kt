@@ -45,6 +45,7 @@ class CreateInfoViewModel(
                             }
                         }
                     }
+                    is PickFileInterface.ResultEvent.PickedFile -> {}
                 }
             }
             .launchIn(viewModelScope)

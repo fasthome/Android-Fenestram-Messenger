@@ -27,7 +27,6 @@ class ProfileGuestImagesFragment :
         profileGuestImagesAppbar.setNavigationOnClickListener {
             vm.navigateBack()
         }
-        vm.fetchImages()
     }
 
     override fun renderState(state: ProfileGuestImagesState) {

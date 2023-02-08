@@ -568,6 +568,12 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
                         next.copy(timeVisible = !isInvisible)
                     is ConversationViewItem.Self.TextReplyOnImage -> messages[tempPreviousCounter] =
                         next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Group.Forward -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Receive.Forward -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Self.Forward -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
                 }
 
                 tempPreviousCounter++

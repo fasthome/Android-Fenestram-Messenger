@@ -137,6 +137,7 @@ class ConversationViewModel(
                 is ProfileGuestFeature.ProfileGuestResult.ChatNameChanged -> {
                     updateState { state -> state.copy(userName = result.newName) }
                 }
+                ProfileGuestFeature.ProfileGuestResult.Canceled -> {}
             }
         }
 
@@ -413,6 +414,7 @@ class ConversationViewModel(
                 is InputMessageMode.Reply -> {
                     replyMessage(mess)
                 }
+                is InputMessageMode.Forward -> {}
             }
         }
     }
@@ -674,6 +676,8 @@ class ConversationViewModel(
                             tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                     }
                 }
+                is ConversationViewItem.Self.Forward -> {}
+                is ConversationViewItem.Self.TextReplyOnImage -> {}
             }
             state.copy(
                 messages = newMessages
@@ -930,6 +934,8 @@ class ConversationViewModel(
                         )
                     }
                 }
+                is InputMessageMode.Default -> {}
+                is InputMessageMode.Forward -> {}
             }
             state.copy(messages = messages)
         }
@@ -1092,6 +1098,8 @@ class ConversationViewModel(
                     selfViewItem.files?.map { AttachedFile.Document(it) } ?: return
                 )
             }
+            is ConversationViewItem.Self.Forward -> {}
+            is ConversationViewItem.Self.TextReplyOnImage -> {}
         }
     }
 
@@ -1181,6 +1189,8 @@ class ConversationViewModel(
                                 )
                             }
                         }
+                        is InputMessageMode.Default -> {}
+                        is InputMessageMode.Forward -> {}
                     }
                     return@updateState state.copy(messages = messages)
                 }

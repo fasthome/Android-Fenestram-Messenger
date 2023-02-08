@@ -19,6 +19,6 @@ fun createFilesAdapterDelegate() =
         RecentFileItemBinding::inflate,
     ) {
         bindWithBinding {
-            recentFileName.text = item.fileName
+            recentFileName.text = item.path
         }
     }

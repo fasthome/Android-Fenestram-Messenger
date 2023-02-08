@@ -2,6 +2,7 @@ package io.fasthome.network.client
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
+import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.network.tokens.TokenUpdateException
 import io.fasthome.network.tokens.TokensRepo
 import io.fasthome.network.util.NetworkUtils
@@ -19,11 +20,15 @@ internal class JwtNetworkClientFactory(
     private val baseUrl: String,
     private val networkLogger: Logger,
     private val tokensRepo: TokensRepo,
+    private val deviceIdRepo: DeviceIdRepo,
     //Циклическая зависимость. LogoutManager зависит внутри от ForceLogoutManager через
     //JwtNetworkClientFactory, тк по факту они не зависят, решается lazy инициализацией
     private val forceLogoutManager: Lazy<ForceLogoutManager>,
 ) : NetworkClientFactory {
 
+    companion object {
+        const val XSessionHeader = "X-Session-Id"
+    }
     override fun create(
         adjustClientBlock: HttpClientConfig<*>.() -> Unit,
     ): NetworkClient = SimpleNetworkClientFactory(
@@ -31,7 +36,8 @@ internal class JwtNetworkClientFactory(
         environment = environment,
         baseUrl = baseUrl,
         networkLogger = networkLogger,
-        forceLogoutManager = forceLogoutManager
+        forceLogoutManager = forceLogoutManager,
+        deviceIdRepo = deviceIdRepo
     ).create {
 
         defaultRequestSuspend {

@@ -310,6 +310,7 @@ fun createConversationSelfForwardAdapterDelegate(
                         forwardMessage.metaInfo
                     )
                 }
+                else -> {}
             }
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -523,6 +524,7 @@ fun createConversationReceiveForwardAdapterDelegate(
                         forwardMessage.metaInfo
                     )
                 }
+                else -> {}
             }
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
@@ -831,6 +833,7 @@ fun createConversationGroupForwardAdapterDelegate(
                         forwardMessage.metaInfo
                     )
                 }
+                else -> {}
             }
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             username.setPrintableText(item.userName)
