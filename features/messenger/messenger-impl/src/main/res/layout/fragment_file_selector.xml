@@ -131,5 +131,14 @@
             tools:itemCount="25"
             tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:listitem="@layout/item_image_select_from" />
+
+        <ProgressBar
+            android:id="@+id/files_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/rv_images" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

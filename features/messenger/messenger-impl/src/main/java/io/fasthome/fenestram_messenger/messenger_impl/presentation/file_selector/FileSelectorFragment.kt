@@ -6,6 +6,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selecto
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -18,6 +20,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 class FileSelectorFragment :
@@ -59,19 +62,31 @@ class FileSelectorFragment :
         ibCancel.onClick {
             vm.exitNoResult()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
         subscribeImages()
     }
 
     override fun renderState(state: FileSelectorState) {
-        binding.rvImages.isVisible = state.images.isNotEmpty()
-        binding.tvEmptyView.isVisible = state.images.isEmpty()
+        binding.rvImages.isVisible = true
+//        binding.tvEmptyView.isVisible = state.images.isEmpty()
     }
 
     private fun subscribeImages() {
+        adapterImage.loadStateFlow.collectWhenStarted(this@FileSelectorFragment) { loadStates ->
+            binding.filesProgress.isVisible = loadStates.refresh is LoadState.Loading
+        }
         vm.fetchImages()
             .distinctUntilChanged()
             .collectWhenStarted(this@FileSelectorFragment) {
-                adapterImage.submitData(it)
+                binding.root.post {
+                    viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                        delay(100)
+                        adapterImage.submitData(it)
+                    }
+                }
             }
     }
 
