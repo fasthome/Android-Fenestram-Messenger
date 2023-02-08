@@ -17,6 +17,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
+import io.fasthome.fenestram_messenger.navigation.contract.CreateResultInterface
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class FileSelectorViewModel(
     router: ContractRouter,
-    requestParams: RequestParams,
+    private val requestParams: RequestParams,
     private val galleryRepository: GalleryRepository,
     private val params: FileSelectorNavigationContract.Params,
     private val bottomViewAction: BottomViewAction<FileSelectorButtonEvent>,
@@ -105,16 +106,21 @@ class FileSelectorViewModel(
     override fun createInitialState(): FileSelectorState = FileSelectorState()
 
     fun fromGalleryClicked() {
-        exitWithResult(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenGallery))
+        exitWithResultFromFileSelector(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenGallery))
     }
 
     fun fromCameraClicked() {
-        exitWithResult(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenCamera))
+        exitWithResultFromFileSelector(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenCamera))
     }
 
     fun exitNoResult() = exitWithoutResult()
     fun attachFileClicked() {
-        exitWithResult(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenFiles))
+        exitWithResultFromFileSelector(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenFiles))
+    }
+
+    private fun exitWithResultFromFileSelector(createResultInterface: CreateResultInterface) {
+        bottomViewAction.sendActionToBottomView(FileSelectorButtonEvent.IgnoreRouterExit)
+        router.exitWithResult(requestParams.resultKey, createResultInterface)
     }
 
 }

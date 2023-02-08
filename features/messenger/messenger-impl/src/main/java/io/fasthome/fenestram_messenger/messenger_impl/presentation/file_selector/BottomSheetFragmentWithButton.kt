@@ -73,6 +73,10 @@ open class BottomSheetFragmentWithButton(
                                 binding.includeBottomInput.btnAttach.setText(R.string.common_select_image)
                             }
                         }
+
+                        is FileSelectorButtonEvent.IgnoreRouterExit -> {
+                            dismissed = true
+                        }
                     }
                 }
             }
