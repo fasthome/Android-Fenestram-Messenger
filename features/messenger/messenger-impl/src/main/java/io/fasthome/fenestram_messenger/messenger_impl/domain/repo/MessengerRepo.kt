@@ -38,6 +38,8 @@ interface MessengerRepo {
         isGroup: Boolean
     ): CallResult<PostChatsResult>
 
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String): CallResult<Unit>
+
     suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
@@ -94,5 +96,6 @@ interface MessengerRepo {
         fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse)
         fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse)
         fun onUnreadMessage(badgeResponse: BadgeResponse)
+        fun onNewReactionCallback(reactionsResponse: ReactionsResponse)
     }
 }

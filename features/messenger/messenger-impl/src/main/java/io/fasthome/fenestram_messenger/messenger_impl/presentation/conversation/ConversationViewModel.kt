@@ -21,10 +21,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
@@ -83,7 +80,7 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
-    private var permittedReactions = listOf<ReactionViewItem>()
+    private var permittedReactions = listOf<PermittedReactionViewItem>()
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -736,7 +733,7 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
-                    permittedReactions = chat.permittedReactions.map { ReactionViewItem(it) }
+                    permittedReactions = chat.permittedReactions.map { PermittedReactionViewItem(it) }
                     val selfUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
@@ -770,7 +767,8 @@ class ConversationViewModel(
             onNewMessageStatusCallback = { onNewMessageStatus(it) },
             onMessageDeletedCallback = { onMessagesDeletedCallback(it) },
             onNewChatChangesCallback = { onChatChangesCallback(it) },
-            onChatDeletedCallback = { onChatDeletedCallback(it) }
+            onChatDeletedCallback = { onChatDeletedCallback(it) },
+            onNewReactionCallback = { onNewReaction(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -803,7 +801,8 @@ class ConversationViewModel(
                 if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
-                        permittedReactions = it.permittedReactions.map { reaction -> ReactionViewItem(reaction) }
+                        permittedReactions =
+                            it.permittedReactions.map { reaction -> PermittedReactionViewItem(reaction) }
                         updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
@@ -836,7 +835,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
-            permittedReactions = it.permittedReactions.map { reaction -> ReactionViewItem(reaction) }
+            permittedReactions = it.permittedReactions.map { reaction -> PermittedReactionViewItem(reaction) }
             updateState { state ->
                 state.copy(
                     avatar = it.avatar,
@@ -1308,5 +1307,27 @@ class ConversationViewModel(
 
     fun contentInserted(content: Content) {
         attachContentFile(content)
+    }
+
+    fun postReaction(messageId: Long, reaction: String) {
+        viewModelScope.launch {
+            chatId?.let {
+                messengerInteractor.postReaction(it, messageId, reaction.dropLast(1))
+            }
+        }
+    }
+
+    fun onNewReaction(messageReactions: MessageReactions) {
+        val changedMessages = currentViewState.messages.mapValues {
+            if (it.value.id == messageReactions.messageId)
+                messageReactions.toConversationViewItem(selfUserId, it.value)
+            else it.value
+
+        }
+        updateState { state -> state.copy(messages = changedMessages) }
+    }
+
+    fun onReactionClicked(messageId: Long, reactionViewItem: ReactionsViewItem) {
+        postReaction(messageId, reactionViewItem.reaction)
     }
 }

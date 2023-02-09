@@ -7,6 +7,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageReactions
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
@@ -82,7 +83,8 @@ fun Message.toForwardConversationViewItem(
                     selfUserId,
                     isGroup,
                     profileImageUrlConverter
-                )
+                ),
+                reactions = mapReactions(selfUserId, true, reactions)
             )
             else -> {
                 if (isGroup) {
@@ -104,7 +106,8 @@ fun Message.toForwardConversationViewItem(
                         ),
                         avatar = initiator?.avatar ?: "",
                         phone = initiator?.phone ?: "",
-                        userId = initiator?.id ?: 0
+                        userId = initiator?.id ?: 0,
+                        reactions = mapReactions(selfUserId, false, reactions)
                     )
                 } else {
                     ConversationViewItem.Receive.Forward(
@@ -122,7 +125,8 @@ fun Message.toForwardConversationViewItem(
                             selfUserId,
                             isGroup,
                             profileImageUrlConverter
-                        )
+                        ),
+                        reactions = mapReactions(selfUserId, false, reactions)
                     )
                 }
             }
@@ -182,7 +186,8 @@ fun Message.toConversationViewItem(
                                     isGroup,
                                     profileImageUrlConverter
                                 ),
-                                userName = PrintableText.Raw(getName(initiator))
+                                userName = PrintableText.Raw(getName(initiator)),
+                                reactions = mapReactions(selfUserId, true, reactions)
                             )
                         }
                         else -> {
@@ -202,7 +207,8 @@ fun Message.toConversationViewItem(
                                     isGroup,
                                     profileImageUrlConverter
                                 ),
-                                userName = PrintableText.Raw(getName(initiator))
+                                userName = PrintableText.Raw(getName(initiator)),
+                                reactions = mapReactions(selfUserId, true, reactions)
                             )
                         }
                     }
@@ -224,7 +230,9 @@ fun Message.toConversationViewItem(
                             profileImageUrlConverter
                         ),
                         userName = PrintableText.Raw(getName(initiator)),
-                        metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
+                        metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) }
+                            ?: emptyList(),
+                        reactions = mapReactions(selfUserId, true, reactions)
                     )
                 }
 
@@ -240,7 +248,8 @@ fun Message.toConversationViewItem(
                         files = null,
                         path = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
+                        metaInfo = content?.map { MetaInfo(it) } ?: emptyList(),
+                        reactions = mapReactions(selfUserId, true, reactions)
                     )
                 }
 
@@ -289,7 +298,8 @@ fun Message.toConversationViewItem(
                                     selfUserId,
                                     isGroup,
                                     profileImageUrlConverter
-                                )
+                                ),
+                                reactions = mapReactions(selfUserId, false, reactions)
                             )
                         } else {
                             ConversationViewItem.Group.TextReplyOnImage(
@@ -310,7 +320,8 @@ fun Message.toConversationViewItem(
                                     selfUserId,
                                     isGroup,
                                     profileImageUrlConverter
-                                )
+                                ),
+                                reactions = mapReactions(selfUserId, false, reactions)
                             )
                         }
                     }
@@ -333,7 +344,9 @@ fun Message.toConversationViewItem(
                                 isGroup,
                                 profileImageUrlConverter
                             ),
-                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
+                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) }
+                                ?: emptyList(),
+                            reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
 
@@ -350,7 +363,8 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
-                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
+                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList(),
+                            reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
 
@@ -395,7 +409,8 @@ fun Message.toConversationViewItem(
                                         isGroup,
                                         profileImageUrlConverter
                                     ),
-                                    userName = PrintableText.Raw(getName(initiator))
+                                    userName = PrintableText.Raw(getName(initiator)),
+                                    reactions = mapReactions(selfUserId, false, reactions)
                                 )
                             }
                             else -> {
@@ -414,7 +429,8 @@ fun Message.toConversationViewItem(
                                         isGroup,
                                         profileImageUrlConverter
                                     ),
-                                    userName = PrintableText.Raw(getName(initiator))
+                                    userName = PrintableText.Raw(getName(initiator)),
+                                    reactions = mapReactions(selfUserId, false, reactions)
                                 )
                             }
                         }
@@ -435,7 +451,9 @@ fun Message.toConversationViewItem(
                                 profileImageUrlConverter
                             ),
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
+                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) }
+                                ?: emptyList(),
+                            reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
 
@@ -448,7 +466,8 @@ fun Message.toConversationViewItem(
                             id = id,
                             timeVisible = true,
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
+                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList(),
+                            reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
 
@@ -602,7 +621,8 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     nickname = null,
     messageType = "text",
     replyMessage = null,
-    userName = PrintableText.EMPTY
+    userName = PrintableText.EMPTY,
+    reactions = emptyList()
 )
 
 fun createImageMessage(loadableContent: List<Content>, userName: String?) =
@@ -619,7 +639,8 @@ fun createImageMessage(loadableContent: List<Content>, userName: String?) =
         messageType = "images",
         replyMessage = null,
         userName = PrintableText.Raw(userName ?: ""),
-        metaInfo = loadableContent.map { MetaInfo() }
+        metaInfo = loadableContent.map { MetaInfo() },
+        reactions = emptyList()
     )
 
 fun createDocumentMessage(document: List<String>, file: List<File>) = ConversationViewItem.Self.Document(
@@ -633,7 +654,8 @@ fun createDocumentMessage(document: List<String>, file: List<File>) = Conversati
     timeVisible = true,
     path = null,
     userName = PrintableText.EMPTY,
-    metaInfo = file.map { MetaInfo(it) }
+    metaInfo = file.map { MetaInfo(it) },
+    reactions = emptyList()
 )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
@@ -776,3 +798,72 @@ fun findForwardText(messageToForward: MessengerFeature.ForwardMessage) =
             getPrintableRawText(messageToForward.username)
         )
     }
+
+fun mapReactions(selfUserId: Long?, isSelfMessage: Boolean, messageReactions: Map<String, List<User>>) =
+    messageReactions.map {
+        val userIds = it.value.map { user -> user.id }
+        ReactionsViewItem(
+            reaction = it.key,
+            userCount = it.value.size,
+            avatars = it.value.map { user -> user.avatar },
+            reactionBackground = when {
+                userIds.contains(selfUserId) -> R.color.blue
+                isSelfMessage -> R.color.blue4
+                else -> R.color.blue2
+            }
+        )
+    }
+
+fun MessageReactions.toConversationViewItem(
+    selfUserId: Long?,
+    oldViewItem: ConversationViewItem
+): ConversationViewItem {
+    return when (oldViewItem) {
+        is ConversationViewItem.Self.Text -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, true, reactions)
+        )
+        is ConversationViewItem.Self.TextReplyOnImage -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, true, reactions)
+        )
+        is ConversationViewItem.Self.Forward -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, true, reactions)
+        )
+        is ConversationViewItem.Self.Image -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, true, reactions)
+        )
+        is ConversationViewItem.Self.Document -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, true, reactions)
+        )
+        is ConversationViewItem.Group.Document -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Group.Forward -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Group.Image -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Group.Text -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Group.TextReplyOnImage -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Receive.Document -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Receive.Forward -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Receive.Image -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Receive.Text -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        is ConversationViewItem.Receive.TextReplyOnImage -> oldViewItem.copy(
+            reactions = mapReactions(selfUserId, false, reactions)
+        )
+        else -> error("Unexpected View Item $oldViewItem !")
+    }
+}

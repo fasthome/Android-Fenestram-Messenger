@@ -21,7 +21,6 @@
     </FrameLayout>
 
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
@@ -41,22 +40,24 @@
 
         <LinearLayout
             android:id="@+id/message_content"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="5dp"
             android:orientation="vertical"
             android:background="@drawable/message_rectangle_receive"
             android:maxWidth="300dp"
             app:layout_constraintStart_toEndOf="@id/avatar"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.85">
 
             <TextView
                 android:id="@+id/username"
                 style="@style/Text.Light.14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:paddingTop="5dp"
                 android:text="Мария Сергеевна"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -65,12 +66,16 @@
                 android:id="@+id/rv_docs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="4dp"
                 android:maxWidth="300dp"
                 tools:itemCount="2"
                 tools:listitem="@layout/item_document" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
 
         </LinearLayout>
 

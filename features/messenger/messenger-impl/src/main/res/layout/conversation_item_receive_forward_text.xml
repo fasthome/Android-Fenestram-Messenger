@@ -26,128 +26,142 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_message_content"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/forward_ll"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
             android:minWidth="48dp"
             android:minHeight="24dp"
             android:orientation="vertical"
-            android:paddingStart="6dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
             app:barrierMargin="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.85">
 
-            <View
-                android:id="@+id/blue_line"
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/blue"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iv_arrow"
-                app:layout_constraintTop_toBottomOf="@+id/username"
-                tools:viewBindingIgnore="true" />
-
-            <TextView
-                android:id="@+id/username"
-                style="@style/Text.Light.14sp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_message_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Сергей Сергеевич"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="HardcodedText" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/forward_author_name"
-                style="@style/Text.Blue.14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@id/blue_line"
-                app:layout_constraintTop_toTopOf="@+id/blue_line"
-                tools:text="Мария Сергеева" />
+                <View
+                    android:id="@+id/blue_line"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/blue"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_arrow"
+                    app:layout_constraintTop_toBottomOf="@+id/username"
+                    tools:viewBindingIgnore="true" />
 
-
-            <ImageView
-                android:id="@+id/iv_arrow"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_action_forward"
-                android:tint="@color/blue"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/blue_line"
-                tools:ignore="UseAppTint" />
-
-            <LinearLayout
-                android:id="@+id/forward_document_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:maxWidth="300dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/forward_author_name"
-                app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
-                tools:visibility="visible">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_docs"
+                <TextView
+                    android:id="@+id/username"
+                    style="@style/Text.Light.14sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:text="Сергей Сергеевич"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/forward_author_name"
+                    style="@style/Text.Blue.14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/blue_line"
+                    app:layout_constraintTop_toTopOf="@+id/blue_line"
+                    tools:text="Мария Сергеева" />
+
+
+                <ImageView
+                    android:id="@+id/iv_arrow"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_action_forward"
+                    android:tint="@color/blue"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/blue_line"
+                    tools:ignore="UseAppTint" />
+
+                <LinearLayout
+                    android:id="@+id/forward_document_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
                     android:maxWidth="300dp"
-                    tools:itemCount="4"
-                    tools:listitem="@layout/item_document" />
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/forward_author_name"
+                    app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                    tools:visibility="visible">
 
-            </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_docs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:maxWidth="300dp"
+                        tools:itemCount="4"
+                        tools:listitem="@layout/item_document" />
+
+                </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/message_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/geometria"
-                android:maxEms="16"
-                android:text="@string/MessageContentCheck"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/forward_author_name"
-                app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
-                tools:ignore="TouchTargetSizeCheck"
-                tools:visibility="gone" />
+                <TextView
+                    android:id="@+id/message_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/geometria"
+                    android:maxEms="16"
+                    android:text="@string/MessageContentCheck"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@+id/forward_author_name"
+                    app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                    tools:ignore="TouchTargetSizeCheck"
+                    tools:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_images"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:padding="3dp"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_min="@dimen/image_min_size"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/blue_line"
+                    app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                    app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
+                    app:layout_constraintWidth_min="@dimen/image_min_size"
+                    tools:ignore="TouchTargetSizeCheck"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/holder_image" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_images"
+                android:id="@+id/list_reactions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="10dp"
-                android:padding="3dp"
-                app:barrierMargin="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_min="@dimen/image_min_size"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/blue_line"
-                app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
-                app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
-                app:layout_constraintWidth_min="@dimen/image_min_size"
-                tools:ignore="TouchTargetSizeCheck"
-                tools:itemCount="1"
-                tools:listitem="@layout/holder_image" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/blue_line"
+                android:layout_marginTop="3dp"
+                tools:listitem="@layout/holder_reactions" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/send_time_view"
@@ -160,7 +174,7 @@
             android:textColor="@color/gray1"
             android:textSize="11sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cl_message_content" />
+            app:layout_constraintTop_toBottomOf="@+id/forward_ll" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

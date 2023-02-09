@@ -28,7 +28,7 @@
 
         <LinearLayout
             android:id="@+id/cl_message_content"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
@@ -37,13 +37,13 @@
             android:minHeight="24dp"
             android:orientation="vertical"
             android:paddingStart="12dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="5dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
             app:barrierMargin="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="@dimen/image_recycler_ll_max_width">
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.65">
 
             <TextView
                 android:id="@+id/reply_message_name"
@@ -108,6 +108,12 @@
                 android:textSize="14sp"
                 tools:ignore="TouchTargetSizeCheck"
                 tools:text="123" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
 
         </LinearLayout>
 

@@ -28,7 +28,7 @@
 
         <LinearLayout
             android:id="@+id/cl_message"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:background="@drawable/message_rectangle_self"
@@ -43,7 +43,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            tools:ignore="TouchTargetSizeCheck">
+            tools:ignore="TouchTargetSizeCheck"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.85">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_reply_message"
@@ -107,6 +109,12 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
+
             <TextView
                 android:id="@+id/tv_edited"
                 style="@style/Text.Gray.10sp"
@@ -116,6 +124,7 @@
                 android:text="@string/messenger_edited"
                 android:textColor="@color/gray4"
                 android:visibility="gone" />
+
 
         </LinearLayout>
 

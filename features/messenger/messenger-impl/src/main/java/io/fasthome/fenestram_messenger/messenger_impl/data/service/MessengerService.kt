@@ -30,7 +30,7 @@ class MessengerService(
             path = "chats/message/$id",
             body = SendMessageRequest(text, type, replyMessageId = null, authorId = authorId)
         )
-        
+
         return SendMessageMapper.responseToSendMessageResult(response.requireData(), localId)
     }
 
@@ -84,7 +84,7 @@ class MessengerService(
         return UploadImageResult(imagePath = response.pathToFile)
     }
 
-    suspend fun uploadImages(imageBytes: List<ByteArray>, chatId: Long, filename: List<String>,): SendMessageResponse {
+    suspend fun uploadImages(imageBytes: List<ByteArray>, chatId: Long, filename: List<String>): SendMessageResponse {
         val response = client
             .runSubmitFormWithImages<BaseResponse<SendMessageResponse>>(
                 path = "chats/$chatId/file_message",
@@ -107,7 +107,10 @@ class MessengerService(
     }
 
     suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {
-        val httpResponse = client.runGet<HttpResponse>(path = url, useBaseUrl = false) { progress, loadedBytesSize, fullBytesSize, isReady ->
+        val httpResponse = client.runGet<HttpResponse>(
+            path = url,
+            useBaseUrl = false
+        ) { progress, loadedBytesSize, fullBytesSize, isReady ->
             progressListener(progress, loadedBytesSize, fullBytesSize, isReady)
         }
         val byteArray = httpResponse.readBytes()
@@ -183,6 +186,13 @@ class MessengerService(
         return response.requireData().let {
             Badge(count = it.totalPending)
         }
+    }
+
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String) {
+        val response: BaseResponse<ReactionsResponse> = client.runPost(
+            path = "chats/$chatId/message/$messageId/reaction",
+            body = PostReactionRequest(reaction = reaction)
+        )
     }
 
 }

@@ -46,9 +46,10 @@
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/avatar"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.75">
 
             <TextView
                 android:id="@+id/username"
@@ -120,7 +121,7 @@
                 tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 tools:layout_constraintHeight_min="@dimen/image_medium_min_size"
                 tools:layout_constraintWidth_min="@dimen/image_medium_min_size"
-                tools:listitem="@layout/holder_image"/>
+                tools:listitem="@layout/holder_image" />
 
 
             <TextView
@@ -139,6 +140,14 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 tools:ignore="TouchTargetSizeCheck" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions"
+                android:paddingHorizontal="12dp"
+                android:paddingBottom="5dp" />
 
         </LinearLayout>
 

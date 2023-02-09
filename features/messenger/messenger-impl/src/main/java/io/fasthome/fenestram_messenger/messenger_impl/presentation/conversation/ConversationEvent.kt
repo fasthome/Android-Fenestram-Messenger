@@ -3,7 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ReactionViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.PermittedReactionViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 sealed interface ConversationEvent {
@@ -21,19 +21,19 @@ sealed interface ConversationEvent {
 
     class ShowSelfMessageActionDialog(
         val conversationViewItem: ConversationViewItem.Self,
-        val permittedReactions: List<ReactionViewItem>
+        val permittedReactions: List<PermittedReactionViewItem>
     ) :
         ConversationEvent
 
     class ShowReceiveMessageActionDialog(
         val conversationViewItem: ConversationViewItem.Receive,
-        val permittedReactions: List<ReactionViewItem>
+        val permittedReactions: List<PermittedReactionViewItem>
     ) :
         ConversationEvent
 
     class ShowGroupMessageActionDialog(
         val conversationViewItem: ConversationViewItem.Group,
-        val permittedReactions: List<ReactionViewItem>
+        val permittedReactions: List<PermittedReactionViewItem>
     ) :
         ConversationEvent
 

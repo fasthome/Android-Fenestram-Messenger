@@ -40,21 +40,23 @@
 
         <LinearLayout
             android:id="@+id/text_container"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
             android:orientation="vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
             app:layout_constraintStart_toEndOf="@+id/avatar"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.85">
 
             <TextView
                 android:id="@+id/username"
                 style="@style/Text.Light.14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="12dp"
-                android:paddingTop="5dp"
                 android:text="Мария Сергеевна"
                 tools:ignore="HardcodedText" />
 
@@ -62,11 +64,9 @@
                 android:id="@+id/cl_reply_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
                 android:minWidth="200dp"
                 android:paddingBottom="6dp"
                 android:visibility="gone"
-                android:layout_marginStart="12dp"
                 tools:visibility="visible">
 
                 <View
@@ -114,14 +114,18 @@
                 android:maxEms="16"
                 android:minWidth="48dp"
                 android:minHeight="24dp"
-                android:paddingStart="12dp"
                 android:paddingTop="2dp"
-                android:paddingEnd="12dp"
                 android:paddingBottom="5dp"
                 android:text="@string/MessageContentCheck"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 tools:ignore="TouchTargetSizeCheck" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
 
             <TextView
                 android:id="@+id/tv_edited"
@@ -129,8 +133,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
                 android:paddingBottom="5dp"
                 android:text="@string/messenger_edited"
                 android:textColor="@color/gray4"

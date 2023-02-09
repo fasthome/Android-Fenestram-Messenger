@@ -28,9 +28,10 @@
 
         <LinearLayout
             android:id="@+id/cl_message_content"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
+            android:layout_marginStart="12dp"
             android:background="@drawable/message_rectangle_receive"
             android:minWidth="48dp"
             android:minHeight="24dp"
@@ -41,7 +42,9 @@
             android:paddingBottom="5dp"
             app:barrierMargin="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.85">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_reply_message"
@@ -89,7 +92,6 @@
                     tools:text="@string/MessageContentCheckBig" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <TextView
                 android:id="@+id/message_content"
                 android:layout_width="wrap_content"
@@ -102,6 +104,12 @@
                 tools:ignore="TouchTargetSizeCheck"
                 tools:text="123" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
+
             <TextView
                 android:id="@+id/tv_edited"
                 style="@style/Text.Gray.10sp"
@@ -109,6 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/messenger_edited"
+                android:gravity="bottom"
                 android:textColor="@color/gray4"
                 android:visibility="gone"
                 tools:visibility="visible" />

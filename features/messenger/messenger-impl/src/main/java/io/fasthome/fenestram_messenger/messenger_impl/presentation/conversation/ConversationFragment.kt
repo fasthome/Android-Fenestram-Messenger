@@ -125,7 +125,10 @@ class ConversationFragment :
             vm.onSelfDocumentLongClicked(it)
         }, onGroupDocumentLongClicked = {
             vm.onGroupDocumentLongClicked(it)
-        })
+        }, onReactionClicked = { messageId, reactionViewItem ->
+            vm.onReactionClicked(messageId, reactionViewItem)
+        }
+    )
 
     private val attachedAdapter = AttachedAdapter(
         onRemoveClicked = {
@@ -538,11 +541,12 @@ class ConversationFragment :
 
     private fun replyImageDialog(
         conversationViewItem: ConversationViewItem,
-        permittedReactions: List<ReactionViewItem>
+        permittedReactions: List<PermittedReactionViewItem>
     ) =
         MessageActionDialog.create(
             fragment = this,
             permittedReactions = permittedReactions,
+            onReactionClicked = { vm.postReaction(conversationViewItem.id, it) },
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
                 { vm.onDeleteMessageClicked(conversationViewItem) }
             } else null,
@@ -559,7 +563,7 @@ class ConversationFragment :
 
     private fun replyTextDialog(
         conversationViewItem: ConversationViewItem,
-        permittedReactions: List<ReactionViewItem>
+        permittedReactions: List<PermittedReactionViewItem>
     ) {
 
         val canEdit =
@@ -569,6 +573,7 @@ class ConversationFragment :
         MessageActionDialog.create(
             fragment = this,
             permittedReactions = permittedReactions,
+            onReactionClicked = { vm.postReaction(conversationViewItem.id, it) },
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
                 { vm.onDeleteMessageClicked(conversationViewItem) }
             } else null,

@@ -28,24 +28,32 @@
 
         <LinearLayout
             android:id="@+id/message_content"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:background="@drawable/message_rectangle_receive"
             android:maxWidth="300dp"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="8dp"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.85">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_docs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginVertical="8dp"
                 android:maxWidth="300dp"
                 tools:itemCount="4"
                 tools:listitem="@layout/item_document" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
 
         </LinearLayout>
 

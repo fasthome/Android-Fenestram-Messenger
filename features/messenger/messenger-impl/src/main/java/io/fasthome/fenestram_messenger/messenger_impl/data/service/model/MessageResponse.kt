@@ -48,5 +48,5 @@ class MessageResponse(
     val content: List<ContentResponse>? = null,
 
     @SerialName("reactions")
-    val reactions: MessageReactions? = null,
+    val reactions: Map<String, List<UserResponse>>? = null,
 )
