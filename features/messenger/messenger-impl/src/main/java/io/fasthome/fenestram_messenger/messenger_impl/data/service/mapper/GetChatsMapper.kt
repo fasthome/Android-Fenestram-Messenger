@@ -10,7 +10,10 @@ import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
+class GetChatsMapper(
+    private val profileImageUrlConverter: StorageUrlConverter,
+    private val contentMapper: ContentMapper
+) {
 
     fun responseToGetChatsResult(response: GetChatsResponse): List<Chat> {
         response.data?.let { list ->
@@ -34,7 +37,7 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                             messageStatus = lastMessage.messageStatus,
                             usersHaveRead = lastMessage.usersHaveRead,
                             forwardedMessages = null,
-                            content = lastMessage.content
+                            content = lastMessage.content.map(contentMapper::mapContentResponseToMetaInfo)
                         )
                     }),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
@@ -79,7 +82,7 @@ class GetChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) 
                 replyMessage = if (replyMessage != null) responseToMessage(replyMessage) else null,
                 usersHaveRead = usersHaveRead,
                 forwardedMessages = forwardedMessages.map { responseToMessage(it) },
-                content = content ?: emptyList()
+                content = content?.map(contentMapper::mapContentResponseToMetaInfo) ?: listOf()
             )
         }
     }

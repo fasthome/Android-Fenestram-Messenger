@@ -30,7 +30,7 @@ object ProfileGuestMapper {
         return files.take(PREVIEW_DOCUMENT_SIZE).mapIndexedNotNull { index, fileItem ->
             if (fileItem !is FileItem.Document) return@mapIndexedNotNull null
             RecentFilesViewItem(
-                path = fileItem.path
+                metaInfo = fileItem.metaInfo
             )
         }
     }
@@ -42,6 +42,15 @@ object ProfileGuestMapper {
                 image = fileItem.content,
                 hasMoreImages = false,
                 moreImagesCount = PrintableText.EMPTY
+            )
+        }
+    }
+
+    fun mapFilesToRecentDocs(files: List<FileItem>): List<RecentFilesViewItem> {
+        return files.mapIndexedNotNull { index, fileItem ->
+            if (fileItem !is FileItem.Document) return@mapIndexedNotNull null
+            RecentFilesViewItem(
+                metaInfo = fileItem.metaInfo
             )
         }
     }

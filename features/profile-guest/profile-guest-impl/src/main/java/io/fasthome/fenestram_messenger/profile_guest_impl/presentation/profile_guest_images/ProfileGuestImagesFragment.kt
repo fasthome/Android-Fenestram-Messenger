@@ -15,7 +15,12 @@ class ProfileGuestImagesFragment :
     BaseFragment<ProfileGuestImagesState, ProfileGuestImagesEvent>(R.layout.fragment_profile_guest_images) {
 
     private val binding by fragmentViewBinding(FragmentProfileGuestImagesBinding::bind)
-    private val imagesAdapter = ImagesAdapter()
+
+    private val imagesAdapter = ImagesAdapter(
+        onItemClicked = {
+            vm.onItemClicked(it)
+        }
+    )
 
     override val vm: ProfileGuestImagesViewModel by viewModel(getParamsInterface = ProfileGuestImagesNavigationContract.getParams)
 

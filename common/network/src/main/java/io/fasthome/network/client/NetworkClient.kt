@@ -1,12 +1,11 @@
 package io.fasthome.network.client
 
-import android.util.Log
+import io.fasthome.fenestram_messenger.util.ProgressListener
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import java.util.*
 
 class NetworkClient(
     @PublishedApi
@@ -49,7 +48,7 @@ class NetworkClient(
         params: Map<String, Any?> = emptyMap(),
         customHeaders: Map<String, String> = emptyMap(),
         contentType: ContentType = ContentType.Application.Json,
-        crossinline progressListener : ProgressListener
+        crossinline progressListener: ProgressListener
     ): Response = httpClient.get {
         url(buildUrl(path, useBaseUrl))
         contentType(contentType)
@@ -58,7 +57,12 @@ class NetworkClient(
         onDownload { bytesSentTotal, contentLength ->
             val step = contentLength / 100
             val currentProgress = bytesSentTotal / step
-            progressListener(currentProgress.toInt(), bytesSentTotal, contentLength, bytesSentTotal == contentLength)
+            progressListener(
+                currentProgress.toInt(),
+                bytesSentTotal,
+                contentLength,
+                bytesSentTotal == contentLength
+            )
         }
     }
 
@@ -206,5 +210,3 @@ class NetworkClient(
         path
     }
 }
-
-typealias ProgressListener = suspend (progress : Int, loadedBytesSize : Long, fullBytesSize : Long, isReady : Boolean) -> Unit

@@ -7,18 +7,22 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
 import io.fasthome.fenestram_messenger.util.bindWithBinding
+import io.fasthome.fenestram_messenger.util.onClick
 
-class ImagesAdapter : AsyncListDifferDelegationAdapter<RecentImagesViewItem>(
+class ImagesAdapter(onItemClicked : (position : Int) -> Unit) : AsyncListDifferDelegationAdapter<RecentImagesViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
-        createImagesAdapterDelegate()
+        createImagesAdapterDelegate(onItemClicked)
     )
 ) {}
 
-fun createImagesAdapterDelegate() =
+fun createImagesAdapterDelegate(onItemClicked: (position: Int) -> Unit) =
     adapterDelegateViewBinding<RecentImagesViewItem, ImageItemBinding>(
         ImageItemBinding::inflate,
     ) {
+        binding.root.onClick {
+            onItemClicked(adapterPosition)
+        }
         bindWithBinding {
             photoItem.setContent(item.image)
         }

@@ -12,6 +12,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.ktor.util.reflect.*
 import java.io.File
 import java.time.ZonedDateTime
@@ -224,7 +225,7 @@ fun Message.toConversationViewItem(
                             profileImageUrlConverter
                         ),
                         userName = PrintableText.Raw(getName(initiator)),
-                        metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
+                        metaInfo = content
                     )
                 }
 
@@ -240,7 +241,7 @@ fun Message.toConversationViewItem(
                         files = null,
                         path = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
+                        metaInfo = content
                     )
                 }
 
@@ -333,7 +334,7 @@ fun Message.toConversationViewItem(
                                 isGroup,
                                 profileImageUrlConverter
                             ),
-                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
+                            metaInfo = content
                         )
                     }
 
@@ -350,7 +351,7 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
-                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
+                            metaInfo = content
                         )
                     }
 
@@ -435,7 +436,7 @@ fun Message.toConversationViewItem(
                                 profileImageUrlConverter
                             ),
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) } ?: emptyList()
+                            metaInfo = content
                         )
                     }
 
@@ -448,7 +449,7 @@ fun Message.toConversationViewItem(
                             id = id,
                             timeVisible = true,
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList()
+                            metaInfo = content
                         )
                     }
 

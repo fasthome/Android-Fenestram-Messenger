@@ -9,23 +9,29 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.RecentImag
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.util.*
 
-class RecentImagesAdapter(private val onMoreClicked : () -> Unit) : AsyncListDifferDelegationAdapter<RecentImagesViewItem>(
+class RecentImagesAdapter(
+    onMoreClicked: () -> Unit,
+    onItemClicked: (position : Int) -> Unit
+) : AsyncListDifferDelegationAdapter<RecentImagesViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
-        createPhotosAdapterDelegate(onMoreClicked)
+        createPhotosAdapterDelegate(onMoreClicked, onItemClicked)
     )
 ) {}
 
-fun createPhotosAdapterDelegate(onMoreClicked: () -> Unit) =
+fun createPhotosAdapterDelegate(onMoreClicked: () -> Unit, onItemClicked: (position: Int) -> Unit) =
     adapterDelegateViewBinding<RecentImagesViewItem, RecentImageItemBinding>(
         RecentImageItemBinding::inflate,
     ) {
+        binding.root.onClick {
+            onItemClicked(adapterPosition)
+        }
         bindWithBinding {
             recentImageItem.setContent(item.image, CenterCrop(), RoundedCorners(12.dp))
             recentImageShowAll.isVisible = item.hasMoreImages
             recentImageShowAll.setPrintableText(item.moreImagesCount)
-            if(item.hasMoreImages){
-                root.onClick{
+            if (item.hasMoreImages) {
+                root.onClick {
                     onMoreClicked()
                 }
             }

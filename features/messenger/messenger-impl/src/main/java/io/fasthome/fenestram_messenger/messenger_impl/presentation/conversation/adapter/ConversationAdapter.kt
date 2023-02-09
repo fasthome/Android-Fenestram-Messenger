@@ -20,7 +20,7 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.links.addCommonLinks
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 
 
 class ConversationAdapter(

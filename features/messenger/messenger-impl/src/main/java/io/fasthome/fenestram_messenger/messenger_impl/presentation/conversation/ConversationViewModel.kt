@@ -25,14 +25,17 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.DownloadDocumentUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toAttachedImages
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContentUriList
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContents
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toFiles
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.canDelete
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
@@ -49,7 +52,7 @@ import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
 import io.fasthome.fenestram_messenger.util.links.getNicknameFromLink
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
@@ -68,7 +71,7 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
     private val storageUrlConverter: StorageUrlConverter,
-    private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
+    private val downloadDocumentUseCase: DownloadDocumentUseCase,
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
@@ -535,7 +538,7 @@ class ConversationViewModel(
                 tempMessage =
                     tempMessage.copy(metaInfo = result.data.message?.content?.map {
                         MetaInfo(
-                            name = PrintableText.Raw(it.name),
+                            name = it.name,
                             extension = it.extension,
                             size = it.size,
                             url = storageUrlConverter.convert(it.url)
@@ -566,13 +569,12 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(metaInfo = result.data.message?.content?.map { MetaInfo(it) }
-                        ?: return)
+                    tempMessage.copy(metaInfo = result.data)
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
-                    result.data.message?.content?.firstOrNull()?.url,
-                    result.data.message?.id
+                    result.data.firstOrNull()?.url,
+                    conversationViewItem.id
                 )
             }
         }
@@ -1037,13 +1039,22 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return
-        val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
-        fileSelectorLauncher.launch(
-            FileSelectorNavigationContract.Params(
-                selectedImages = allImages.toContentUriList()
-            )
-        )
+        viewModelScope.launch {
+            val permissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionInterface.request(Manifest.permission.READ_MEDIA_IMAGES)
+            } else {
+                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if(permissionGranted){
+                val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return@launch
+                val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
+                fileSelectorLauncher.launch(
+                    FileSelectorNavigationContract.Params(
+                        selectedImages = allImages.toContentUriList()
+                    )
+                )
+            }
+        }
     }
 
     private fun openCameraFragment() {
@@ -1301,22 +1312,13 @@ class ConversationViewModel(
     ) {
         val documentLink = meta.url.toString()
         downloadFileJob = viewModelScope.launch {
-            messengerInteractor.getDocument(
-                storagePath = documentLink,
-                progressListener = progressListener
-            ).onSuccess { loadedDocument ->
-                val permissionGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                        || permissionInterface.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-                if (!permissionGranted) return@launch
-                copyDocumentToDownloadsUseCase.invoke(
-                    loadedDocument.byteArray,
-                    PrintableText.Raw(documentLink),
-                    extension = meta.extension
-                ).onSuccess { uri ->
-                    openFileLauncher.launch(OpenFileNavigationContract.Params(uri))
-                }
-            }
+            downloadDocumentUseCase.invoke(
+                documentLink = documentLink,
+                progressListener = progressListener,
+                metaInfo = meta,
+                permissionInterface = permissionInterface,
+                openFileLauncher = openFileLauncher
+            )
         }
     }
 

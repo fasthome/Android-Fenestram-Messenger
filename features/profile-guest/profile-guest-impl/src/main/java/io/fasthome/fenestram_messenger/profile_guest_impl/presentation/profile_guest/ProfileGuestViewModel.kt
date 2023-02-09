@@ -15,8 +15,8 @@ import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.provideSavedState
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenFileNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.FileItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.ProfileGuestInteractor
@@ -25,16 +25,15 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.ProfileGuestFilesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.mapper.ImagesMapper
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.getOrDefault
-import io.fasthome.fenestram_messenger.util.getOrNull
-import io.fasthome.fenestram_messenger.util.getPrintableRawText
+import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.kotlin.switchJob
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.io.File
 
 class ProfileGuestViewModel(
     router: ContractRouter,
@@ -47,6 +46,7 @@ class ProfileGuestViewModel(
     private val permissionInterface: PermissionInterface,
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val pickFileInterface: PickFileInterface,
+    private val messengerFeature: MessengerFeature
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     class Features(
@@ -55,6 +55,8 @@ class ProfileGuestViewModel(
     )
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) {}
+
+    private val openFileLauncher = registerScreen(OpenFileNavigationContract)
 
     private val filesProfileGuestLauncher =
         registerScreen(ProfileGuestFilesNavigationContract) { result ->
@@ -76,6 +78,7 @@ class ProfileGuestViewModel(
 
     private var imageFiles : List<FileItem> = listOf()
     private var documentFiles : List<FileItem> = listOf()
+    private var downloadFileJob by switchJob()
 
     init {
         groupParticipantsInterface.listChanged = { size ->
@@ -131,7 +134,7 @@ class ProfileGuestViewModel(
     }
 
 
-    fun fetchFilesAndPhotos() {
+    private fun fetchFilesAndPhotos() {
         viewModelScope.launch {
             val chatId = params.groupParticipantsParams.chatId ?: return@launch
 
@@ -164,7 +167,9 @@ class ProfileGuestViewModel(
     }
 
     fun onShowFilesClicked() {
-        filesProfileGuestLauncher.launch(NoParams)
+        filesProfileGuestLauncher.launch(ProfileGuestFilesNavigationContract.Params(
+            docs = documentFiles
+        ))
     }
 
     fun onShowPhotosClicked() {
@@ -288,6 +293,33 @@ class ProfileGuestViewModel(
                     )
                 )
             }
+        }
+    }
+
+    fun onItemClicked(position: Int) {
+        imageViewerLauncher.launch(
+            ImageViewerContract.ImageViewerParams.ImagesParams(
+                imageViewerModel = imageFiles
+                    .filterIsInstance<FileItem.Image>()
+                    .map { ImagesMapper.toImageViewerItem(it) },
+                currentImagePosition = position
+            )
+        )
+    }
+
+    fun onDownloadDocument(
+        meta: MetaInfo,
+        progressListener: ProgressListener,
+    ) {
+        val documentLink = meta.url.toString()
+        downloadFileJob = viewModelScope.launch {
+            messengerFeature.downloadDocumentUseCase(
+                documentLink = documentLink,
+                progressListener = progressListener,
+                metaInfo = meta,
+                permissionInterface = permissionInterface,
+                openFileLauncher = openFileLauncher
+            )
         }
     }
 

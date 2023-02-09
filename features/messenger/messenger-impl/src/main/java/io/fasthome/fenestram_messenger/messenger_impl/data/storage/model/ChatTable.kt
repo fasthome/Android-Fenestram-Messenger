@@ -51,7 +51,7 @@ class ContentDb(
     val name: String,
     val extension: String,
     val size: Float,
-    val url: String,
+    val url: String?,
 )
 
 @Serializable

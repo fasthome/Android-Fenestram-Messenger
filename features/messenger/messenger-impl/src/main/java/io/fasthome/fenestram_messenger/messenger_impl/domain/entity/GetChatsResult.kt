@@ -2,7 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.entity
 
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import kotlinx.parcelize.Parcelize
 import java.time.ZonedDateTime
 
@@ -33,7 +33,7 @@ data class Message(
     val replyMessage: Message?,
     val usersHaveRead: List<Long?>?,
     val forwardedMessages: List<Message>?,
-    val content: List<ContentResponse>
+    val content: List<MetaInfo>
 ) : Parcelable {
     companion object {
         fun onlyDate(date: ZonedDateTime) = Message(
