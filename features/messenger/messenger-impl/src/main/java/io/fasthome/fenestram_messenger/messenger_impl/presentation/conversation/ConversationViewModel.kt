@@ -574,7 +574,7 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
+                    tempMessage.copy(userName = conversationViewItem.userName,
                         metaInfo = result.data)
                 updateStatus(
                     tempMessage,
