@@ -11,6 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
+        android:paddingBottom="30dp"
         android:focusable="true" />
+
+    <include android:id="@+id/include_bottom_input"
+        layout="@layout/layout_button_conversation"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

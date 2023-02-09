@@ -4,8 +4,8 @@
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import androidx.lifecycle.viewModelScope
-import io.fasthome.component.imageViewer.ImageViewerContract
-import io.fasthome.component.imageViewer.ImageViewerModel
+import io.fasthome.component.image_viewer.ImageViewerContract
+import io.fasthome.component.image_viewer.ImageViewerModel
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel

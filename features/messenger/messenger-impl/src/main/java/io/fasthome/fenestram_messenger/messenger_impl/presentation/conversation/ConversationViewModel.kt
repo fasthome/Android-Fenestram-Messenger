@@ -4,8 +4,9 @@ import android.Manifest
 import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
-import io.fasthome.component.imageViewer.ImageViewerContract
-import io.fasthome.component.imageViewer.ImageViewerModel
+import io.fasthome.component.gallery.GalleryImage
+import io.fasthome.component.image_viewer.ImageViewerContract
+import io.fasthome.component.image_viewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -19,7 +20,6 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.ActionMessageBlank
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
-import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
@@ -29,14 +29,19 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentT
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toAttachedImages
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContentUriList
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContents
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toFiles
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
-import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenFileNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
@@ -67,6 +72,10 @@ class ConversationViewModel(
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
+    companion object {
+        private const val MAX_ATTACHMENTS = 10
+    }
+
     class Features(
         val profileGuestFeature: ProfileGuestFeature,
         val authFeature: AuthFeature,
@@ -83,6 +92,23 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
+
+    private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
+        when (result) {
+            is FileSelectorNavigationContract.Result.Attach -> {
+                addContentImagesToAttach(result.images)
+            }
+            FileSelectorNavigationContract.Result.OpenCamera -> {
+                sendEvent(ConversationEvent.OpenCamera)
+            }
+            FileSelectorNavigationContract.Result.OpenFiles -> {
+                sendEvent(ConversationEvent.OpenFilePicker)
+            }
+            FileSelectorNavigationContract.Result.OpenGallery -> {
+                sendEvent(ConversationEvent.OpenImagePicker)
+            }
+        }
+    }
 
     private val imageViewerLauncher = registerScreen(ImageViewerContract) { result ->
         when (result) {
@@ -229,7 +255,7 @@ class ConversationViewModel(
             }
 
             params.actionMessageBlank?.let {
-                when(it){
+                when (it) {
                     is ActionMessageBlank.Image -> {
                         pickFileInterface.processUri(it.uri)
                     }
@@ -369,20 +395,33 @@ class ConversationViewModel(
         }
     }
 
-    private fun attachContentFile(content: Content) {
+    private fun addContentImagesToAttach(attachedContent: List<Content>) {
         updateState { state ->
+            val newUriContent = attachedContent.filterIsInstance<UriLoadableContent>()
+            val newAttachFiles = mutableListOf<AttachedFile>()
+            newAttachFiles.addAll(attachedContent.toAttachedImages())
+            ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
+                ?: emptyList()).forEach {
+                when (it) {
+                    is AttachedFile.Document -> {
+                        newAttachFiles.add(it)
+                    }
+                    is AttachedFile.Image -> {
+                        if (it.content !is UriLoadableContent || newUriContent.isEmpty()) {
+                            newAttachFiles.add(it)
+                        }
+                    }
+                }
+            }
             state.copy(
                 inputMessageMode = InputMessageMode.Default(
-                    attachedFiles = ((state.inputMessageMode as? InputMessageMode.Default)?.attachedFiles
-                        ?: emptyList()).plus(
-                        AttachedFile.Image(
-                            content = content
-                        )
-                    )
+                    attachedFiles = newAttachFiles
                 )
             )
         }
     }
+
+    private fun attachContentFile(content: Content) = addContentImagesToAttach(listOf(content))
 
     fun addMessageToConversation(mess: String) {
         val fileState = currentViewState.inputMessageMode as? InputMessageMode.Default
@@ -420,31 +459,33 @@ class ConversationViewModel(
     private fun sendFiles(attachedFiles: List<AttachedFile>) {
         var tempFileMessages: List<ConversationViewItem.Self> = emptyList()
         viewModelScope.launch {
-            val files = attachedFiles.filterIsInstance<AttachedFile.Document>()
-            if (files.isNotEmpty()) {
-                val fileMessage = createDocumentMessage(emptyList(), files.map { it.file })
-                tempFileMessages = tempFileMessages + fileMessage
-                sendDocument(fileMessage)
+            val allFiles = attachedFiles.filterIsInstance<AttachedFile.Document>()
+            val chunkedFiles = allFiles.chunked(MAX_ATTACHMENTS)
+            val allImages = attachedFiles.filterIsInstance<AttachedFile.Image>()
+            val chunkedImages = allImages.chunked(MAX_ATTACHMENTS)
+
+            chunkedFiles.forEach { attachedDocument ->
+                if (attachedDocument.isNotEmpty()) {
+                    val fileMessage = createDocumentMessage(emptyList(), attachedDocument.toFiles())
+                    tempFileMessages = tempFileMessages + fileMessage
+                    sendDocument(fileMessage)
+                }
             }
 
-            val images = attachedFiles.filterIsInstance<AttachedFile.Image>()
-            if (images.isNotEmpty()) {
-                val imageMessage = createImageMessage(
-                    images.map { it.content },
-                    getPrintableRawText(currentViewState.userName)
-                )
-                tempFileMessages = tempFileMessages + imageMessage
-                sendImages(imageMessage)
+            chunkedImages.forEach { images ->
+                if (images.isNotEmpty()) {
+                    val imageMessage = createImageMessage(
+                        images.toContents(),
+                        getPrintableRawText(currentViewState.userName)
+                    )
+                    tempFileMessages = tempFileMessages + imageMessage
+
+                    sendImages(imageMessage)
+                }
             }
-        }
-
-        updateState { state ->
-            state.copy(inputMessageMode = InputMessageMode.Default())
-        }
-
-        viewModelScope.launch {
             updateState { state ->
                 state.copy(
+                    inputMessageMode = InputMessageMode.Default(),
                     messages = tempFileMessages.reversed().associateBy({
                         it.localId
                     }, {
@@ -469,7 +510,7 @@ class ConversationViewModel(
                     filename = filename + content.file.name
                 }
                 is Content.LoadableContent -> {
-                    byteArrays = byteArrays + (content.load()?.array?: byteArrayOf())
+                    byteArrays = byteArrays + (content.load()?.array ?: byteArrayOf())
                     filename = filename + UUID.randomUUID().toString()
                 }
             }
@@ -506,6 +547,7 @@ class ConversationViewModel(
                 )
             }
         }
+        sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
     private suspend fun sendDocument(conversationViewItem: ConversationViewItem.Self.Document) {
@@ -947,11 +989,11 @@ class ConversationViewModel(
         }
     }
 
-    private fun onChatDeletedCallback(deletedChatId:Long) {
-        if(chatId == deletedChatId && !userDeleteChat)
-        sendEvent(
-            ConversationEvent.ShowChatDeletedDialog
-        )
+    private fun onChatDeletedCallback(deletedChatId: Long) {
+        if (chatId == deletedChatId && !userDeleteChat)
+            sendEvent(
+                ConversationEvent.ShowChatDeletedDialog
+            )
     }
 
     fun onGroupProfileClicked(item: ConversationViewItem.Group) {
@@ -989,11 +1031,13 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        if ((currentViewState.inputMessageMode as? InputMessageMode.Default)?.attachedFiles?.size == 10) {
-            showMessage(Message.PopUp(PrintableText.StringResource(R.string.messenger_max_attach)))
-            return
-        }
-        sendEvent(ConversationEvent.ShowSelectFromDialog)
+        val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return
+        val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
+        fileSelectorLauncher.launch(
+            FileSelectorNavigationContract.Params(
+                selectedImages = allImages.toContentUriList()
+            )
+        )
     }
 
     private fun openCameraFragment() {
@@ -1032,7 +1076,6 @@ class ConversationViewModel(
     fun selectAttachFile() {
         pickFileInterface.pickFile(PickFileComponentParams.MimeType.Document())
     }
-
 
     fun onAttachedRemoveClicked(attachedFile: AttachedFile) {
         updateState { state ->
@@ -1115,15 +1158,26 @@ class ConversationViewModel(
         imageViewerLauncher.launch(imageParams)
     }
 
+
     fun onImageClicked(
         url: String? = null,
         conversationViewItem: ConversationViewItem? = null,
+        galleryImage: GalleryImage? = null,
     ) {
-        val imageParams =
-            if (conversationViewItem == null || chatId == null) ImageViewerContract.ImageViewerParams.ImageParams(
-                ImageViewerModel(url, null)
-            )
-            else {
+        val imageParams = when {
+            url != null -> {
+                ImageViewerContract.ImageViewerParams.ImageParams(
+                    ImageViewerModel(url, null)
+                )
+            }
+            galleryImage != null -> {
+                ImageViewerContract.ImageViewerParams.ImageParams(
+                    imageModel = ImageViewerModel(
+                        null, null, imageGallery = galleryImage
+                    )
+                )
+            }
+            chatId != null && conversationViewItem != null -> {
                 val mess = conversationViewItem.replyMessage ?: conversationViewItem
                 ImageViewerContract.ImageViewerParams.MessageImageParams(
                     imageViewerModel = listOf(ImageViewerModel(mess.content as? String, null)),
@@ -1132,7 +1186,10 @@ class ConversationViewModel(
                     username = conversationViewItem.userName
                 )
             }
-
+            else -> {
+                return
+            }
+        }
         imageViewerLauncher.launch(imageParams)
     }
 
