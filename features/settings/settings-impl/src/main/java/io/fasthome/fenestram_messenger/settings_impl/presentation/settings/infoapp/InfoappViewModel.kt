@@ -5,6 +5,8 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenUrlNavigationContract
+import io.fasthome.fenestram_messenger.settings_impl.R
+import io.fasthome.fenestram_messenger.util.PrintableText
 
 
 class InfoappViewModel(
@@ -16,7 +18,9 @@ class InfoappViewModel(
     private val openUrlLauncher = registerScreen(OpenUrlNavigationContract)
 
     override fun createInitialState(): InfoappState {
-        return InfoappState()
+        return InfoappState(
+            version = PrintableText.StringResource(R.string.app_version, environment.appVersion)
+        )
     }
 
     override fun onBackPressed(): Boolean {

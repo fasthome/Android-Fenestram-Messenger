@@ -11,7 +11,7 @@ object SelectFromDialog {
     fun create(
         fragment: Fragment,
         fromGalleryClicked: () -> Unit,
-        fromCameraClicked: () -> Unit
+        fromCameraClicked: () -> Unit,
     ): Dialog {
         val errorBinding = DialogSelectFromBinding.inflate(fragment.layoutInflater)
 

@@ -1,4 +1,4 @@
-package io.fasthome.component.imageViewer
+package io.fasthome.component.image_viewer
 
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
@@ -23,8 +23,7 @@ object ImageViewerContract :
         data class ImagesParams(
             override val imageViewerModel: List<ImageViewerModel>,
             val currentImagePosition: Int,
-        ) : ImageViewerParams() {
-        }
+        ) : ImageViewerParams()
 
         @Parcelize
         data class MessageImageParams(

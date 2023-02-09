@@ -44,7 +44,6 @@
         app:layout_constraintStart_toStartOf="@+id/hooliName"
         app:layout_constraintTop_toBottomOf="@+id/hooliName"
         android:layout_marginTop="4dp"
-        android:text="@string/infoapp_version"
         android:textColor="@color/white"
         android:textSize="14sp"/>
 
