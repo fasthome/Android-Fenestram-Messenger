@@ -1,6 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.di
 
-import io.fasthome.component.imageViewer.ImageViewerViewModel
+import io.fasthome.component.image_viewer.ImageViewerViewModel
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
@@ -23,6 +23,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.create_info.CreateInfoViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.CreateGroupChatViewModel
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.MessengerViewModel
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper.MessengerMapper
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
@@ -70,6 +71,7 @@ object MessengerModule {
         viewModel(::CreateGroupChatViewModel)
         viewModel(::CreateInfoViewModel)
         viewModel(::ImageViewerViewModel)
+        viewModel(::FileSelectorViewModel)
 
         factory(::PagingDataViewModelHelper)
         factory(::MessengerMapper)

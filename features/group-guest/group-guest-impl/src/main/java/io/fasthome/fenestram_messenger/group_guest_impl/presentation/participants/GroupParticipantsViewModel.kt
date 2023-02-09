@@ -1,8 +1,8 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
 
 import androidx.lifecycle.viewModelScope
-import io.fasthome.component.imageViewer.ImageViewerContract
-import io.fasthome.component.imageViewer.ImageViewerModel
+import io.fasthome.component.image_viewer.ImageViewerContract
+import io.fasthome.component.image_viewer.ImageViewerModel
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter

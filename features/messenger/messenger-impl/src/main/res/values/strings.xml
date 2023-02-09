@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="messageHint">Ваше сообщение</string>
     <string name="SendButtonPresentText">Кнопка отправки сообщения</string>
     <string name="AttachButtonPresentText">Кнопка прикрепления файлов</string>
     <string name="SendMessegeTextViewPresentText">Поле ввода сообщения</string>
@@ -25,6 +24,9 @@
     <string name="conversation_edit">Редактировать</string>
     <string name="messenger_retry_sent">Отправить снова</string>
     <string name="messenger_cancel_sent">Отменить отправку</string>
+    <string name="reset_file_selector">Сбросить изменения?</string>
+    <string name="reset_file_selector_descr">Вы действительно хотите сбросить изменения?</string>
+    <string name="reset">Сбросить</string>
     <string name="search">Поиск</string>
     <string name="messenger_image_viewer_toolbar">Просмотр изображения</string>
     <string name="edit_message_title">Редактирование сообщения</string>

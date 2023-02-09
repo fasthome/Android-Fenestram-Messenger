@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="messageHint">Ваше сообщение</string>
+    <string name="common_selected">Выбрано </string>
+    <string name="images">Изображения</string>
     <string name="common_skip_button">Пропустить</string>
     <string name="common_done_b">Готово</string>
     <string name="common_cancel_b">Отмена</string>
@@ -26,10 +29,13 @@
     <string name="common_retry">Повторить</string>
     <string name="common_unable_to_download">Невозможно загрузить данный файл</string>
     <string name="common_accept">Подтвердить</string>
+    <string name="common_select_image">Выберите изображение</string>
+    <string name="common_attach">Прикрепить</string>
     <string name="common_save">Сохранить</string>
     <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
     <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
     <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
+    <string name="empty_gallery">У Вас нет изображений доступных для отправки. Проверьте разрешения для доступа к хранилищу устройства.</string>
     <string name="common_allow_permission">Разрешить</string>
     <string name="common_edit">Редактирование</string>
     <string name="common_name_copied">Имя пользователя скопировано</string>

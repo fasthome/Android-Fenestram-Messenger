@@ -16,8 +16,8 @@ class PagingDataViewModelHelper {
 
     fun <K : Any, T : Any> getDataFlow(
         getItems: () -> TotalPagingSource<Int, K>,
-        getCachedSelectedId: suspend () -> Long?,
-        getItem: suspend (itemId: Long) -> CallResult<K>?,
+        getCachedSelectedId: suspend () -> Long? = { null },
+        getItem: suspend (itemId: Long) -> CallResult<K>? = { null },
         mapDataItem: (K) -> T,
         getItemId: (K) -> Long?,
     ): Flow<PagingData<T>> = Pager(

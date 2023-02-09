@@ -24,7 +24,7 @@ sealed interface Content : Parcelable {
 
 @Parcelize
 class UriLoadableContent(
-    private val uri: Uri
+    val uri: Uri
 ) : Content.LoadableContent, KoinComponent {
 
     override suspend fun load(): ByteArrayWrapper? {
