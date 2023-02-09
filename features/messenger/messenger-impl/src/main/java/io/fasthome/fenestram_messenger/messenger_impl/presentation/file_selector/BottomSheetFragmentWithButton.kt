@@ -100,5 +100,10 @@ open class BottomSheetFragmentWithButton(
     override suspend fun dismiss() {
         openResetDialog()
     }
+
+    override fun handleSlideCallback(slideOffset: Float) {
+        if (slideOffset in 0f..1f) return
+        binding.includeBottomInput.clInput.translationY = 1 - slideOffset * binding.includeBottomInput.clInput.height
+    }
 }
 

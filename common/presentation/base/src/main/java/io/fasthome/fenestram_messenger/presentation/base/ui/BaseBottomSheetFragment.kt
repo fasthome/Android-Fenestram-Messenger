@@ -85,6 +85,7 @@ open class BaseBottomSheetFragment(
     }
 
     private val slideCallback = SlideChangeListener { slideOffset ->
+        handleSlideCallback(slideOffset)
         fragmentInstance?.handleSlideCallback(slideOffset)
     }
 
@@ -319,6 +320,8 @@ open class BaseBottomSheetFragment(
         override fun onStateChanged(bottomSheet: View, newState: Int) = Unit
         override fun onSlide(bottomSheet: View, slideOffset: Float) = block(slideOffset)
     }
+
+    open fun handleSlideCallback(slideOffset: Float) {}
 }
 
 interface BottomSheetDismissListener {
