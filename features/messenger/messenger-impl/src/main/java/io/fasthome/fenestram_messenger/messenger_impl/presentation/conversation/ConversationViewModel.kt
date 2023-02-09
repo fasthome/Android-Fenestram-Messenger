@@ -92,6 +92,7 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
+    private var wasResumed: Boolean = false
 
     private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
         when (result) {
@@ -257,7 +258,10 @@ class ConversationViewModel(
             params.actionMessageBlank?.let {
                 when (it) {
                     is ActionMessageBlank.Image -> {
-                        pickFileInterface.processUri(it.uri)
+                        if (!wasResumed) {
+                            pickFileInterface.processUri(it.uri)
+                            wasResumed = true
+                        }
                     }
                     is ActionMessageBlank.Text -> {
                         sendEvent(ConversationEvent.ExtraText(it.text))
@@ -531,14 +535,15 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(metaInfo = result.data.message?.content?.map {
-                        MetaInfo(
-                            name = PrintableText.Raw(it.name),
-                            extension = it.extension,
-                            size = it.size,
-                            url = storageUrlConverter.convert(it.url)
-                        )
-                    } ?: return)
+                    tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
+                        metaInfo = result.data.message?.content?.map {
+                            MetaInfo(
+                                name = PrintableText.Raw(it.name),
+                                extension = it.extension,
+                                size = it.size,
+                                url = storageUrlConverter.convert(it.url)
+                            )
+                        } ?: return)
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
@@ -564,8 +569,9 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(metaInfo = result.data.message?.content?.map { MetaInfo(it) }
-                        ?: return)
+                    tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
+                        metaInfo = result.data.message?.content?.map { MetaInfo(it) }
+                            ?: return)
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
