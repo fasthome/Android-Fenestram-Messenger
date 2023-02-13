@@ -7,8 +7,7 @@
     android:layout_marginTop="5dp"
     android:layout_marginEnd="5dp"
     android:background="@drawable/bg_reaction"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp">
+    android:paddingStart="6dp">
 
     <TextView
         android:id="@+id/reaction"
@@ -27,6 +26,7 @@
         style="@style/Text.White.16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingEnd="6dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/reaction"
@@ -37,6 +37,7 @@
         android:id="@+id/avatars"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingEnd="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/reaction"

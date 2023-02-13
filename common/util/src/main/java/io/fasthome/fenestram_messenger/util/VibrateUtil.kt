@@ -11,8 +11,8 @@ import android.os.Vibrator
 fun Context.vibrate() {
     val v: Vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        v.vibrate(VibrationEffect.createOneShot(5, VibrationEffect.DEFAULT_AMPLITUDE))
+        v.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
     } else {
-        v.vibrate(5)
+        v.vibrate(50)
     }
 }

@@ -26,20 +26,18 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/message_content"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:background="@drawable/message_rectangle_self"
-            android:maxWidth="300dp"
+            android:orientation="vertical"
             android:paddingHorizontal="15dp"
             android:paddingVertical="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="wrap"
-            android:orientation="vertical"
-            app:layout_constraintWidth_percent="0.85">
+            app:layout_constraintWidth_max="300dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_docs"
@@ -50,11 +48,13 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_reactions"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/holder_reactions" />
+                tools:listitem="@layout/holder_reactions"
+                android:layout_below="@id/rv_docs"
+                android:layout_alignEnd="@id/rv_docs" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"

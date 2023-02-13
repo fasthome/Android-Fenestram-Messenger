@@ -9,11 +9,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderPermitte
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderReactionsBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.PermittedReactionViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ReactionsViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
+import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.android.color
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.onClick
 
 class PermittedReactionsAdapter(onItemClicked: (PermittedReactionViewItem) -> Unit) :
     AsyncListDifferDelegationAdapter<PermittedReactionViewItem>(
@@ -52,6 +49,7 @@ fun createReactionsAdapterDelegate(
         HolderReactionsBinding::inflate,
     ) {
         binding.root.onClick {
+            if (!item.setBySelf) context.vibrate()
             onItemClicked(item)
         }
         bindWithBinding {

@@ -125,7 +125,7 @@ class ConversationFragment :
         }, onGroupDocumentLongClicked = {
             vm.onGroupDocumentLongClicked(it)
         }, onReactionClicked = { messageId, reactionViewItem ->
-            vm.onReactionClicked(messageId, reactionViewItem)
+            vm.postReaction(messageId, reactionViewItem.reaction)
         }
     )
 

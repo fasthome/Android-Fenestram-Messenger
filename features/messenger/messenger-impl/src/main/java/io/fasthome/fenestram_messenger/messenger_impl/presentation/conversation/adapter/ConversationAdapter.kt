@@ -1100,8 +1100,7 @@ private fun createReactionsAdapter(
     onReactionClicked: (reactionViewItem: ReactionsViewItem) -> Unit
 ) {
     val adapter = ReactionsAdapter(onItemClicked = onReactionClicked)
-    recyclerViewReactions.layoutManager =
-        FlexboxLayoutManager(recyclerViewReactions.context) //ConstrainedFlexboxLayoutManager(recyclerViewReactions.context, 5)
+    recyclerViewReactions.layoutManager = FlexboxLayoutManager(recyclerViewReactions.context)
     recyclerViewReactions.adapter = adapter
     adapter.items = items
 }
@@ -1109,13 +1108,13 @@ private fun createReactionsAdapter(
 private fun SentStatus.canSwipe() = this != SentStatus.Error && this != SentStatus.Loading
 
 private fun getMockReactions() = listOf(
-    ReactionsViewItem("&#128522;", 1, listOf("", "", ""), R.color.blue2),
-    ReactionsViewItem("&#129306;", 1, listOf("", "", ""), R.color.blue2),
-    ReactionsViewItem("&#9995;", 53, listOf("", "", ""), R.color.blue2),
-    ReactionsViewItem("&#128165;", 1, listOf("", "", ""), R.color.blue2),
-    ReactionsViewItem("&#128164;", 1, listOf("", "", ""), R.color.blue2),
-    ReactionsViewItem("&#9996;", 100, listOf(), R.color.blue2),
-    ReactionsViewItem("&#128076;", 20, listOf(), R.color.blue2),
-    ReactionsViewItem("&#128072;", 1, listOf("", "", ""), R.color.blue2),
-    ReactionsViewItem("&#129305;", 1, listOf("", ""), R.color.blue2),
-)
+    ReactionsViewItem("&#128522;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#129306;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#9995;", 53, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#128165;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#128164;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#9996;", 100, listOf(), R.color.blue2, true),
+    ReactionsViewItem("&#128076;", 20, listOf(), R.color.blue2, true),
+    ReactionsViewItem("&#128072;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#129305;", 2, listOf("", ""), R.color.blue2, true),
+).sortedByDescending { it.userCount }

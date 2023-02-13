@@ -26,9 +26,9 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/cl_message_content"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
@@ -42,8 +42,7 @@
             app:barrierMargin="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="wrap"
-            app:layout_constraintWidth_percent="0.65">
+            app:layout_constraintWidth_max="@dimen/image_recycler_ll_max_width">
 
             <TextView
                 android:id="@+id/reply_message_name"
@@ -55,11 +54,6 @@
                 android:maxEms="16"
                 android:textColor="@color/blue3"
                 app:barrierMargin="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
                 tools:text="Ответ на фото\nдля Мария Сергеева" />
 
             <LinearLayout
@@ -68,8 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:maxWidth="300dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_below="@id/reply_message_name">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_docs"
@@ -92,6 +85,7 @@
                 app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
                 app:layout_constraintWidth_min="@dimen/image_min_size"
                 tools:ignore="TouchTargetSizeCheck"
+                android:layout_below="@id/reply_document_content"
                 tools:itemCount="1"
                 tools:listitem="@layout/holder_image" />
 
@@ -106,16 +100,19 @@
                 android:text="@string/MessageContentCheck"
                 android:textColor="@color/white"
                 android:textSize="14sp"
+                android:layout_below="@id/rv_images"
                 tools:ignore="TouchTargetSizeCheck"
                 tools:text="123" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_reactions"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/message_content"
+                android:layout_alignEnd="@id/rv_images"
                 tools:listitem="@layout/holder_reactions" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"

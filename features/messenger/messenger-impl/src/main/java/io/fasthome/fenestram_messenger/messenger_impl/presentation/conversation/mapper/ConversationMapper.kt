@@ -799,20 +799,26 @@ fun findForwardText(messageToForward: MessengerFeature.ForwardMessage) =
         )
     }
 
-fun mapReactions(selfUserId: Long?, isSelfMessage: Boolean, messageReactions: Map<String, List<User>>) =
-    messageReactions.map {
-        val userIds = it.value.map { user -> user.id }
+fun mapReactions(
+    selfUserId: Long?,
+    isSelfMessage: Boolean,
+    messageReactions: Map<String, List<User>>
+): List<ReactionsViewItem> {
+    return messageReactions.map {
+        val setBySelf = it.value.map { user -> user.id }.contains(selfUserId)
         ReactionsViewItem(
             reaction = it.key,
             userCount = it.value.size,
             avatars = it.value.map { user -> user.avatar },
             reactionBackground = when {
-                userIds.contains(selfUserId) -> R.color.blue
+                setBySelf -> R.color.blue
                 isSelfMessage -> R.color.blue4
                 else -> R.color.blue2
-            }
+            },
+            setBySelf = setBySelf
         )
-    }
+    }.sortedByDescending { it.userCount }
+}
 
 fun MessageReactions.toConversationViewItem(
     selfUserId: Long?,
@@ -864,6 +870,6 @@ fun MessageReactions.toConversationViewItem(
         is ConversationViewItem.Receive.TextReplyOnImage -> oldViewItem.copy(
             reactions = mapReactions(selfUserId, false, reactions)
         )
-        else -> error("Unexpected View Item $oldViewItem !")
+        is ConversationViewItem.System -> oldViewItem
     }
 }

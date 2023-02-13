@@ -1390,7 +1390,4 @@ class ConversationViewModel(
         updateState { state -> state.copy(messages = changedMessages) }
     }
 
-    fun onReactionClicked(messageId: Long, reactionViewItem: ReactionsViewItem) {
-        postReaction(messageId, reactionViewItem.reaction)
-    }
 }

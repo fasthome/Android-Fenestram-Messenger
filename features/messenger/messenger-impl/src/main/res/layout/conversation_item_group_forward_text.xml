@@ -38,9 +38,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/forward_ll"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
@@ -51,9 +51,7 @@
             android:paddingVertical="8dp"
             app:barrierMargin="5dp"
             app:layout_constraintStart_toEndOf="@id/avatar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="wrap"
-            app:layout_constraintWidth_percent="0.85">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_message_content"
@@ -167,14 +165,15 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_reactions"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/blue_line"
+                android:layout_below="@id/cl_message_content"
+                android:layout_alignEnd="@id/cl_message_content"
                 tools:listitem="@layout/holder_reactions" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"

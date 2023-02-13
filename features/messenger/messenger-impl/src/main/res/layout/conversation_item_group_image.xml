@@ -34,7 +34,7 @@
             android:paddingHorizontal="12dp"
             android:paddingTop="5dp"
             android:text="Мария Сергеевна"
-            app:layout_constraintStart_toStartOf="@+id/image_ll"
+            app:layout_constraintStart_toStartOf="@+id/cl_message"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText" />
 
@@ -44,13 +44,13 @@
             android:layout_height="32dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/ic_avatar_placeholder"
-            app:layout_constraintBottom_toBottomOf="@+id/image_ll"
+            app:layout_constraintBottom_toBottomOf="@+id/cl_message"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-        <LinearLayout
-            android:id="@+id/image_ll"
+        <RelativeLayout
+            android:id="@+id/cl_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -76,15 +76,15 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_reactions"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="9dp"
                 android:paddingBottom="2dp"
-                app:layout_constraintStart_toStartOf="@id/message_content"
-                app:layout_constraintTop_toBottomOf="@id/message_content"
+                android:layout_below="@id/message_content"
+                android:layout_alignEnd="@id/message_content"
                 tools:listitem="@layout/holder_reactions" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"
@@ -95,8 +95,8 @@
             android:text="@string/timeviewcheck"
             android:textColor="@color/gray1"
             android:textSize="11sp"
-            app:layout_constraintStart_toStartOf="@+id/image_ll"
-            app:layout_constraintTop_toBottomOf="@+id/image_ll" />
+            app:layout_constraintStart_toStartOf="@+id/cl_message"
+            app:layout_constraintTop_toBottomOf="@+id/cl_message" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
