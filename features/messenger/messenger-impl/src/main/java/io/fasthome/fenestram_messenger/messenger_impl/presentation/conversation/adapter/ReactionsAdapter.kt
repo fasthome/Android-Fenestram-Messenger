@@ -1,7 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
 import android.content.res.ColorStateList
-import android.text.Html
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -30,7 +30,7 @@ fun createPermittedReactionsAdapterDelegate(
             onItemClicked(item)
         }
         bindWithBinding {
-            reaction.text = Html.fromHtml(item.permittedReaction, Html.FROM_HTML_MODE_LEGACY)
+            reaction.text = HtmlCompat.fromHtml(item.permittedReaction, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
     }
 
@@ -53,7 +53,7 @@ fun createReactionsAdapterDelegate(
             onItemClicked(item)
         }
         bindWithBinding {
-            reaction.text = Html.fromHtml(item.reaction, Html.FROM_HTML_MODE_LEGACY)
+            reaction.text = HtmlCompat.fromHtml(item.reaction, HtmlCompat.FROM_HTML_MODE_LEGACY)
             root.backgroundTintList = ColorStateList.valueOf(context.resources.color(item.reactionBackground))
             if (item.userCount > 3) {
                 userCount.isVisible = true

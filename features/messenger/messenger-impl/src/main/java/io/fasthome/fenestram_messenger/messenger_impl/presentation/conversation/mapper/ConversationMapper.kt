@@ -6,10 +6,7 @@ import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageReactions
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
@@ -819,6 +816,8 @@ fun mapReactions(
         )
     }.sortedByDescending { it.userCount }
 }
+
+fun GetChatByIdResult.mapPermittedReactions() = permittedReactions.map { PermittedReactionViewItem(it) }
 
 fun MessageReactions.toConversationViewItem(
     selfUserId: Long?,

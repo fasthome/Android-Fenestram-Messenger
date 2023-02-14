@@ -781,7 +781,7 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
-                    permittedReactions = chat.permittedReactions.map { PermittedReactionViewItem(it) }
+                    permittedReactions = chat.mapPermittedReactions()
                     val selfUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
@@ -849,8 +849,7 @@ class ConversationViewModel(
                 if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
-                        permittedReactions =
-                            it.permittedReactions.map { reaction -> PermittedReactionViewItem(reaction) }
+                        permittedReactions = it.mapPermittedReactions()
                         updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
@@ -883,7 +882,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
-            permittedReactions = it.permittedReactions.map { reaction -> PermittedReactionViewItem(reaction) }
+            permittedReactions = it.mapPermittedReactions()
             updateState { state ->
                 state.copy(
                     avatar = it.avatar,
