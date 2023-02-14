@@ -8,6 +8,8 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 
 sealed interface ConversationEvent {
     object OpenMenuEvent : ConversationEvent
+
+    class SendLoading(val isLoading: Boolean): ConversationEvent
     class ShowDeleteChatDialog(val id: Long) : ConversationEvent
     object ShowChatDeletedDialog : ConversationEvent
     object OpenFilePicker : ConversationEvent

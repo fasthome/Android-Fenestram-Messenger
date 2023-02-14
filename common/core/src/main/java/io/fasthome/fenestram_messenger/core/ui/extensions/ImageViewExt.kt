@@ -134,6 +134,7 @@ fun ImageView.loadCircle(
     placeholderRes: Int? = null,
     onLoadFailed: () -> Unit = {},
     onResourceReady: () -> Unit = {},
+    progressBar: ProgressBar? = null
 ) {
     if (url.isNullOrEmpty()) {
         placeholderRes?.let {
@@ -143,6 +144,7 @@ fun ImageView.loadCircle(
                 .into(this)
         }
     } else {
+        progressBar?.alpha = 1f
         Glide
             .with(this)
             .load(url)
@@ -155,6 +157,7 @@ fun ImageView.loadCircle(
                     target: Target<Drawable>?,
                     isFirstResource: Boolean,
                 ): Boolean {
+                    progressBar?.alpha = 0f
                     onLoadFailed()
                     return false
                 }
@@ -166,6 +169,7 @@ fun ImageView.loadCircle(
                     dataSource: DataSource?,
                     isFirstResource: Boolean,
                 ): Boolean {
+                    progressBar?.alpha = 0f
                     onResourceReady()
                     return false
                 }

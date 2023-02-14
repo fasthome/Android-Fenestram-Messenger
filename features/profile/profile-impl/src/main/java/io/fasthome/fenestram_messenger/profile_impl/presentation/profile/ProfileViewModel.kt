@@ -49,6 +49,7 @@ class ProfileViewModel(
     }
 
     private fun fetchProfile() {
+        sendEvent(ProfileEvent.AvatarLoading(true))
         viewModelScope.launch {
             profileInteractor.getPersonalData().onSuccess { personalData ->
                 updateState { state ->
