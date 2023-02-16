@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AlphaAnimation
 import android.view.animation.AnimationUtils
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
@@ -139,7 +140,7 @@ class ConversationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-
+        vm.updateSendLoadingState(false)
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         messagesList.adapter = conversationAdapter
@@ -188,7 +189,7 @@ class ConversationFragment :
         inputMessage.doAfterTextChanged { text ->
             vm.fetchTags(text.toString(), inputMessage.selectionStart)
         }
-        inputMessage.setInputContentListener { content->
+        inputMessage.setInputContentListener { content ->
             vm.contentInserted(content)
         }
 
@@ -326,6 +327,16 @@ class ConversationFragment :
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
+            is ConversationEvent.SendLoading -> {
+                val alphaAnim = AlphaAnimation(
+                    if (event.isLoading) 0f else 1f,
+                    if (event.isLoading) 1f else 0f
+                ).apply {
+                    fillAfter = true
+                }
+                binding.progressBar.startAnimation(alphaAnim)
+                binding.sendButton.isEnabled = !event.isLoading
+            }
             is ConversationEvent.OpenFilePicker -> vm.selectAttachFile()
             is ConversationEvent.OpenCamera -> vm.selectFromCamera()
             is ConversationEvent.OpenImagePicker -> vm.selectFromGallery()

@@ -502,6 +502,7 @@ class ConversationViewModel(
     }
 
     private suspend fun sendImages(conversationViewItem: ConversationViewItem.Self.Image) {
+        updateSendLoadingState(true)
         var tempMessage = conversationViewItem
         if (tempMessage.loadableContent == null) return
         var byteArrays: List<ByteArray> = emptyList()
@@ -550,12 +551,18 @@ class ConversationViewModel(
                     result.data.message?.content?.firstOrNull()?.url,
                     result.data.message?.id
                 )
+                updateSendLoadingState(false)
             }
         }
         sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
+    fun updateSendLoadingState(isLoading: Boolean) {
+        sendEvent(ConversationEvent.SendLoading(isLoading))
+    }
+
     private suspend fun sendDocument(conversationViewItem: ConversationViewItem.Self.Document) {
+        updateSendLoadingState(true)
         var tempMessage = conversationViewItem
         val result = messengerInteractor.uploadDocuments(
             chatId ?: return,
@@ -578,6 +585,7 @@ class ConversationViewModel(
                     result.data.message?.content?.firstOrNull()?.url,
                     result.data.message?.id
                 )
+                updateSendLoadingState(false)
             }
         }
     }

@@ -14,7 +14,6 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.databinding.FragmentProfileBinding
@@ -78,10 +77,16 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         state.birth?.let { birth.setPrintableText(it) }
         state.email?.let { email.setPrintableText(it) }
         state.avatarUrl?.let { url ->
-            ivAvatar.loadCircle(url, placeholderRes = R.drawable.ic_avatar_placeholder)
+            ivAvatar.loadCircle(url, placeholderRes = R.drawable.ic_avatar_placeholder,progressBar = progressBar)
         }
     }
 
-    override fun handleEvent(event: ProfileEvent) = noEventsExpected()
+    override fun handleEvent(event: ProfileEvent) {
+        when(event) {
+            is ProfileEvent.AvatarLoading -> {
+                binding.progressBar.alpha = if(event.isLoading) 1f else 0f
+            }
+        }
+    }
 
 }
