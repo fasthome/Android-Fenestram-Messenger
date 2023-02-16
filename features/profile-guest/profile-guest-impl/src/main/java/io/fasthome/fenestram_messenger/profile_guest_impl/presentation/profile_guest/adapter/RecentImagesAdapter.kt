@@ -27,7 +27,7 @@ fun createPhotosAdapterDelegate(onMoreClicked: () -> Unit, onItemClicked: (posit
             onItemClicked(adapterPosition)
         }
         bindWithBinding {
-            recentImageItem.loadRounded(item.image.url, placeholderRes = R.drawable.shape_placeholder_gray, radius = 12.dp, CenterCrop())
+            recentImageItem.loadRounded(item.image.url, placeholderRes = R.drawable.shape_placeholder_gray_12dp, radius = 12.dp, CenterCrop())
             recentImageShowAll.isVisible = item.hasMoreImages
             recentImageShowAll.setPrintableText(item.moreImagesCount)
             if (item.hasMoreImages) {
