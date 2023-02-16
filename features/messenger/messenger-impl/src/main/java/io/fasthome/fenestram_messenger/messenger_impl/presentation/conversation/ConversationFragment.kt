@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
@@ -185,10 +184,10 @@ class ConversationFragment :
             )
         })
 
-        inputMessage.doAfterTextChanged { text ->
-            vm.fetchTags(text.toString(), inputMessage.selectionStart)
+        inputMessage.setSelectionChangedListener { selStart, _ ->
+            vm.fetchTags(inputMessage.text.toString(), selStart - 1)
         }
-        inputMessage.setInputContentListener { content->
+        inputMessage.setInputContentListener { content ->
             vm.contentInserted(content)
         }
 
@@ -432,19 +431,15 @@ class ConversationFragment :
             is ConversationEvent.UpdateInputUserTag -> {
                 var text = binding.inputMessage.text.toString()
                 if (text.isNotEmpty()) {
-                    var tagCharIndex = 0
-                    do {
-                        tagCharIndex = text.indexOf("@", tagCharIndex)
-                        tagCharIndex++
-                    } while (tagCharIndex < binding.inputMessage.selectionStart)
+                    val tagStartCharIndex = text.lastIndexOf('@', binding.inputMessage.selectionStart - 1) + 1
+                    var tagEndCharIndex = text.indexOfAny(listOf(" ", "@"), tagStartCharIndex)
+                    if (tagEndCharIndex == -1) tagEndCharIndex = text.length
 
-                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(
-                        tagCharIndex
-                    ) + " "
+                    val replacement = "${event.nickname} "
+                    text = text.replaceRange(tagStartCharIndex, tagEndCharIndex, replacement)
+                    binding.inputMessage.setText(text)
+                    binding.inputMessage.setSelection(tagStartCharIndex + replacement.length)
                 }
-                binding.inputMessage.setText(text)
-                binding.inputMessage.lastCharFocus()
-
             }
 
             is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
