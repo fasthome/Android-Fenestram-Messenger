@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.FileItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentFilesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UrlLoadableContent
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 object ProfileGuestMapper {
@@ -19,7 +20,7 @@ object ProfileGuestMapper {
             val hasMore = hasMoreImages && index == PREVIEW_IMAGE_SIZE - 1
             val moreImagesCount = files.size - PREVIEW_IMAGE_SIZE
             RecentImagesViewItem(
-                image = fileItem.content,
+                image = fileItem.content as? UrlLoadableContent ?: return@mapIndexedNotNull null,
                 hasMoreImages = hasMore,
                 moreImagesCount = PrintableText.Raw("+$moreImagesCount")
             )
@@ -39,7 +40,7 @@ object ProfileGuestMapper {
         return files.mapIndexedNotNull { index, fileItem ->
             if (fileItem !is FileItem.Image) return@mapIndexedNotNull null
             RecentImagesViewItem(
-                image = fileItem.content,
+                image = fileItem.content as? UrlLoadableContent ?: return@mapIndexedNotNull null,
                 hasMoreImages = false,
                 moreImagesCount = PrintableText.EMPTY
             )

@@ -2,7 +2,9 @@ package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_
 
 import android.os.Bundle
 import android.view.View
-import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
@@ -27,7 +29,9 @@ class ProfileGuestImagesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
         allImagesList.adapter = imagesAdapter
-        allImagesList.layoutManager = GridLayoutManager(context, 3)
+        val flexboxManager =
+            FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)
+        allImagesList.layoutManager = flexboxManager
 
         profileGuestImagesAppbar.setNavigationOnClickListener {
             vm.navigateBack()
