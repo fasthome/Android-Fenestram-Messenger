@@ -25,14 +25,11 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.DownloadDocumentUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFile
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toAttachedImages
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContentUriList
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContents
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toFiles
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.canDelete
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
