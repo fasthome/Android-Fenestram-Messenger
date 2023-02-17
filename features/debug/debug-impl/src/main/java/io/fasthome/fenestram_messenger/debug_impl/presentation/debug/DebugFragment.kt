@@ -62,6 +62,11 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onAuthClicked()
         }
 
+        debugAuthAd.onClick {
+            vm.onAuthAdClicked()
+        }
+
+
         debugProfileGuest.onClick {
             vm.onProfileGuestClicked()
         }
@@ -112,7 +117,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onEnvironmentChangedClicked(EndpointsConfig.Prod)
         }
 
-        debugSip.onClick{
+        debugSip.onClick {
             vm.onSipClicked(requireContext())
         }
 

@@ -22,4 +22,11 @@
     <color name="blue3">#5EA4FF</color>
     <color name="red">#FF4B4B</color>
 
+
+    <color name="BG_0">#EFF2F7</color>
+    <color name="text_1">#717394</color>
+    <color name="stroke_2">#717394</color>
+    <color name="main_active">#7B57C8</color>
+
+
 </resources>
