@@ -763,22 +763,19 @@ class ConversationViewModel(
 
     fun fetchTags(text: String, selectionStart: Int) {
         var users = emptyList<User>()
-        if (text.isNotEmpty() && selectionStart != 0 && text.contains('@')) {
-            val prevTag = text.getOrNull(selectionStart - 2)
-            val canShowTagList = if (prevTag == null) text.startsWith('@') else prevTag == ' '
-            if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
+        val tagPos = text.lastIndexOf('@', startIndex = selectionStart)
+        val spacePos = text.lastIndexOf(' ', startIndex = selectionStart)
+        when {
+            spacePos >= tagPos || (tagPos != 0 && text[tagPos - 1] != ' ') -> users = emptyList()
+            spacePos < tagPos && tagPos == selectionStart -> {
                 users = chatUsers.filter { it.nickname.isNotEmpty() && it.id != selfUserId }
-            } else {
-                val tagPos = text.lastIndexOf('@')
-                val nickname = text.substring(tagPos, selectionStart)
-                if (USER_TAG_PATTERN.matcher(nickname).matches() && (text.getOrNull(tagPos - 1)
-                        ?: ' ') == ' '
-                ) {
+            }
+            tagPos in (spacePos + 1) until selectionStart -> {
+                val nickname = text.substring(tagPos, selectionStart + 1)
+                if (USER_TAG_PATTERN.matcher(nickname).matches()) {
                     users = chatUsers.filter {
-                        it.nickname.contains(
-                            nickname.getNicknameFromLink(),
-                            true
-                        ) && it.id != selfUserId
+                        it.nickname.contains(nickname.getNicknameFromLink(), true)
+                                && it.id != selfUserId
                     }
                 }
             }
