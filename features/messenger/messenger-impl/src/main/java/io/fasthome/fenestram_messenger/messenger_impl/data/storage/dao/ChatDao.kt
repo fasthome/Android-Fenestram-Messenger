@@ -16,7 +16,7 @@ interface ChatDao {
     suspend fun getChats(): List<ChatTable>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveChats(chats: List<ChatTable>)
+    suspend fun saveChats(chats: List<ChatTable>?)
 
     @Query("DELETE FROM ChatTable")
     suspend fun removeChats()

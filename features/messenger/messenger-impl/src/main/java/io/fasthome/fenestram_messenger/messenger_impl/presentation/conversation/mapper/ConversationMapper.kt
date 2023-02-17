@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.ktor.util.reflect.*
 import java.io.File
 import java.time.ZonedDateTime
@@ -227,8 +228,7 @@ fun Message.toConversationViewItem(
                             profileImageUrlConverter
                         ),
                         userName = PrintableText.Raw(getName(initiator)),
-                        metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) }
-                            ?: emptyList(),
+                        metaInfo = content,
                         reactions = mapReactions(selfUserId, true, reactions)
                     )
                 }
@@ -245,7 +245,7 @@ fun Message.toConversationViewItem(
                         files = null,
                         path = null,
                         userName = PrintableText.Raw(getName(initiator)),
-                        metaInfo = content?.map { MetaInfo(it) } ?: emptyList(),
+                        metaInfo = content,
                         reactions = mapReactions(selfUserId, true, reactions)
                     )
                 }
@@ -341,8 +341,7 @@ fun Message.toConversationViewItem(
                                 isGroup,
                                 profileImageUrlConverter
                             ),
-                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) }
-                                ?: emptyList(),
+                            metaInfo = content,
                             reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
@@ -360,7 +359,7 @@ fun Message.toConversationViewItem(
                             timeVisible = true,
                             nickname = initiator?.nickname ?: "",
                             userId = initiator?.id ?: 0,
-                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList(),
+                            metaInfo = content,
                             reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
@@ -448,8 +447,7 @@ fun Message.toConversationViewItem(
                                 profileImageUrlConverter
                             ),
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.map { MetaInfo(it).copy(url = profileImageUrlConverter.convert(it.url)) }
-                                ?: emptyList(),
+                            metaInfo = content,
                             reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
@@ -463,7 +461,7 @@ fun Message.toConversationViewItem(
                             id = id,
                             timeVisible = true,
                             userName = PrintableText.Raw(getName(initiator)),
-                            metaInfo = content?.map { MetaInfo(it) } ?: emptyList(),
+                            metaInfo = content,
                             reactions = mapReactions(selfUserId, false, reactions)
                         )
                     }
@@ -583,6 +581,12 @@ fun List<ConversationViewItem>.singleSameTime(): List<ConversationViewItem> {
                     is ConversationViewItem.Receive.TextReplyOnImage -> messages[tempPreviousCounter] =
                         next.copy(timeVisible = !isInvisible)
                     is ConversationViewItem.Self.TextReplyOnImage -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Group.Forward -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Receive.Forward -> messages[tempPreviousCounter] =
+                        next.copy(timeVisible = !isInvisible)
+                    is ConversationViewItem.Self.Forward -> messages[tempPreviousCounter] =
                         next.copy(timeVisible = !isInvisible)
                 }
 

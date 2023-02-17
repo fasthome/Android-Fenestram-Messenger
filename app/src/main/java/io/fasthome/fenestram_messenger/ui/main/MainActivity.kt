@@ -19,12 +19,14 @@ import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.ui.splash.SplashActivity
+import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnStartStop
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.koin.viewModel
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -117,12 +119,14 @@ class MainActivity : AppCompatActivity() {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
             ) {
-                appUpdateManager.startUpdateFlowForResult(
-                    appUpdateInfo,
-                    AppUpdateType.FLEXIBLE,
-                    this,
-                    UPDATE_REQUEST_CODE
-                )
+                callForResult {
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.FLEXIBLE,
+                        this,
+                        UPDATE_REQUEST_CODE
+                    )
+                }
             }
         }
     }

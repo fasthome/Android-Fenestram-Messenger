@@ -13,11 +13,13 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl.MessengerRepoImpl
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ContentMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatByIdMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.GetChatsMapper
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.ChatStorage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.BadgeCounter
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.DownloadDocumentUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationViewModel
@@ -49,6 +51,7 @@ object MessengerModule {
         factory(::GetChatsMapper)
         factory(::GetChatByIdMapper)
         factory(::ChatsMapper)
+        factory(::ContentMapper)
         single {
             ChatStorage(
                 databaseFactory = get(named(StorageQualifier.Simple)),
@@ -61,6 +64,7 @@ object MessengerModule {
     private fun createDomainModule() = module {
         factory(::MessengerInteractor)
         factory(::CopyDocumentToDownloadsUseCase)
+        factory(::DownloadDocumentUseCase)
         single(::BadgeCounter)
     }
 

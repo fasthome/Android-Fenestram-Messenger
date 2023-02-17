@@ -32,6 +32,7 @@ fun View.increaseHitArea(dp: Int) {
         parent.touchDelegate = TouchDelegate(rect, this)
     }
 }
+
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
 
@@ -42,8 +43,9 @@ suspend fun View.awaitPost() = suspendCancellableCoroutine<Unit> { continuation 
 val View.layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
 fun View.setOnSizeChanged(
-    onHeightChanged:(height:Int) -> Unit = {},
-    onWidthChanged:(width:Int) -> Unit = {},) {
+    onHeightChanged: (height: Int) -> Unit = {},
+    onWidthChanged: (width: Int) -> Unit = {},
+) {
     this.addOnLayoutChangeListener { v, _, _, _, _, leftWas, topWas, rightWas, bottomWas ->
         val widthWas = rightWas - leftWas
         if (v.width != widthWas) {
@@ -55,3 +57,17 @@ fun View.setOnSizeChanged(
         }
     }
 }
+
+
+fun Resources.getSpanCount(columnWidth: Int): Int {
+    val screenWidth = this.displayMetrics.widthPixels
+    return if (isTablet()) {
+        val columns = screenWidth / columnWidth
+        columns
+    } else 3
+}
+
+fun Resources.isTablet(): Boolean {
+    return this.configuration.smallestScreenWidthDp >= 600
+}
+

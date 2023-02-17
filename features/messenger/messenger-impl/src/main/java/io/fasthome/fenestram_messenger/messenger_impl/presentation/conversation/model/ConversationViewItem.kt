@@ -1,9 +1,9 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.fenestram_messenger.util.fileSizeInMb
 import java.io.File
 import java.time.ZonedDateTime
@@ -344,32 +344,4 @@ fun getStatusIcon(sentStatus: SentStatus) =
 
 enum class SentStatus {
     Sent, Error, Read, Loading, Received, None
-}
-
-data class MetaInfo(
-    var name: PrintableText,
-    /**
-     * Расширение файла, напр. ".txt"
-     */
-    var extension: String,
-    /**
-     * Размер файла указанный в мегабайтах
-     */
-    var size: Float,
-    var url: String?
-) {
-    constructor() : this(PrintableText.Raw("File"), "", 0f, "")
-    constructor(content: ContentResponse) : this(
-        PrintableText.Raw(content.name),
-        content.extension,
-        content.size,
-        content.url
-    )
-
-    constructor(file: File) : this(
-        PrintableText.Raw(file.name),
-        file.extension,
-        fileSizeInMb(file.length()),
-        null
-    )
 }

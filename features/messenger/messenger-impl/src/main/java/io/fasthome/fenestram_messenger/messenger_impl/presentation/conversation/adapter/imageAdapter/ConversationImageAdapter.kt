@@ -6,8 +6,8 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderImageBinding
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 
 
 class ConversationImageAdapter(

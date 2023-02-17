@@ -6,8 +6,9 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
+import io.fasthome.fenestram_messenger.util.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.network.client.NetworkClientFactory
-import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
 import io.ktor.client.statement.*
@@ -15,7 +16,8 @@ import io.ktor.client.statement.*
 class MessengerService(
     clientFactory: NetworkClientFactory,
     private val getChatsMapper: GetChatsMapper,
-    private val getChatByIdMapper: GetChatByIdMapper
+    private val getChatByIdMapper: GetChatByIdMapper,
+    private val contentMapper: ContentMapper,
 ) {
     private val client = clientFactory.create()
 
@@ -84,7 +86,11 @@ class MessengerService(
         return UploadImageResult(imagePath = response.pathToFile)
     }
 
-    suspend fun uploadImages(imageBytes: List<ByteArray>, chatId: Long, filename: List<String>): SendMessageResponse {
+    suspend fun uploadImages(
+        imageBytes: List<ByteArray>,
+        chatId: Long,
+        filename: List<String>
+    ): SendMessageResponse {
         val response = client
             .runSubmitFormWithImages<BaseResponse<SendMessageResponse>>(
                 path = "chats/$chatId/file_message",
@@ -95,15 +101,21 @@ class MessengerService(
         return response
     }
 
-    suspend fun uploadDocuments(documentBytes: List<ByteArray>, guid: List<String>, chatId: Long): SendMessageResponse {
-        val response = client
+    suspend fun uploadDocuments(
+        documentBytes: List<ByteArray>,
+        guid: List<String>,
+        chatId: Long
+    ): List<MetaInfo> {
+        return client
             .runSubmitFormWithDocument<BaseResponse<SendMessageResponse>>(
                 path = "chats/$chatId/file_message",
                 binaryDatas = documentBytes,
                 filename = guid,
             )
             .requireData()
-        return response
+            .let {
+                it.message?.content?.map(contentMapper::mapContentResponseToMetaInfo) ?: listOf()
+            }
     }
 
     suspend fun getDocument(url: String, progressListener: ProgressListener): LoadedDocumentData {
@@ -160,7 +172,12 @@ class MessengerService(
         return if (response.data?.message != null) getChatsMapper.responseToMessage(response.data!!.message!!) else null
     }
 
-    suspend fun replyMessage(messageId: Long, chatId: Long, text: String, messageType: String): Message? {
+    suspend fun replyMessage(
+        messageId: Long,
+        chatId: Long,
+        text: String,
+        messageType: String
+    ): Message? {
         val response: BaseResponse<ReplyMessageResponse> =
             client.runPost(
                 path = "chats/reply/message/$chatId/$messageId",

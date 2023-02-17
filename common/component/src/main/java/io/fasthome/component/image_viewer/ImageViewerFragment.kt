@@ -20,6 +20,7 @@ class ImageViewerFragment :
     BaseFragment<ImageViewerState, ImageViewerEvent>(R.layout.fragment_image_viewer) {
 
     private val binding by fragmentViewBinding(FragmentImageViewerBinding::bind)
+
     val adapterImages = ImageViewerAdapter(
         onDownSwipe = {
             binding.root.animate().alpha(0f).setDuration(300).start()

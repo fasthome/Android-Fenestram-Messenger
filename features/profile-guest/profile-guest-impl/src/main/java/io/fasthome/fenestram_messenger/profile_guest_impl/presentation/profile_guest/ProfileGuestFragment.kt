@@ -30,18 +30,27 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentPr
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.RecentImagesViewItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import org.koin.android.ext.android.inject
 
 class ProfileGuestFragment :
-    BaseFragment<ProfileGuestState, ProfileGuestEvent>(R.layout.fragment_profile_guest), BottomSheetDismissListener {
+    BaseFragment<ProfileGuestState, ProfileGuestEvent>(R.layout.fragment_profile_guest),
+    BottomSheetDismissListener {
 
     private val binding by fragmentViewBinding(FragmentProfileGuestBinding::bind)
-    private val recentFilesAdapter = RecentFilesAdapter()
-    private val recentImagesAdapter = RecentImagesAdapter()
+
+    private val recentFilesAdapter =
+        RecentFilesAdapter(onDownloadDocument = { meta, progressListener ->
+            vm.onDownloadDocument(meta = meta, progressListener = progressListener)
+        })
+
+    private val recentImagesAdapter = RecentImagesAdapter(onMoreClicked = {
+        vm.onShowPhotosClicked()
+    }, onItemClicked = {
+        vm.onItemClicked(it)
+    })
 
     private val groupGuestFeature: GroupGuestFeature by inject()
 
@@ -74,7 +83,17 @@ class ProfileGuestFragment :
         super.onViewCreated(view, savedInstanceState)
         recentFilesList.adapter = recentFilesAdapter
         recentImagesList.adapter = recentImagesAdapter
-        recentImagesList.layoutManager = GridLayoutManager(context, 3)
+        recentImagesList.itemAnimator = null
+
+        val spanCount = resources.getSpanCount(resources.getDimension(R.dimen.min_image_height).toInt() + 20.dp)
+        val gridLayoutManager = GridLayoutManager(
+            requireContext(),
+            spanCount
+        )
+        vm.fetchFilesAndPhotos(spanCount)
+
+        recentImagesList.layoutManager = gridLayoutManager
+        recentImagesList.supportBottomSheetScroll()
 
         recentFilesList.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean {
@@ -85,185 +104,149 @@ class ProfileGuestFragment :
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
         profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
-        profileGuestName.setOnClickListener {
+        profileGuestName.onClick {
             vm.copyText(profileGuestName.text.toString(), TextViewKey.Name)
         }
 
-        profileGuestNickname.setOnClickListener {
+        profileGuestNickname.onClick {
             vm.copyText(profileGuestNickname.text.toString(), TextViewKey.Nickname)
         }
 
-        profileGuestPhone.setOnClickListener {
+        profileGuestPhone.onClick {
             vm.copyText(profileGuestPhone.text.toString(), TextViewKey.Phone)
         }
-
-//        vm.fetchFilesAndPhotos()
-
-        recentFilesHeader.recentFilesShowAll.setOnClickListener {
+        recentFilesHeader.recentFileHeaderText.setText(R.string.recent_files)
+        recentFilesHeader.recentHeader.onClick {
             vm.onShowFilesClicked()
         }
-        recentImagesHeader.imagesShowAll.setOnClickListener {
+        recentImagesHeader.recentFileHeaderText.setText(R.string.images)
+        recentImagesHeader.recentHeader.onClick {
             vm.onShowPhotosClicked()
         }
 
-        buttonDeleteChat.setOnClickListener {
+        buttonDeleteChat.onClick {
             vm.onDeleteChatClicked()
         }
 
-        profileGuestEdit.setOnClickListener {
+        profileGuestEdit.onClick {
             vm.onEditClicked(profileGuestName.text.toString().trim())
         }
 
-        profileGuestAvatar.setOnClickListener {
+        profileGuestAvatar.onClick {
             vm.onAvatarClicked()
         }
     }
 
-    override fun renderState(state: ProfileGuestState) {
-        when {
-            state.recentFiles.size > 3 -> {
-                recentFilesAdapter.items = state.recentFiles.take(3)
-            }
-            state.recentImages.isNotEmpty() -> {
-                recentFilesAdapter.items = state.recentFiles
-            }
-            else -> {
-                //TODO Нет недавних файлов
-            }
-        }
+    override fun renderState(state: ProfileGuestState) = with(binding) {
+        recentImagesAdapter.items = state.recentImages
+        recentFilesAdapter.items = state.recentFiles
 
-        when {
-            state.recentImages.size > 6 -> {
-                val items = state.recentImages.take(5) +
-                        RecentImagesViewItem(
-                            state.recentImages[5].image,
-                            state.recentImages.size - 5,
-                            true
-                        )
-                recentImagesAdapter.items = items
-            }
-            state.recentImages.isNotEmpty() -> {
-                recentImagesAdapter.items = state.recentImages
-            }
-            else -> {
-                //TODO Нет недавних изображений
-            }
-        }
+        participantsContainer.isVisible = state.isGroup
+        profileGuestPhone.isVisible = !state.isGroup
+        profileGuestContainer.isVisible = !state.editMode
+        pickPhotoIcon.isVisible = state.editMode && state.isGroup
+        profileGuestName.isFocusable = state.editMode
+        profileGuestName.isFocusableInTouchMode = state.editMode
+        profileGuestName.isCursorVisible = state.editMode
 
-        with(binding) {
-            participantsContainer.isVisible = state.isGroup
-            profileGuestPhone.isVisible = !state.isGroup
-            profileGuestContainer.isVisible = !state.editMode
-            pickPhotoIcon.isVisible = state.editMode && state.isGroup
-            profileGuestName.isFocusable = state.editMode
-            profileGuestName.isFocusableInTouchMode = state.editMode
-            profileGuestName.isCursorVisible = state.editMode
+        profileGuestName.background.setTint(
+            ContextCompat.getColor(
+                requireContext(),
+                when (state.profileGuestStatus) {
+                    EditTextStatus.Idle -> {
+                        profileGuestNameError.isVisible = false
+                        R.color.dark1
+                    }
+                    EditTextStatus.Editable -> {
+                        profileGuestNameError.isVisible = false
+                        R.color.white
+                    }
+                    EditTextStatus.Error -> {
+                        profileGuestNameError.isVisible = true
+                        R.color.red
+                    }
+                }
+            )
+        )
 
-            profileGuestName.background.setTint(
+        if (state.isGroup) {
+            profileGuestNickname.setTextColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    when (state.profileGuestStatus) {
-                        EditTextStatus.Idle -> {
-                            profileGuestNameError.isVisible = false
-                            R.color.dark1
-                        }
-                        EditTextStatus.Editable -> {
-                            profileGuestNameError.isVisible = false
-                            R.color.white
-                        }
-                        EditTextStatus.Error -> {
-                            profileGuestNameError.isVisible = true
-                            R.color.red
-                        }
-                    }
+                    R.color.gray1
                 )
             )
-
-            if (state.isGroup) {
-                profileGuestNickname.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.gray1
-                    )
-                )
-                profileGuestNickname.textSize = 14F
-                profileGuestNickname.setPrintableText(
-                    PrintableText.PluralResource(
-                        R.plurals.chat_participants_count,
-                        state.participantsQuantity,
-                        state.participantsQuantity
-                    )
-                )
-            } else {
-                profileGuestNickname.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.blue
-                    )
-                )
-                profileGuestNickname.textSize = 18F
-                profileGuestNickname.isVisible =
-                    getPrintableRawText(state.userNickname).isNotEmpty()
-                profileGuestNickname.setPrintableText(
-                    PrintableText.Raw("@" + getPrintableRawText(state.userNickname))
-                )
-            }
-
-            if (state.editMode) {
-                if (state.isGroup)
-                    profileGuestAvatar.brightness = 0.5F
-                profileGuestEdit.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_complete_edit
-                    )
-                )
-                if (state.profileGuestStatus == EditTextStatus.Idle) {
-                    profileGuestName.setPrintableText(state.userName)
-                    profileGuestName.background.setTint(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.white
-                        )
-                    )
-                }
-            } else {
-                profileGuestAvatar.brightness = 1F
-                profileGuestEdit.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_edit
-                    )
-                )
-                profileGuestPhone.setPrintableText(state.userPhone)
-                profileGuestName.setPrintableText(state.userName)
-                requireActivity().hideKeyboard(true)
-            }
-
-            when {
-                state.avatarContent != null -> profileGuestAvatar.setContent(state.avatarContent, CircleCrop())
-                state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
-                    url = state.userAvatar,
-                    placeholderRes = R.drawable.ic_avatar_placeholder
-                )
-                else -> profileGuestAvatar.loadCircle(R.drawable.ic_avatar_placeholder)
-            }
-
-            recentFilesHeader.recentFileCount.setPrintableText(
+            profileGuestNickname.textSize = 14F
+            profileGuestNickname.setPrintableText(
                 PrintableText.PluralResource(
-                    R.plurals.file_quantity,
-                    state.recentFiles.size,
-                    state.recentFiles.size
+                    R.plurals.chat_participants_count,
+                    state.participantsQuantity,
+                    state.participantsQuantity
                 )
             )
-            recentImagesHeader.recentImagesCount.setPrintableText(
-                PrintableText.PluralResource(
-                    R.plurals.image_quantity,
-                    state.recentImages.size,
-                    state.recentImages.size
+        } else {
+            profileGuestNickname.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.blue
                 )
+            )
+            profileGuestNickname.textSize = 18F
+            profileGuestNickname.isVisible =
+                getPrintableRawText(state.userNickname).isNotEmpty()
+            profileGuestNickname.setPrintableText(
+                PrintableText.Raw("@" + getPrintableRawText(state.userNickname))
             )
         }
+
+        if (state.editMode) {
+            if (state.isGroup)
+                profileGuestAvatar.brightness = 0.5F
+            profileGuestEdit.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_complete_edit
+                )
+            )
+            if (state.profileGuestStatus == EditTextStatus.Idle) {
+                profileGuestName.setPrintableText(state.userName)
+                profileGuestName.background.setTint(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.white
+                    )
+                )
+            }
+        } else {
+            profileGuestAvatar.brightness = 1F
+            profileGuestEdit.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_edit
+                )
+            )
+            profileGuestPhone.setPrintableText(state.userPhone)
+            profileGuestName.setPrintableText(state.userName)
+            requireActivity().hideKeyboard(true)
+        }
+
+        when {
+            state.avatarContent != null -> profileGuestAvatar.setContent(
+                state.avatarContent,
+                CircleCrop()
+            )
+            state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
+                url = state.userAvatar,
+                placeholderRes = R.drawable.ic_avatar_placeholder
+            )
+            else -> profileGuestAvatar.loadCircle(R.drawable.ic_avatar_placeholder)
+        }
+        recentImagesHeader.recentFileCount.setPrintableText(
+            state.recentImagesCount
+        )
+        recentFilesHeader.recentFileCount.setPrintableText(
+            state.recentFilesCount
+        )
     }
 
     override fun handleEvent(event: ProfileGuestEvent) {

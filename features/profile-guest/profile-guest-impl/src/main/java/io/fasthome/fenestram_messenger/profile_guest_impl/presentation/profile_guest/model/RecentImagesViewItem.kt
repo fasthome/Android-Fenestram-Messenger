@@ -1,9 +1,10 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model
 
-import androidx.annotation.DrawableRes
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UrlLoadableContent
+import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class RecentImagesViewItem(
-    @DrawableRes val image: Int,
-    val imageCount: Int = 0,
-    val showAll: Boolean = true
+    val image: UrlLoadableContent,
+    val hasMoreImages: Boolean,
+    val moreImagesCount: PrintableText
 )

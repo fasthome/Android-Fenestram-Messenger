@@ -437,6 +437,7 @@ class ConversationFragment :
                     is InputMessageMode.Default -> {
                         binding.chatUserTagsContainer.setPadding(0, 0, 0, 0)
                     }
+                    is InputMessageMode.Forward -> {}
                 }
             }
 
@@ -669,6 +670,7 @@ class ConversationFragment :
                                 getPrintableRawText(message.userName)
                             )
                     }
+                    else -> {}
                 }
             }
         }

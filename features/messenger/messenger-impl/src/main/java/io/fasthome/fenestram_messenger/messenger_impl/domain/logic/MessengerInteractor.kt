@@ -12,8 +12,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ProgressListener
 import io.fasthome.fenestram_messenger.util.onSuccess
-import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.tokens.TokensRepo
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel

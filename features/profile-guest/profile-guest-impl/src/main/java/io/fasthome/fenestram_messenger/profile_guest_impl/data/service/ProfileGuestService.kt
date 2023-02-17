@@ -1,9 +1,11 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.data.service
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.model.FileResponse
 import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.model.PatchChatAvatarRequest
 import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.model.PatchChatNameRequest
 import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.model.UploadImageResponse
+import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.FileItem
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.entity.UploadImageResult
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
@@ -11,7 +13,8 @@ import io.fasthome.network.util.requireData
 
 class ProfileGuestService(
     clientFactory: NetworkClientFactory,
-    private val environment: Environment
+    private val environment: Environment,
+    private val filesMapper: FilesMapper
 ) {
     private val client = clientFactory.create()
 
@@ -39,5 +42,11 @@ class ProfileGuestService(
             )
             .requireData()
         return UploadImageResult(imagePath = response.pathToFile)
+    }
+
+    suspend fun getAttachFiles(chatId: Long, type: String): List<FileItem> {
+        return client.runGet<BaseResponse<FileResponse>>(
+            path = "chats/$chatId/files/$type",
+        ).requireData().let { filesMapper.mapResponseToFiles(it, messageType = type) }
     }
 }

@@ -22,7 +22,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
-import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.DownloadDocumentUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
@@ -46,7 +46,7 @@ import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
 import io.fasthome.fenestram_messenger.util.links.getNicknameFromLink
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
@@ -65,7 +65,7 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
     private val storageUrlConverter: StorageUrlConverter,
-    private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
+    private val downloadDocumentUseCase: DownloadDocumentUseCase,
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
@@ -162,6 +162,7 @@ class ConversationViewModel(
                 is ProfileGuestFeature.ProfileGuestResult.ChatNameChanged -> {
                     updateState { state -> state.copy(userName = result.newName) }
                 }
+                ProfileGuestFeature.ProfileGuestResult.Canceled -> {}
             }
         }
 
@@ -454,6 +455,7 @@ class ConversationViewModel(
                 is InputMessageMode.Reply -> {
                     replyMessage(mess)
                 }
+                is InputMessageMode.Forward -> {}
             }
         }
     }
@@ -537,7 +539,7 @@ class ConversationViewModel(
                     tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
                         metaInfo = result.data.message?.content?.map {
                             MetaInfo(
-                                name = PrintableText.Raw(it.name),
+                                name = it.name,
                                 extension = it.extension,
                                 size = it.size,
                                 url = storageUrlConverter.convert(it.url)
@@ -574,14 +576,13 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
-                        metaInfo = result.data.message?.content?.map { MetaInfo(it) }
-                            ?: return)
+                    tempMessage.copy(userName = conversationViewItem.userName,
+                        metaInfo = result.data)
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
-                    result.data.message?.content?.firstOrNull()?.url,
-                    result.data.message?.id
+                    result.data.firstOrNull()?.url,
+                    conversationViewItem.id
                 )
                 updateSendLoadingState(false)
             }
@@ -728,6 +729,8 @@ class ConversationViewModel(
                             tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                     }
                 }
+                is ConversationViewItem.Self.Forward -> {}
+                is ConversationViewItem.Self.TextReplyOnImage -> {}
             }
             state.copy(
                 messages = newMessages
@@ -988,6 +991,8 @@ class ConversationViewModel(
                         )
                     }
                 }
+                is InputMessageMode.Default -> {}
+                is InputMessageMode.Forward -> {}
             }
             state.copy(messages = messages)
         }
@@ -1047,13 +1052,22 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return
-        val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
-        fileSelectorLauncher.launch(
-            FileSelectorNavigationContract.Params(
-                selectedImages = allImages.toContentUriList()
-            )
-        )
+        viewModelScope.launch {
+            val permissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionInterface.request(Manifest.permission.READ_MEDIA_IMAGES)
+            } else {
+                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if(permissionGranted){
+                val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return@launch
+                val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
+                fileSelectorLauncher.launch(
+                    FileSelectorNavigationContract.Params(
+                        selectedImages = allImages.toContentUriList()
+                    )
+                )
+            }
+        }
     }
 
     private fun openCameraFragment() {
@@ -1151,6 +1165,8 @@ class ConversationViewModel(
                     selfViewItem.files?.map { AttachedFile.Document(it) } ?: return
                 )
             }
+            is ConversationViewItem.Self.Forward -> {}
+            is ConversationViewItem.Self.TextReplyOnImage -> {}
         }
     }
 
@@ -1254,6 +1270,8 @@ class ConversationViewModel(
                                 )
                             }
                         }
+                        is InputMessageMode.Default -> {}
+                        is InputMessageMode.Forward -> {}
                     }
                     return@updateState state.copy(messages = messages)
                 }
@@ -1307,22 +1325,13 @@ class ConversationViewModel(
     ) {
         val documentLink = meta.url.toString()
         downloadFileJob = viewModelScope.launch {
-            messengerInteractor.getDocument(
-                storagePath = documentLink,
-                progressListener = progressListener
-            ).onSuccess { loadedDocument ->
-                val permissionGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                        || permissionInterface.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-                if (!permissionGranted) return@launch
-                copyDocumentToDownloadsUseCase.invoke(
-                    loadedDocument.byteArray,
-                    PrintableText.Raw(documentLink),
-                    extension = meta.extension
-                ).onSuccess { uri ->
-                    openFileLauncher.launch(OpenFileNavigationContract.Params(uri))
-                }
-            }
+            downloadDocumentUseCase.invoke(
+                documentLink = documentLink,
+                progressListener = progressListener,
+                metaInfo = meta,
+                permissionInterface = permissionInterface,
+                openFileLauncher = openFileLauncher
+            )
         }
     }
 

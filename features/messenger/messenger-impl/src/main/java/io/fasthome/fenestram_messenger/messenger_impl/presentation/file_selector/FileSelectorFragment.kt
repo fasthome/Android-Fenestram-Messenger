@@ -86,7 +86,7 @@ class FileSelectorFragment :
             .collectWhenStarted(this@FileSelectorFragment) {
                 binding.root.post {
                     viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                        delay(100)
+                        delay(200)
                         adapterImage.submitData(it)
                     }
                 }

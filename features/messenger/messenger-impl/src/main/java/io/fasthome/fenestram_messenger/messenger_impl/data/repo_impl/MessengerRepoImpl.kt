@@ -17,8 +17,9 @@ import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalCachingPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ProgressListener
 import io.fasthome.fenestram_messenger.util.callForResult
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.network.tokens.AccessToken
 
 class MessengerRepoImpl(
@@ -194,7 +195,7 @@ class MessengerRepoImpl(
         chatId: Long,
         documentBytes: List<ByteArray>,
         guid: List<String>
-    ): CallResult<SendMessageResponse> = callForResult {
+    ): CallResult<List<MetaInfo>> = callForResult {
         messengerService.uploadDocuments(documentBytes, guid, chatId)
     }
 
