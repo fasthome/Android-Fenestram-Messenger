@@ -164,7 +164,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/timeviewcheck"
-            android:textColor="@color/gray1"
+            android:textColor="@color/text1"
             android:textSize="11sp"
             app:layout_constraintStart_toEndOf="@+id/avatar"
             app:layout_constraintTop_toBottomOf="@+id/text_container" />

@@ -812,7 +812,7 @@ fun mapReactions(
             userCount = it.value.size,
             avatars = it.value.map { user -> user.avatar },
             reactionBackground = when {
-                setBySelf -> R.color.blue
+                setBySelf -> R.color.main_active
                 isSelfMessage -> R.color.blue4
                 else -> R.color.blue2
             },

@@ -40,8 +40,8 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
         fab.onClick {
             onFabClicked()
         }
-        navigationView.setOnItemSelectedListener { item ->
-            val tabType = TabsMapper.mapItemIdToTab(item) ?: return@setOnItemSelectedListener false
+        navigationView.setItemClickListener { item ->
+            val tabType = TabsMapper.mapItemIdToTab(item) ?: return@setItemClickListener false
             vm.onShowFragment(tabType)
             true
         }

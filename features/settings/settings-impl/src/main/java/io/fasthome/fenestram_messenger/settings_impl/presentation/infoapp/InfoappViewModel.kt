@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.settings_impl.presentation.settings.infoapp
+package io.fasthome.fenestram_messenger.settings_impl.presentation.infoapp
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel

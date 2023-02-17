@@ -65,7 +65,7 @@
                     android:layout_height="0dp"
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="4dp"
-                    android:background="@color/blue"
+                    android:background="@color/main_active"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/iv_arrow"
                     app:layout_constraintTop_toBottomOf="@+id/username"
@@ -121,7 +121,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_action_forward"
-                    android:tint="@color/blue"
+                    android:tint="@color/main_active"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/blue_line"
                     tools:ignore="UseAppTint" />
@@ -182,7 +182,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/timeviewcheck"
-            android:textColor="@color/gray1"
+            android:textColor="@color/text1"
             android:textSize="11sp"
             app:layout_constraintStart_toStartOf="@+id/forward_ll"
             app:layout_constraintTop_toBottomOf="@+id/forward_ll" />

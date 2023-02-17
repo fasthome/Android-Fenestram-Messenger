@@ -1,9 +1,9 @@
 package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
-import com.instabug.library.Instabug
 import io.fasthome.fenestram_messenger.navigation.contract.InterfaceFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
@@ -11,8 +11,12 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_api.SettingsInterface
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentSettingsBinding
+import io.fasthome.fenestram_messenger.settings_impl.presentation.DeleteAccountDialog
+import io.fasthome.fenestram_messenger.settings_impl.presentation.LogoutDialog
+import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.adapter.SettingsAdapter
+import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.dp
 
 
 class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fragment_settings),
@@ -22,37 +26,29 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
 
     private val binding by fragmentViewBinding(FragmentSettingsBinding::bind)
 
+    private val adapter = SettingsAdapter()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-
-        tvExitProfile.onClick {
-            vm.onLogoutClicked()
-        }
-
-        tvAboutApp.onClick {
-            vm.startInfoapp()
-        }
-
-        tvBugReport.onClick {
-            Instabug.show()
-        }
-
-        ibBlueButton.onClick {
-            vm.onBlueClicked()
-        }
-
-        ibGreenButton.onClick {
-            vm.onGreenClicked()
-        }
-
-        tvDeleteAccount.onClick {
-            vm.onDeleteAccountClicked()
-        }
+        list.adapter = adapter
     }
 
     override fun renderState(state: SettingsState) = with(binding) {
-        ibBlueButton.isActivated = state.blueSelected
-        ibGreenButton.isActivated = state.greenSelected
+        adapter.items = state.items
+        list.addItemDecoration(SpacingItemDecoration { index, itemCount ->
+            val verticalMargin = if (index == 0) {
+                32.dp
+            } else {
+                16.dp
+            }
+
+            Rect(
+                20.dp,
+                verticalMargin,
+                20.dp,
+                0,
+            )
+        })
     }
 
     override fun handleEvent(event: SettingsEvent) {

@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.settings_impl.presentation.settings.infoapp
+package io.fasthome.fenestram_messenger.settings_impl.presentation.infoapp
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,6 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
-import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentInfoappBinding

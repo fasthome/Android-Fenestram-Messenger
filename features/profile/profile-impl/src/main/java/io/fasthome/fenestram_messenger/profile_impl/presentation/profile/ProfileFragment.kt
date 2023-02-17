@@ -73,8 +73,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
         state.username?.let { username.setPrintableText(it) }
-        state.nickname?.let { nickname.setPrintableText(it) }
-        state.birth?.let { birth.setPrintableText(it) }
         state.email?.let { email.setPrintableText(it) }
         state.avatarUrl?.let { url ->
             ivAvatar.loadCircle(url, placeholderRes = R.drawable.ic_avatar_placeholder,progressBar = progressBar)

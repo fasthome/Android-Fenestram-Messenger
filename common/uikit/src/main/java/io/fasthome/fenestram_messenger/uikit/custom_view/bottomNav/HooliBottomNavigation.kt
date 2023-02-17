@@ -9,14 +9,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class HooliBottomNavigation : BottomNavigationView {
+
     private var tabIndicator: TabIndicator = TabIndicator(context)
 
+    private var itemClickListener : OnItemSelectedListener? = null
 
     init {
         addView(tabIndicator)
         setOnItemSelectedListener {
             val itemView = findViewById<BottomNavigationItemView>(it.itemId)
             tabIndicator.setNewPosition(itemView, true)
+            itemClickListener?.onNavigationItemSelected(it)
             return@setOnItemSelectedListener true
         }
     }
@@ -24,10 +27,14 @@ class HooliBottomNavigation : BottomNavigationView {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         tabIndicator.post {
-            val menu = menu.getItem(0)
+            val menu = menu.getItem(defaultIndicatorPosition)
             val itemView = findViewById<BottomNavigationItemView>(menu.itemId)
-            tabIndicator.setNewPosition(itemView, false)
+            tabIndicator.setNewPosition(itemView, true)
         }
+    }
+
+    fun setItemClickListener(itemClickListener : OnItemSelectedListener){
+        this.itemClickListener = itemClickListener
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -43,7 +50,10 @@ class HooliBottomNavigation : BottomNavigationView {
 
     constructor(context: Context, @Nullable attrs: AttributeSet?, defStyle: Int) : super(
         context, attrs, defStyle
-    ) {
+    )
+
+    companion object {
+        private const val defaultIndicatorPosition = 1
     }
 
 }

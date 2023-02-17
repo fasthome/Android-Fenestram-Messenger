@@ -47,7 +47,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/dark1"
                     android:padding="15dp"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/main_active" />
             </LinearLayout>
 
             <LinearLayout
@@ -73,7 +73,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/dark1"
                     android:padding="15dp"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/main_active" />
             </LinearLayout>
         </LinearLayout>
 
@@ -316,7 +316,7 @@
                 android:inputType="phone"
                 android:padding="10dp"
                 android:text="@string/common_country_code_text"
-                android:textColor="@color/gray1"
+                android:textColor="@color/text1"
                 android:textSize="15sp"
                 tools:ignore="LabelFor" />
 
@@ -332,7 +332,7 @@
                 android:gravity="center"
                 android:inputType="number"
                 android:maxLength="4"
-                android:textColor="@color/gray1"
+                android:textColor="@color/text1"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
