@@ -66,6 +66,9 @@ class ConversationAdapter(
 
     //---Ответ---//
     onReplyMessage: (item: ConversationViewItem) -> Unit,
+
+    //---Клики по реакциям---//
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) :
     AsyncListDifferDelegationAdapter<ConversationViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -78,18 +81,21 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onSelfMessageLongClicked = onSelfMessageLongClicked,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationSelfImageAdapterDelegate(
                 onImageClicked = onImagesClicked,
                 onSelfImageLongClicked = onSelfImageLongClicked,
                 viewBinderHelper = viewBinderHelper,
-                onReplyMessageImage = onReplyMessage
+                onReplyMessageImage = onReplyMessage,
+                onReactionClicked = onReactionClicked
             ),
             createConversationSelfDocumentAdapterDelegate(
                 onDownloadDocument = onDownloadDocument,
                 onReplyMessageDocument = onReplyMessage,
-                onSelfDocumentLongClicked = onSelfDocumentLongClicked
+                onSelfDocumentLongClicked = onSelfDocumentLongClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationSelfTextReplyImageAdapterDelegate(
                 onSelfTextReplyImageLongClicked = onSelfTextReplyImageLongClicked,
@@ -97,7 +103,8 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onUserTagClicked = onUserTagClicked,
-                onDownloadDocument = onDownloadDocument
+                onDownloadDocument = onDownloadDocument,
+                onReactionClicked = onReactionClicked
             ),
             createConversationSelfForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
@@ -105,28 +112,31 @@ class ConversationAdapter(
                 onSelfForwardLongClicked = onSelfForwardLongClicked,
                 onImagesClicked = onImagesClicked,
                 onUserTagClicked = onUserTagClicked,
-                onDownloadDocument = onDownloadDocument
+                onDownloadDocument = onDownloadDocument,
+                onReactionClicked = onReactionClicked
             ),
 
             createConversationReceiveTextAdapterDelegate(
                 onReceiveMessageLongClicked = onReceiveMessageLongClicked,
                 onReplyMessage = onReplyMessage,
                 viewBinderHelper = viewBinderHelper,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationReceiveDocumentAdapterDelegate(
                 onDownloadDocument = onDownloadDocument,
                 onReplyMessageDocument = onReplyMessage,
-                onReceiveDocumentLongClicked = onReceiveDocumentLongClicked
+                onReceiveDocumentLongClicked = onReceiveDocumentLongClicked,
+                onReactionClicked = onReactionClicked
             ),
-
             createConversationReceiveForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onReceiveForwardLongClicked = onReceiveForwardLongClicked,
                 onImagesClicked = onImagesClicked,
                 onUserTagClicked = onUserTagClicked,
-                onDownloadDocument = onDownloadDocument
+                onDownloadDocument = onDownloadDocument,
+                onReactionClicked = onReactionClicked
             ),
             createConversationReceiveTextReplyImageAdapterDelegate(
                 onReceiveTextReplyImageLongClicked = onReceiveTextReplyImageLongClicked,
@@ -134,13 +144,15 @@ class ConversationAdapter(
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessage = onReplyMessage,
                 onUserTagClicked = onUserTagClicked,
-                onDownloadDocument = onDownloadDocument
+                onDownloadDocument = onDownloadDocument,
+                onReactionClicked = onReactionClicked
             ),
             createConversationReceiveImageAdapterDelegate(
                 onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReceiveImageLongClicked = onReceiveImageLongClicked,
-                onReplyMessageImage = onReplyMessage
+                onReplyMessageImage = onReplyMessage,
+                onReactionClicked = onReactionClicked
             ),
 
             createConversationGroupTextAdapterDelegate(
@@ -148,20 +160,23 @@ class ConversationAdapter(
                 onGroupMessageLongClicked = onGroupMessageLongClicked,
                 onReplyMessage = onReplyMessage,
                 viewBinderHelper = viewBinderHelper,
-                onUserTagClicked = onUserTagClicked
+                onUserTagClicked = onUserTagClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationGroupImageAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
                 onImagesClicked = onImagesClicked,
                 viewBinderHelper = viewBinderHelper,
                 onReplyMessageImage = onReplyMessage,
-                onGroupImageLongClicked = onGroupImageLongClicked
+                onGroupImageLongClicked = onGroupImageLongClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationGroupDocumentAdapterDelegate(
                 onGroupProfileItemClicked = onGroupProfileItemClicked,
                 onDownloadDocument = onDownloadDocument,
                 onReplyMessageDocument = onReplyMessage,
-                onGroupDocumentLongClicked = onGroupDocumentLongClicked
+                onGroupDocumentLongClicked = onGroupDocumentLongClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationGroupForwardAdapterDelegate(
                 viewBinderHelper = viewBinderHelper,
@@ -170,7 +185,8 @@ class ConversationAdapter(
                 onImagesClicked = onImagesClicked,
                 onUserTagClicked = onUserTagClicked,
                 onDownloadDocument = onDownloadDocument,
-                onGroupProfileItemClicked = onGroupProfileItemClicked
+                onGroupProfileItemClicked = onGroupProfileItemClicked,
+                onReactionClicked = onReactionClicked
             ),
             createConversationGroupTextReplyImageAdapterDelegate(
                 onGroupTextReplyImageLongClicked = onGroupTextReplyImageLongClicked,
@@ -179,7 +195,8 @@ class ConversationAdapter(
                 onReplyMessage = onReplyMessage,
                 onProfileClicked = onGroupProfileItemClicked,
                 onUserTagClicked = onUserTagClicked,
-                onDownloadDocument = onDownloadDocument
+                onDownloadDocument = onDownloadDocument,
+                onReactionClicked = onReactionClicked
             ),
 
             createConversationSystemAdapterDelegate(),
@@ -195,6 +212,7 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.TextReplyOnImage, ConversationItemSelfTextReplyImageBinding>(
         ConversationItemSelfTextReplyImageBinding::inflate
@@ -246,6 +264,9 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -256,6 +277,7 @@ fun createConversationSelfForwardAdapterDelegate(
     onSelfForwardLongClicked: (ConversationViewItem.Self.Forward) -> Unit,
     onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Forward, ConversationItemSelfForwardTextBinding>(
         ConversationItemSelfForwardTextBinding::inflate
@@ -318,6 +340,9 @@ fun createConversationSelfForwardAdapterDelegate(
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -326,6 +351,7 @@ fun createConversationSelfTextAdapterDelegate(
     onSelfMessageLongClicked: (ConversationViewItem.Self.Text) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Text, ConversationItemSelfTextBinding>(
         ConversationItemSelfTextBinding::inflate
@@ -355,6 +381,9 @@ fun createConversationSelfTextAdapterDelegate(
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
             status.setImageResource(item.statusIcon)
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -363,6 +392,7 @@ fun createConversationSelfImageAdapterDelegate(
     onSelfImageLongClicked: (ConversationViewItem.Self.Image) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) = adapterDelegateViewBinding<ConversationViewItem.Self.Image, ConversationItemSelfImageBinding>(
     ConversationItemSelfImageBinding::inflate
 ) {
@@ -388,6 +418,9 @@ fun createConversationSelfImageAdapterDelegate(
         sendTimeView.isVisible = item.timeVisible
         status.setImageResource(item.statusIcon)
         status.isVisible = item.timeVisible
+        createReactionsAdapter(listReactions, item.reactions) {
+            onReactionClicked(item.id, it)
+        }
     }
 }
 
@@ -395,6 +428,7 @@ fun createConversationSelfDocumentAdapterDelegate(
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
     onSelfDocumentLongClicked: (ConversationViewItem.Self) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Self.Document, ConversationItemSelfDocumentBinding>(
         ConversationItemSelfDocumentBinding::inflate
@@ -418,6 +452,9 @@ fun createConversationSelfDocumentAdapterDelegate(
             status.setImageResource(item.statusIcon)
             sendTimeView.isVisible = item.timeVisible
             status.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -429,6 +466,7 @@ fun createConversationReceiveTextAdapterDelegate(
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onReplyMessage: (item: ConversationViewItem) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Text, ConversationItemReceiveTextBinding>(
         ConversationItemReceiveTextBinding::inflate
@@ -459,6 +497,9 @@ fun createConversationReceiveTextAdapterDelegate(
             messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -469,6 +510,7 @@ fun createConversationReceiveForwardAdapterDelegate(
     onReceiveForwardLongClicked: (ConversationViewItem.Receive.Forward) -> Unit,
     onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Forward, ConversationItemReceiveForwardTextBinding>(
         ConversationItemReceiveForwardTextBinding::inflate
@@ -531,6 +573,9 @@ fun createConversationReceiveForwardAdapterDelegate(
             username.text = getPrintableRawText(item.userName)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -541,6 +586,7 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.TextReplyOnImage, ConversationItemReceiveTextReplyImageBinding>(
         ConversationItemReceiveTextReplyImageBinding::inflate
@@ -588,6 +634,9 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
             sendTimeView.setPrintableText(item.time)
             messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -597,6 +646,7 @@ fun createConversationReceiveImageAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReceiveImageLongClicked: (ConversationViewItem.Receive.Image) -> Unit,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Image, ConversationItemReceiveImageBinding>(
         ConversationItemReceiveImageBinding::inflate
@@ -622,6 +672,9 @@ fun createConversationReceiveImageAdapterDelegate(
             viewBinderHelper.setOpenOnlyOne(true)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -629,6 +682,7 @@ fun createConversationReceiveDocumentAdapterDelegate(
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
     onReceiveDocumentLongClicked: (ConversationViewItem.Receive) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Receive.Document, ConversationItemReceiveDocumentBinding>(
         ConversationItemReceiveDocumentBinding::inflate
@@ -650,6 +704,9 @@ fun createConversationReceiveDocumentAdapterDelegate(
             )
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -664,6 +721,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
     onProfileClicked: (ConversationViewItem.Group) -> Unit,
     viewBinderHelper: ViewBinderHelper,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.TextReplyOnImage, ConversationItemGroupTextReplyImageBinding>(
         ConversationItemGroupTextReplyImageBinding::inflate
@@ -717,6 +775,9 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
             sendTimeView.setPrintableText(item.time)
             messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -726,6 +787,7 @@ fun createConversationGroupTextAdapterDelegate(
     onGroupMessageLongClicked: (ConversationViewItem.Group.Text) -> Unit,
     onReplyMessage: (ConversationViewItem) -> Unit,
     viewBinderHelper: ViewBinderHelper,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Text, ConversationItemGroupTextBinding>(
         ConversationItemGroupTextBinding::inflate
@@ -762,6 +824,9 @@ fun createConversationGroupTextAdapterDelegate(
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -774,6 +839,7 @@ fun createConversationGroupForwardAdapterDelegate(
     onGroupProfileItemClicked: (ConversationViewItem.Group) -> Unit,
     onImagesClicked: (List<MetaInfo>, Int) -> Unit,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Forward, ConversationItemGroupForwardTextBinding>(
         ConversationItemGroupForwardTextBinding::inflate
@@ -839,6 +905,9 @@ fun createConversationGroupForwardAdapterDelegate(
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -848,6 +917,7 @@ fun createConversationGroupImageAdapterDelegate(
     viewBinderHelper: ViewBinderHelper,
     onReplyMessageImage: (item: ConversationViewItem) -> Unit,
     onGroupImageLongClicked: (ConversationViewItem.Group.Image) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Image, ConversationItemGroupImageBinding>(
         ConversationItemGroupImageBinding::inflate
@@ -877,6 +947,9 @@ fun createConversationGroupImageAdapterDelegate(
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -885,6 +958,7 @@ fun createConversationGroupDocumentAdapterDelegate(
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     onReplyMessageDocument: (item: ConversationViewItem) -> Unit,
     onGroupDocumentLongClicked: (ConversationViewItem.Group) -> Unit,
+    onReactionClicked: (messageId: Long, reactionViewItem: ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ConversationViewItem.Group.Document, ConversationItemGroupDocumentBinding>(
         ConversationItemGroupDocumentBinding::inflate
@@ -912,6 +986,9 @@ fun createConversationGroupDocumentAdapterDelegate(
             sendTimeView.setPrintableText(item.time)
             avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             sendTimeView.isVisible = item.timeVisible
+            createReactionsAdapter(listReactions, item.reactions) {
+                onReactionClicked(item.id, it)
+            }
         }
     }
 
@@ -1020,4 +1097,27 @@ private fun createDocumentAdapter(
     adapterDocument.items = items
 }
 
+private fun createReactionsAdapter(
+    recyclerViewReactions: RecyclerView,
+    items: List<ReactionsViewItem>,
+    onReactionClicked: (reactionViewItem: ReactionsViewItem) -> Unit
+) {
+    val adapter = ReactionsAdapter(onItemClicked = onReactionClicked)
+    recyclerViewReactions.layoutManager = FlexboxLayoutManager(recyclerViewReactions.context)
+    recyclerViewReactions.adapter = adapter
+    adapter.items = items
+}
+
 private fun SentStatus.canSwipe() = this != SentStatus.Error && this != SentStatus.Loading
+
+private fun getMockReactions() = listOf(
+    ReactionsViewItem("&#128522;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#129306;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#9995;", 53, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#128165;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#128164;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#9996;", 100, listOf(), R.color.blue2, true),
+    ReactionsViewItem("&#128076;", 20, listOf(), R.color.blue2, true),
+    ReactionsViewItem("&#128072;", 3, listOf("", "", ""), R.color.blue2, true),
+    ReactionsViewItem("&#129305;", 2, listOf("", ""), R.color.blue2, true),
+).sortedByDescending { it.userCount }

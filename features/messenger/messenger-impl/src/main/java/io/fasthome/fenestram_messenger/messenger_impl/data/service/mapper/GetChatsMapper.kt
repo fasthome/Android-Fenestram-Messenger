@@ -4,6 +4,7 @@ import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.GetChatsResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.UserResponse
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
 import io.fasthome.network.util.NetworkMapperUtil
@@ -37,7 +38,8 @@ class GetChatsMapper(
                             messageStatus = lastMessage.messageStatus,
                             usersHaveRead = lastMessage.usersHaveRead,
                             forwardedMessages = null,
-                            content = lastMessage.content.map(contentMapper::mapContentResponseToMetaInfo)
+                            content = lastMessage.content.map(contentMapper::mapContentResponseToMetaInfo),
+                            reactions = emptyMap()
                         )
                     }),
                     time = getZonedTime(chat.updatedDate)?.withZoneSameInstant(ZoneId.systemDefault()),
@@ -82,9 +84,21 @@ class GetChatsMapper(
                 replyMessage = if (replyMessage != null) responseToMessage(replyMessage) else null,
                 usersHaveRead = usersHaveRead,
                 forwardedMessages = forwardedMessages.map { responseToMessage(it) },
-                content = content?.map(contentMapper::mapContentResponseToMetaInfo) ?: listOf()
+                content = content?.map(contentMapper::mapContentResponseToMetaInfo) ?: listOf(),
+                reactions = mapReactions(reactions)
             )
         }
+    }
+
+    fun mapReactions(reactions: Map<String, List<UserResponse>>?): Map<String, List<User>> {
+        return reactions?.filter { it.value.isNotEmpty() }
+            ?.mapKeys { "${it.key};" }
+            ?.mapValues {
+                it.value.map { userResponse ->
+                    User(id = userResponse.id, avatar = profileImageUrlConverter.convert(userResponse.avatar))
+                }
+            }
+            ?: emptyMap()
     }
 
 

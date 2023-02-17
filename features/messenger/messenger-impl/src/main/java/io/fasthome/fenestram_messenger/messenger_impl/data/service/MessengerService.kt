@@ -89,7 +89,7 @@ class MessengerService(
     suspend fun uploadImages(
         imageBytes: List<ByteArray>,
         chatId: Long,
-        filename: List<String>,
+        filename: List<String>
     ): SendMessageResponse {
         val response = client
             .runSubmitFormWithImages<BaseResponse<SendMessageResponse>>(
@@ -203,6 +203,13 @@ class MessengerService(
         return response.requireData().let {
             Badge(count = it.totalPending)
         }
+    }
+
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String) {
+        val response: BaseResponse<ReactionsResponse> = client.runPost(
+            path = "chats/$chatId/message/$messageId/reaction",
+            body = PostReactionRequest(reaction = reaction)
+        )
     }
 
 }

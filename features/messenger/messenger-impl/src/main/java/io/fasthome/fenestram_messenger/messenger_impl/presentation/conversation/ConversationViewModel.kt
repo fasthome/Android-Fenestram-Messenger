@@ -21,10 +21,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.DownloadDocumentUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
@@ -95,6 +92,7 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
+    private var permittedReactions = listOf<PermittedReactionViewItem>()
     private var wasResumed: Boolean = false
 
     private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
@@ -507,6 +505,7 @@ class ConversationViewModel(
     }
 
     private suspend fun sendImages(conversationViewItem: ConversationViewItem.Self.Image) {
+        updateSendLoadingState(true)
         var tempMessage = conversationViewItem
         if (tempMessage.loadableContent == null) return
         var byteArrays: List<ByteArray> = emptyList()
@@ -555,12 +554,18 @@ class ConversationViewModel(
                     result.data.message?.content?.firstOrNull()?.url,
                     result.data.message?.id
                 )
+                updateSendLoadingState(false)
             }
         }
         sendEvent(ConversationEvent.UpdateScrollPosition(0))
     }
 
+    fun updateSendLoadingState(isLoading: Boolean) {
+        sendEvent(ConversationEvent.SendLoading(isLoading))
+    }
+
     private suspend fun sendDocument(conversationViewItem: ConversationViewItem.Self.Document) {
+        updateSendLoadingState(true)
         var tempMessage = conversationViewItem
         val result = messengerInteractor.uploadDocuments(
             chatId ?: return,
@@ -582,6 +587,7 @@ class ConversationViewModel(
                     result.data.firstOrNull()?.url,
                     conversationViewItem.id
                 )
+                updateSendLoadingState(false)
             }
         }
     }
@@ -789,6 +795,7 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
+                    permittedReactions = chat.mapPermittedReactions()
                     val selfUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
@@ -822,7 +829,8 @@ class ConversationViewModel(
             onNewMessageStatusCallback = { onNewMessageStatus(it) },
             onMessageDeletedCallback = { onMessagesDeletedCallback(it) },
             onNewChatChangesCallback = { onChatChangesCallback(it) },
-            onChatDeletedCallback = { onChatDeletedCallback(it) }
+            onChatDeletedCallback = { onChatDeletedCallback(it) },
+            onNewReactionCallback = { onNewReaction(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -855,6 +863,7 @@ class ConversationViewModel(
                 if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
+                        permittedReactions = it.mapPermittedReactions()
                         updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
@@ -887,6 +896,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
+            permittedReactions = it.mapPermittedReactions()
             updateState { state ->
                 state.copy(
                     avatar = it.avatar,
@@ -1224,7 +1234,7 @@ class ConversationViewModel(
             SentStatus.Sent,
             SentStatus.Received,
             SentStatus.Read,
-            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
             SentStatus.Loading -> Unit
             SentStatus.None -> Unit
         }
@@ -1273,39 +1283,39 @@ class ConversationViewModel(
     }
 
     fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveForwardLongClicked(conversationViewItem: ConversationViewItem.Receive.Forward) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupForwardLongClicked(conversationViewItem: ConversationViewItem.Group.Forward) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupDocumentLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onSelfDocumentLongClicked(conversationViewItem: ConversationViewItem.Self) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveDocumentLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onTypingMessage() {
@@ -1380,4 +1390,23 @@ class ConversationViewModel(
     fun contentInserted(content: Content) {
         attachContentFile(content)
     }
+
+    fun postReaction(messageId: Long, reaction: String) {
+        viewModelScope.launch {
+            chatId?.let {
+                messengerInteractor.postReaction(it, messageId, reaction.dropLast(1))
+            }
+        }
+    }
+
+    fun onNewReaction(messageReactions: MessageReactions) {
+        val changedMessages = currentViewState.messages.mapValues {
+            if (it.value.id == messageReactions.messageId)
+                messageReactions.toConversationViewItem(selfUserId, it.value)
+            else it.value
+
+        }
+        updateState { state -> state.copy(messages = changedMessages) }
+    }
+
 }

@@ -82,7 +82,7 @@ class MessengerRepoImpl(
                     chatStorage.saveChats(it)
                 },
             )
-        }else{
+        } else {
             totalPagingSource(PAGE_SIZE) { _, _ -> currrentList }
         }
     }
@@ -101,6 +101,11 @@ class MessengerRepoImpl(
     ): CallResult<PostChatsResult> =
         callForResult {
             messengerService.postChats(name, users, isGroup)
+        }
+
+    override suspend fun postReaction(chatId: Long, messageId: Long, reaction: String): CallResult<Unit> =
+        callForResult {
+            messengerService.postReaction(chatId, messageId, reaction)
         }
 
     override suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit> =
@@ -145,7 +150,8 @@ class MessengerRepoImpl(
             messageDeletedCallback = { callback.onMessageDeleted(this) },
             chatChangesCallback = { callback.onNewChatChanges(this) },
             chatDeletedCallback = { callback.onDeletedChatCallback(this) },
-            unreadCountCallback = { callback.onUnreadMessage(this) }
+            unreadCountCallback = { callback.onUnreadMessage(this) },
+            reactionsCallback = { callback.onNewReactionCallback(this) }
         )
     }
 
@@ -197,8 +203,8 @@ class MessengerRepoImpl(
         chatId: Long,
         documentBytes: List<ByteArray>,
         filename: List<String>,
-    ): CallResult<SendMessageResponse>  = callForResult {
-        messengerService.uploadImages(documentBytes, chatId,filename)
+    ): CallResult<SendMessageResponse> = callForResult {
+        messengerService.uploadImages(documentBytes, chatId, filename)
     }
 
     override suspend fun clearChats() = chatStorage.deleteChats()
