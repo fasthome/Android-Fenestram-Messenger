@@ -3,14 +3,8 @@ package io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageActionResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponseWithChatId
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageStatusResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.network.util.NetworkMapperUtil
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -51,7 +45,8 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
                 GetChatsMapper(profileImageUrlConverter).responseToMessage(mess)
             }
         },
-        content = messageResponse.content
+        content = messageResponse.content,
+        reactions = mapReactions(messageResponse.reactions)
     )
 
     fun toMessageAction(messageActionResponse: MessageActionResponse): MessageAction {
@@ -83,23 +78,41 @@ class ChatsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
     )
 
     fun toChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse): ChatChanges {
-        val chatUsers = chatChangesResponse.updatedValues!!.chatUsers?.map { user ->
+        val chatUsers = chatChangesResponse.updatedValues!!.chatUsers?.map { userResponse ->
             User(
-                id = user.id,
-                phone = user.phone,
-                name = user.name ?: "",
-                nickname = user.nickname ?: "",
-                contactName = user.contactName,
-                email = user.email ?: "",
-                birth = user.birth ?: "",
-                avatar = profileImageUrlConverter.convert(user.avatar),
-                isOnline = user.isOnline ?: false,
+                id = userResponse.id,
+                phone = userResponse.phone,
+                name = userResponse.name ?: "",
+                nickname = userResponse.nickname ?: "",
+                contactName = userResponse.contactName,
+                email = userResponse.email ?: "",
+                birth = userResponse.birth ?: "",
+                avatar = profileImageUrlConverter.convert(userResponse.avatar),
+                isOnline = userResponse.isOnline ?: false,
                 lastActive = ZonedDateTime.now()
             )
         }
         return ChatChanges(
             users = chatUsers
         )
+    }
+
+    fun toMessageReactions(reactionsResponse: ReactionsResponse): MessageReactions {
+        return MessageReactions(
+            messageId = reactionsResponse.messageId,
+            reactions = mapReactions(reactionsResponse.reactions)
+        )
+    }
+
+    fun mapReactions(reactions: Map<String, List<UserResponse>>?): Map<String, List<User>> {
+        return reactions?.filter { it.value.isNotEmpty() }
+            ?.mapKeys { "${it.key};" }
+            ?.mapValues {
+                it.value.map { userResponse ->
+                    User(id = userResponse.id, avatar = profileImageUrlConverter.convert(userResponse.avatar))
+                }
+            }
+            ?: emptyMap()
     }
 
     companion object {

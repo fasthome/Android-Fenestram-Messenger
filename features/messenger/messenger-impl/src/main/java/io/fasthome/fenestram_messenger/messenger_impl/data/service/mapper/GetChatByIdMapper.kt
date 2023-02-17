@@ -7,11 +7,11 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.GetChatByIdR
 import io.fasthome.network.model.BaseResponse
 import java.time.ZonedDateTime
 
-class GetChatByIdMapper(private val profileImageUrlConverter : StorageUrlConverter) {
+class GetChatByIdMapper(private val profileImageUrlConverter: StorageUrlConverter) {
     fun responseToGetChatById(response: BaseResponse<GetChatByIdResponse>): GetChatByIdResult {
         response.data?.let {
             return GetChatByIdResult(
-                chatUsers = it.chatUsers.map { user->
+                chatUsers = it.chatUsers.map { user ->
                     User(
                         id = user.id,
                         phone = user.phone,
@@ -26,7 +26,8 @@ class GetChatByIdMapper(private val profileImageUrlConverter : StorageUrlConvert
                     )
                 },
                 avatar = profileImageUrlConverter.convert(it.avatar),
-                chatName = it.name ?: ""
+                chatName = it.name ?: "",
+                permittedReactions = it.permittedReactions?.map { reaction -> "$reaction;" } ?: listOf()
             )
         }
         throw Exception()
