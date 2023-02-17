@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.bottom_navigation.BottomNavContract
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.call_api.CallFeature
@@ -77,6 +78,7 @@ class DebugViewModel(
         registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
     private val onboardingLauncher =
         registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
+    private val bottomNavLauncher = registerScreen(BottomNavContract)
 
     override fun createInitialState() = DebugState(
         userId = "",
@@ -165,6 +167,10 @@ class DebugViewModel(
 
     fun onOnboardingClicked() {
         onboardingLauncher.launch(NoParams)
+    }
+
+    fun onBottomNavViewClicked() {
+        bottomNavLauncher.launch(NoParams)
     }
 
     fun onLinkFieldClicked(token: String) {
