@@ -8,6 +8,7 @@ import android.content.Intent
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.bottom_navigation.BottomNavContract
 import io.fasthome.component.person_detail.PersonDetail
+import io.fasthome.fenestram_messenger.auth_ad_api.AuthAdFeature
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.call_api.CallFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
@@ -46,7 +47,8 @@ class DebugViewModel(
         val groupGuestFeature: GroupGuestFeature,
         val pushFeature: PushFeature,
         val mainFeature: MainFeature,
-        val callFeature: CallFeature
+        val callFeature: CallFeature,
+        val authAdFeature: AuthAdFeature
     )
 
     private var personalData: PersonalData? = null
@@ -72,6 +74,8 @@ class DebugViewModel(
     }
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
+
+    private val authAdLauncher = registerScreen(features.authAdFeature.authAdNavigationContract) {}
     private val personalDataLauncher =
         registerScreen(features.authFeature.personalDataNavigationContract) {}
     private val profileGuestLauncher =
@@ -94,6 +98,10 @@ class DebugViewModel(
 
     fun onAuthClicked() {
         authLauncher.launch(NoParams)
+    }
+
+    fun onAuthAdClicked() {
+        authAdLauncher.launch(NoParams)
     }
 
     fun onLogoutClicked() {

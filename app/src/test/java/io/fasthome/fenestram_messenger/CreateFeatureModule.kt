@@ -5,8 +5,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun main() {
-    val username = "Dmitry Popov" // todo: поменяй это на своё имя.
-    val name = "call" // todo: поменяй это на название модуля.
+    val username = "Vladimir Rudakov" // todo: поменяй это на своё имя.
+    val name = "auth-ad" // todo: поменяй это на название модуля.
 
     // название модуля в коде.
     val codeName = name

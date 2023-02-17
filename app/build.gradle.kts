@@ -126,6 +126,9 @@ dependencies {
     implementation(project(Modules.Feature.call.api))
     implementation(project(Modules.Feature.call.impl))
 
+    implementation(project(Modules.Feature.authAd.api))
+    implementation(project(Modules.Feature.authAd.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)

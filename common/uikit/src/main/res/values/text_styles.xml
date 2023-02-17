@@ -87,6 +87,10 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="Text.Red.12sp">
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="Text.Red.16sp">
         <item name="android:textSize">16sp</item>
     </style>
@@ -134,6 +138,16 @@
 
     <style name="Text.Blue.14sp">
         <item name="android:textSize">14sp</item>
+    </style>
+
+
+    <style name="Text.NewLight">
+        <item name="android:textColor">@color/text_1</item>
+    </style>
+
+    <style name="Text.NewLight.14sp">
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">4sp</item>
     </style>
 
 </resources>
