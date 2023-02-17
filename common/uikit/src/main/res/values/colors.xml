@@ -22,4 +22,8 @@
     <color name="blue3">#5EA4FF</color>
     <color name="red">#FF4B4B</color>
 
+    <!-- TODO: Заменить new_light_gray и new_purple на название цвета из новой цветовой палитры (В Figma) Сейчас названий нет! -->
+    <color name="new_light_gray">#A5ABD7</color>
+    <color name="new_purple">#7847E2</color>
+
 </resources>

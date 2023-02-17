@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/contacts"
-        android:icon="@drawable/ic_contacts"
+        android:icon="@drawable/ic_users"
         android:title="contacts"
         tools:ignore="HardcodedText" />
 
@@ -15,7 +15,7 @@
 
     <item
         android:id="@+id/tasks"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_task"
         android:title="tasks"
         tools:ignore="HardcodedText" />
 
