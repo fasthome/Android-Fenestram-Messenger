@@ -43,6 +43,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onComponentsClicked()
         }
 
+        debugBottomBar.onClick {
+            vm.onBottomNavViewClicked()
+        }
+
         debugRequests.onClick {
             vm.onRequestsClicked()
         }

@@ -127,6 +127,14 @@
             android:text="Features"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/debug_bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Bottom Navigation View"
+            tools:ignore="HardcodedText" />
+
         <LinearLayout
             android:id="@+id/features_container"
             android:layout_width="match_parent"
