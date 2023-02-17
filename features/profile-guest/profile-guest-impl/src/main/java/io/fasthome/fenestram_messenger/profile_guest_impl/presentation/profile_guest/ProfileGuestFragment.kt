@@ -9,11 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.FlexboxLayoutManager
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -87,10 +85,12 @@ class ProfileGuestFragment :
         recentImagesList.adapter = recentImagesAdapter
         recentImagesList.itemAnimator = null
 
-        val flexboxManager =
-            FlexboxLayoutManager(requireContext(), FlexDirection.ROW, FlexWrap.WRAP)
+        val gridLayoutManager = GridLayoutManager(
+            requireContext(),
+            resources.getSpanCount(resources.getDimension(R.dimen.min_image_height).toInt())
+        )
 
-        recentImagesList.layoutManager = flexboxManager
+        recentImagesList.layoutManager = gridLayoutManager
         recentImagesList.supportBottomSheetScroll()
 
         recentFilesList.layoutManager = object : LinearLayoutManager(context) {
