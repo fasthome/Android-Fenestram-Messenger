@@ -103,8 +103,6 @@ class ProfileGuestViewModel(
                 }
             }
             .launchIn(viewModelScope)
-
-        fetchFilesAndPhotos()
     }
 
 
@@ -134,7 +132,7 @@ class ProfileGuestViewModel(
     }
 
 
-    private fun fetchFilesAndPhotos() {
+    fun fetchFilesAndPhotos(spanCount: Int) {
         viewModelScope.launch {
             val chatId = params.groupParticipantsParams.chatId ?: return@launch
 
@@ -149,7 +147,7 @@ class ProfileGuestViewModel(
 
             updateState { state ->
                 state.copy(
-                    recentImages = ProfileGuestMapper.mapPreviewFilesToRecentImages(imageFiles),
+                    recentImages = ProfileGuestMapper.mapPreviewFilesToRecentImages(spanCount, imageFiles),
                     recentImagesCount = PrintableText.PluralResource(
                         R.plurals.image_quantity,
                         images.size,

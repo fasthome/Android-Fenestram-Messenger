@@ -85,10 +85,12 @@ class ProfileGuestFragment :
         recentImagesList.adapter = recentImagesAdapter
         recentImagesList.itemAnimator = null
 
+        val spanCount = resources.getSpanCount(resources.getDimension(R.dimen.min_image_height).toInt() + 20.dp)
         val gridLayoutManager = GridLayoutManager(
             requireContext(),
-            resources.getSpanCount(resources.getDimension(R.dimen.min_image_height).toInt())
+            spanCount
         )
+        vm.fetchFilesAndPhotos(spanCount)
 
         recentImagesList.layoutManager = gridLayoutManager
         recentImagesList.supportBottomSheetScroll()
