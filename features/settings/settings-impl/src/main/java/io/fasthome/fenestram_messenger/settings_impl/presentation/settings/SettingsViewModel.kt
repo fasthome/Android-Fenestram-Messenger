@@ -14,6 +14,7 @@ import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.domain.repo.SettingsRepo
 import io.fasthome.fenestram_messenger.settings_impl.presentation.infoapp.InfoappNavigationContact
 import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.model.SettingsViewItem
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.coroutines.launch
 
@@ -32,16 +33,22 @@ class SettingsViewModel(
     private val infoappLauncher = registerScreen(InfoappNavigationContact)
 
     override fun createInitialState(): SettingsState {
-        return SettingsState(items = createSettingsList())
+        return SettingsState(items = createSettingsList(null))
     }
 
-    private fun createSettingsList(): List<SettingsViewItem> = listOf(
+    private fun createSettingsList(theme: Theme?): List<SettingsViewItem> = listOf(
         SettingsViewItem(
             icon = R.drawable.ic_info,
             title = PrintableText.StringResource(R.string.settings_about_app),
             onItemClicked = {
                 infoappLauncher.launch()
             },
+            colors = theme?.let {
+                SettingsViewItem.Colors(
+                    textColor = theme.text0Color(),
+                    cardColor = theme.shapeBg2_20dp()
+                )
+            }
         ),
         SettingsViewItem(
             icon = R.drawable.ic_delete_account,
@@ -49,6 +56,12 @@ class SettingsViewModel(
             onItemClicked = {
                 onDeleteAccountClicked()
             },
+            colors = theme?.let {
+                SettingsViewItem.Colors(
+                    textColor = theme.text0Color(),
+                    cardColor = theme.shapeBg2_20dp()
+                )
+            }
         ),
         SettingsViewItem(
             icon = R.drawable.ic_info,
@@ -56,6 +69,12 @@ class SettingsViewModel(
             onItemClicked = {
                 Instabug.show()
             },
+            colors = theme?.let {
+                SettingsViewItem.Colors(
+                    textColor = theme.text0Color(),
+                    cardColor = theme.shapeBg2_20dp()
+                )
+            }
         ),
         SettingsViewItem(
             icon = R.drawable.ic_exit,
@@ -63,8 +82,15 @@ class SettingsViewModel(
             onItemClicked = {
                 onLogoutClicked()
             },
+            colors = theme?.let {
+                SettingsViewItem.Colors(
+                    textColor = theme.text0Color(),
+                    cardColor = theme.shapeBg2_20dp()
+                )
+            }
         ),
     )
+
     fun onLogoutClicked() {
         sendEvent(SettingsEvent.Logout)
     }
@@ -88,11 +114,19 @@ class SettingsViewModel(
         sendEvent(SettingsEvent.DeleteAccount)
     }
 
-    fun deleteAccount(){
+    fun deleteAccount() {
         viewModelScope.launch {
             settingsRepo.deleteAccount().withErrorHandled(ShowErrorType.Dialog) {
                 logout(false)
             }
+        }
+    }
+
+    fun themeSynced(theme: Theme) {
+        updateState { state ->
+            state.copy(
+                items = createSettingsList(theme)
+            )
         }
     }
 }

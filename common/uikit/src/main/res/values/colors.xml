@@ -3,6 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="black_50">#80000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="bg_0">#EFF2F7</color>
+    <color name="bg_1">#FAFAFC</color>
+    <color name="bg_2">#FFFFFF</color>
     <color name="bg_3">#FFFFFFFF</color>
     <color name="background_main">#222121</color>
     <color name="button_standart">#888686</color>
@@ -32,8 +35,8 @@
 
     <color name="BG_0">#EFF2F7</color>
     <color name="text_1">#717394</color>
-    <color name="stroke_2">#717394</color>
-    <color name="main_active">#7B57C8</color>
+    <color name="text_0">#2A313C</color>
+    <color name="stroke_2">#D6E1F2</color>
 
 
 </resources>

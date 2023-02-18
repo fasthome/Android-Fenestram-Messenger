@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.settings_impl.presentation.DeleteAccountD
 import io.fasthome.fenestram_messenger.settings_impl.presentation.LogoutDialog
 import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.adapter.SettingsAdapter
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.dp
 
@@ -28,27 +29,25 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
 
     private val adapter = SettingsAdapter()
 
+    private val decoration = SpacingItemDecoration { index, itemCount ->
+        Rect(
+            20.dp,
+            16.dp,
+            20.dp,
+            0,
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
         list.adapter = adapter
+        list.itemAnimator = null
+        list.removeItemDecoration(decoration)
+        list.addItemDecoration(decoration)
     }
 
     override fun renderState(state: SettingsState) = with(binding) {
         adapter.items = state.items
-        list.addItemDecoration(SpacingItemDecoration { index, itemCount ->
-            val verticalMargin = if (index == 0) {
-                32.dp
-            } else {
-                16.dp
-            }
-
-            Rect(
-                20.dp,
-                verticalMargin,
-                20.dp,
-                0,
-            )
-        })
     }
 
     override fun handleEvent(event: SettingsEvent) {
@@ -72,4 +71,9 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
     }
 
     override fun getInterface(): SettingsInterface = vm
+
+    override fun syncTheme(appTheme: Theme) = with(binding){
+        appTheme.setContext(requireActivity().applicationContext)
+        vm.themeSynced(appTheme)
+    }
 }

@@ -19,6 +19,8 @@ private fun createSettingsDelegate() = adapterDelegateViewBinding<SettingsViewIt
     bindWithBinding {
         icon.setImageResource(item.icon)
         title.setPrintableText(item.title)
+        item.colors?.textColor?.let { it1 -> title.setTextColor(it1) }
+        item.colors?.cardColor?.let { it1 -> root.background = it1 }
         root.onClick {
             item.onItemClicked()
         }

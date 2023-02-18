@@ -130,4 +130,6 @@ object Deps {
 
     const val instaBug = "com.instabug.library:instabug:${Versions.instaBug}"
 
+    const val themeManager = "com.dolatkia:animated-theme-manager:1.1.4"
+
 }
