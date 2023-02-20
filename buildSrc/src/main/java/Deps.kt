@@ -62,6 +62,7 @@ object Deps {
         const val core = "io.ktor:ktor-client-core:${Versions.ktor}"
         const val serialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
         const val client = "io.ktor:ktor-client-okhttp:${Versions.ktor}"
+        const val socket = "io.ktor:ktor-client-websockets:${Versions.ktor}"
         const val logging = "io.ktor:ktor-client-logging:${Versions.ktor}"
         const val mock = "io.ktor:ktor-client-mock:${Versions.ktor}"
     }
