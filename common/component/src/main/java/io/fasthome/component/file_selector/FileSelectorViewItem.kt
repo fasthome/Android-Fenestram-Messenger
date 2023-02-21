@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
+package io.fasthome.component.file_selector
 
 import android.view.animation.Animation
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent

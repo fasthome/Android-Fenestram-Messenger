@@ -2,6 +2,7 @@
 <resources>
     <string name="messageHint">Ваше сообщение</string>
     <string name="common_selected">Выбрано </string>
+    <string name="common_select_image_selector">Выбрать изображение</string>
     <string name="images">Изображения</string>
     <string name="common_skip_button">Пропустить</string>
     <string name="common_done_b">Готово</string>

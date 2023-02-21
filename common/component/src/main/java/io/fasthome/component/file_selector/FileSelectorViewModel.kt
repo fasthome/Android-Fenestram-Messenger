@@ -1,7 +1,7 @@
 /**
  * Created by Dmitry Popov on 02.02.2023.
  */
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
+package io.fasthome.component.file_selector
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -10,11 +10,11 @@ import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl
 import io.fasthome.component.image_viewer.ImageViewerContract
 import io.fasthome.component.image_viewer.ImageViewerModel
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toListUri
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toContents
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toFileSelectorViewItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toGalleryImage
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorMapper.toViewItem
+import io.fasthome.component.file_selector.FileSelectorMapper.toContents
+import io.fasthome.component.file_selector.FileSelectorMapper.toFileSelectorViewItem
+import io.fasthome.component.file_selector.FileSelectorMapper.toGalleryImage
+import io.fasthome.component.file_selector.FileSelectorMapper.toListUri
+import io.fasthome.component.file_selector.FileSelectorMapper.toViewItem
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.CreateResultInterface
@@ -69,8 +69,8 @@ class FileSelectorViewModel(
                     return@totalPagingSource ListWithTotal(emptyList(), pageSize)
                 }
             },
-            mapDataItem = {
-                it.toViewItem(params.selectedImages.toListUri())
+            mapDataItem = { galleryImage ->
+                galleryImage.toViewItem(params.selectedImages.toListUri())
             },
             getItemId = { it.cursorPosition.toLong() },
         ).cachedIn(viewModelScope)
@@ -78,18 +78,37 @@ class FileSelectorViewModel(
     }
 
     fun onAttachFiles(attachedModel: FileSelectorViewItem) {
-        if (attachedModel.isChecked)
-            attachedImages.add(attachedModel)
-        else
+        if (attachedModel.isChecked) {
+            when (params.maxImagesCount) {
+                FileSelectorNavigationContract.Params.IMAGES_COUNT_INFINITY -> {
+                    attachedImages.add(attachedModel)
+                    sendImagesCount(attachedImages.isNotEmpty())
+                }
+                FileSelectorNavigationContract.Params.IMAGES_COUNT_ONE -> {
+                    sendEvent(FileSelectorEvent.ClearAdapterSelect(attachedModel.cursorPosition))
+                    attachedImages.clear()
+                    attachedImages.add(attachedModel)
+                    sendImagesCount(attachedImages.isNotEmpty(), true)
+                }
+                else -> {
+                    if (attachedImages.size >= params.maxImagesCount) {
+                        sendEvent(FileSelectorEvent.MaxImagesReached)
+                    } else {
+                        attachedImages.add(attachedModel)
+                        sendImagesCount(attachedImages.isNotEmpty())
+                    }
+                }
+            }
+        } else {
             attachedImages.removeIf { it.content.uri == attachedModel.content.uri }
-
-        sendImagesCount(attachedImages.isNotEmpty())
+            sendImagesCount(attachedImages.isNotEmpty())
+        }
     }
 
-    private fun sendImagesCount(haveChanges: Boolean = false) {
+    private fun sendImagesCount(haveChanges: Boolean = false, oneSelect: Boolean = false) {
         bottomViewAction.sendActionToBottomView(
             FileSelectorButtonEvent.AttachCountEvent(
-                attachedImages.size, haveChanges
+                attachedImages.size, haveChanges, oneSelect
             )
         )
     }
@@ -103,7 +122,9 @@ class FileSelectorViewModel(
         imageViewerLauncher.launch(params)
     }
 
-    override fun createInitialState(): FileSelectorState = FileSelectorState()
+    override fun createInitialState(): FileSelectorState = FileSelectorState(
+        canSelectFiles = params.canSelectFiles
+    )
 
     fun fromGalleryClicked() {
         exitWithResultFromFileSelector(
