@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="messageHint">Ваше сообщение</string>
+    <string name="common_selected">Выбрано </string>
+    <string name="images">Изображения</string>
+    <string name="common_skip_button">Пропустить</string>
+    <string name="common_done_b">Готово</string>
+    <string name="common_cancel_b">Отмена</string>
+    <string name="common_email_label">Email</string>
+    <string name="common_birthday_label">Дата рождения</string>
+    <string name="common_user_name_label">Никнейм</string>
+    <string name="common_name_label">Имя</string>
+    <string name="common_welcome_message_label">Добро пожаловать\nв Hoolichat!</string>
+    <string name="common_hoolichat_label">hoolichat</string>
+    <string name="common_phone_number_label">Номер телефона</string>
+    <string name="common_phone_number_error">Неверный формат ввода номера</string>
+    <string name="common_phone_number_country_error">Некорректный код страны</string>
+    <string name="common_country_code_text">+7</string>
+    <string name="common_send_code_button">Отправить код</string>
+    <string name="common_input_code_label">Введите код из СМС</string>
+    <string name="common_incorrect_code_label">Неверный код</string>
+    <string name="common_resend_code_button">Отправить заново?</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_dialog_retry">Попробовать еще раз</string>
+    <string name="common_notification_channel_title_push">PUSH-уведомления</string>
+    <string name="common_notification_channel_description_push">Получение PUSH-уведомлений</string>
+    <string name="common_more_button">Далее</string>
+    <string name="common_delete_chat_dialog">Вы уверены, что хотите удалить чат?</string>
+    <string name="common_retry">Повторить</string>
+    <string name="common_unable_to_download">Невозможно загрузить данный файл</string>
+    <string name="common_accept">Подтвердить</string>
+    <string name="common_select_image">Выберите изображение</string>
+    <string name="common_attach">Прикрепить</string>
+    <string name="common_save">Сохранить</string>
+    <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
+    <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
+    <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
+    <string name="empty_gallery">У Вас нет изображений доступных для отправки. Проверьте разрешения для доступа к хранилищу устройства.</string>
+    <string name="common_allow_permission">Разрешить</string>
+    <string name="common_edit">Редактирование</string>
+    <string name="common_name_copied">Имя пользователя скопировано</string>
+    <string name="common_chat_name_copied">Имя чата скопировано</string>
+    <string name="common_nickname_copied">Никнейм пользователя скопирован</string>
+    <string name="common_phone_copied">Телефон пользователя скопирован</string>
+    <string name="common_empty_chat_name">Название чата не может быть пустым</string>
+
+</resources>

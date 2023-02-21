@@ -12,8 +12,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ProgressListener
 import io.fasthome.fenestram_messenger.util.onSuccess
-import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.tokens.TokensRepo
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -56,6 +56,9 @@ class MessengerInteractor(
     suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
 
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String) =
+        messageRepo.postReaction(chatId, messageId, reaction)
+
     suspend fun patchChatAvatar(id: Long, avatar: String) =
         messageRepo.patchChatAvatar(id, avatar)
 
@@ -79,7 +82,8 @@ class MessengerInteractor(
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
         onMessageDeletedCallback: (List<Long>) -> Unit,
         onNewChatChangesCallback: (ChatChanges) -> Unit,
-        onChatDeletedCallback: (Long) -> Unit
+        onChatDeletedCallback: (Long) -> Unit,
+        onNewReactionCallback: (MessageReactions) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -114,6 +118,10 @@ class MessengerInteractor(
 
                 override fun onUnreadMessage(badgeResponse: BadgeResponse) {
                     badgeCounter.sendCount(Badge(count = badgeResponse.totalPending))
+                }
+
+                override fun onNewReactionCallback(reactionsResponse: ReactionsResponse) {
+                    onNewReactionCallback(chatsMapper.toMessageReactions(reactionsResponse))
                 }
 
             })
@@ -178,6 +186,10 @@ class MessengerInteractor(
 
                 override fun onUnreadMessage(badgeResponse: BadgeResponse) {
                     badgeCounter.sendCount(Badge(count = badgeResponse.totalPending))
+                }
+
+                override fun onNewReactionCallback(reactionsResponse: ReactionsResponse) {
+
                 }
             },
             selfUserId = null

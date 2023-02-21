@@ -50,6 +50,7 @@ class MessengerViewModel(
                 }
                 loadDataHelper.invalidateSource()
             }
+            ConversationNavigationContract.Result.Canceled -> {}
         }
     }
 

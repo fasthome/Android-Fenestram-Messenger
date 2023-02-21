@@ -4,11 +4,15 @@
 package io.fasthome.fenestram_messenger.messenger_api
 
 import android.os.Parcelable
+import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.messenger_api.entity.*
+import io.fasthome.fenestram_messenger.mvi.ScreenLauncher
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.presentation.base.navigation.OpenFileNavigationContract
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.parcelize.Parcelize
 
@@ -35,9 +39,17 @@ interface MessengerFeature {
 
     suspend fun clearChats()
 
-    suspend fun fetchUnreadCount() : CallResult<Badge>
+    suspend fun fetchUnreadCount(): CallResult<Badge>
 
-    fun subscribeUnreadCount() : Flow<Badge>
+    fun subscribeUnreadCount(): Flow<Badge>
+
+    suspend fun downloadDocumentUseCase(
+        documentLink: String,
+        progressListener: suspend (progress: Int, loadedBytesSize: Long, fullBytesSize: Long, isReady: Boolean) -> Unit,
+        metaInfo: MetaInfo,
+        permissionInterface: PermissionInterface,
+        openFileLauncher: ScreenLauncher<OpenFileNavigationContract.Params>
+    )
 
     /**
      * @param chatSelectionMode если true, то экран мессенджера используется для выбора куда переслать сообщение
@@ -47,12 +59,12 @@ interface MessengerFeature {
     data class MessengerParams(
         val chatSelectionMode: Boolean = false,
         val forwardMessage: ForwardMessage? = null,
-        val newMessage : ActionMessageBlank? = null
+        val newMessage: ActionMessageBlank? = null
     ) : Parcelable
 
     @Parcelize
     data class ForwardMessage(
-        val message : MessageInfo,
+        val message: MessageInfo,
         val username: PrintableText
     ) : Parcelable
 

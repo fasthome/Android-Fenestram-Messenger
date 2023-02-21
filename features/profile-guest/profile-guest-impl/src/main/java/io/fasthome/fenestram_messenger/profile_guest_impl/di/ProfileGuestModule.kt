@@ -10,6 +10,7 @@ import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.profile_guest_impl.ProfileGuestFeatureImpl
 import io.fasthome.fenestram_messenger.profile_guest_impl.data.repo_impl.ProfileGuestRepoImpl
+import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.FilesMapper
 import io.fasthome.fenestram_messenger.profile_guest_impl.data.service.ProfileGuestService
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.logic.ProfileGuestInteractor
 import io.fasthome.fenestram_messenger.profile_guest_impl.domain.repo.ProfileGuestRepo
@@ -35,6 +36,8 @@ object ProfileGuestModule {
         single(::ProfileGuestRepoImpl) bindSafe ProfileGuestRepo::class
 
         singleAuthorizedService(::ProfileGuestService)
+
+        factory(::FilesMapper)
     }
 
     private fun createDomainModule() = module {

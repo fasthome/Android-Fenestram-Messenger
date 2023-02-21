@@ -106,16 +106,28 @@ class FileSelectorViewModel(
     override fun createInitialState(): FileSelectorState = FileSelectorState()
 
     fun fromGalleryClicked() {
-        exitWithResultFromFileSelector(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenGallery))
+        exitWithResultFromFileSelector(
+            FileSelectorNavigationContract.createResult(
+                FileSelectorNavigationContract.Result.OpenGallery
+            )
+        )
     }
 
     fun fromCameraClicked() {
-        exitWithResultFromFileSelector(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenCamera))
+        exitWithResultFromFileSelector(
+            FileSelectorNavigationContract.createResult(
+                FileSelectorNavigationContract.Result.OpenCamera
+            )
+        )
     }
 
     fun exitNoResult() = exitWithoutResult()
     fun attachFileClicked() {
-        exitWithResultFromFileSelector(FileSelectorNavigationContract.createResult(FileSelectorNavigationContract.Result.OpenFiles))
+        exitWithResultFromFileSelector(
+            FileSelectorNavigationContract.createResult(
+                FileSelectorNavigationContract.Result.OpenFiles
+            )
+        )
     }
 
     private fun exitWithResultFromFileSelector(createResultInterface: CreateResultInterface) {

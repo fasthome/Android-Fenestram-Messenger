@@ -1,13 +1,13 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.storage.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.model.ChatTable
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.model.ContentDb
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.model.MessageDb
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.model.UserDb
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Message
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 
 object ChatDbMapper {
 
@@ -89,13 +89,14 @@ object ChatDbMapper {
         },
         content = message.content?.mapNotNull { content ->
             val contentDb = ObjectMapper.fromString<ContentDb>(content) ?: return@mapNotNull null
-            ContentResponse(
+            MetaInfo(
                 name = contentDb.name,
                 extension = contentDb.extension,
                 size = contentDb.size,
                 url = contentDb.url
             )
-        } ?: emptyList()
+        } ?: emptyList(),
+        reactions = emptyMap()
     )
 
     fun mapUserToTable(user: User?) = if (user == null) null else UserDb(

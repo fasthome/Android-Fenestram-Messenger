@@ -81,8 +81,8 @@
                 style="@style/Text.Red.14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:text="@string/common_empty_chat_name"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@id/profile_guest_name"
                 app:layout_constraintTop_toBottomOf="@id/profile_guest_name" />
 
@@ -172,7 +172,6 @@
                 layout="@layout/recent_files_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/participants_container" />
@@ -181,10 +180,11 @@
                 android:id="@+id/recent_files_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipToPadding="false"
                 android:maxHeight="120dp"
                 android:nestedScrollingEnabled="false"
-                android:paddingTop="10dp"
-                android:visibility="gone"
+                android:paddingHorizontal="25dp"
+                android:paddingVertical="10dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -193,10 +193,9 @@
 
             <include
                 android:id="@+id/recent_images_header"
-                layout="@layout/recent_images_header"
+                layout="@layout/recent_files_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recent_files_list" />
@@ -208,8 +207,6 @@
                 android:maxHeight="120dp"
                 android:paddingStart="25dp"
                 android:paddingEnd="25dp"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recent_images_header"

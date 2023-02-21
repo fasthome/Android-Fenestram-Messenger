@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.PermittedReactionViewItem
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
 
@@ -24,13 +25,22 @@ sealed interface ConversationEvent {
     class ShowErrorSentDialog(val conversationViewItem: ConversationViewItem.Self) :
         ConversationEvent
 
-    class ShowSelfMessageActionDialog(val conversationViewItem: ConversationViewItem.Self) :
+    class ShowSelfMessageActionDialog(
+        val conversationViewItem: ConversationViewItem.Self,
+        val permittedReactions: List<PermittedReactionViewItem>
+    ) :
         ConversationEvent
 
-    class ShowReceiveMessageActionDialog(val conversationViewItem: ConversationViewItem.Receive) :
+    class ShowReceiveMessageActionDialog(
+        val conversationViewItem: ConversationViewItem.Receive,
+        val permittedReactions: List<PermittedReactionViewItem>
+    ) :
         ConversationEvent
 
-    class ShowGroupMessageActionDialog(val conversationViewItem: ConversationViewItem.Group) :
+    class ShowGroupMessageActionDialog(
+        val conversationViewItem: ConversationViewItem.Group,
+        val permittedReactions: List<PermittedReactionViewItem>
+    ) :
         ConversationEvent
 
     class DotsEvent(val userStatus: PrintableText, val userStatusDots: PrintableText) :
@@ -38,5 +48,5 @@ sealed interface ConversationEvent {
 
     class ToggleToolbarClickable(val clickable: Boolean) : ConversationEvent
 
-    class ExtraText(val text : String) : ConversationEvent
+    class ExtraText(val text: String) : ConversationEvent
 }

@@ -6,7 +6,8 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.network.tokens.AccessToken
 
 interface MessengerRepo {
@@ -37,6 +38,8 @@ interface MessengerRepo {
         users: List<Long>,
         isGroup: Boolean
     ): CallResult<PostChatsResult>
+
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String): CallResult<Unit>
 
     suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
@@ -74,7 +77,7 @@ interface MessengerRepo {
         chatId: Long,
         documentBytes: List<ByteArray>,
         guid: List<String>
-    ): CallResult<SendMessageResponse>
+    ): CallResult<List<MetaInfo>>
 
     suspend fun uploadImages(
         chatId: Long,
@@ -94,5 +97,6 @@ interface MessengerRepo {
         fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse)
         fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse)
         fun onUnreadMessage(badgeResponse: BadgeResponse)
+        fun onNewReactionCallback(reactionsResponse: ReactionsResponse)
     }
 }

@@ -1,42 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll">
+            app:contentScrim="@color/background"
+            app:layout_scrollFlags="scroll|enterAlways|exitUntilCollapsed">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_collapseMode="parallax">
+                android:layout_height="wrap_content">
+
+                <View
+                    android:id="@+id/gradient"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    android:background="@drawable/bg_profile_gradient"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="0dp"
+                    android:layout_height="210dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="47dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/shape_bg_2_20dp"
+                    android:elevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/iv_avatar" />
 
                 <ImageView
                     android:id="@+id/iv_avatar"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="94dp"
+                    android:layout_height="94dp"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="70dp"
                     android:layout_marginEnd="32dp"
+
                     android:background="@drawable/ic_avatar_placeholder"
+                    android:elevation="2dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
-                    android:alpha="0"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:alpha="0"
+
+                    android:elevation="2dp"
                     app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
                     app:layout_constraintEnd_toEndOf="@id/iv_avatar"
                     app:layout_constraintStart_toStartOf="@id/iv_avatar"
@@ -44,84 +75,97 @@
 
                 <TextView
                     android:id="@+id/username"
+                    style="@style/Text.White"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="24dp"
                     android:layout_marginEnd="32dp"
-                    android:textColor="#FFFFFF"
+
+                    android:elevation="2dp"
                     android:textSize="22sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/iv_avatar" />
+                    app:layout_constraintTop_toBottomOf="@+id/iv_avatar"
+                    tools:text="Мария Иванова" />
 
-                <EditText
-                    android:id="@+id/nickname"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="24dp"
-                    android:layout_marginTop="32dp"
-                    android:backgroundTint="@color/gray1"
-                    android:enabled="false"
-                    android:gravity="center"
-                    android:hint="@string/common_user_name_label"
-                    android:textColor="@color/gray1"
-                    android:textColorHint="@color/gray1_50"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/username" />
-
-                <EditText
-                    android:id="@+id/birth"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="24dp"
-                    android:layout_marginTop="12dp"
-                    android:backgroundTint="@color/gray1"
-                    android:enabled="false"
-                    android:gravity="center"
-                    android:hint="@string/common_birthday_label"
-                    android:textColor="@color/gray1"
-                    android:textColorHint="@color/gray1_50"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/nickname" />
-
-                <EditText
+                <TextView
                     android:id="@+id/email"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="24dp"
                     android:layout_marginTop="12dp"
-                    android:layout_marginBottom="32dp"
-                    android:backgroundTint="@color/gray1"
-                    android:enabled="false"
+                    android:elevation="2dp"
                     android:gravity="center"
-                    android:hint="@string/common_email_label"
-                    android:textColor="@color/gray1"
-                    android:textColorHint="@color/gray1_50"
-                    app:layout_constraintBottom_toBottomOf="parent"
+
+                    android:textColor="@color/text1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/birth" />
+                    app:layout_constraintTop_toBottomOf="@+id/username"
+                    tools:text="irinaivanova@smartlifesystem.ru" />
 
-                <ImageButton
-                    android:id="@+id/ib_edit_data"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintBottom_toTopOf="@+id/iv_avatar"
+                <Button
+                    android:id="@+id/status"
+                    style="@style/Button.Blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:padding="0dp"
+                    android:text="@string/status_in_office"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/view"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_edit" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/email" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="32dp"
+                app:layout_collapseMode="pin">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/night_theme"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:padding="10dp"
+                        android:thumb="@drawable/thumb_switch"
+                        app:layout_constraintEnd_toStartOf="@+id/ib_edit_data"
+                        app:switchMinWidth="40dp"
+                        app:track="@drawable/bg_switch_track" />
+
+                    <ImageButton
+                        android:id="@+id/ib_edit_data"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_edit" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <View
+        android:id="@+id/bg_geometry"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/layout_bg1"
+        android:fitsSystemWindows="false" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

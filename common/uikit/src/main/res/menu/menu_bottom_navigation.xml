@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/contacts"
+        android:icon="@drawable/ic_users"
+        android:title="contacts"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/chats"
+        android:icon="@drawable/ic_chat"
+        android:title="chats"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/tasks"
+        android:icon="@drawable/ic_task"
+        android:title="tasks"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/ic_prof"
+        android:title="profile"
+        tools:ignore="HardcodedText" />
+</menu>

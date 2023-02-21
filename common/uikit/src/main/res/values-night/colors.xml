@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="black_50">#80000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background_main">#222121</color>
+    <color name="button_standart">#888686</color>
+    <color name="button_standart_stroke">#C5C4C4</color>
+    <color name="button_standart_text">#1B1A1A</color>
+
+    <color name="background_0">#1A202C</color>
+    <color name="background">#EFF2F7</color>
+    <color name="dark1">#232b38</color>
+    <color name="dark2">#2a313c</color>
+    <color name="dark2_50">#802A313C</color>
+    <color name="text1">#718096</color>
+    <color name="gray1_50">#80718096</color>
+    <color name="gray2">#A0AEC0</color>
+    <color name="gray4">#C9C9C9</color>
+    <color name="gray5">#2A313C</color>
+    <color name="main_active">#076ed1</color>
+    <color name="blue2">#053868</color>
+    <color name="blue3">#5EA4FF</color>
+    <color name="blue4">#054077</color>
+    <color name="red">#FF4B4B</color>
+
+    <!-- TODO: Заменить new_light_gray и new_purple на название цвета из новой цветовой палитры (В Figma) Сейчас названий нет! -->
+    <color name="new_light_gray">#A5ABD7</color>
+    <color name="new_purple">#7847E2</color>
+
+</resources>

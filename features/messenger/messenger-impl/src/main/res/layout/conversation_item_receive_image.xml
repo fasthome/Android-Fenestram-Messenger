@@ -26,12 +26,13 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/message_content"
+        <RelativeLayout
+            android:id="@+id/cl_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginHorizontal="10dp"
             android:background="@drawable/message_rectangle_receive"
+            android:orientation="vertical"
             android:padding="3dp"
             app:barrierMargin="5dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,10 +41,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
-            app:layout_constraintWidth_min="@dimen/image_min_size"
-            tools:ignore="TouchTargetSizeCheck"
-            tools:itemCount="1"
-            tools:listitem="@layout/holder_image" />
+            app:layout_constraintWidth_min="@dimen/image_min_size">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:itemCount="1"
+                tools:listitem="@layout/holder_image"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/message_content"
+                android:layout_alignEnd="@id/message_content"
+                tools:listitem="@layout/holder_reactions"
+                android:paddingStart="9dp"
+                android:paddingBottom="2dp" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"
@@ -53,10 +73,10 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/timeviewcheck"
-            android:textColor="@color/gray1"
+            android:textColor="@color/text1"
             android:textSize="11sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/message_content" />
+            app:layout_constraintTop_toBottomOf="@+id/cl_message" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

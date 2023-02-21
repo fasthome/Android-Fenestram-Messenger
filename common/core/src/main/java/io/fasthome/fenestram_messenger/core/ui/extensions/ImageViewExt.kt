@@ -29,6 +29,7 @@ import com.bumptech.glide.request.target.Target
 import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.ContentLoaderFactory
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UrlLoadableContent
 import io.fasthome.fenestram_messenger.util.dp
 import org.koin.core.component.KoinComponent
 import java.nio.ByteBuffer
@@ -208,11 +209,20 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
         .load(
             when (content) {
                 is Content.FileContent -> content.file
-                is Content.LoadableContent -> content
+                is Content.LoadableContent -> {
+                    when(content){
+                        is UrlLoadableContent -> {
+                            content.url
+                        }
+                        else -> {
+                            content
+                        }
+                    }
+                }
             }
         )
         .transform(*transformations)
-        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
         .skipMemoryCache(true)
         .into(this)
 }

@@ -39,5 +39,6 @@ object Versions {
     const val glide = "4.13.2"
     const val processPhoenix = "2.1.2"
     const val instaBug = "11.5.4"
+    const val room = "2.5.0"
 
 }

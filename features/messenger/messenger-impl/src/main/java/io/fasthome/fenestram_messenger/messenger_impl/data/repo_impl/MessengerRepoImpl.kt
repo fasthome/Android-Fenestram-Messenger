@@ -17,8 +17,9 @@ import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalCachingPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ProgressListener
 import io.fasthome.fenestram_messenger.util.callForResult
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.network.tokens.AccessToken
 
 class MessengerRepoImpl(
@@ -81,7 +82,7 @@ class MessengerRepoImpl(
                     chatStorage.saveChats(it)
                 },
             )
-        }else{
+        } else {
             totalPagingSource(PAGE_SIZE) { _, _ -> currrentList }
         }
     }
@@ -100,6 +101,11 @@ class MessengerRepoImpl(
     ): CallResult<PostChatsResult> =
         callForResult {
             messengerService.postChats(name, users, isGroup)
+        }
+
+    override suspend fun postReaction(chatId: Long, messageId: Long, reaction: String): CallResult<Unit> =
+        callForResult {
+            messengerService.postReaction(chatId, messageId, reaction)
         }
 
     override suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit> =
@@ -144,7 +150,8 @@ class MessengerRepoImpl(
             messageDeletedCallback = { callback.onMessageDeleted(this) },
             chatChangesCallback = { callback.onNewChatChanges(this) },
             chatDeletedCallback = { callback.onDeletedChatCallback(this) },
-            unreadCountCallback = { callback.onUnreadMessage(this) }
+            unreadCountCallback = { callback.onUnreadMessage(this) },
+            reactionsCallback = { callback.onNewReactionCallback(this) }
         )
     }
 
@@ -188,7 +195,7 @@ class MessengerRepoImpl(
         chatId: Long,
         documentBytes: List<ByteArray>,
         guid: List<String>
-    ): CallResult<SendMessageResponse> = callForResult {
+    ): CallResult<List<MetaInfo>> = callForResult {
         messengerService.uploadDocuments(documentBytes, guid, chatId)
     }
 
@@ -196,8 +203,8 @@ class MessengerRepoImpl(
         chatId: Long,
         documentBytes: List<ByteArray>,
         filename: List<String>,
-    ): CallResult<SendMessageResponse>  = callForResult {
-        messengerService.uploadImages(documentBytes, chatId,filename)
+    ): CallResult<SendMessageResponse> = callForResult {
+        messengerService.uploadImages(documentBytes, chatId, filename)
     }
 
     override suspend fun clearChats() = chatStorage.deleteChats()

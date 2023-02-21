@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.mod
 import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
+import com.bumptech.glide.Glide
 import io.fasthome.fenestram_messenger.util.android.ByteArrayWrapper
 import io.fasthome.fenestram_messenger.util.android.wrap
 import io.fasthome.fenestram_messenger.util.callForResult
@@ -29,6 +30,19 @@ class UriLoadableContent(
 
     override suspend fun load(): ByteArrayWrapper? {
         val bytes = callForResult { readBytes(get<Context>().contentResolver, uri) }.getOrNull()
+        return bytes?.wrap()
+    }
+}
+
+@Parcelize
+class UrlLoadableContent(
+    val url: String
+) : Content.LoadableContent, KoinComponent {
+
+    override suspend fun load(): ByteArrayWrapper? {
+        val bytes = callForResult {
+            Glide.with(get<Context>()).`as`(ByteArray::class.java).load(url).submit().get()
+        }.getOrNull()
         return bytes?.wrap()
     }
 }

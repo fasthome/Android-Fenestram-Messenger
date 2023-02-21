@@ -124,7 +124,7 @@ fun createMessengerAdapter(
                         lastMessage.setTextColor(
                             ContextCompat.getColor(
                                 lastMessage.context,
-                                R.color.blue
+                                R.color.main_active
                             )
                         )
                         statusDots.setPrintableText(PrintableText.Raw("."))

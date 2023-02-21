@@ -3,6 +3,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.data
 import android.util.Log
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.MESSAGE_TYPE_SYSTEM
+import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -30,7 +31,8 @@ class MessengerSocket(private val baseUrl: String) {
         messageDeletedCallback: SocketDeleteMessage.() -> Unit,
         chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit,
         chatDeletedCallback: SocketDeletedChat.SocketDeletedResponse.() -> Unit,
-        unreadCountCallback: BadgeResponse.() -> Unit
+        unreadCountCallback: BadgeResponse.() -> Unit,
+        reactionsCallback: ReactionsResponse.() -> Unit
     ) {
         try {
             val opts = IO.Options()
@@ -99,6 +101,14 @@ class MessengerSocket(private val baseUrl: String) {
                 Log.d(this.javaClass.simpleName, "receiveTotalPendingMessages: " + it[0].toString())
                 val unreadCount = json.decodeFromString<BadgeResponse>(it[0].toString())
                 unreadCountCallback(unreadCount)
+            }
+
+            socket?.on("receiveReactions") {
+                Log.d(this.javaClass.simpleName, "receiveReactions: " + it[0].toString())
+                val reactions = json.decodeFromString<BaseResponse<ReactionsResponse>>(it[0].toString())
+                if (chatId != null && reactions.data != null && chatId.toLong() == reactions.data!!.chatId) {
+                    reactionsCallback(reactions.data!!)
+                }
             }
         } catch (e: Exception) {
         }

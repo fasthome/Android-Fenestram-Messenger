@@ -21,11 +21,8 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageInfo
 import io.fasthome.fenestram_messenger.messenger_api.entity.MessageType
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsMapper.Companion.TYPING_MESSAGE_STATUS
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessagesPage
-import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.UserStatus
-import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.CopyDocumentToDownloadsUseCase
+import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
+import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.DownloadDocumentUseCase
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
@@ -49,7 +46,7 @@ import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
 import io.fasthome.fenestram_messenger.util.links.getNicknameFromLink
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.model.Bytes.Companion.BYTES_PER_MB
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOn
@@ -68,7 +65,7 @@ class ConversationViewModel(
     private val messengerInteractor: MessengerInteractor,
     private val pickFileInterface: PickFileInterface,
     private val storageUrlConverter: StorageUrlConverter,
-    private val copyDocumentToDownloadsUseCase: CopyDocumentToDownloadsUseCase,
+    private val downloadDocumentUseCase: DownloadDocumentUseCase,
     private val permissionInterface: PermissionInterface,
 ) : BaseViewModel<ConversationState, ConversationEvent>(router, requestParams) {
 
@@ -92,6 +89,7 @@ class ConversationViewModel(
     private var lastPage: MessagesPage? = null
     var firstVisibleItemPosition: Int = -1
     private var userDeleteChat: Boolean = false
+    private var permittedReactions = listOf<PermittedReactionViewItem>()
     private var wasResumed: Boolean = false
 
     private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
@@ -164,6 +162,7 @@ class ConversationViewModel(
                 is ProfileGuestFeature.ProfileGuestResult.ChatNameChanged -> {
                     updateState { state -> state.copy(userName = result.newName) }
                 }
+                ProfileGuestFeature.ProfileGuestResult.Canceled -> {}
             }
         }
 
@@ -456,6 +455,7 @@ class ConversationViewModel(
                 is InputMessageMode.Reply -> {
                     replyMessage(mess)
                 }
+                is InputMessageMode.Forward -> {}
             }
         }
     }
@@ -539,7 +539,7 @@ class ConversationViewModel(
                     tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
                         metaInfo = result.data.message?.content?.map {
                             MetaInfo(
-                                name = PrintableText.Raw(it.name),
+                                name = it.name,
                                 extension = it.extension,
                                 size = it.size,
                                 url = storageUrlConverter.convert(it.url)
@@ -576,14 +576,13 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
-                        metaInfo = result.data.message?.content?.map { MetaInfo(it) }
-                            ?: return)
+                    tempMessage.copy(userName = conversationViewItem.userName,
+                        metaInfo = result.data)
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
-                    result.data.message?.content?.firstOrNull()?.url,
-                    result.data.message?.id
+                    result.data.firstOrNull()?.url,
+                    conversationViewItem.id
                 )
                 updateSendLoadingState(false)
             }
@@ -730,6 +729,8 @@ class ConversationViewModel(
                             tempMessage.copy(sentStatus = status, content = imageUrl ?: "")
                     }
                 }
+                is ConversationViewItem.Self.Forward -> {}
+                is ConversationViewItem.Self.TextReplyOnImage -> {}
             }
             state.copy(
                 messages = newMessages
@@ -762,22 +763,19 @@ class ConversationViewModel(
 
     fun fetchTags(text: String, selectionStart: Int) {
         var users = emptyList<User>()
-        if (text.isNotEmpty() && selectionStart != 0 && text.contains('@')) {
-            val prevTag = text.getOrNull(selectionStart - 2)
-            val canShowTagList = if (prevTag == null) text.startsWith('@') else prevTag == ' '
-            if (text.getOrNull(selectionStart - 1) == '@' && canShowTagList) {
+        val tagPos = text.lastIndexOf('@', startIndex = selectionStart)
+        val spacePos = text.lastIndexOf(' ', startIndex = selectionStart)
+        when {
+            spacePos >= tagPos || (tagPos != 0 && text[tagPos - 1] != ' ') -> users = emptyList()
+            spacePos < tagPos && tagPos == selectionStart -> {
                 users = chatUsers.filter { it.nickname.isNotEmpty() && it.id != selfUserId }
-            } else {
-                val tagPos = text.lastIndexOf('@')
-                val nickname = text.substring(tagPos, selectionStart)
-                if (USER_TAG_PATTERN.matcher(nickname).matches() && (text.getOrNull(tagPos - 1)
-                        ?: ' ') == ' '
-                ) {
+            }
+            tagPos in (spacePos + 1) until selectionStart -> {
+                val nickname = text.substring(tagPos, selectionStart + 1)
+                if (USER_TAG_PATTERN.matcher(nickname).matches()) {
                     users = chatUsers.filter {
-                        it.nickname.contains(
-                            nickname.getNicknameFromLink(),
-                            true
-                        ) && it.id != selfUserId
+                        it.nickname.contains(nickname.getNicknameFromLink(), true)
+                                && it.id != selfUserId
                     }
                 }
             }
@@ -791,6 +789,7 @@ class ConversationViewModel(
             if (chatId != null)
                 messengerInteractor.getChatById(chatId!!).onSuccess { chat ->
                     chatUsers = chat.chatUsers
+                    permittedReactions = chat.mapPermittedReactions()
                     val selfUserId = messengerInteractor.getUserId()
                     profileGuestLauncher.launch(
                         ProfileGuestFeature.ProfileGuestParams(
@@ -824,7 +823,8 @@ class ConversationViewModel(
             onNewMessageStatusCallback = { onNewMessageStatus(it) },
             onMessageDeletedCallback = { onMessagesDeletedCallback(it) },
             onNewChatChangesCallback = { onChatChangesCallback(it) },
-            onChatDeletedCallback = { onChatDeletedCallback(it) }
+            onChatDeletedCallback = { onChatDeletedCallback(it) },
+            onNewReactionCallback = { onNewReaction(it) }
         )
             .flowOn(Dispatchers.Main)
             .onEach { message ->
@@ -857,6 +857,7 @@ class ConversationViewModel(
                 if (message.messageType == MESSAGE_TYPE_SYSTEM) {
                     messengerInteractor.getChatById(chatId).onSuccess {
                         chatUsers = it.chatUsers
+                        permittedReactions = it.mapPermittedReactions()
                         updateState { state ->
                             state.copy(
                                 avatar = it.avatar,
@@ -889,6 +890,7 @@ class ConversationViewModel(
             .launchIn(viewModelScope)
         messengerInteractor.getChatById(chatId).onSuccess {
             chatUsers = it.chatUsers
+            permittedReactions = it.mapPermittedReactions()
             updateState { state ->
                 state.copy(
                     avatar = it.avatar,
@@ -986,6 +988,8 @@ class ConversationViewModel(
                         )
                     }
                 }
+                is InputMessageMode.Default -> {}
+                is InputMessageMode.Forward -> {}
             }
             state.copy(messages = messages)
         }
@@ -1045,13 +1049,22 @@ class ConversationViewModel(
         get() = CapturedItem(UUID.randomUUID().toString())
 
     fun onAttachClicked() {
-        val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return
-        val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
-        fileSelectorLauncher.launch(
-            FileSelectorNavigationContract.Params(
-                selectedImages = allImages.toContentUriList()
-            )
-        )
+        viewModelScope.launch {
+            val permissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionInterface.request(Manifest.permission.READ_MEDIA_IMAGES)
+            } else {
+                permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if(permissionGranted){
+                val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return@launch
+                val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
+                fileSelectorLauncher.launch(
+                    FileSelectorNavigationContract.Params(
+                        selectedImages = allImages.toContentUriList()
+                    )
+                )
+            }
+        }
     }
 
     private fun openCameraFragment() {
@@ -1149,6 +1162,8 @@ class ConversationViewModel(
                     selfViewItem.files?.map { AttachedFile.Document(it) } ?: return
                 )
             }
+            is ConversationViewItem.Self.Forward -> {}
+            is ConversationViewItem.Self.TextReplyOnImage -> {}
         }
     }
 
@@ -1213,7 +1228,7 @@ class ConversationViewModel(
             SentStatus.Sent,
             SentStatus.Received,
             SentStatus.Read,
-            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
             SentStatus.Loading -> Unit
             SentStatus.None -> Unit
         }
@@ -1252,6 +1267,8 @@ class ConversationViewModel(
                                 )
                             }
                         }
+                        is InputMessageMode.Default -> {}
+                        is InputMessageMode.Forward -> {}
                     }
                     return@updateState state.copy(messages = messages)
                 }
@@ -1260,39 +1277,39 @@ class ConversationViewModel(
     }
 
     fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveForwardLongClicked(conversationViewItem: ConversationViewItem.Receive.Forward) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupForwardLongClicked(conversationViewItem: ConversationViewItem.Group.Forward) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onGroupDocumentLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onSelfDocumentLongClicked(conversationViewItem: ConversationViewItem.Self) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onReceiveDocumentLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem))
+        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
     }
 
     fun onTypingMessage() {
@@ -1305,22 +1322,13 @@ class ConversationViewModel(
     ) {
         val documentLink = meta.url.toString()
         downloadFileJob = viewModelScope.launch {
-            messengerInteractor.getDocument(
-                storagePath = documentLink,
-                progressListener = progressListener
-            ).onSuccess { loadedDocument ->
-                val permissionGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                        || permissionInterface.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-                if (!permissionGranted) return@launch
-                copyDocumentToDownloadsUseCase.invoke(
-                    loadedDocument.byteArray,
-                    PrintableText.Raw(documentLink),
-                    extension = meta.extension
-                ).onSuccess { uri ->
-                    openFileLauncher.launch(OpenFileNavigationContract.Params(uri))
-                }
-            }
+            downloadDocumentUseCase.invoke(
+                documentLink = documentLink,
+                progressListener = progressListener,
+                metaInfo = meta,
+                permissionInterface = permissionInterface,
+                openFileLauncher = openFileLauncher
+            )
         }
     }
 
@@ -1376,4 +1384,23 @@ class ConversationViewModel(
     fun contentInserted(content: Content) {
         attachContentFile(content)
     }
+
+    fun postReaction(messageId: Long, reaction: String) {
+        viewModelScope.launch {
+            chatId?.let {
+                messengerInteractor.postReaction(it, messageId, reaction.dropLast(1))
+            }
+        }
+    }
+
+    fun onNewReaction(messageReactions: MessageReactions) {
+        val changedMessages = currentViewState.messages.mapValues {
+            if (it.value.id == messageReactions.messageId)
+                messageReactions.toConversationViewItem(selfUserId, it.value)
+            else it.value
+
+        }
+        updateState { state -> state.copy(messages = changedMessages) }
+    }
+
 }

@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.permission.PermissionComponentContract
@@ -38,10 +37,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.findForwardText
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.singleSameTime
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.toMessageInfo
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationDocumentItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationImageItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationTextItem
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ConversationViewItem
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.*
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -128,7 +124,10 @@ class ConversationFragment :
             vm.onSelfDocumentLongClicked(it)
         }, onGroupDocumentLongClicked = {
             vm.onGroupDocumentLongClicked(it)
-        })
+        }, onReactionClicked = { messageId, reactionViewItem ->
+            vm.postReaction(messageId, reactionViewItem.reaction)
+        }
+    )
 
     private val attachedAdapter = AttachedAdapter(
         onRemoveClicked = {
@@ -186,8 +185,8 @@ class ConversationFragment :
             )
         })
 
-        inputMessage.doAfterTextChanged { text ->
-            vm.fetchTags(text.toString(), inputMessage.selectionStart)
+        inputMessage.setSelectionChangedListener { selStart, _ ->
+            vm.fetchTags(inputMessage.text.toString(), selStart - 1)
         }
         inputMessage.setInputContentListener { content ->
             vm.contentInserted(content)
@@ -437,48 +436,90 @@ class ConversationFragment :
                     is InputMessageMode.Default -> {
                         binding.chatUserTagsContainer.setPadding(0, 0, 0, 0)
                     }
+                    is InputMessageMode.Forward -> {}
                 }
             }
 
             is ConversationEvent.UpdateInputUserTag -> {
                 var text = binding.inputMessage.text.toString()
                 if (text.isNotEmpty()) {
-                    var tagCharIndex = 0
-                    do {
-                        tagCharIndex = text.indexOf("@", tagCharIndex)
-                        tagCharIndex++
-                    } while (tagCharIndex < binding.inputMessage.selectionStart)
+                    val tagStartCharIndex = text.lastIndexOf('@', binding.inputMessage.selectionStart - 1) + 1
+                    var tagEndCharIndex = text.indexOfAny(listOf(" ", "@"), tagStartCharIndex)
+                    if (tagEndCharIndex == -1) tagEndCharIndex = text.length
 
-                    text = text.substring(0, tagCharIndex) + event.nickname + text.substring(
-                        tagCharIndex
-                    ) + " "
+                    val replacement = "${event.nickname} "
+                    text = text.replaceRange(tagStartCharIndex, tagEndCharIndex, replacement)
+                    binding.inputMessage.setText(text)
+                    binding.inputMessage.setSelection(tagStartCharIndex + replacement.length)
                 }
-                binding.inputMessage.setText(text)
-                binding.inputMessage.lastCharFocus()
-
             }
 
             is ConversationEvent.ShowSelfMessageActionDialog -> when (event.conversationViewItem) {
-                is ConversationViewItem.Self.Text -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Self.Image -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Self.Document -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Self.Forward -> replyImageDialog(event.conversationViewItem)
+                is ConversationViewItem.Self.Text -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Self.TextReplyOnImage -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Self.Image -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Self.Document -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Self.Forward -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
             }
 
             is ConversationEvent.ShowReceiveMessageActionDialog -> when (event.conversationViewItem) {
-                is ConversationViewItem.Receive.Text -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Receive.Image -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Receive.Document -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Receive.Forward -> replyImageDialog(event.conversationViewItem)
+                is ConversationViewItem.Receive.Text -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Receive.TextReplyOnImage -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Receive.Image -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Receive.Document -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Receive.Forward -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
             }
             is ConversationEvent.ShowGroupMessageActionDialog -> when (event.conversationViewItem) {
-                is ConversationViewItem.Group.Text -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(event.conversationViewItem)
-                is ConversationViewItem.Group.Image -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Group.Document -> replyImageDialog(event.conversationViewItem)
-                is ConversationViewItem.Group.Forward -> replyImageDialog(event.conversationViewItem)
+                is ConversationViewItem.Group.Text -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Group.TextReplyOnImage -> replyTextDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Group.Image -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Group.Document -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
+                is ConversationViewItem.Group.Forward -> replyImageDialog(
+                    event.conversationViewItem,
+                    event.permittedReactions
+                )
             }
             is ConversationEvent.DotsEvent -> {
                 binding.userStatusView.setPrintableText(event.userStatus)
@@ -493,9 +534,14 @@ class ConversationFragment :
         }
     }
 
-    private fun replyImageDialog(conversationViewItem: ConversationViewItem) =
+    private fun replyImageDialog(
+        conversationViewItem: ConversationViewItem,
+        permittedReactions: List<PermittedReactionViewItem>
+    ) =
         MessageActionDialog.create(
             fragment = this,
+            permittedReactions = permittedReactions,
+            onReactionClicked = { vm.postReaction(conversationViewItem.id, it) },
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
                 { vm.onDeleteMessageClicked(conversationViewItem) }
             } else null,
@@ -510,7 +556,10 @@ class ConversationFragment :
             }
         ).show()
 
-    private fun replyTextDialog(conversationViewItem: ConversationViewItem) {
+    private fun replyTextDialog(
+        conversationViewItem: ConversationViewItem,
+        permittedReactions: List<PermittedReactionViewItem>
+    ) {
 
         val canEdit =
             conversationViewItem.date?.plusDays(1)?.isAfter(ZonedDateTime.now())
@@ -518,6 +567,8 @@ class ConversationFragment :
 
         MessageActionDialog.create(
             fragment = this,
+            permittedReactions = permittedReactions,
+            onReactionClicked = { vm.postReaction(conversationViewItem.id, it) },
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
                 { vm.onDeleteMessageClicked(conversationViewItem) }
             } else null,
@@ -614,6 +665,7 @@ class ConversationFragment :
                                 getPrintableRawText(message.userName)
                             )
                     }
+                    else -> {}
                 }
             }
         }

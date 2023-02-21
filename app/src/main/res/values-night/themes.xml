@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.FenestramMessenger" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/gray1</item>
-        <item name="colorPrimaryVariant">@color/gray1</item>
+        <item name="colorPrimary">@color/text1</item>
+        <item name="colorPrimaryVariant">@color/text1</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

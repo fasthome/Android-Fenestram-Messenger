@@ -1,11 +1,10 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.ContentResponse
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.fenestram_messenger.util.fileSizeInMb
-import io.fasthome.fenestram_messenger.util.getPrettySize
 import java.io.File
 import java.time.ZonedDateTime
 
@@ -41,6 +40,7 @@ sealed interface ConversationViewItem {
     var userName: PrintableText
     val messageType: String?
     val replyMessage: ConversationViewItem?
+    val reactions: List<ReactionsViewItem>?
 
     val statusIcon: Int
         get() = getStatusIcon(sentStatus)
@@ -62,6 +62,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self(), ConversationTextItem
 
@@ -78,6 +79,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self(), ConversationTextItem
 
@@ -93,11 +95,12 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             val forwardMessage: ConversationViewItem,
             override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self()
 
-        data class  Image(
+        data class Image(
             override val id: Long,
             override val content: String,
             override val time: PrintableText,
@@ -110,6 +113,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList(),
         ) : Self(), ConversationImageItem
 
@@ -127,6 +131,7 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo>
         ) : Self(), ConversationDocumentItem
     }
@@ -144,6 +149,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
         ) : Receive(), ConversationTextItem
 
         data class Forward(
@@ -157,6 +163,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             val forwardMessage: ConversationViewItem
         ) : Receive()
 
@@ -172,6 +179,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
         ) : Receive(), ConversationTextItem
 
         data class Image(
@@ -185,6 +193,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo>,
         ) : Receive(), ConversationImageItem
 
@@ -200,6 +209,7 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo>
         ) : Receive(), ConversationDocumentItem
     }
@@ -224,6 +234,7 @@ sealed interface ConversationViewItem {
             override val timeVisible: Boolean,
             val isEdited: Boolean,
             override val messageType: String?,
+            override val reactions: List<ReactionsViewItem>,
             override val replyMessage: ConversationViewItem?,
         ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
@@ -241,6 +252,7 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
+            override val reactions: List<ReactionsViewItem>,
             val forwardMessage: ConversationViewItem
         ) : Group(userName, avatar, phone, userId)
 
@@ -258,6 +270,7 @@ sealed interface ConversationViewItem {
             override val timeVisible: Boolean,
             val isEdited: Boolean,
             override val messageType: String?,
+            override val reactions: List<ReactionsViewItem>,
             override val replyMessage: ConversationViewItem?,
         ) : Group(userName, avatar, phone, userId), ConversationTextItem
 
@@ -275,6 +288,7 @@ sealed interface ConversationViewItem {
             override val timeVisible: Boolean,
             override val messageType: String?,
             override val replyMessage: ConversationViewItem?,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo>,
         ) : Group(userName, avatar, phone, userId), ConversationImageItem
 
@@ -293,6 +307,7 @@ sealed interface ConversationViewItem {
             var path: String? = null,
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
+            override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList()
         ) : Group(userName, avatar, phone, userId), ConversationDocumentItem
     }
@@ -307,6 +322,7 @@ sealed interface ConversationViewItem {
         override val nickname: String? = null,
         override val messageType: String? = null,
         override val replyMessage: ConversationViewItem? = null,
+        override val reactions: List<ReactionsViewItem>? = null,
         override var userName: PrintableText = PrintableText.EMPTY,
     ) : ConversationViewItem
 
@@ -328,31 +344,4 @@ fun getStatusIcon(sentStatus: SentStatus) =
 
 enum class SentStatus {
     Sent, Error, Read, Loading, Received, None
-}
-
-data class MetaInfo(
-    var name: PrintableText,
-    /**
-     * Расширение файла, напр. ".txt"
-     */
-    var extension: String,
-    /**
-     * Размер файла указанный в мегабайтах
-     */
-    var size: Float,
-    var url: String?
-) {
-    constructor() : this(PrintableText.Raw("File"), "", 0f, "")
-    constructor(content: ContentResponse) : this(
-        PrintableText.Raw(content.name),
-        content.extension,
-        content.size,
-        content.url
-    )
-    constructor(file: File) : this(
-        PrintableText.Raw(file.name),
-        file.extension,
-        fileSizeInMb(file.length()),
-        null
-    )
 }

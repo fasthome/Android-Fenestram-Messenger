@@ -26,12 +26,13 @@
         android:layout_height="wrap_content"
         android:clickable="true">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/message_content"
+        <RelativeLayout
+            android:id="@+id/cl_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:background="@drawable/message_rectangle_self"
+            android:orientation="vertical"
             android:padding="3dp"
             app:barrierMargin="5dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,11 +40,29 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_min="@dimen/image_min_size"
             app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
-            tools:ignore="TouchTargetSizeCheck"
-            tools:itemCount="1"
-            tools:listitem="@layout/holder_image" />
+            app:layout_constraintWidth_min="@dimen/image_min_size">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:itemCount="1"
+                tools:listitem="@layout/holder_image" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="9dp"
+                android:paddingBottom="2dp"
+                tools:listitem="@layout/holder_reactions"
+                android:layout_below="@id/message_content"
+                android:layout_alignEnd="@id/message_content" />
+
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/send_time_view"
             android:layout_width="wrap_content"
@@ -52,10 +71,10 @@
             android:layout_marginEnd="30dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/timeviewcheck"
-            android:textColor="@color/gray1"
+            android:textColor="@color/text1"
             android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/message_content" />
+            app:layout_constraintTop_toBottomOf="@+id/cl_message" />
 
         <ImageView
             android:id="@+id/status"
@@ -64,7 +83,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/message_content"
+            app:layout_constraintTop_toBottomOf="@+id/cl_message"
             app:srcCompat="@drawable/ic_approve_send" />
 
 

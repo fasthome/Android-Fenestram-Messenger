@@ -12,6 +12,7 @@ dependencies {
     api(Deps.Ktor.core)
     api(Deps.Ktor.logging)
     implementation(Deps.Ktor.client)
+    implementation(Deps.Ktor.socket)
     implementation(Deps.Ktor.serialization)
 
     api(Deps.serializationJson)

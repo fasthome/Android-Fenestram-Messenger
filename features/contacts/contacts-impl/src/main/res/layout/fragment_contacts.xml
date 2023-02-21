@@ -96,7 +96,7 @@
             android:layout_height="@dimen/contacts_add_first_height"
             android:layout_marginBottom="@dimen/contacts_add_first_margin_bottom"
             android:text="@string/add_contact"
-            app:backgroundTint="@color/blue"
+            app:backgroundTint="@color/main_active"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -202,7 +202,7 @@
             android:layout_height="@dimen/contacts_add_first_height"
             android:layout_marginBottom="@dimen/contacts_add_first_margin_bottom"
             android:text="@string/common_allow_permission"
-            app:backgroundTint="@color/blue"
+            app:backgroundTint="@color/main_active"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

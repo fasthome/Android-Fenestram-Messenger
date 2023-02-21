@@ -14,5 +14,7 @@ import androidx.core.content.res.ResourcesCompat
 fun Resources.color(@ColorRes colorRes: Int): Int =
     ResourcesCompat.getColor(this, colorRes, null)
 
+fun Context.color(@ColorRes colorRes: Int): Int =
+    this.resources.color(colorRes)
 fun Context.drawable(@DrawableRes drawableRes: Int): Drawable =
     AppCompatResources.getDrawable(this, drawableRes)!!

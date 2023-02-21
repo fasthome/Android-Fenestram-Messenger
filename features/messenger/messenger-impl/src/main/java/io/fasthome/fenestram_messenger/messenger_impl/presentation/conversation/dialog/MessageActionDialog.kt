@@ -5,12 +5,16 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.DialogMessageActionMenuBinding
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.PermittedReactionsAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.PermittedReactionViewItem
 
 
 object MessageActionDialog {
 
     fun create(
         fragment: Fragment,
+        permittedReactions: List<PermittedReactionViewItem>,
+        onReactionClicked: ((String) -> Unit),
         onDelete: (() -> Unit)? = null,
         onEdit: (() -> Unit)? = null,
         onCopy: (() -> Unit)? = null,
@@ -50,6 +54,13 @@ object MessageActionDialog {
                 onForward?.invoke()
                 dialog.dismiss()
             }
+
+            val permittedReactionsAdapter = PermittedReactionsAdapter {
+                onReactionClicked(it.permittedReaction)
+                dialog.dismiss()
+            }
+            listPermittedReactions.adapter = permittedReactionsAdapter
+            permittedReactionsAdapter.items = permittedReactions
 
             return dialog.build()
         }
