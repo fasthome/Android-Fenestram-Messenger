@@ -1,17 +1,23 @@
 package io.fasthome.fenestram_messenger.uikit.theme
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
+import android.graphics.Shader.TileMode
 import android.graphics.drawable.Drawable
+import android.widget.TextView
 import com.dolatkia.animatedThemeManager.AppTheme
 import io.fasthome.fenestram_messenger.uikit.R
 import io.fasthome.fenestram_messenger.util.android.color
 import io.fasthome.fenestram_messenger.util.android.drawable
 
+
 interface Theme : AppTheme {
     fun setContext(context: Context)
 
     fun backgroundColor(): Int
-    fun backgroundGeometry() : Drawable
+    fun backgroundGeometry(): Drawable
 
     fun text0Color(): Int
     fun text1Color(): Int
@@ -21,12 +27,17 @@ interface Theme : AppTheme {
     fun bg3Color(): Int
 
     //Main
-    fun navigationViewBackground() : Int
+    fun navigationViewBackground(): Int
 
     //Profile
     fun gradientDrawable(): Drawable
     fun shapeBg2_20dp(): Drawable
     fun shapeBg3_20dp(): Drawable
+
+    // Messenger
+    fun logoGradient(textView: TextView)
+
+    fun shapeBg2_10dp(): Drawable
 }
 
 class LightTheme : Theme {
@@ -83,6 +94,24 @@ class LightTheme : Theme {
 
     override fun shapeBg3_20dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_3_20dp)
+    }
+
+    override fun logoGradient(textView: TextView) {
+        val paint = textView.paint
+        val width = paint.measureText(textView.text.toString())
+
+        val textShader: Shader = LinearGradient(
+            0f, 0f, width, textView.textSize, intArrayOf(
+                Color.parseColor("#9F86C7"),
+                Color.parseColor("#77BDED"),
+            ), null, TileMode.CLAMP
+        )
+
+        textView.paint.shader = textShader
+    }
+
+    override fun shapeBg2_10dp(): Drawable {
+        return context.drawable(R.drawable.shape_bg_2_10dp)
     }
 
     override fun id(): Int = 1
@@ -143,6 +172,24 @@ class DarkTheme : Theme {
 
     override fun shapeBg3_20dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_3_20dp_dark)
+    }
+
+    override fun logoGradient(textView: TextView) {
+        val paint = textView.paint
+        val width = paint.measureText(textView.text.toString())
+
+        val textShader: Shader = LinearGradient(
+            0f, 0f, width, textView.textSize, intArrayOf(
+                Color.parseColor("#4C3E77"),
+                Color.parseColor("#3D5085"),
+            ), null, TileMode.CLAMP
+        )
+
+        textView.paint.shader = textShader
+    }
+
+    override fun shapeBg2_10dp(): Drawable {
+        return context.drawable(R.drawable.shape_bg_2_10dp_dark)
     }
 
     override fun id(): Int = 2

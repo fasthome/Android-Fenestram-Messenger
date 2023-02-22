@@ -7,7 +7,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/retry"
-        style="@style/BottomActionDialogButton"
+        style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -18,7 +18,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel"
-        style="@style/BottomActionDialogButton"
+        style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"

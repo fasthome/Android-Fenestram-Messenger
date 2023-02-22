@@ -26,7 +26,7 @@ class MessengerAdapter(
     onProfileClicked: (MessengerViewItem) -> Unit,
     onDeleteChat: (id: Long) -> Unit,
     viewBinderHelper: ViewBinderHelper,
-    handler: Handler
+    handler: Handler,
 ) :
     PagerDelegateAdapter<MessengerViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -145,6 +145,11 @@ fun createMessengerAdapter(
                 )
                 status.setImageResource(item.statusIcon)
                 pendingAmount.setPrintableText(item.pendingAmount)
+
+                // Update theme
+                item.itemTheme?.let {
+                    nameView.setTextColor(it.nameColor)
+                }
             }
         }
     )

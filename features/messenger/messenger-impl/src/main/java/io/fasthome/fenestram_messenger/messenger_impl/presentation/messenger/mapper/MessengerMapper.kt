@@ -72,7 +72,8 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
                 R.drawable.bg_not_read
             },
             pendingAmount = if (chat.pendingMessages == 0L) PrintableText.EMPTY
-            else PrintableText.Raw(chat.pendingMessages.toString())
+            else PrintableText.Raw(chat.pendingMessages.toString()),
+            itemTheme = null
         )
     }
 
