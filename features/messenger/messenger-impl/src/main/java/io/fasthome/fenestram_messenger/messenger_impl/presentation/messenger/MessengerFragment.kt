@@ -222,8 +222,9 @@ class MessengerFragment :
     }
 
     private fun toggleToolbar(currentToolbarMode: MessengerToolbarMode) {
+        if(vm.currentToolbarState == currentToolbarMode) return
+        vm.currentToolbarState = currentToolbarMode
         with(binding) {
-
             var constraintId = appNameHeader.id
             when (currentToolbarMode) {
                 is MessengerToolbarMode.Select -> {
@@ -241,6 +242,7 @@ class MessengerFragment :
                     appNameHeader.startAnimation(hideAnim)
                     toolbar.startAnimation(getAlphaAnimation(1f, 0f))
                     toolbar.isVisible = false
+                    etSearch.isVisible = false
                 }
                 is MessengerToolbarMode.Search -> {
                     toolbar.isVisible = true
