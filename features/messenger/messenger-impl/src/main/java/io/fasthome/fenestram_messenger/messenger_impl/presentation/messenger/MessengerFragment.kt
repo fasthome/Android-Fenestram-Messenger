@@ -222,8 +222,9 @@ class MessengerFragment :
     }
 
     private fun toggleToolbar(currentToolbarMode: MessengerToolbarMode) {
+        if(vm.currentToolbarState == currentToolbarMode) return
+        vm.currentToolbarState = currentToolbarMode
         with(binding) {
-
             var constraintId = appNameHeader.id
             when (currentToolbarMode) {
                 is MessengerToolbarMode.Select -> {

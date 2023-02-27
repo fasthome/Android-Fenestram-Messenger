@@ -75,6 +75,8 @@ class MessengerViewModel(
 
     private var _query = ""
 
+    var currentToolbarState: MessengerToolbarMode = MessengerToolbarMode.Default
+
     override fun createInitialState(): MessengerState {
         return MessengerState(
             chats = listOf(),

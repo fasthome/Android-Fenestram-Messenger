@@ -13,6 +13,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:minHeight="51dp"
+        android:visibility="gone"
         android:layout_height="wrap_content"
         android:background="@color/dark2"
         app:layout_constraintStart_toStartOf="parent"
