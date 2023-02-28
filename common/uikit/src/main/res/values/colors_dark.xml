@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bg_0_dark">#150E41</color>
+    <color name="bg_02_dark">#28245C</color>
+    <color name="bg_03_dark">#251E50</color>
     <color name="bg_1_dark">#0D0A30</color>
     <color name="bg_2_dark">#47408F</color>
     <color name="bg_3_dark">#332C79</color>
