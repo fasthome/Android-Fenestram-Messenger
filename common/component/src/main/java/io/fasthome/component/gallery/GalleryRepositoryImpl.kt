@@ -2,6 +2,7 @@ package io.fasthome.component.gallery
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -20,16 +21,19 @@ class GalleryRepositoryImpl(
         const val IMAGES_COUNT_MEDIUM_PAGE = 15
     }
 
-    override suspend fun getFileFromGalleryImage(image: GalleryImage): CallResult<File> =
+    override suspend fun getFileFromGalleryImage(image: GalleryImage): CallResult<File> = getFileFromGalleryUri(image.uri)
+
+
+    override suspend fun getFileFromGalleryUri(imageUri: Uri): CallResult<File> =
         callForResult {
             val tempPhotoFile by lazy {
                 File(
                     fileSystemInterface.cacheDir,
-                    "image_${image.uri.getFileName(appContext)}.jpg"
+                    "image_${imageUri.getFileName(appContext)}.jpg"
                 )
             }
             val fos = FileOutputStream(tempPhotoFile)
-            fos.write((appContext.contentResolver?.openInputStream(image.uri))?.readBytes())
+            fos.write((appContext.contentResolver?.openInputStream(imageUri))?.readBytes())
             fos.close()
             tempPhotoFile
         }

@@ -7,8 +7,6 @@ object AttachedFileMapper {
     fun List<Content>.toAttachedImages() = this.map { AttachedFile.Image(it) }
     fun List<AttachedFile.Image>.toContents() = this.map { it.content }
 
-
-    fun List<UriLoadableContent>.toListUri() = this.map { it.uri }
     fun List<AttachedFile.Image>.toContentUriList(): List<UriLoadableContent> {
         var uriList = emptyList<UriLoadableContent>()
         this.forEach {

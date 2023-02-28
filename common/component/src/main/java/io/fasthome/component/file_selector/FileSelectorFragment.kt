@@ -1,22 +1,23 @@
 /**
  * Created by Dmitry Popov on 02.02.2023.
  */
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
+package io.fasthome.component.file_selector
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
-import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentFileSelectorBinding
+import io.fasthome.component.R
+import io.fasthome.component.databinding.FragmentFileSelectorBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.util.SingleToast
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
@@ -70,7 +71,7 @@ class FileSelectorFragment :
     }
 
     override fun renderState(state: FileSelectorState) {
-
+        binding.attachFile.isVisible = state.canSelectFiles
     }
 
     private fun subscribeImages() {
@@ -93,7 +94,19 @@ class FileSelectorFragment :
             }
     }
 
-    override fun handleEvent(event: FileSelectorEvent) = noEventsExpected()
+    override fun handleEvent(event: FileSelectorEvent) {
+        when (event) {
+            is FileSelectorEvent.MaxImagesReached -> {
+                SingleToast.show(context, R.string.max_images_attached, Toast.LENGTH_LONG)
+            }
+            is FileSelectorEvent.ClearAdapterSelect -> {
+                adapterImage.snapshot().items.forEach {
+                    it.isChecked = it.cursorPosition == event.checkedCursor
+                }
+                adapterImage.notifyDataSetChanged()
+            }
+        }
+    }
 
     override fun handleSlideCallback(offset: Float) {
         if (offset !in 0f..1f) return

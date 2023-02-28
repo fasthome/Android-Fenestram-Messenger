@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
+package io.fasthome.component.file_selector
 
 import android.net.Uri
 import android.view.ViewGroup
@@ -17,7 +17,7 @@ class FileSelectorAdapter(
     onImageClick: (currentImage: FileSelectorViewItem) -> Unit,
     onCheckImage: (image: FileSelectorViewItem) -> Unit,
 ) : PagerDelegateAdapter<FileSelectorViewItem>(
-    AdapterUtil.diffUtilItemCallbackEquals(Uri::toString),
+    AdapterUtil.diffUtilItemCallbackEquals(FileSelectorViewItem::toString),
     delegates = listOf(
         createImageAdapterDelegate(
             onImageClick = onImageClick,
@@ -25,7 +25,6 @@ class FileSelectorAdapter(
         )
     )
 )
-
 
 fun createImageAdapterDelegate(
     onImageClick: (currentImage: FileSelectorViewItem) -> Unit,

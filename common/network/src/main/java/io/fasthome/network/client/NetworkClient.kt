@@ -6,6 +6,7 @@ import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 
 class NetworkClient(
     @PublishedApi
@@ -135,6 +136,28 @@ class NetworkClient(
             }
         ) {
             params.forEach { (t, u) -> parameter(t, u) }
+        }
+    }
+
+    suspend inline fun <reified Response> runSubmitFromWithPatchImages(
+        path: String,
+        binaryDatas: List<ByteArray>,
+        filename: List<String>,
+        params: Map<String, Any?> = emptyMap(),
+        useBaseUrl: Boolean = true,
+    ): Response {
+        val formData = formData {
+            binaryDatas.forEachIndexed { i, bytes ->
+                append("images", bytes, Headers.build {
+                    append(HttpHeaders.ContentDisposition, "filename=${filename[i]}.jpeg")
+                })
+            }
+        }
+        return httpClient.request {
+            params.forEach { (t, u) -> parameter(t, u) }
+            url(buildUrl(path, useBaseUrl))
+            method = HttpMethod.Patch
+            body = MultiPartFormDataContent(formData)
         }
     }
 
