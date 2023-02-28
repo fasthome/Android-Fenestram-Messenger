@@ -173,7 +173,7 @@ class ProfileGuestFragment :
             profileGuestNickname.setTextColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.gray1
+                    R.color.text1
                 )
             )
             profileGuestNickname.textSize = 14F
@@ -188,7 +188,7 @@ class ProfileGuestFragment :
             profileGuestNickname.setTextColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.blue
+                    R.color.main_active
                 )
             )
             profileGuestNickname.textSize = 18F

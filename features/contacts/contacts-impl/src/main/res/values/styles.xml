@@ -21,8 +21,8 @@
     </style>
 
     <style name="SearchView" parent="Theme.AppCompat">
-        <item name="android:textColor">@color/gray1</item>
-        <item name="android:textColorHint">@color/gray1</item>
+        <item name="android:textColor">@color/text1</item>
+        <item name="android:textColorHint">@color/text1</item>
         <item name="android:textSize">14sp</item>
         <item name="android:inputType">text</item>
         <item name="iconifiedByDefault">false</item>

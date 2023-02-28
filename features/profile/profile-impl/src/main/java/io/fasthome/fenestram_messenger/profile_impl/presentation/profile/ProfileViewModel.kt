@@ -11,7 +11,9 @@ import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.domain.logic.ProfileInteractor
+import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.model.StatusViewItem
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.getPrintableRawText
 import io.fasthome.fenestram_messenger.util.onSuccess
@@ -93,4 +95,52 @@ class ProfileViewModel(
             )
         )
     }
+
+    fun onStatusSelected(statusViewItem: StatusViewItem) {
+        sendEvent(ProfileEvent.UpdateStatus(statusViewItem))
+    }
+
+    fun onStatusClicked() {
+        sendEvent(ProfileEvent.ShowStatusSelectionDialog(
+            items = createStatusList()
+        ))
+    }
+
+    fun createStatusList() = listOf(
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_in_office),
+            isChecked = true,
+            dotColor = R.color.status_green
+        ),
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_in_home),
+            isChecked = true,
+            dotColor = R.color.status_purple
+        ),
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_in_business_trip),
+            isChecked = true,
+            dotColor = R.color.status_blue
+        ),
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_on_holiday),
+            isChecked = true,
+            dotColor = R.color.status_light_green
+        ),
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_on_seak_leave),
+            isChecked = true,
+            dotColor = R.color.status_yellow
+        ),
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_on_meating),
+            isChecked = true,
+            dotColor = R.color.status_orange
+        ),
+        StatusViewItem(
+            name = PrintableText.StringResource(R.string.status_no_available),
+            isChecked = true,
+            dotColor = R.color.status_pink
+        ),
+    )
 }

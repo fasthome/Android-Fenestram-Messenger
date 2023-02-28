@@ -34,5 +34,6 @@ object Modules {
         val push = FeatureTemplate("push")
         val camera = FeatureTemplate("camera")
         val call = FeatureTemplate("call")
+        val authAd = FeatureTemplate("auth-ad")
     }
 }

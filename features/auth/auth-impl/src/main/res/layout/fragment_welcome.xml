@@ -23,7 +23,7 @@
         android:layout_marginBottom="5dp"
         android:fontFamily="@font/geometria"
         android:text="@string/common_phone_number_label"
-        android:textColor="@color/gray1"
+        android:textColor="@color/text1"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/phone_input"
         app:layout_constraintStart_toStartOf="parent" />

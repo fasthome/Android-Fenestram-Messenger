@@ -12,6 +12,7 @@ dependencies {
     api(project(Modules.Common.di))
 
     implementation(project(Modules.Common.util))
+    implementation(project(Modules.Common.uikit))
 
     api(Deps.AndroidX.core)
     api(Deps.AndroidX.appcompat)

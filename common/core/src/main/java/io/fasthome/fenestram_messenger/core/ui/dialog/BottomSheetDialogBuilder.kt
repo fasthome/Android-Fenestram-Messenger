@@ -1,8 +1,8 @@
 package io.fasthome.fenestram_messenger.core.ui.dialog
 
+import android.content.res.ColorStateList
 import android.view.View
-import android.widget.Button
-import androidx.annotation.StringRes
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -12,7 +12,7 @@ import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.uikit.databinding.ViewBottomDialogContentBinding
 
 
-class BottomSheetDialogBuilder(fragment: Fragment) {
+class BottomSheetDialogBuilder(val fragment: Fragment) {
     private val activity = fragment.requireActivity()
     private val dialog = BottomSheetDialog(activity, R.style.SheetDialog)
     private val binding = ViewBottomDialogContentBinding.inflate(activity.layoutInflater)
@@ -67,6 +67,11 @@ class BottomSheetDialogBuilder(fragment: Fragment) {
             customViewContainer.isVisible = customViewContainer.childCount != 0
         }
         return dialog
+    }
+
+    fun setBackground(colorRes: Int){
+        binding.root.backgroundTintList = ColorStateList.valueOf(colorRes)
+        binding.customViewContainer.background = colorRes.toDrawable()
     }
 
     fun dismiss() {

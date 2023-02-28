@@ -12,8 +12,8 @@ import io.fasthome.fenestram_messenger.settings_impl.SettingsFeatureImpl
 import io.fasthome.fenestram_messenger.settings_impl.data.repo_impl.SettingsRepoImpl
 import io.fasthome.fenestram_messenger.settings_impl.data.service.SettingsService
 import io.fasthome.fenestram_messenger.settings_impl.domain.repo.SettingsRepo
+import io.fasthome.fenestram_messenger.settings_impl.presentation.infoapp.InfoappViewModel
 import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.SettingsViewModel
-import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.infoapp.InfoappViewModel
 import io.fasthome.network.di.singleAuthorizedService
 import org.koin.dsl.module
 

@@ -4,8 +4,10 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.drawable.toDrawable
+import com.dolatkia.animatedThemeManager.AppTheme
+import com.dolatkia.animatedThemeManager.ThemeActivity
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
@@ -19,6 +21,8 @@ import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.ui.splash.SplashActivity
+import io.fasthome.fenestram_messenger.uikit.theme.LightTheme
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnStartStop
@@ -28,7 +32,7 @@ import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.koin.viewModel
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ThemeActivity() {
 
     companion object {
         const val UPDATE_REQUEST_CODE = 1
@@ -91,9 +95,19 @@ class MainActivity : AppCompatActivity() {
         navigatorHolder.setNavigator(navigator)
     }
 
+    override fun syncTheme(appTheme: AppTheme) {
+        appTheme as Theme
+        appTheme.setContext(applicationContext)
+        binding.root.background = appTheme.bg0Color().toDrawable()
+    }
+
     override fun onPause() {
         super.onPause()
         navigatorHolder.removeNavigator()
+    }
+
+    override fun getStartTheme(): AppTheme {
+        return LightTheme()
     }
 
     override fun onBackPressed() {

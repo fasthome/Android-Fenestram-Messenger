@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.presentation.base.ui
 import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.dolatkia.animatedThemeManager.ThemeManager
 import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
 import io.fasthome.fenestram_messenger.mvi.ViewModelInterface
 import io.fasthome.fenestram_messenger.mvi.messageResult
@@ -16,6 +17,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.onBackPressed
 import io.fasthome.fenestram_messenger.presentation.base.util.onFabClicked
 import io.fasthome.fenestram_messenger.presentation.base.util.onFabUpdateIcon
 import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnCreate
 import io.fasthome.fenestram_messenger.util.doOnStartStop
@@ -50,6 +52,21 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
             vm.onMessageResult(bundle.messageResult)
         }
     }
+
+    override fun onResume() {
+        getThemeManager()?.getCurrentLiveTheme()?.observe(this) {
+            syncTheme(it as Theme)
+        }
+
+        super.onResume()
+    }
+
+    fun getThemeManager() : ThemeManager? {
+        return ThemeManager.instance
+    }
+
+    // to sync ui with selected theme
+    open fun syncTheme(appTheme: Theme){}
 
     override fun onBackPressed(): Boolean =
         childFragmentManager.onBackPressed() || vm.onBackPressed()

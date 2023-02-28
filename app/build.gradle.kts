@@ -86,6 +86,7 @@ dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.component))
     implementation(project(Modules.Common.network))
+    implementation(project(Modules.Common.uikit))
 
     implementation(project(Modules.Feature.main.api))
     implementation(project(Modules.Feature.main.impl))
@@ -125,6 +126,9 @@ dependencies {
 
     implementation(project(Modules.Feature.call.api))
     implementation(project(Modules.Feature.call.impl))
+
+    implementation(project(Modules.Feature.authAd.api))
+    implementation(project(Modules.Feature.authAd.impl))
 
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)

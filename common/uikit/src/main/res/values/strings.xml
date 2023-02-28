@@ -45,4 +45,14 @@
     <string name="common_phone_copied">Телефон пользователя скопирован</string>
     <string name="common_empty_chat_name">Название чата не может быть пустым</string>
 
+
+    <string name="auth_login_label">Введите Ваш корпоративный логин</string>
+    <string name="auth_login_hint">Логин</string>
+    <string name="auth_login_error">Логин не найден</string>
+    <string name="auth_password_label">Введите пароль</string>
+    <string name="auth_password_hint">Пароль</string>
+    <string name="auth_password_error">Введен неправильный пароль</string>
+    <string name="auth_login">Войти</string>
+
+
 </resources>

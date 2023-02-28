@@ -16,6 +16,7 @@ dependencies {
     implementation(Deps.Android.material)
     implementation(Deps.AndroidX.paging)
     implementation(Deps.flexbox)
+    api(Deps.themeManager)
 
     api(Deps.AndroidX.swipeRefreshLayout)
     api(Deps.adapterDelegates)
