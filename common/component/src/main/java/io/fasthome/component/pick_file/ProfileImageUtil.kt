@@ -15,7 +15,11 @@ interface ProfileImageUtil {
 
 class ProfileImageUtilImpl : ProfileImageUtil {
     override suspend fun getPhoto(file: File): Bitmap? = withContext(DispatchersProvider.IO) {
-        return@withContext BitmapFactory.decodeFile(file.path)
+        try {
+            return@withContext BitmapFactory.decodeFile(file.path)
+        } catch (e: Exception) {
+            return@withContext null
+        }
     }
 
     override suspend fun getCroppedFile(bitmap: Bitmap, outputFile: File, paddings: Paddings) {

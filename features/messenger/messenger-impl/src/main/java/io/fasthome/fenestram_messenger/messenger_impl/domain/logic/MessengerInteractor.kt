@@ -229,6 +229,8 @@ class MessengerInteractor(
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
 
+    suspend fun uploadAvatarImage(chatId: Long, imagesBytes: ByteArray) = messageRepo.uploadAvatar(chatId,imagesBytes)
+
     suspend fun uploadDocuments(chatId: Long, documentBytes: List<ByteArray>, name: List<String>) =
         messageRepo.uploadDocuments(chatId = chatId, documentBytes, name)
 

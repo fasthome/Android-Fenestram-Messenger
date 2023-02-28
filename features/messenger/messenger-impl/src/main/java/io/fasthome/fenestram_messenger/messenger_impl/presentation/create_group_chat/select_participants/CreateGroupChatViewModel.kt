@@ -124,7 +124,7 @@ class CreateGroupChatViewModel(
         }
 
         if (params.isGroupChat)
-            createInfoLauncher.launch(CreateInfoContract.Params(contacts))
+            createInfoLauncher.launch(CreateInfoContract.Params(contacts = contacts))
         else {
             router.backTo(null)
             conversationLauncher.launch(
@@ -138,7 +138,7 @@ class CreateGroupChatViewModel(
                         avatar = contacts[0].user!!.avatar,
                         id = null,
                         pendingMessages = 0
-                    )
+                    ),
                 )
             )
         }
