@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.util
 
 import android.view.View
+import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.view.animation.TranslateAnimation
@@ -24,6 +25,13 @@ object AnimationUtil {
         )
         anim.fillAfter = true
         anim.duration = 300
+        return anim
+    }
+
+    fun getAlphaAnimation(start: Float, end: Float): Animation {
+        val anim: Animation = AlphaAnimation(start,end)
+        anim.fillAfter = true
+        anim.duration = 200
         return anim
     }
 }

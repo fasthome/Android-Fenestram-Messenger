@@ -10,6 +10,6 @@ data class MessengerState(
     val chats: List<Chat>,
     val messengerViewItems: List<MessengerViewItem>,
     val newMessagesCount: Int,
-    val isSelectMode: Boolean,
+    val currentMode: MessengerToolbarMode,
     val scrolledDown: Boolean
 )

@@ -10,9 +10,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.uikit.databinding.ViewBottomDialogContentBinding
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 
 
-class BottomSheetDialogBuilder(val fragment: Fragment) {
+class BottomSheetDialogBuilder(val fragment: Fragment, val theme: Theme? = null) {
     private val activity = fragment.requireActivity()
     private val dialog = BottomSheetDialog(activity, R.style.SheetDialog)
     private val binding = ViewBottomDialogContentBinding.inflate(activity.layoutInflater)
@@ -21,6 +22,9 @@ class BottomSheetDialogBuilder(val fragment: Fragment) {
 
     init {
         dialog.setContentView(binding.root)
+        theme?.let {
+            binding.root.backgroundTintList = ColorStateList.valueOf(it.bg1Color())
+        }
 
         /**
          * BottomSheetDialog запускается как отдельное окно, а не как часть фрагмента,
