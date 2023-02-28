@@ -14,7 +14,7 @@ class AuthAdService(
 
     suspend fun login(login: String, password: String): LoginResult {
         val response: BaseResponse<LoginResponse> = client.runPost(
-            path = "authorization2/login",
+            path = "oauth/token",
             body = LoginRequest(login, password),
         )
 

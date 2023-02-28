@@ -2,6 +2,8 @@ package io.fasthome.fenestram_messenger.auth_ad_impl.presentation.login
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.children
 import androidx.core.widget.addTextChangedListener
 import io.fasthome.fenestram_messenger.auth_ad_impl.R
@@ -10,6 +12,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.getPrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 
@@ -23,7 +26,7 @@ class LoginFragment : BaseFragment<LoginState, LoginEvent>(R.layout.fragment_log
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        animateKeyboard(listOf(loginButton), listOf(loginInput, passwordInput))
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         loginInput.addTextChangedListener {
             vm.onTextChanged(it.toString().trim(), passwordInput.text.toString(), true)
@@ -44,9 +47,29 @@ class LoginFragment : BaseFragment<LoginState, LoginEvent>(R.layout.fragment_log
         }
     }
 
+    override fun syncTheme(appTheme: Theme): Unit = with(binding) {
+        appTheme.setContext(requireContext())
+        linearLayout.background = appTheme.backgroundGeometry()
+        DrawableCompat.setTint(
+            DrawableCompat.wrap(logoIv.drawable),
+            appTheme.logoColor()
+        )
+        loginInput.setTextColor(appTheme.text0Color())
+        passwordInput.setTextColor(appTheme.text0Color())
+        loginInputLayout.apply {
+            boxBackgroundColor = appTheme.boxBackgroundColor()
+            setBoxStrokeColorStateList(appTheme.boxStrokeColor())
+        }
+        passwordInputLayout.apply {
+            boxBackgroundColor = appTheme.boxBackgroundColor()
+            setBoxStrokeColorStateList(appTheme.boxStrokeColor())
+            setEndIconTintList(appTheme.endIconTint())
+        }
+        loginButton.setBackgroundResource(appTheme.buttonDrawableRes())
+    }
+
     override fun renderState(state: LoginState) = with(binding) {
         loginButton.isEnabled = state.loginButtonEnabled
-        loginButton.animateAlpha(state.loginButtonAlpha)
         loginInputLayout.error = getPrintableText(state.loginErrorMessage)
         passwordInputLayout.error = getPrintableText(state.passwordErrorMessage)
     }
