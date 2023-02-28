@@ -32,11 +32,11 @@
     <color name="new_light_gray">#A5ABD7</color>
     <color name="new_purple">#7847E2</color>
 
-
-    <color name="BG_0">#EFF2F7</color>
     <color name="text_1">#717394</color>
     <color name="text_0">#2A313C</color>
     <color name="stroke_2">#D6E1F2</color>
+    <color name="logo_tfn">#293240</color>
+    <color name="button_inactive">#C3C4E4</color>
 
 
 </resources>

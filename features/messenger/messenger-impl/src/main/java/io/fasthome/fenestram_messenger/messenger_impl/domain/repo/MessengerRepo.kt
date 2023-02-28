@@ -72,6 +72,8 @@ interface MessengerRepo {
     fun emitChatListeners(subChatId: Long?, unsubChatId: Long?)
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
+
+    suspend fun uploadAvatar(chatId: Long, photoBytes: ByteArray): CallResult<PatchChatAvatarRequest>
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit>
     suspend fun uploadDocuments(
         chatId: Long,

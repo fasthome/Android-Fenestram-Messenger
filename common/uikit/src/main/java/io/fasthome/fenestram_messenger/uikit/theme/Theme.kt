@@ -5,19 +5,20 @@ import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Shader.TileMode
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.widget.TextView
 import com.dolatkia.animatedThemeManager.AppTheme
 import io.fasthome.fenestram_messenger.uikit.R
 import io.fasthome.fenestram_messenger.util.android.color
+import io.fasthome.fenestram_messenger.util.android.colorStateList
 import io.fasthome.fenestram_messenger.util.android.drawable
-
 
 interface Theme : AppTheme {
     fun setContext(context: Context)
 
     fun backgroundColor(): Int
-    fun backgroundGeometry(): Drawable
+    fun backgroundGeometry() : Drawable
 
     fun text0Color(): Int
     fun text1Color(): Int
@@ -27,12 +28,19 @@ interface Theme : AppTheme {
     fun bg3Color(): Int
 
     //Main
-    fun navigationViewBackground(): Int
+    fun navigationViewBackground() : Int
 
     //Profile
     fun gradientDrawable(): Drawable
     fun shapeBg2_20dp(): Drawable
     fun shapeBg3_20dp(): Drawable
+
+    //AuthAd
+    fun logoColor(): Int
+    fun boxBackgroundColor(): Int
+    fun boxStrokeColor(): ColorStateList
+    fun buttonDrawableRes(): Int
+    fun endIconTint(): ColorStateList
 
     // Messenger
     fun logoGradient(textView: TextView)
@@ -94,6 +102,26 @@ class LightTheme : Theme {
 
     override fun shapeBg3_20dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_3_20dp)
+    }
+
+    override fun logoColor(): Int {
+        return context.color(R.color.logo_tfn)
+    }
+
+    override fun boxBackgroundColor(): Int {
+        return context.color(R.color.white)
+    }
+
+    override fun boxStrokeColor(): ColorStateList {
+        return context.colorStateList(R.color.selector_text_input)
+    }
+
+    override fun buttonDrawableRes(): Int {
+        return R.drawable.rounded_violet_button
+    }
+
+    override fun endIconTint(): ColorStateList {
+        return context.colorStateList(R.color.selector_show_password)
     }
 
     override fun logoGradient(textView: TextView) {
@@ -172,6 +200,26 @@ class DarkTheme : Theme {
 
     override fun shapeBg3_20dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_3_20dp_dark)
+    }
+
+    override fun logoColor(): Int {
+        return context.color(R.color.white)
+    }
+
+    override fun boxBackgroundColor(): Int {
+        return context.color(R.color.bg_0_dark)
+    }
+
+    override fun boxStrokeColor(): ColorStateList {
+        return context.colorStateList(R.color.selector_text_input_dark)
+    }
+
+    override fun buttonDrawableRes(): Int {
+        return R.drawable.rounded_violet_button_dark
+    }
+
+    override fun endIconTint(): ColorStateList {
+        return context.colorStateList(R.color.selector_show_password_dark)
     }
 
     override fun logoGradient(textView: TextView) {

@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
+package io.fasthome.component.file_selector
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -63,12 +63,16 @@ open class BottomSheetFragmentWithButton(
                             isHaveChanges = event.isHaveChanges
                             binding.includeBottomInput.btnAttach.isEnabled = event.count > 0
                             if (event.count > 0) {
-                                binding.includeBottomInput.btnAttach.text =
+                                val text = if (event.oneSelect) {
+                                    getString(R.string.common_select_image_selector)
+                                } else {
                                     getString(R.string.common_attach) + " " + resources.getQuantityString(
                                         R.plurals.image_quantity,
                                         event.count,
                                         event.count
                                     )
+                                }
+                                binding.includeBottomInput.btnAttach.text = text
                             } else {
                                 binding.includeBottomInput.btnAttach.setText(R.string.common_select_image)
                             }
@@ -103,7 +107,8 @@ open class BottomSheetFragmentWithButton(
 
     override fun handleSlideCallback(slideOffset: Float) {
         if (slideOffset in 0f..1f) return
-        binding.includeBottomInput.clInput.translationY = 1 - slideOffset * binding.includeBottomInput.clInput.height
+        binding.includeBottomInput.clInput.translationY =
+            1 - slideOffset * binding.includeBottomInput.clInput.height
     }
 }
 

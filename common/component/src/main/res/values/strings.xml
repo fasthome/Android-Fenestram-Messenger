@@ -11,6 +11,8 @@
     <string name="personality_empty_name_error">Поле имя не может быть пустым</string>
     <string name="personality_empty_nickname_error">Поле никнейм не может быть пустым</string>
 
+    <string name="max_images_attached">Достигнуто максимальное количество прикрепляемых изображений</string>
+
     <string name="personality_incorrect_name">Некорректное имя</string>
     <string name="personality_incorrect_length_name">Длина имени должна быть больше одного символа</string>
     <string name="personality_incorrect_birthday">Укажите дату рождения</string>

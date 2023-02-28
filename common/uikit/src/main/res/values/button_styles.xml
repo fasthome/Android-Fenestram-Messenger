@@ -60,6 +60,7 @@
         <item name="android:background">@drawable/rounded_violet_button</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/poppins_semibold</item>
     </style>
 
 </resources>

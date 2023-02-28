@@ -17,7 +17,8 @@ object ConversationNavigationContract :
         val fromContacts: Boolean = true,
         val forwardMessage: MessengerFeature.ForwardMessage? = null,
         val actionMessageBlank: ActionMessageBlank? = null,
-        val chat: Chat
+        val chat: Chat,
+        val avatarBytes: ByteArray? = null
     ) : Parcelable
 
     sealed class Result : Parcelable {

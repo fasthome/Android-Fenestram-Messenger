@@ -1,4 +1,4 @@
-package io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector
+package io.fasthome.component.file_selector
 
 import android.net.Uri
 import io.fasthome.component.gallery.GalleryImage
@@ -13,6 +13,7 @@ object FileSelectorMapper {
         cursorPosition = cursorPosition
     )
 
+    fun List<UriLoadableContent>.toListUri() = this.map { it.uri }
     fun GalleryImage.toViewItem(contentList: List<Uri> = emptyList()) = FileSelectorViewItem(
         content = UriLoadableContent(this.uri),
         cursorPosition = cursorPosition,
