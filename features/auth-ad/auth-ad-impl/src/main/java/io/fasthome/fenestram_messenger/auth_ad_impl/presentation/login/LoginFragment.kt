@@ -48,7 +48,7 @@ class LoginFragment : BaseFragment<LoginState, LoginEvent>(R.layout.fragment_log
     }
 
     override fun syncTheme(appTheme: Theme): Unit = with(binding) {
-        appTheme.setContext(requireContext())
+        appTheme.context = requireContext()
         linearLayout.background = appTheme.backgroundGeometry()
         DrawableCompat.setTint(
             DrawableCompat.wrap(logoIv.drawable),

@@ -15,23 +15,29 @@ import io.fasthome.fenestram_messenger.util.android.colorStateList
 import io.fasthome.fenestram_messenger.util.android.drawable
 
 interface Theme : AppTheme {
-    fun setContext(context: Context)
+
+    var context: Context
 
     fun backgroundColor(): Int
     fun backgroundGeometry() : Drawable
 
     fun text0Color(): Int
     fun text1Color(): Int
+    fun stroke2Color(): Int
     fun bg0Color(): Int
+    fun bg02Color(): Int
+    fun bg03Color(): Int
     fun bg1Color(): Int
     fun bg2Color(): Int
     fun bg3Color(): Int
+    fun redColor(): Int = context.color(R.color.red)
 
     //Main
     fun navigationViewBackground() : Int
 
     //Profile
     fun gradientDrawable(): Drawable
+    fun shapeBg02_5dp(): Drawable
     fun shapeBg2_20dp(): Drawable
     fun shapeBg3_20dp(): Drawable
 
@@ -50,11 +56,7 @@ interface Theme : AppTheme {
 
 class LightTheme : Theme {
 
-    private lateinit var context: Context
-
-    override fun setContext(context: Context) {
-        this.context = context
-    }
+    override lateinit var context: Context
 
     override fun backgroundColor(): Int {
         return context.color(R.color.background)
@@ -72,8 +74,20 @@ class LightTheme : Theme {
         return context.color(R.color.text_1)
     }
 
+    override fun stroke2Color(): Int {
+        return context.color(R.color.stroke_2)
+    }
+
     override fun bg0Color(): Int {
         return context.color(R.color.bg_0)
+    }
+
+    override fun bg02Color(): Int {
+        return context.color(R.color.bg_02)
+    }
+
+    override fun bg03Color(): Int {
+        return context.color(R.color.bg_03)
     }
 
     override fun bg1Color(): Int {
@@ -94,6 +108,10 @@ class LightTheme : Theme {
 
     override fun gradientDrawable(): Drawable {
         return context.drawable(R.drawable.bg_profile_gradient)
+    }
+
+    override fun shapeBg02_5dp(): Drawable {
+        return context.drawable(R.drawable.shape_bg_02_5dp)
     }
 
     override fun shapeBg2_20dp(): Drawable {
@@ -148,11 +166,7 @@ class LightTheme : Theme {
 
 class DarkTheme : Theme {
 
-    private lateinit var context: Context
-
-    override fun setContext(context: Context) {
-        this.context = context
-    }
+    override lateinit var context: Context
 
     override fun backgroundColor(): Int {
         return context.color(R.color.dark1)
@@ -170,8 +184,20 @@ class DarkTheme : Theme {
         return context.color(R.color.text_1_dark)
     }
 
+    override fun stroke2Color(): Int {
+        return context.color(R.color.stroke_2_dark)
+    }
+
     override fun bg0Color(): Int {
         return context.color(R.color.bg_0_dark)
+    }
+
+    override fun bg02Color(): Int {
+        return context.color(R.color.bg_02_dark)
+    }
+
+    override fun bg03Color(): Int {
+        return context.color(R.color.bg_03_dark)
     }
 
     override fun bg1Color(): Int {
@@ -192,6 +218,10 @@ class DarkTheme : Theme {
 
     override fun gradientDrawable(): Drawable {
         return context.drawable(R.drawable.bg_profile_gradient_night)
+    }
+
+    override fun shapeBg02_5dp(): Drawable {
+        return context.drawable(R.drawable.shape_bg_02_5dp_dark)
     }
 
     override fun shapeBg2_20dp(): Drawable {

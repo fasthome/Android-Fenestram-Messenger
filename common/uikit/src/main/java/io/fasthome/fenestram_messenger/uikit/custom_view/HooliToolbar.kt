@@ -10,9 +10,13 @@ import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.annotation.StyleableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isInvisible
+import com.dolatkia.animatedThemeManager.ThemeManager
 import io.fasthome.fenestram_messenger.uikit.R
 import io.fasthome.fenestram_messenger.uikit.databinding.ToolbarCommonBinding
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.android.drawable
 import io.fasthome.fenestram_messenger.util.onClick
 
@@ -58,6 +62,14 @@ class HooliToolbar : ConstraintLayout {
         val startButtonDrawableId = setDrawable(a, binding.ibCancel, R.styleable.HooliToolbar_buttonDrawable)
         binding.ibCancel.isInvisible = startButtonDrawableId == 0
 
+
+        val theme = ThemeManager.instance.getCurrentTheme() as Theme
+        binding.root.background = theme.bg03Color().toDrawable()
+        binding.toolbarTitle.setTextColor(theme.text0Color())
+        DrawableCompat.setTint(
+            DrawableCompat.wrap(binding.ibCancel.drawable),
+            theme.text1Color()
+        )
         a.recycle()
     }
 
