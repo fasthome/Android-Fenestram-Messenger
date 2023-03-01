@@ -6,5 +6,4 @@ data class LoginState(
     val loginErrorMessage: PrintableText,
     val passwordErrorMessage: PrintableText,
     val loginButtonEnabled: Boolean,
-    val loginButtonAlpha: Float,
 )

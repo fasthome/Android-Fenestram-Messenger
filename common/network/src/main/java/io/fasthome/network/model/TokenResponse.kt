@@ -1,10 +1,10 @@
-package io.fasthome.fenestram_messenger.auth_ad_impl.data.service.model
+package io.fasthome.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class LoginResponse(
+class TokenResponse(
     @SerialName("user_id")
     val userId: Long? = null,
 
@@ -19,16 +19,4 @@ class LoginResponse(
 
     @SerialName("expires_in")
     val expiresIn: Long? = null,
-
-    @SerialName("error")
-    val error: String? = null,
-
-    @SerialName("error_description")
-    val errorDescription: String? = null,
-
-    @SerialName("hint")
-    val hint: String? = null,
-
-    @SerialName("message")
-    val message: String? = null,
 )

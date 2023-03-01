@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.auth_ad_impl.presentation.login
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.auth_ad_impl.R
 import io.fasthome.fenestram_messenger.auth_ad_impl.domain.entity.LoginResult
@@ -21,7 +22,6 @@ class LoginViewModel(
             loginErrorMessage = PrintableText.EMPTY,
             passwordErrorMessage = PrintableText.EMPTY,
             loginButtonEnabled = false,
-            loginButtonAlpha = BUTTON_INACTIVE_ALPHA
         )
     }
 
@@ -30,7 +30,8 @@ class LoginViewModel(
             authAdInteractor.login(login, password).withErrorHandled { result ->
                 when (result) {
                     is LoginResult.Success -> {
-                        //TODO Proceed
+                        authAdInteractor.onLoginResultSuccess(result)
+                        Log.d("AuthAd", "Success login: $result")
                     }
                     is LoginResult.Error -> {
                         if (result.isLoginWrong) {
@@ -51,9 +52,9 @@ class LoginViewModel(
 
     fun onTextChanged(login: String, password: String, isLoginChanged: Boolean) {
         if (login.isNotEmpty() && password.isNotEmpty()) {
-            updateState { state -> state.copy(loginButtonAlpha = BUTTON_ACTIVE_ALPHA, loginButtonEnabled = true) }
+            updateState { state -> state.copy(loginButtonEnabled = true) }
         } else {
-            updateState { state -> state.copy(loginButtonAlpha = BUTTON_INACTIVE_ALPHA, loginButtonEnabled = false) }
+            updateState { state -> state.copy(loginButtonEnabled = false) }
         }
         if (isLoginChanged) updateState { state -> state.copy(loginErrorMessage = PrintableText.EMPTY) }
         else updateState { state -> state.copy(passwordErrorMessage = PrintableText.EMPTY) }

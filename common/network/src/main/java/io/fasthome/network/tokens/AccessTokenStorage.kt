@@ -8,12 +8,12 @@ import kotlinx.coroutines.withContext
 /**
  * Временное решение, предполагается не сохранять access токен, о получать его при входе в приложение через refresh
  */
-class AccessTokenStorage(
-    persistentStorageFactory: io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory,
+open class AccessTokenStorage(
+    persistentStorageFactory: KeyValueStorage.Factory,
 ) {
-    private val preferencesStorage = persistentStorageFactory.create("tokens_persistent.prefs")
+    protected val preferencesStorage = persistentStorageFactory.create("tokens_persistent.prefs")
 
-    private var accessToken: String? by preferencesStorage.stored("KEY_ACCESS_TOKEN")
+    protected open var accessToken: String? by preferencesStorage.stored("KEY_ACCESS_TOKEN")
 
     suspend fun getAccessToken(): AccessToken? =
         withContext(DispatchersProvider.IO) {
@@ -30,4 +30,10 @@ class AccessTokenStorage(
             accessToken = null
         }
     }
+}
+
+class AccessTokenAdStorage(
+    persistentStorageFactory: KeyValueStorage.Factory,
+) : AccessTokenStorage(persistentStorageFactory) {
+    override var accessToken: String? by preferencesStorage.stored("KEY_ACCESS_TOKEN_AD")
 }

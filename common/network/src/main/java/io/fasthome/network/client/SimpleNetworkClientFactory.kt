@@ -1,6 +1,7 @@
 package io.fasthome.network.client
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.core.exceptions.BadRequestException
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
 import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
@@ -75,6 +76,9 @@ internal class SimpleNetworkClientFactory(
                             if (cause.message.contains("refresh token invalid")) {
                                 forceLogoutManager.value.forceLogout()
                             } else throw UnauthorizedException()
+                        }
+                        if (cause.response.status.value == HttpStatusCode.BadRequest.value) {
+                            throw BadRequestException(cause)
                         }
                     }
                     is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(
