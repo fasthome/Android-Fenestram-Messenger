@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.camera.CameraComponentParams
+import io.fasthome.component.file_selector.FileSelectorNavigationContract
 import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.component.image_viewer.ImageViewerContract
 import io.fasthome.component.image_viewer.ImageViewerModel
@@ -30,7 +31,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContentUriList
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContents
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toFiles
-import io.fasthome.component.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -213,7 +213,7 @@ class ConversationViewModel(
         )
     }
 
-    fun loadPage(isResumed: Boolean ) {
+    fun loadPage(isResumed: Boolean) {
         loadItemsJob = viewModelScope.launch {
             val firstNewMessageCount = lastPage?.let {
                 if (it.total <= PAGE_SIZE) {
@@ -300,7 +300,7 @@ class ConversationViewModel(
         )
         subscribeMessageActions()
         if (params.avatarBytes != null && chatId != null) {
-            uploadChatAvatar(params.avatarBytes,chatId!!)
+            uploadChatAvatar(params.avatarBytes, chatId!!)
         }
     }
 
@@ -488,7 +488,8 @@ class ConversationViewModel(
 
             chunkedFiles.forEach { attachedDocument ->
                 if (attachedDocument.isNotEmpty()) {
-                    val fileMessage = createDocumentMessage(emptyList(), attachedDocument.toFiles())
+                    val fileMessage =
+                        createDocumentMessage(emptyList(), attachedDocument.toFiles(), currentTheme)
                     tempFileMessages = tempFileMessages + fileMessage
                     sendDocument(fileMessage)
                 }
@@ -498,7 +499,8 @@ class ConversationViewModel(
                 if (images.isNotEmpty()) {
                     val imageMessage = createImageMessage(
                         images.toContents(),
-                        getPrintableRawText(currentViewState.userName)
+                        getPrintableRawText(currentViewState.userName),
+                        currentTheme
                     )
                     tempFileMessages = tempFileMessages + imageMessage
 
@@ -675,7 +677,7 @@ class ConversationViewModel(
         viewModelScope.launch {
             val tempMessage = when (messageType) {
                 MessageType.Text -> {
-                    createTextMessage(text)
+                    createTextMessage(text, currentTheme)
                 }
                 MessageType.Image -> {
                     if ((existMessage as ConversationViewItem.Self.Image).loadableContent == null) return@launch
@@ -1471,7 +1473,7 @@ class ConversationViewModel(
     fun onNewReaction(messageReactions: MessageReactions) {
         val changedMessages = currentViewState.messages.mapValues {
             if (it.value.id == messageReactions.messageId)
-                messageReactions.toConversationViewItem(selfUserId, it.value,currentTheme)
+                messageReactions.toConversationViewItem(selfUserId, it.value, currentTheme)
             else it.value
 
         }

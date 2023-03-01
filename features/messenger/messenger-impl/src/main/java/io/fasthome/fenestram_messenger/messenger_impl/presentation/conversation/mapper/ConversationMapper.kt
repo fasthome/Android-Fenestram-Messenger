@@ -668,7 +668,7 @@ private fun singleSameTimeIsContinue(
     }
 }
 
-fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
+fun createTextMessage(text: String, appTheme: Theme? = null) = ConversationViewItem.Self.Text(
     content = PrintableText.Raw(text),
     time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
     sentStatus = SentStatus.Loading,
@@ -681,10 +681,11 @@ fun createTextMessage(text: String) = ConversationViewItem.Self.Text(
     messageType = "text",
     replyMessage = null,
     userName = PrintableText.EMPTY,
-    reactions = emptyList()
+    reactions = emptyList(),
+    conversationSelfItemTheme = appTheme?.getSelfMessageTheme()
 )
 
-fun createImageMessage(loadableContent: List<Content>, userName: String?) =
+fun createImageMessage(loadableContent: List<Content>, userName: String?, appTheme: Theme? = null) =
     ConversationViewItem.Self.Image(
         content = "",
         time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
@@ -699,10 +700,11 @@ fun createImageMessage(loadableContent: List<Content>, userName: String?) =
         replyMessage = null,
         userName = PrintableText.Raw(userName ?: ""),
         metaInfo = loadableContent.map { MetaInfo() },
-        reactions = emptyList()
+        reactions = emptyList(),
+        conversationSelfItemTheme = appTheme?.getSelfMessageTheme()
     )
 
-fun createDocumentMessage(document: List<String>, file: List<File>) =
+fun createDocumentMessage(document: List<String>, file: List<File>, appTheme: Theme? = null) =
     ConversationViewItem.Self.Document(
         content = "",
         time = PrintableText.Raw(timeFormatter.format(ZonedDateTime.now())),
@@ -715,7 +717,8 @@ fun createDocumentMessage(document: List<String>, file: List<File>) =
         path = null,
         userName = PrintableText.EMPTY,
         metaInfo = file.map { MetaInfo(it) },
-        reactions = emptyList()
+        reactions = emptyList(),
+        conversationSelfItemTheme = appTheme?.getSelfMessageTheme()
     )
 
 fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
@@ -777,7 +780,7 @@ fun getSentStatus(messageStatus: String): SentStatus {
 }
 
 fun MessageStatus.toConversationViewItem(
-    oldViewItem: ConversationViewItem,
+    oldViewItem: ConversationViewItem
 ): ConversationViewItem {
     val sentStatus =
         if (usersHaveRead?.isNotEmpty() == true) SentStatus.Read else SentStatus.Received

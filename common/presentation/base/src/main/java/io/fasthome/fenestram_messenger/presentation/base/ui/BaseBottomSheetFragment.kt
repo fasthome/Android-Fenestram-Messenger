@@ -15,12 +15,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.lifecycleScope
+import com.dolatkia.animatedThemeManager.ThemeManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.ModalWindow
 import io.fasthome.fenestram_messenger.presentation.base.R
 import io.fasthome.fenestram_messenger.presentation.base.util.onBackPressed
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.awaitPost
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -89,6 +91,23 @@ open class BaseBottomSheetFragment(
         fragmentInstance?.handleSlideCallback(slideOffset)
     }
 
+    fun getThemeManager() : ThemeManager {
+        return ThemeManager.instance
+    }
+
+    fun getTheme(): Theme {
+        return getThemeManager().getCurrentTheme() as Theme
+    }
+
+    open fun syncTheme(appTheme: Theme){}
+
+    override fun onResume() {
+        getThemeManager().getCurrentLiveTheme().observe(this) {
+            syncTheme(it as Theme)
+        }
+
+        super.onResume()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedStateRegistry.run {

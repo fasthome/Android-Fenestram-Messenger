@@ -123,7 +123,7 @@ class MessengerFragment :
     }
 
     override fun syncTheme(appTheme: Theme) = with(binding) {
-        appTheme.setContext(requireActivity().applicationContext)
+        appTheme.context = requireActivity().applicationContext
         appTheme.logoGradient(appNameHeader)
         bgGeometry.background = appTheme.backgroundGeometry()
         toolbar.setBackgroundColor(appTheme.bg3Color())
