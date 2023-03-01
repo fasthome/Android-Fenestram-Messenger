@@ -39,13 +39,16 @@
     </style>
 
     <style name="BottomActionDialogButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="materialThemeOverlay">@style/DarkButtonThemeOverlay</item>
-        <item name="shapeAppearanceOverlay">@style/CornersShapeRounded10</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/gray2</item>
         <item name="iconTint">@color/gray2</item>
         <item name="android:textStyle">bold</item>
         <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="BottomActionDialogButton.WithOverlay" parent="BottomActionDialogButton">
+        <item name="materialThemeOverlay">@style/DarkButtonThemeOverlay</item>
+        <item name="shapeAppearanceOverlay">@style/CornersShapeRounded10</item>
     </style>
 
     <style name="DarkButtonThemeOverlay">

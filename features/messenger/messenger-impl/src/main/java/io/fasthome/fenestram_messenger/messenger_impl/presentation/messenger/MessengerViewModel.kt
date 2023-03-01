@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -74,12 +75,14 @@ class MessengerViewModel(
 
     private var _query = ""
 
+    var currentToolbarState: MessengerToolbarMode = MessengerToolbarMode.Default
+
     override fun createInitialState(): MessengerState {
         return MessengerState(
             chats = listOf(),
             messengerViewItems = listOf(),
             newMessagesCount = 0,
-            isSelectMode = params.chatSelectionMode,
+            currentMode = if (params.chatSelectionMode) MessengerToolbarMode.Select(R.string.forward) else MessengerToolbarMode.Default,
             scrolledDown = false
         )
     }
@@ -278,5 +281,27 @@ class MessengerViewModel(
             updateState { state -> state.copy(scrolledDown = scrolledDown) }
     }
 
-    fun exitToConversation() = exitWithoutResult()
+    fun backButtonClick() {
+        if (canLeaveFragment()) exitWithoutResult()
+    }
+
+    fun canLeaveFragment(): Boolean {
+        if (currentViewState.currentMode is MessengerToolbarMode.Search) {
+            defaultToolbarMode()
+            return false
+        }
+        return true
+    }
+
+    fun searchToolbarMode() {
+        updateState { state ->
+            state.copy(currentMode = MessengerToolbarMode.Search)
+        }
+    }
+
+    fun defaultToolbarMode() {
+        updateState { state ->
+            state.copy(currentMode = MessengerToolbarMode.Default)
+        }
+    }
 }

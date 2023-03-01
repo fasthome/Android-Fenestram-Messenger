@@ -7,8 +7,8 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
-import com.dolatkia.animatedThemeManager.ThemeManager
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
@@ -25,6 +25,7 @@ import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
 import io.fasthome.fenestram_messenger.uikit.theme.DarkTheme
 import io.fasthome.fenestram_messenger.uikit.theme.LightTheme
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.android.getNavigationBarHeight
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
@@ -68,6 +69,12 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.rootView.setPadding(
+            0,
+            0,
+            0,
+            getNavigationBarHeight(requireContext().resources)
+        )
         activity?.window?.apply {
             setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
             setFlags(
@@ -89,22 +96,38 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         }
 
         nightTheme.setOnCheckedChangeListener { compoundButton, b ->
-            if(b){
-                ThemeManager.instance.changeTheme(LightTheme(), compoundButton)
-            }else{
-                ThemeManager.instance.changeTheme(DarkTheme(), compoundButton)
+            nightTheme.isEnabled = false
+            nightTheme.postDelayed({
+                nightTheme.isEnabled = true
+            }, 600)
+            if (b) {
+                vm.onThemeChanged(LightTheme(), compoundButton)
+            } else {
+                vm.onThemeChanged(DarkTheme(), compoundButton)
             }
         }
     }
 
-    override fun syncTheme(appTheme: Theme) = with(binding){
-        appTheme.setContext(requireActivity().applicationContext)
+    override fun syncTheme(appTheme: Theme) = with(binding) {
+        appTheme.context = requireActivity().applicationContext
         gradient.background = appTheme.gradientDrawable()
         view.background = appTheme.shapeBg3_20dp()
         username.setTextColor(appTheme.text0Color())
         email.setTextColor(appTheme.text1Color())
         bgGeometry.background = appTheme.backgroundGeometry()
         collapsingToolbar.contentScrim = appTheme.bg0Color().toDrawable()
+
+        when (appTheme) {
+            is LightTheme -> {
+                nightTheme.isChecked = true
+            }
+            is DarkTheme -> {
+                nightTheme.isChecked = false
+            }
+            else -> {
+                nightTheme.isChecked = true
+            }
+        }
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
@@ -134,10 +157,23 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
                 ).show()
             }
             is ProfileEvent.UpdateStatus -> {
-                binding.status.backgroundTintList = ColorStateList.valueOf(event.status.dotColor)
+                binding.status.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), event.status.dotColor))
                 binding.status.setPrintableText(event.status.name)
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.window?.clearFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+        binding.root.rootView.setPadding(
+            0,
+            0,
+            0,
+            0
+        )
     }
 
 }

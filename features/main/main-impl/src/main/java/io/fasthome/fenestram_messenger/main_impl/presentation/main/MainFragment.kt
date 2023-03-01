@@ -89,7 +89,7 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
     }
 
     override fun syncTheme(appTheme: Theme) {
-        appTheme.setContext(requireActivity().applicationContext)
+        appTheme.context = requireActivity().applicationContext
         binding.content.background = appTheme.bg0Color().toDrawable()
         binding.navigationView.setBackgroundResource(appTheme.navigationViewBackground())
     }

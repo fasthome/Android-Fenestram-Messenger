@@ -8,12 +8,10 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.WindowManager
-import androidx.annotation.StringRes
-import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
-import androidx.paging.LoadState
+import androidx.core.widget.doOnTextChanged
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
@@ -21,16 +19,15 @@ import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentMessengerBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.adapter.MessengerAdapter
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.MessengerItemTheme
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.collectWhenStarted
-import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.AnimationUtil.getAlphaAnimation
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 
 
@@ -73,19 +70,13 @@ class MessengerFragment :
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
-        chatsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+        etSearch.doOnTextChanged { text, start, before, count ->
+            text?.let {
+                vm.filterChats(text.toString())
+                messageAdapter.refresh()
             }
+        }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let {
-                    vm.filterChats(it)
-                    messageAdapter.refresh()
-                }
-                return true
-            }
-        })
         val linearLayoutManager =
             LinearLayoutManager(requireContext())
         chatList.layoutManager = linearLayoutManager
@@ -106,7 +97,8 @@ class MessengerFragment :
         })
 
         backButton.onClick {
-            vm.exitToConversation()
+            vm.backButtonClick()
+            requireActivity().hideKeyboard(true)
         }
 
         messageAdapter.addOnPagesUpdatedListener {
@@ -120,10 +112,34 @@ class MessengerFragment :
             vm.onCreateChatClicked()
         }
 
+        ivChatSearch.onClick {
+            vm.searchToolbarMode()
+        }
+
         swipeRefresh.setOnRefreshListener {
             subscribeChats()
             swipeRefresh.isRefreshing = false
         }
+    }
+
+    override fun syncTheme(appTheme: Theme) = with(binding) {
+        appTheme.setContext(requireActivity().applicationContext)
+        appTheme.logoGradient(appNameHeader)
+        bgGeometry.background = appTheme.backgroundGeometry()
+        toolbar.setBackgroundColor(appTheme.bg3Color())
+        toolbarTitle.setTextColor(appTheme.text0Color())
+        etSearch.setTextColor(appTheme.text0Color())
+        messageAdapter.snapshot().items.forEach {
+            it.itemTheme = getMessengerItemTheme()
+        }
+        messageAdapter.notifyDataSetChanged()
+    }
+
+    private fun getMessengerItemTheme(): MessengerItemTheme {
+        val theme = getThemeManager()?.getCurrentTheme() as Theme
+        return MessengerItemTheme(
+            nameColor = theme.text0Color(),
+        )
     }
 
     override fun onResume() {
@@ -132,10 +148,8 @@ class MessengerFragment :
     }
 
     override fun renderState(state: MessengerState) {
-        if (state.isSelectMode) {
-            toggleToolbar(true, R.string.forward)
-        } else {
-            toggleToolbar(false)
+        toggleToolbar(state.currentMode)
+        if (state.currentMode == MessengerToolbarMode.Default) {
             when {
                 state.scrolledDown || state.newMessagesCount != 0 && lastScrollPosition != 0 -> {
                     updateFabIcon(iconRes = R.drawable.ic_arrow_up, state.newMessagesCount)
@@ -164,7 +178,8 @@ class MessengerFragment :
                 .show()
             is MessengerEvent.CreateChatEvent -> CreateChatDialog.create(
                 this,
-                vm::createChatClicked
+                vm::createChatClicked,
+                getThemeManager()?.getCurrentTheme() as Theme
             ).show()
             is MessengerEvent.Invalidate -> {
                 toggleEmptyView()
@@ -191,29 +206,62 @@ class MessengerFragment :
         vm.fetchChats()
             .distinctUntilChanged()
             .collectWhenStarted(this@MessengerFragment) {
-                subscribeLoader()
-                messageAdapter.submitData(it)
+                val messengerViewItems = it.map { messengerItem ->
+                    messengerItem.copy(
+                        itemTheme = getMessengerItemTheme()
+                    )
+                }
+                messageAdapter.submitData(messengerViewItems)
             }
     }
 
-    private fun subscribeLoader() {
-        messageAdapter.loadStateFlow
-            .onEach { loadStates ->
-                binding.chatProgress.alpha = if (loadStates.refresh is LoadState.Loading) 1.0f else 0.0f
-            }.launchIn(this.lifecycleScope)
+    override fun onBackPressed(): Boolean {
+        return if (vm.canLeaveFragment())
+            super.onBackPressed()
+        else true
     }
 
-    private fun toggleToolbar(visible: Boolean, @StringRes text: Int? = null) {
+    private fun toggleToolbar(currentToolbarMode: MessengerToolbarMode) {
+        if(vm.currentToolbarState == currentToolbarMode) return
+        vm.currentToolbarState = currentToolbarMode
         with(binding) {
-            toolbar.isVisible = visible
-            text?.let { toolbarTitle.setText(it) }
-            appNameHeader.isVisible = !visible
+            var constraintId = appNameHeader.id
+            when (currentToolbarMode) {
+                is MessengerToolbarMode.Select -> {
+                    ivChatSearch.isVisible = false
+                    appNameHeader.isVisible = false
+                    constraintId = toolbar.id
+                    toolbarTitle.isVisible = true
+                    etSearch.isVisible = false
+                    toolbar.isVisible = true
+                    toolbarTitle.setText(currentToolbarMode.titleRes)
+                }
+                is MessengerToolbarMode.Default -> {
+                    val hideAnim = getAlphaAnimation(0f, 1f)
+                    ivChatSearch.startAnimation(hideAnim)
+                    appNameHeader.startAnimation(hideAnim)
+                    toolbar.startAnimation(getAlphaAnimation(1f, 0f))
+                    toolbar.isVisible = false
+                }
+                is MessengerToolbarMode.Search -> {
+                    toolbar.isVisible = true
+                    toolbarTitle.isVisible = false
+                    etSearch.isVisible = true
+                    val hideAnim = getAlphaAnimation(1f, 0f)
+                    ivChatSearch.startAnimation(hideAnim)
+                    appNameHeader.startAnimation(hideAnim)
+                    toolbar.startAnimation(getAlphaAnimation(0f, 1f))
+                    constraintId = toolbar.id
+                    etSearch.showKeyboard()
+                }
+            }
+
             val constraints = ConstraintSet().apply {
                 clone(root)
                 connect(
-                    chatsSv.id,
+                    swipeRefresh.id,
                     ConstraintSet.TOP,
-                    if (visible) toolbar.id else appNameHeader.id,
+                    constraintId,
                     ConstraintSet.BOTTOM
                 )
             }

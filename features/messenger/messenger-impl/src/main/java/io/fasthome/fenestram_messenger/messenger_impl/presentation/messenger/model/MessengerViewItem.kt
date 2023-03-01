@@ -19,9 +19,13 @@ data class MessengerViewItem(
     val isGroup: Boolean,
     val sentStatus: SentStatus,
     @DrawableRes val statusIcon: Int = getStatusIcon(sentStatus),
-    val pendingAmount: PrintableText
+    val pendingAmount: PrintableText,
+    var itemTheme: MessengerItemTheme?
 )
 
+data class MessengerItemTheme(
+    val nameColor: Int
+)
 sealed class LastMessage {
 
     data class Text(val text: PrintableText) : LastMessage()
