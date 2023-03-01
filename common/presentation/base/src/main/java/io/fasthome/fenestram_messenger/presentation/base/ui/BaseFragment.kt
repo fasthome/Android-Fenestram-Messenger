@@ -54,15 +54,19 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
     }
 
     override fun onResume() {
-        getThemeManager()?.getCurrentLiveTheme()?.observe(this) {
+        getThemeManager().getCurrentLiveTheme().observe(this) {
             syncTheme(it as Theme)
         }
 
         super.onResume()
     }
 
-    fun getThemeManager() : ThemeManager? {
+    fun getThemeManager() : ThemeManager {
         return ThemeManager.instance
+    }
+
+    fun getTheme(): Theme {
+        return getThemeManager().getCurrentTheme() as Theme
     }
 
     // to sync ui with selected theme

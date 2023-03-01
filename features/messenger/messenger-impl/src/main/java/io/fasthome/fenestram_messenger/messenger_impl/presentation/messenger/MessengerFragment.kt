@@ -136,9 +136,8 @@ class MessengerFragment :
     }
 
     private fun getMessengerItemTheme(): MessengerItemTheme {
-        val theme = getThemeManager()?.getCurrentTheme() as Theme
         return MessengerItemTheme(
-            nameColor = theme.text0Color(),
+            nameColor = getTheme().text0Color(),
         )
     }
 
@@ -171,6 +170,7 @@ class MessengerFragment :
         when (event) {
             is MessengerEvent.DeleteChatEvent -> AcceptDialog.create(
                 this,
+                theme = getTheme(),
                 PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 vm::deleteChat,
                 event.id
@@ -179,7 +179,7 @@ class MessengerFragment :
             is MessengerEvent.CreateChatEvent -> CreateChatDialog.create(
                 this,
                 vm::createChatClicked,
-                getThemeManager()?.getCurrentTheme() as Theme
+                getTheme()
             ).show()
             is MessengerEvent.Invalidate -> {
                 toggleEmptyView()

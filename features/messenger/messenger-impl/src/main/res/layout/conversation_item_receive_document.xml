@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="10dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
             app:layout_constraintWidth_max="300dp"
             android:paddingHorizontal="15dp"
             android:paddingVertical="8dp"

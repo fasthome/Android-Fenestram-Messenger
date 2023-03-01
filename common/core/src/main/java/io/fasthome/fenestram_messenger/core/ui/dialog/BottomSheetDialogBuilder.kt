@@ -13,7 +13,7 @@ import io.fasthome.fenestram_messenger.uikit.databinding.ViewBottomDialogContent
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 
 
-class BottomSheetDialogBuilder(val fragment: Fragment, val theme: Theme? = null) {
+class BottomSheetDialogBuilder(val fragment: Fragment, val bgColor: Int? = null) {
     private val activity = fragment.requireActivity()
     private val dialog = BottomSheetDialog(activity, R.style.SheetDialog)
     private val binding = ViewBottomDialogContentBinding.inflate(activity.layoutInflater)
@@ -22,8 +22,8 @@ class BottomSheetDialogBuilder(val fragment: Fragment, val theme: Theme? = null)
 
     init {
         dialog.setContentView(binding.root)
-        theme?.let {
-            binding.root.backgroundTintList = ColorStateList.valueOf(it.bg1Color())
+        bgColor?.let {
+            binding.root.backgroundTintList = ColorStateList.valueOf(bgColor)
         }
 
         /**

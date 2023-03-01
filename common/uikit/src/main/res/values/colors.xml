@@ -6,14 +6,18 @@
     <color name="bg_0">#EFF2F7</color>
     <color name="bg_1">#FAFAFC</color>
     <color name="bg_2">#E8ECF3</color>
-    <color name="bg_3">#FFFFFFFF</color>
+    <color name="bg_3">#DDE4EF</color>
+    <color name="button_inactive">#C3C4E4</color>
     <color name="background_main">#222121</color>
     <color name="button_standart">#888686</color>
     <color name="button_standart_stroke">#C5C4C4</color>
     <color name="button_standart_text">#1B1A1A</color>
 
+    <color name="gradient_start_color">#9F86C7</color>
+    <color name="gradient_end_color">#77BDED</color>
+
     <color name="background_0">#1A202C</color>
-    <color name="background">#EFF2F7</color>
+    <color name="background">#FAFAFC</color>
     <color name="dark1">#232b38</color>
     <color name="dark2">#2a313c</color>
     <color name="dark2_50">#802A313C</color>

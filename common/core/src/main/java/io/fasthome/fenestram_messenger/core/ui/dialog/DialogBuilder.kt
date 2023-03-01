@@ -1,15 +1,17 @@
 package io.fasthome.fenestram_messenger.core.ui.dialog
 
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import io.fasthome.fenestram_messenger.core.R
 import io.fasthome.fenestram_messenger.uikit.databinding.ViewDialogContentBinding
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 
 
-class DialogBuilder(fragment: Fragment) {
+class DialogBuilder(fragment: Fragment, val bgColor: Int? = null) {
 
     private val activity = fragment.requireActivity()
     private val dialog = Dialog(activity, R.style.SheetDialog)
@@ -18,6 +20,10 @@ class DialogBuilder(fragment: Fragment) {
 
     init {
         dialog.setContentView(binding.root)
+
+        bgColor?.let {
+            binding.llBg.backgroundTintList = ColorStateList.valueOf(bgColor)
+        }
 
         val fragmentManager = fragment.parentFragmentManager
         fragmentManager.registerFragmentLifecycleCallbacks(

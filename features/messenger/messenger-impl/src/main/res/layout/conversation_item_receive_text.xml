@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginStart="12dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
             android:minWidth="48dp"
             android:minHeight="24dp"
             android:orientation="vertical"
@@ -65,7 +65,8 @@
 
                 <TextView
                     android:id="@+id/reply_author_name"
-                    style="@style/Text.Gray.12sp"
+                    style="@style/Text.White.12sp"
+                    android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="11dp"
@@ -116,7 +117,7 @@
                 android:layout_gravity="end"
                 android:text="@string/messenger_edited"
                 android:gravity="bottom"
-                android:textColor="@color/gray4"
+                android:textColor="@color/text_1"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

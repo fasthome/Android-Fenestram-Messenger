@@ -8,6 +8,6 @@ data class ReactionsViewItem(
     val reaction: String,
     val userCount: Int,
     val avatars: List<String>,
-    @ColorRes val reactionBackground: Int,
+    val reactionBackground: Int?,
     val setBySelf: Boolean
 )

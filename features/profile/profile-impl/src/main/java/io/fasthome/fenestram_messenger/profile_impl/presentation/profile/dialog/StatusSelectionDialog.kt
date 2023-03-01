@@ -17,7 +17,7 @@ object StatusSelectionDialog {
     ): Dialog {
         val binding = DialogStatusSelectionBinding.inflate(fragment.layoutInflater)
 
-        val theme = fragment.getThemeManager()?.getCurrentTheme() as Theme
+        val theme = fragment.getTheme()
 
         val adapter = StatusAdapter(
             onItemClicked = onStatusSelected

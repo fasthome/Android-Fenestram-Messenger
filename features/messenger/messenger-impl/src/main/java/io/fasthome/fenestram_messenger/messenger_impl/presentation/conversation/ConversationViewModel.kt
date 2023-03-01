@@ -40,6 +40,7 @@ import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.links.USER_TAG_PATTERN
@@ -91,6 +92,8 @@ class ConversationViewModel(
     private var userDeleteChat: Boolean = false
     private var permittedReactions = listOf<PermittedReactionViewItem>()
     private var wasResumed: Boolean = false
+
+    var currentTheme: Theme? = null
 
     private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
         when (result) {
@@ -210,7 +213,7 @@ class ConversationViewModel(
         )
     }
 
-    fun loadPage(isResumed: Boolean) {
+    fun loadPage(isResumed: Boolean ) {
         loadItemsJob = viewModelScope.launch {
             val firstNewMessageCount = lastPage?.let {
                 if (it.total <= PAGE_SIZE) {
@@ -232,7 +235,8 @@ class ConversationViewModel(
                             it.messages.toConversationItems(
                                 selfUserId = selfUserId!!,
                                 isGroup = params.chat.isGroup,
-                                profileImageUrlConverter = storageUrlConverter
+                                profileImageUrlConverter = storageUrlConverter,
+                                appTheme = currentTheme
                             )
                         )
                     )
@@ -383,7 +387,8 @@ class ConversationViewModel(
                             (result.data ?: return@updateState state).toConversationViewItem(
                                 selfUserId,
                                 params.chat.isGroup,
-                                storageUrlConverter
+                                storageUrlConverter,
+                                currentTheme
                             ) as ConversationViewItem.Self
                         var messages = state.messages
                         messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
@@ -838,7 +843,8 @@ class ConversationViewModel(
                                     message.toConversationViewItem(
                                         selfUserId,
                                         params.chat.isGroup,
-                                        storageUrlConverter
+                                        storageUrlConverter,
+                                        currentTheme
                                     )
                                 else it.value
                             }
@@ -848,7 +854,8 @@ class ConversationViewModel(
                     val newMessages = listOf(message).toConversationItems(
                         selfUserId = selfUserId,
                         isGroup = params.chat.isGroup,
-                        storageUrlConverter
+                        storageUrlConverter,
+                        currentTheme
                     )
                     state.copy(
                         messages = newMessages.plus(state.messages)
@@ -1396,7 +1403,7 @@ class ConversationViewModel(
     fun onNewReaction(messageReactions: MessageReactions) {
         val changedMessages = currentViewState.messages.mapValues {
             if (it.value.id == messageReactions.messageId)
-                messageReactions.toConversationViewItem(selfUserId, it.value)
+                messageReactions.toConversationViewItem(selfUserId, it.value,currentTheme)
             else it.value
 
         }

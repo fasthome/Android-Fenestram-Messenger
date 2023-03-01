@@ -18,7 +18,7 @@
     </style>
 
     <style name="Button.Dialog">
-        <item name="android:background">@drawable/background_dialog_button</item>
+        <item name="android:background">@drawable/shape_bg_2_10dp</item>
     </style>
 
     <style name="Button.Dialog.Cancel">
@@ -26,8 +26,9 @@
     </style>
 
     <style name="Button.Dialog.Accept">
-        <item name="android:textAppearance">@style/Text.Red.14sp</item>
+        <item name="android:textAppearance">@style/Text.White.14sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:backgroundTint">@color/main_active</item>
     </style>
 
     <style name="CornersShapeRounded10">
@@ -41,7 +42,7 @@
     <style name="BottomActionDialogButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/gray2</item>
-        <item name="iconTint">@color/gray2</item>
+        <item name="iconTint">@color/main_active</item>
         <item name="android:textStyle">bold</item>
         <item name="textAllCaps">false</item>
     </style>

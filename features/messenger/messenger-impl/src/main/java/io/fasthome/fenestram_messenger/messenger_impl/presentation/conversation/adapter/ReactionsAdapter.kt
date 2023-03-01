@@ -10,7 +10,6 @@ import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderReaction
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.PermittedReactionViewItem
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.ReactionsViewItem
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.fenestram_messenger.util.android.color
 
 class PermittedReactionsAdapter(onItemClicked: (PermittedReactionViewItem) -> Unit) :
     AsyncListDifferDelegationAdapter<PermittedReactionViewItem>(
@@ -21,7 +20,7 @@ class PermittedReactionsAdapter(onItemClicked: (PermittedReactionViewItem) -> Un
     ) {}
 
 fun createPermittedReactionsAdapterDelegate(
-    onItemClicked: (PermittedReactionViewItem) -> Unit
+    onItemClicked: (PermittedReactionViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<PermittedReactionViewItem, HolderPermittedReactionBinding>(
         HolderPermittedReactionBinding::inflate,
@@ -30,7 +29,8 @@ fun createPermittedReactionsAdapterDelegate(
             onItemClicked(item)
         }
         bindWithBinding {
-            reaction.text = HtmlCompat.fromHtml(item.permittedReaction, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            reaction.text =
+                HtmlCompat.fromHtml(item.permittedReaction, HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
     }
 
@@ -43,7 +43,7 @@ class ReactionsAdapter(onItemClicked: (ReactionsViewItem) -> Unit) :
     ) {}
 
 fun createReactionsAdapterDelegate(
-    onItemClicked: (ReactionsViewItem) -> Unit
+    onItemClicked: (ReactionsViewItem) -> Unit,
 ) =
     adapterDelegateViewBinding<ReactionsViewItem, HolderReactionsBinding>(
         HolderReactionsBinding::inflate,
@@ -54,7 +54,9 @@ fun createReactionsAdapterDelegate(
         }
         bindWithBinding {
             reaction.text = HtmlCompat.fromHtml(item.reaction, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            root.backgroundTintList = ColorStateList.valueOf(context.resources.color(item.reactionBackground))
+            if (item.reactionBackground != null) {
+                root.backgroundTintList = ColorStateList.valueOf(item.reactionBackground!!)
+            }
             if (item.userCount > 3) {
                 userCount.isVisible = true
                 avatars.isVisible = false
