@@ -30,7 +30,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContentUriList
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toContents
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.AttachedFileMapper.toFiles
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.file_selector.FileSelectorNavigationContract
+import io.fasthome.component.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
@@ -288,13 +288,9 @@ class ConversationViewModel(
                 isGroup = params.chat.isGroup
             ).withErrorHandled {
                 chatId = it.chatId
-                if (params.chat.avatar != null && params.chat.isGroup)
-                    if (messengerInteractor.patchChatAvatar(it.chatId, params.chat.avatar)
-                            .successOrSendError() != null
-                    )
-                        updateState { state ->
-                            state.copy(avatar = storageUrlConverter.convert(params.chat.avatar))
-                        }
+                if (params.chat.avatar != null && params.chat.isGroup) {
+                    uploadChatAvatar(params.avatarBytes ?: return@withErrorHandled, it.chatId)
+                }
             }
         }
         subscribeMessages(
@@ -303,6 +299,23 @@ class ConversationViewModel(
             selfUserId ?: return
         )
         subscribeMessageActions()
+        if (params.avatarBytes != null && chatId != null) {
+            uploadChatAvatar(params.avatarBytes,chatId!!)
+        }
+    }
+
+    private fun uploadChatAvatar(bytes: ByteArray, chatId: Long) {
+        viewModelScope.launch {
+            val resultAvatarUpload = messengerInteractor.uploadAvatarImage(
+                chatId,
+                bytes
+            )
+            resultAvatarUpload.onSuccess {
+                updateState { state ->
+                    state.copy(avatar = storageUrlConverter.convert(it.avatar))
+                }
+            }
+        }
     }
 
     fun previousScreen(): Boolean {
@@ -541,7 +554,9 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(userName = PrintableText.Raw(result.data.message?.initiator?.name ?: ""),
+                    tempMessage.copy(userName = PrintableText.Raw(
+                        result.data.message?.initiator?.name ?: ""
+                    ),
                         metaInfo = result.data.message?.content?.map {
                             MetaInfo(
                                 name = it.name,
@@ -581,8 +596,10 @@ class ConversationViewModel(
             }
             is CallResult.Success -> {
                 tempMessage =
-                    tempMessage.copy(userName = conversationViewItem.userName,
-                        metaInfo = result.data)
+                    tempMessage.copy(
+                        userName = conversationViewItem.userName,
+                        metaInfo = result.data
+                    )
                 updateStatus(
                     tempMessage,
                     SentStatus.Received,
@@ -1062,8 +1079,9 @@ class ConversationViewModel(
             } else {
                 permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
-            if(permissionGranted){
-                val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default) ?: return@launch
+            if (permissionGranted) {
+                val fileState = (currentViewState.inputMessageMode as? InputMessageMode.Default)
+                    ?: return@launch
                 val allImages = fileState.attachedFiles.filterIsInstance<AttachedFile.Image>()
                 fileSelectorLauncher.launch(
                     FileSelectorNavigationContract.Params(
@@ -1235,7 +1253,12 @@ class ConversationViewModel(
             SentStatus.Sent,
             SentStatus.Received,
             SentStatus.Read,
-            -> sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
+            -> sendEvent(
+                ConversationEvent.ShowSelfMessageActionDialog(
+                    conversationViewItem,
+                    permittedReactions
+                )
+            )
             SentStatus.Loading -> Unit
             SentStatus.None -> Unit
         }
@@ -1284,39 +1307,84 @@ class ConversationViewModel(
     }
 
     fun onReceiveMessageLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowReceiveMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onGroupMessageLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowGroupMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onReceiveTextReplyImageLongClicked(conversationViewItem: ConversationViewItem.Receive.TextReplyOnImage) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowReceiveMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onSelfForwardLongClicked(conversationViewItem: ConversationViewItem.Self.Forward) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowSelfMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onReceiveForwardLongClicked(conversationViewItem: ConversationViewItem.Receive.Forward) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowReceiveMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onGroupForwardLongClicked(conversationViewItem: ConversationViewItem.Group.Forward) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowGroupMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onGroupDocumentLongClicked(conversationViewItem: ConversationViewItem.Group) {
-        sendEvent(ConversationEvent.ShowGroupMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowGroupMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onSelfDocumentLongClicked(conversationViewItem: ConversationViewItem.Self) {
-        sendEvent(ConversationEvent.ShowSelfMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowSelfMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onReceiveDocumentLongClicked(conversationViewItem: ConversationViewItem.Receive) {
-        sendEvent(ConversationEvent.ShowReceiveMessageActionDialog(conversationViewItem, permittedReactions))
+        sendEvent(
+            ConversationEvent.ShowReceiveMessageActionDialog(
+                conversationViewItem,
+                permittedReactions
+            )
+        )
     }
 
     fun onTypingMessage() {

@@ -5,9 +5,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SendMessageResponse
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.ChatStorage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
@@ -36,14 +34,15 @@ class MessengerRepoImpl(
         text: String,
         type: String,
         localId: String,
-        authorId: Long
+        authorId: Long,
     ): CallResult<SendMessageResult> = callForResult {
         messengerService.sendMessage(id, text, type, localId, authorId)
     }
 
-    override suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?> = callForResult {
-        messengerService.forwardMessage(chatId, messageId)
-    }
+    override suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?> =
+        callForResult {
+            messengerService.forwardMessage(chatId, messageId)
+        }
 
 
     override suspend fun replyMessage(
@@ -97,13 +96,17 @@ class MessengerRepoImpl(
     override suspend fun postChats(
         name: String,
         users: List<Long>,
-        isGroup: Boolean
+        isGroup: Boolean,
     ): CallResult<PostChatsResult> =
         callForResult {
             messengerService.postChats(name, users, isGroup)
         }
 
-    override suspend fun postReaction(chatId: Long, messageId: Long, reaction: String): CallResult<Unit> =
+    override suspend fun postReaction(
+        chatId: Long,
+        messageId: Long,
+        reaction: String,
+    ): CallResult<Unit> =
         callForResult {
             messengerService.postReaction(chatId, messageId, reaction)
         }
@@ -120,7 +123,7 @@ class MessengerRepoImpl(
     override suspend fun getMessagesFromChat(
         id: Long,
         limit: Int,
-        page: Int
+        page: Int,
     ): CallResult<MessagesPage> =
         callForResult {
             messengerService.getMessagesByChat(id = id, limit = limit, page = page)
@@ -138,7 +141,7 @@ class MessengerRepoImpl(
         chatId: String?,
         token: AccessToken,
         callback: MessengerRepo.SocketMessageCallback,
-        selfUserId: Long?
+        selfUserId: Long?,
     ) {
         socket.setClientSocket(
             chatId = chatId,
@@ -157,7 +160,7 @@ class MessengerRepoImpl(
 
     override fun getChatChanges(
         chatId: Long,
-        onNewChatChanges: (SocketChatChanges.ChatChangesResponse) -> Unit
+        onNewChatChanges: (SocketChatChanges.ChatChangesResponse) -> Unit,
     ) {
         socket.getChatChanges(chatId) {
             onNewChatChanges(this)
@@ -176,9 +179,13 @@ class MessengerRepoImpl(
         socket.emitChatListeners(subChatId, unsubChatId)
     }
 
+    override suspend fun uploadAvatar(chatId: Long, photoBytes: ByteArray): CallResult<PatchChatAvatarRequest> = callForResult {
+        messengerService.uploadAvatar(chatId, photoBytes)
+    }
+
     override suspend fun uploadImage(
         photoBytes: ByteArray,
-        guid: String
+        guid: String,
     ): CallResult<UploadImageResult> = callForResult {
         messengerService.uploadImage(photoBytes, guid)
     }
@@ -186,7 +193,7 @@ class MessengerRepoImpl(
     override suspend fun editMessage(
         chatId: Long,
         messageId: Long,
-        newText: String
+        newText: String,
     ): CallResult<Unit> = callForResult {
         messengerService.editMessage(chatId = chatId, messageId = messageId, newText = newText)
     }
@@ -194,7 +201,7 @@ class MessengerRepoImpl(
     override suspend fun uploadDocuments(
         chatId: Long,
         documentBytes: List<ByteArray>,
-        guid: List<String>
+        guid: List<String>,
     ): CallResult<List<MetaInfo>> = callForResult {
         messengerService.uploadDocuments(documentBytes, guid, chatId)
     }
@@ -209,11 +216,12 @@ class MessengerRepoImpl(
 
     override suspend fun clearChats() = chatStorage.deleteChats()
 
-    override suspend fun fetchUnreadCount(): CallResult<Badge> = callForResult { messengerService.fetchUnreadCount() }
+    override suspend fun fetchUnreadCount(): CallResult<Badge> =
+        callForResult { messengerService.fetchUnreadCount() }
 
     override suspend fun getDocument(
         storagePath: String,
-        progressListener: ProgressListener
+        progressListener: ProgressListener,
     ): CallResult<LoadedDocumentData> = callForResult {
         messengerService.getDocument(storageUrlConverter.convert(storagePath), progressListener)
     }

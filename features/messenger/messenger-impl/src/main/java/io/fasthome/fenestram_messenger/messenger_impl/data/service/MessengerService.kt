@@ -12,6 +12,7 @@ import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.util.requireData
 import io.ktor.client.statement.*
+import java.util.*
 
 class MessengerService(
     clientFactory: NetworkClientFactory,
@@ -73,6 +74,15 @@ class MessengerService(
         )
 
         return getChatByIdMapper.responseToGetChatById(response)
+    }
+
+    suspend fun uploadAvatar(chatId: Long, photoBytes: ByteArray): PatchChatAvatarRequest {
+        val response = client.runSubmitFromWithPatchImages<BaseResponse<ChatAvatarResponse>>(
+            path = "chats/$chatId/avatar",
+            binaryDatas = listOf(photoBytes),
+            filename = listOf(UUID.randomUUID().toString())
+        )
+        return PatchChatAvatarRequest(response.data?.avatarUrl)
     }
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): UploadImageResult {

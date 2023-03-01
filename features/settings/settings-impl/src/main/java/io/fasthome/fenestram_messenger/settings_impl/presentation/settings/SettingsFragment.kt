@@ -73,7 +73,7 @@ class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fra
     override fun getInterface(): SettingsInterface = vm
 
     override fun syncTheme(appTheme: Theme) = with(binding){
-        appTheme.setContext(requireActivity().applicationContext)
+        appTheme.context = requireActivity().applicationContext
         vm.themeSynced(appTheme)
     }
 }

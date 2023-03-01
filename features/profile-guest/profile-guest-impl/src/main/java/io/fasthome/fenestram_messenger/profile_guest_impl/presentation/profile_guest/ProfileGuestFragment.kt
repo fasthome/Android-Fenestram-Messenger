@@ -265,6 +265,12 @@ class ProfileGuestFragment :
             is ProfileGuestEvent.CopyText -> {
                 copyTextToClipBoard(event.text, event.toastMessage)
             }
+            is ProfileGuestEvent.OpenCamera -> {
+                vm.selectFromCamera()
+            }
+            is ProfileGuestEvent.OpenImagePicker -> {
+                vm.selectFromGallery()
+            }
         }
     }
 

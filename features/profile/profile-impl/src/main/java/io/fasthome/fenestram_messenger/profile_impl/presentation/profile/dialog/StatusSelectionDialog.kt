@@ -19,15 +19,18 @@ object StatusSelectionDialog {
 
         val theme = fragment.getTheme()
 
-        val adapter = StatusAdapter(
-            onItemClicked = onStatusSelected
-        )
-        adapter.items = statusItems
-
         with(binding) {
             val dialog = BottomSheetDialogBuilder(fragment)
                 .addCustomView(root)
                 .setCancelable(true)
+
+            val adapter = StatusAdapter(
+                onItemClicked = {
+                    onStatusSelected(it)
+                    dialog.dismiss()
+                }
+            )
+            adapter.items = statusItems
 
             list.adapter =  adapter
 

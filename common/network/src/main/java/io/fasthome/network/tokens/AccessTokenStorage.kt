@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
  * Временное решение, предполагается не сохранять access токен, о получать его при входе в приложение через refresh
  */
 class AccessTokenStorage(
-    persistentStorageFactory: io.fasthome.fenestram_messenger.data.KeyValueStorage.Factory,
+    persistentStorageFactory: KeyValueStorage.Factory,
 ) {
     private val preferencesStorage = persistentStorageFactory.create("tokens_persistent.prefs")
 

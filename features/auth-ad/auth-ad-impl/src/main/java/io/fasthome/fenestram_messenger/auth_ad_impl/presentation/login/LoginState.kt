@@ -1,7 +1,10 @@
 package io.fasthome.fenestram_messenger.auth_ad_impl.presentation.login
 
+import io.fasthome.fenestram_messenger.util.PrintableText
+
 data class LoginState(
-    val loginError: Boolean,
-    val passwordError: Boolean,
-    val loginButtonAlpha: Float
+    val loginErrorMessage: PrintableText,
+    val passwordErrorMessage: PrintableText,
+    val loginButtonEnabled: Boolean,
+    val loginButtonAlpha: Float,
 )

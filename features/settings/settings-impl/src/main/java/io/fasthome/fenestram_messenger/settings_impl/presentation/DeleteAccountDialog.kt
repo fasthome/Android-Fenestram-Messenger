@@ -1,9 +1,10 @@
 package io.fasthome.fenestram_messenger.settings_impl.presentation
 
 import android.app.Dialog
-import androidx.fragment.app.Fragment
 import io.fasthome.fenestram_messenger.core.ui.dialog.DialogBuilder
+import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.settings_impl.databinding.DialogDeleteAccountBinding
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
@@ -11,7 +12,7 @@ import io.fasthome.fenestram_messenger.util.setPrintableText
 object DeleteAccountDialog {
 
     fun create(
-        fragment: Fragment,
+        fragment: BaseFragment<*, *>,
         titleText: PrintableText?,
         messageText: PrintableText,
         onAcceptClicked : () -> Unit
@@ -23,6 +24,16 @@ object DeleteAccountDialog {
             val dialog = DialogBuilder(fragment)
                 .addCustomView(root)
                 .setCancelable(true)
+
+            val theme = fragment.getThemeManager()?.getCurrentTheme() as Theme
+
+            title.setTextColor(theme.text0Color())
+            description.setTextColor(theme.text0Color())
+            cancel.setTextColor(theme.text1Color())
+            cancel.background = theme.shapeBg02_5dp()
+            delete.setTextColor(theme.redColor())
+            delete.background = theme.shapeBg02_5dp()
+            root.background = theme.shapeBg2_20dp()
 
             titleText?.let {
                 title.setPrintableText(it)

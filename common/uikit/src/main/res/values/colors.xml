@@ -4,6 +4,8 @@
     <color name="black_50">#80000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="bg_0">#EFF2F7</color>
+    <color name="bg_02">#E8ECF3</color>
+    <color name="bg_03">#EFF2F7</color>
     <color name="bg_1">#FAFAFC</color>
     <color name="bg_2">#E8ECF3</color>
     <color name="bg_3">#DDE4EF</color>
@@ -36,11 +38,11 @@
     <color name="new_light_gray">#A5ABD7</color>
     <color name="new_purple">#7847E2</color>
 
-
-    <color name="BG_0">#EFF2F7</color>
     <color name="text_1">#717394</color>
     <color name="text_0">#2A313C</color>
     <color name="stroke_2">#D6E1F2</color>
+    <color name="logo_tfn">#293240</color>
+    <color name="button_inactive">#C3C4E4</color>
 
 
 </resources>

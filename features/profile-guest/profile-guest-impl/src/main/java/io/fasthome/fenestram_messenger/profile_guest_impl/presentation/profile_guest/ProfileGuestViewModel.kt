@@ -1,13 +1,18 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
 import android.Manifest
+import android.os.Build
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.file_selector.FileSelectorNavigationContract
+import io.fasthome.component.gallery.GalleryRepository
+import io.fasthome.component.gallery.GalleryRepositoryImpl
 import io.fasthome.component.image_viewer.ImageViewerContract
 import io.fasthome.component.image_viewer.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
+import io.fasthome.component.pick_file.ProfileImageUtil
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
@@ -27,6 +32,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.ProfileGuestImagesNavigationContract
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.mapper.ImagesMapper
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.kotlin.switchJob
 import io.fasthome.fenestram_messenger.util.model.MetaInfo
@@ -46,7 +52,8 @@ class ProfileGuestViewModel(
     private val permissionInterface: PermissionInterface,
     private val groupParticipantsInterface: GroupParticipantsInterface,
     private val pickFileInterface: PickFileInterface,
-    private val messengerFeature: MessengerFeature
+    private val messengerFeature: MessengerFeature,
+    private val galleryRepository: GalleryRepository,
 ) : BaseViewModel<ProfileGuestState, ProfileGuestEvent>(router, requestParams) {
 
     class Features(
@@ -76,8 +83,35 @@ class ProfileGuestViewModel(
             )
         }
 
-    private var imageFiles : List<FileItem> = listOf()
-    private var documentFiles : List<FileItem> = listOf()
+    private val fileSelectorLauncher = registerScreen(FileSelectorNavigationContract) { result ->
+        when (result) {
+            is FileSelectorNavigationContract.Result.Attach -> {
+                viewModelScope.launch {
+                    val imageContent =
+                        result.images.firstOrNull() as? UriLoadableContent ?: return@launch
+                    galleryRepository.getFileFromGalleryUri(imageContent.uri)
+                        .onSuccess { imageFile ->
+                            GalleryRepositoryImpl
+                            updateState { state ->
+                                state.copy(
+                                    avatarContent = Content.FileContent(imageFile),
+                                    chatImageFile = imageFile
+                                )
+                            }
+                        }
+                }
+            }
+            FileSelectorNavigationContract.Result.OpenCamera -> {
+                sendEvent(ProfileGuestEvent.OpenCamera)
+            }
+            FileSelectorNavigationContract.Result.OpenGallery -> {
+                sendEvent(ProfileGuestEvent.OpenImagePicker)
+            }
+        }
+    }
+
+    private var imageFiles: List<FileItem> = listOf()
+    private var documentFiles: List<FileItem> = listOf()
     private var downloadFileJob by switchJob()
 
     init {
@@ -141,13 +175,17 @@ class ProfileGuestViewModel(
 
             imageFiles = images.reversed()
 
-            val files = profileGuestInteractor.getAttachFiles(chatId = chatId).getOrDefault(listOf())
+            val files =
+                profileGuestInteractor.getAttachFiles(chatId = chatId).getOrDefault(listOf())
 
             documentFiles = files.reversed()
 
             updateState { state ->
                 state.copy(
-                    recentImages = ProfileGuestMapper.mapPreviewFilesToRecentImages(spanCount, imageFiles),
+                    recentImages = ProfileGuestMapper.mapPreviewFilesToRecentImages(
+                        spanCount,
+                        imageFiles
+                    ),
                     recentImagesCount = PrintableText.PluralResource(
                         R.plurals.image_quantity,
                         images.size,
@@ -165,16 +203,19 @@ class ProfileGuestViewModel(
     }
 
     fun onShowFilesClicked() {
-        filesProfileGuestLauncher.launch(ProfileGuestFilesNavigationContract.Params(
-            docs = documentFiles
-        ))
+        filesProfileGuestLauncher.launch(
+            ProfileGuestFilesNavigationContract.Params(
+                docs = documentFiles
+            )
+        )
     }
 
     fun onShowPhotosClicked() {
         imagesProfileGuestLauncher.launch(
             ProfileGuestImagesNavigationContract.Params(
-            images = imageFiles
-        ))
+                images = imageFiles
+            )
+        )
     }
 
     fun onDeleteChatClicked() {
@@ -279,7 +320,22 @@ class ProfileGuestViewModel(
 
     fun onAvatarClicked() {
         if (currentViewState.editMode && params.isGroup) {
-            pickFileInterface.pickFile()
+            viewModelScope.launch {
+                val permissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    permissionInterface.request(Manifest.permission.READ_MEDIA_IMAGES)
+                } else {
+                    permissionInterface.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+                if (permissionGranted) {
+                    fileSelectorLauncher.launch(
+                        FileSelectorNavigationContract.Params(
+                            selectedImages = emptyList(),
+                            maxImagesCount = FileSelectorNavigationContract.Params.IMAGES_COUNT_ONE,
+                            canSelectFiles = false
+                        )
+                    )
+                }
+            }
         } else {
             if (currentViewState.userAvatar.isNotEmpty() || currentViewState.avatarContent != null) {
                 imageViewerLauncher.launch(
@@ -357,9 +413,18 @@ class ProfileGuestViewModel(
         sendEvent(ProfileGuestEvent.CopyText(text, toastMessage))
     }
 
+    fun selectFromCamera() {
+        pickFileInterface.launchCamera()
+    }
+
+    fun selectFromGallery() {
+        pickFileInterface.pickFile()
+    }
+
+
     @Parcelize
     class SavedState(
         val avatarContent: Content?,
-        val runEdit: Boolean
+        val runEdit: Boolean,
     ) : Parcelable
 }
