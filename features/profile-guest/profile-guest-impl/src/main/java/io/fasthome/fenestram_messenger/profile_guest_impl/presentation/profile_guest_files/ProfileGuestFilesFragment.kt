@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
@@ -13,6 +14,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestFilesBinding
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 
 class ProfileGuestFilesFragment :
     BaseFragment<ProfileGuestFilesState, ProfileGuestFilesEvent>(R.layout.fragment_profile_guest_files) {
@@ -55,8 +57,18 @@ class ProfileGuestFilesFragment :
         })
     }
 
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.profileGuestFilesAppbar.setTitleTextColor(appTheme.text0Color())
+        binding.profileGuestFilesAppbar.setNavigationIconTint(appTheme.text0Color())
+        binding.profileGuestFilesAppbar.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
+    }
+
     override fun renderState(state: ProfileGuestFilesState) {
-        recentFilesAdapter.items = state.files
+        recentFilesAdapter.items = state.files.map {
+            it.textColor = getTheme().text0Color()
+            it
+        }
     }
 
     override fun handleEvent(event: ProfileGuestFilesEvent) = noEventsExpected()

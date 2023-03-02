@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -23,6 +24,10 @@ fun createFilesAdapterDelegate(onDownloadDocument: (meta: MetaInfo, progressList
         RecentFileItemBinding::inflate,
     ) {
         bindWithBinding {
+            item.textColor?.let { color ->
+                fileName.setTextColor(color)
+                progressBar.progressTintList = ColorStateList.valueOf(color)
+            }
             renderDocument(
                 metaInfo = item.metaInfo,
                 progressBar = progressBar,

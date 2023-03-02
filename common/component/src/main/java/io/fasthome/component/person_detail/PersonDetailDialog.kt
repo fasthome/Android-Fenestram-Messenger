@@ -6,6 +6,7 @@ import io.fasthome.component.R
 import io.fasthome.component.databinding.DialogPersonDetailBinding
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.copyTextToClipBoard
 import io.fasthome.fenestram_messenger.util.onClick
@@ -16,6 +17,7 @@ object PersonDetailDialog {
 
     fun create(
         fragment: Fragment,
+        theme: Theme,
         personDetail: PersonDetail,
         launchFaceCallClicked: () -> Unit,
         launchCallClicked: () -> Unit,
@@ -27,7 +29,7 @@ object PersonDetailDialog {
 
         with(personDetailBinding) {
 
-            val dialog = BottomSheetDialogBuilder(fragment)
+            val dialog = BottomSheetDialogBuilder(fragment, theme.bg1Color())
                 .addCustomView(root)
                 .setCancelable(true)
 
@@ -77,6 +79,10 @@ object PersonDetailDialog {
                 launchConversationClicked(personDetail)
                 dialog.dismiss()
             }
+
+            // Theme
+            name.setTextColor(theme.text0Color())
+            launchConversation.background.setTint(theme.bg2Color())
 
             latestDialog = dialog.build()
             return latestDialog!!

@@ -9,6 +9,7 @@
     android:scrollbars="none">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/dark1"
@@ -111,6 +112,7 @@
                 android:id="@+id/profile_guest_phone"
                 style="@style/Text.Blue"
                 android:layout_width="wrap_content"
+                tools:text="+79876543210"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="@id/profile_guest_name_error"
                 app:layout_constraintTop_toBottomOf="@id/profile_guest_name_error" />
@@ -189,6 +191,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recent_files_header"
+                tools:itemCount="2"
                 tools:listitem="@layout/recent_file_item" />
 
             <include
@@ -210,9 +213,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recent_images_header"
-                tools:itemCount="6"
-                tools:listitem="@layout/recent_image_item"
-                tools:spanCount="3" />
+                tools:itemCount="1"
+                tools:listitem="@layout/recent_image_item" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatButton

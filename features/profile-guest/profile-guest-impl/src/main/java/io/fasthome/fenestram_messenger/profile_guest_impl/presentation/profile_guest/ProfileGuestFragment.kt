@@ -31,6 +31,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_g
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentImagesAdapter
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.EditTextStatus
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.model.TextViewKey
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import org.koin.android.ext.android.inject
@@ -137,9 +138,23 @@ class ProfileGuestFragment :
         }
     }
 
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.profileGuestName.setTextColor(appTheme.text0Color())
+        binding.clMain.background.setTint(appTheme.bg1Color())
+        binding.recentFilesHeader.recentHeader.background.setTint(appTheme.bg3Color())
+        binding.recentFilesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
+        binding.recentImagesHeader.recentHeader.background.setTint(appTheme.bg3Color())
+        binding.recentImagesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
+        binding.buttonDeleteChat.background.setTint(appTheme.bg3Color())
+    }
+
     override fun renderState(state: ProfileGuestState) = with(binding) {
         recentImagesAdapter.items = state.recentImages
-        recentFilesAdapter.items = state.recentFiles
+        recentFilesAdapter.items = state.recentFiles.map {
+            it.textColor = getTheme().text0Color()
+            it
+        }
 
         participantsContainer.isVisible = state.isGroup
         profileGuestPhone.isVisible = !state.isGroup
@@ -149,25 +164,25 @@ class ProfileGuestFragment :
         profileGuestName.isFocusableInTouchMode = state.editMode
         profileGuestName.isCursorVisible = state.editMode
 
-        profileGuestName.background.setTint(
-            ContextCompat.getColor(
-                requireContext(),
-                when (state.profileGuestStatus) {
-                    EditTextStatus.Idle -> {
-                        profileGuestNameError.isVisible = false
-                        R.color.dark1
-                    }
-                    EditTextStatus.Editable -> {
-                        profileGuestNameError.isVisible = false
-                        R.color.white
-                    }
-                    EditTextStatus.Error -> {
-                        profileGuestNameError.isVisible = true
+        when (state.profileGuestStatus) {
+            EditTextStatus.Idle -> {
+                profileGuestNameError.isVisible = false
+                profileGuestName.background.setTint(getTheme().bg1Color())
+            }
+            EditTextStatus.Editable -> {
+                profileGuestNameError.isVisible = false
+                profileGuestName.background.setTint(getTheme().text0Color())
+            }
+            EditTextStatus.Error -> {
+                profileGuestNameError.isVisible = true
+                profileGuestName.background.setTint(
+                    ContextCompat.getColor(
+                        requireContext(),
                         R.color.red
-                    }
-                }
-            )
-        )
+                    )
+                )
+            }
+        }
 
         if (state.isGroup) {
             profileGuestNickname.setTextColor(

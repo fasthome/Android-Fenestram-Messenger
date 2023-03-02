@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
@@ -10,6 +11,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestImagesBinding
 import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_images.adapter.ImagesAdapter
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.getSpanCount
 
 class ProfileGuestImagesFragment :
@@ -38,6 +40,13 @@ class ProfileGuestImagesFragment :
         profileGuestImagesAppbar.setNavigationOnClickListener {
             vm.navigateBack()
         }
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.profileGuestImagesAppbar.setTitleTextColor(appTheme.text0Color())
+        binding.profileGuestImagesAppbar.setNavigationIconTint(appTheme.text0Color())
+        binding.profileGuestImagesAppbar.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
     }
 
     override fun renderState(state: ProfileGuestImagesState) {
