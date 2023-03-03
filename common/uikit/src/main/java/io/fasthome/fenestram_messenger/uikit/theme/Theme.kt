@@ -1,11 +1,11 @@
 package io.fasthome.fenestram_messenger.uikit.theme
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Shader.TileMode
-import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.widget.TextView
 import com.dolatkia.animatedThemeManager.AppTheme
@@ -59,6 +59,7 @@ interface Theme : AppTheme {
     // Conversation
     fun bgGradient_Top10_BottomLeft10(): Drawable
     fun shapeBg3_a85_Top10_BottomRight10(): Drawable
+
 }
 
 class LightTheme : Theme {
