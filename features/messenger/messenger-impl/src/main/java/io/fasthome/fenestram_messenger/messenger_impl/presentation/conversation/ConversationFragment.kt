@@ -3,12 +3,15 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.AnimationUtils
+import android.webkit.WebSettings.TextSize
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
@@ -47,6 +50,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.*
 import java.time.ZonedDateTime
 
@@ -79,7 +83,8 @@ class ConversationFragment :
     private val tagsAdapter = TagParticipantsAdapter(
         onUserClicked = {
             vm.onSelectUserTagClicked(it)
-        }
+        },
+        nameThemeColor = getTheme().text0Color()
     )
 
     private val conversationAdapter = ConversationAdapter(
@@ -323,6 +328,19 @@ class ConversationFragment :
 
     }
 
+    override fun syncTheme(appTheme: Theme) {
+        vm.currentTheme = appTheme
+        with(binding) {
+            rvChatUserTags.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
+            inputMessage.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
+            inputMessage.setTextColor(appTheme.text0Color())
+            profileToolBar.setBackgroundColor(appTheme.bg3Color())
+            username.setTextColor(appTheme.text0Color())
+            clEditMessage.backgroundTintList = ColorStateList.valueOf(appTheme.bg0Color())
+            tvTextToEdit.setTextColor(appTheme.text0Color())
+            ivCloseEdit.imageTintList = ColorStateList.valueOf(appTheme.bg2Color())
+        }
+    }
 
     override fun handleEvent(event: ConversationEvent) {
         when (event) {
@@ -344,6 +362,11 @@ class ConversationFragment :
                 val popupMenu = PopupMenu.create(menuBinding.conversationMenu)
                 popupMenu.showAsDropDown(binding.dropdownMenu, 0, (-45).dp)
 
+                val theme = getTheme()
+                menuBinding.conversationMenu.background = theme.shapeBg2_10dp()
+                menuBinding.edit.setTextColor(theme.text0Color())
+                menuBinding.delete.setTextColor(theme.text0Color())
+
                 menuBinding.delete.onClick {
                     vm.showDialog()
                     popupMenu.dismiss()
@@ -363,12 +386,13 @@ class ConversationFragment :
                 else
                     menuBinding.delete.setPrintableText(
                         PrintableText.StringResource(
-                            R.string.conversation_delete_from_chat
+                            R.string.conversation_delete_from_chat_history
                         )
                     )
             }
             is ConversationEvent.ShowDeleteChatDialog -> AcceptDialog.create(
                 fragment = this,
+                theme = getTheme(),
                 titleText = PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 accept = vm::deleteChat,
                 id = event.id
@@ -413,6 +437,7 @@ class ConversationFragment :
             is ConversationEvent.ShowErrorSentDialog -> {
                 ErrorSentDialog.create(
                     fragment = this,
+                    theme = getTheme(),
                     onRetryClicked = {
                         vm.onRetrySentClicked(event.conversationViewItem)
                     }, onCancelClicked = {
@@ -443,7 +468,8 @@ class ConversationFragment :
             is ConversationEvent.UpdateInputUserTag -> {
                 var text = binding.inputMessage.text.toString()
                 if (text.isNotEmpty()) {
-                    val tagStartCharIndex = text.lastIndexOf('@', binding.inputMessage.selectionStart - 1) + 1
+                    val tagStartCharIndex =
+                        text.lastIndexOf('@', binding.inputMessage.selectionStart - 1) + 1
                     var tagEndCharIndex = text.indexOfAny(listOf(" ", "@"), tagStartCharIndex)
                     if (tagEndCharIndex == -1) tagEndCharIndex = text.length
 
@@ -536,10 +562,11 @@ class ConversationFragment :
 
     private fun replyImageDialog(
         conversationViewItem: ConversationViewItem,
-        permittedReactions: List<PermittedReactionViewItem>
+        permittedReactions: List<PermittedReactionViewItem>,
     ) =
         MessageActionDialog.create(
             fragment = this,
+            theme = getTheme(),
             permittedReactions = permittedReactions,
             onReactionClicked = { vm.postReaction(conversationViewItem.id, it) },
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
@@ -558,7 +585,7 @@ class ConversationFragment :
 
     private fun replyTextDialog(
         conversationViewItem: ConversationViewItem,
-        permittedReactions: List<PermittedReactionViewItem>
+        permittedReactions: List<PermittedReactionViewItem>,
     ) {
 
         val canEdit =
@@ -567,6 +594,7 @@ class ConversationFragment :
 
         MessageActionDialog.create(
             fragment = this,
+            theme = getTheme(),
             permittedReactions = permittedReactions,
             onReactionClicked = { vm.postReaction(conversationViewItem.id, it) },
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
@@ -630,17 +658,13 @@ class ConversationFragment :
                         tvTextToEdit.setText(R.string.forward_message)
                     }
                     is ConversationTextItem -> {
-                        tvEditMessageTitle.setTextAppearance(R.style.Text_Gray_12sp)
-                        tvTextToEdit.setTextAppearance(R.style.Text_White_12sp)
+                        tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
+                        val theme = getTheme()
+                        tvTextToEdit.setTextColor(theme.text0Color())
+                        tvTextToEdit.setTextSize(TypedValue.COMPLEX_UNIT_SP,12f)
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
-                        tvTextToEdit.setTextColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.white
-                            )
-                        )
                         tvTextToEdit.text = getPrintableRawText(message.content)
                     }
                     is ConversationImageItem -> {

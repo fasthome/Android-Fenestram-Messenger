@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
             android:minWidth="48dp"
             android:minHeight="24dp"
             android:orientation="vertical"

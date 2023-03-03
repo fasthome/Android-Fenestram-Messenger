@@ -8,7 +8,9 @@
     <color name="bg_3_dark">#251E50</color>
     <color name="text_0_dark">#FFFFFF</color>
     <color name="text_1_dark">#717394</color>
-    <color name="stroke_2_dark">#40417A</color>
+    <color name="gradient_start_color_dark">#4C3E77</color>
+    <color name="gradient_end_color_dark">#3D5085</color>
     <color name="button_inactive_dark">#332F6B</color>
+    <color name="stroke_2_dark">#40417A</color>
 
 </resources>

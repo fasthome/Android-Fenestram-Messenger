@@ -1,6 +1,7 @@
 package io.fasthome.component.file_selector
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
@@ -9,6 +10,7 @@ import io.fasthome.fenestram_messenger.presentation.base.databinding.FragmentBot
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseBottomSheetFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.view_action.BottomViewAction
 import io.fasthome.fenestram_messenger.util.view_action.FileSelectorButtonEvent
@@ -32,6 +34,11 @@ open class BottomSheetFragmentWithButton(
     private val bottomViewActions: BottomViewAction<FileSelectorButtonEvent> by inject()
     private var isHaveChanges: Boolean = false
 
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.includeBottomInput.clInput.backgroundTintList = ColorStateList.valueOf(appTheme.bg0Color())
+    }
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setStateCallback(StateChangeListener { newState ->
@@ -90,7 +97,7 @@ open class BottomSheetFragmentWithButton(
     private fun openResetDialog() {
         if (!dismissed) {
             if (isHaveChanges) {
-                FileSelectorCancelDialog.create(this) {
+                FileSelectorCancelDialog.create(this, getTheme()) {
                     dismissed = true
                     router.exit()
                 }.show()

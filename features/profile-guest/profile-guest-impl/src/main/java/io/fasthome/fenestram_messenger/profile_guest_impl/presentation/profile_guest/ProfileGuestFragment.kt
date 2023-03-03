@@ -253,6 +253,7 @@ class ProfileGuestFragment :
         when (event) {
             is ProfileGuestEvent.DeleteChatEvent -> AcceptDialog.create(
                 this,
+                theme = getTheme(),
                 PrintableText.StringResource(R.string.common_delete_chat_dialog),
                 vm::deleteChat,
                 id = event.id

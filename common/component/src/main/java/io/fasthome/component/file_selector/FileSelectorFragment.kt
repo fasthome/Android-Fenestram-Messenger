@@ -3,6 +3,7 @@
  */
 package io.fasthome.component.file_selector
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -17,6 +18,7 @@ import io.fasthome.component.databinding.FragmentFileSelectorBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.SingleToast
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.onClick
@@ -63,6 +65,22 @@ class FileSelectorFragment :
         ibCancel.onClick {
             vm.exitNoResult()
         }
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        val bg03Color = ColorStateList.valueOf(appTheme.bg3Color())
+        val text0Color = ColorStateList.valueOf(appTheme.text0Color())
+        binding.attachFile.backgroundTintList = bg03Color
+        binding.fromGallery.backgroundTintList = bg03Color
+        binding.fromCamera.backgroundTintList = bg03Color
+        binding.fromGallery.imageTintList = text0Color
+        binding.fromCamera.imageTintList = text0Color
+        binding.attachFile.imageTintList = text0Color
+        binding.clActionButtons.backgroundTintList = ColorStateList.valueOf(appTheme.bg0Color())
+        binding.toolbarTitle.setTextColor(appTheme.text0Color())
+        binding.toolbar.backgroundTintList = bg03Color
+        binding.ibCancel.imageTintList = text0Color
     }
 
     override fun onResume() {

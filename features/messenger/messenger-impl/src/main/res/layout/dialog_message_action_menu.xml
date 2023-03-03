@@ -55,7 +55,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/reply_message"
-        style="@style/BottomActionDialogButton"
+        style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -67,7 +67,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/forward_message"
-        style="@style/BottomActionDialogButton"
+        style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"

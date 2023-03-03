@@ -110,7 +110,7 @@ class MainActivity : ThemeActivity() {
     override fun syncTheme(appTheme: AppTheme) {
         appTheme as Theme
         appTheme.context = applicationContext
-        binding.root.background = appTheme.bg0Color().toDrawable()
+        binding.root.background = appTheme.bg1Color().toDrawable()
     }
 
     override fun onPause() {

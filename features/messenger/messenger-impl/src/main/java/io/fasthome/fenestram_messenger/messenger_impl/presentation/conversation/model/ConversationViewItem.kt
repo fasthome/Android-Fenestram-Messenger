@@ -1,14 +1,31 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model
 
+import android.graphics.drawable.Drawable
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.model.MetaInfo
-import io.fasthome.fenestram_messenger.util.fileSizeInMb
 import java.io.File
 import java.time.ZonedDateTime
 
 typealias OnStatusChanged = (SentStatus) -> Unit
+
+data class ConversationSelfItemTheme(
+    val background: Drawable,
+)
+
+data class ConversationReceiveItemTheme(
+    val background: Drawable,
+    val textColor: Int,
+    val documentColor: Int,
+)
+
+data class ConversationGroupItemTheme(
+    val background: Drawable,
+    val textColor: Int,
+    val documentColor: Int,
+)
+
 
 interface ConversationImageItem {
     val id: Long
@@ -48,6 +65,7 @@ sealed interface ConversationViewItem {
     sealed class Self : ConversationViewItem {
         abstract val localId: String
         abstract val metaInfo: List<MetaInfo>
+        abstract val conversationSelfItemTheme: ConversationSelfItemTheme?
 
         data class Text(
             override val id: Long,
@@ -64,6 +82,7 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList(),
+            override val conversationSelfItemTheme: ConversationSelfItemTheme? = null,
         ) : Self(), ConversationTextItem
 
         data class TextReplyOnImage(
@@ -81,6 +100,7 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList(),
+            override val conversationSelfItemTheme: ConversationSelfItemTheme? = null,
         ) : Self(), ConversationTextItem
 
         data class Forward(
@@ -98,6 +118,7 @@ sealed interface ConversationViewItem {
             override val reactions: List<ReactionsViewItem>,
             val forwardMessage: ConversationViewItem,
             override val metaInfo: List<MetaInfo> = emptyList(),
+            override val conversationSelfItemTheme: ConversationSelfItemTheme? = null,
         ) : Self()
 
         data class Image(
@@ -115,6 +136,7 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo> = emptyList(),
+            override val conversationSelfItemTheme: ConversationSelfItemTheme? = null,
         ) : Self(), ConversationImageItem
 
         data class Document(
@@ -132,11 +154,15 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
-            override val metaInfo: List<MetaInfo>
+            override val metaInfo: List<MetaInfo>,
+            override val conversationSelfItemTheme: ConversationSelfItemTheme? = null,
         ) : Self(), ConversationDocumentItem
     }
 
     sealed class Receive : ConversationViewItem {
+
+        abstract val conversationReceiveItemTheme: ConversationReceiveItemTheme?
+
         data class Text(
             override val id: Long,
             override val content: PrintableText,
@@ -150,6 +176,7 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
+            override val conversationReceiveItemTheme: ConversationReceiveItemTheme? = null,
         ) : Receive(), ConversationTextItem
 
         data class Forward(
@@ -164,7 +191,8 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
-            val forwardMessage: ConversationViewItem
+            val forwardMessage: ConversationViewItem,
+            override val conversationReceiveItemTheme: ConversationReceiveItemTheme? = null,
         ) : Receive()
 
         data class TextReplyOnImage(
@@ -180,6 +208,7 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
+            override val conversationReceiveItemTheme: ConversationReceiveItemTheme? = null,
         ) : Receive(), ConversationTextItem
 
         data class Image(
@@ -195,6 +224,7 @@ sealed interface ConversationViewItem {
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo>,
+            override val conversationReceiveItemTheme: ConversationReceiveItemTheme? = null,
         ) : Receive(), ConversationImageItem
 
         data class Document(
@@ -210,7 +240,8 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem? = null,
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
-            override val metaInfo: List<MetaInfo>
+            override val metaInfo: List<MetaInfo>,
+            override val conversationReceiveItemTheme: ConversationReceiveItemTheme? = null,
         ) : Receive(), ConversationDocumentItem
     }
 
@@ -219,6 +250,7 @@ sealed interface ConversationViewItem {
         open val avatar: String,
         open val phone: String,
         open val userId: Long,
+        open val conversationGroupItemTheme: ConversationGroupItemTheme?,
     ) : ConversationViewItem {
         data class Text(
             override val id: Long,
@@ -236,7 +268,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val reactions: List<ReactionsViewItem>,
             override val replyMessage: ConversationViewItem?,
-        ) : Group(userName, avatar, phone, userId), ConversationTextItem
+            override val conversationGroupItemTheme: ConversationGroupItemTheme?,
+        ) : Group(userName, avatar, phone, userId, conversationGroupItemTheme), ConversationTextItem
 
         data class Forward(
             override val id: Long,
@@ -253,8 +286,9 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override var userName: PrintableText,
             override val reactions: List<ReactionsViewItem>,
-            val forwardMessage: ConversationViewItem
-        ) : Group(userName, avatar, phone, userId)
+            val forwardMessage: ConversationViewItem,
+            override val conversationGroupItemTheme: ConversationGroupItemTheme?,
+        ) : Group(userName, avatar, phone, userId, conversationGroupItemTheme)
 
         data class TextReplyOnImage(
             override val id: Long,
@@ -272,7 +306,8 @@ sealed interface ConversationViewItem {
             override val messageType: String?,
             override val reactions: List<ReactionsViewItem>,
             override val replyMessage: ConversationViewItem?,
-        ) : Group(userName, avatar, phone, userId), ConversationTextItem
+            override val conversationGroupItemTheme: ConversationGroupItemTheme?,
+        ) : Group(userName, avatar, phone, userId, conversationGroupItemTheme), ConversationTextItem
 
         data class Image(
             override val id: Long,
@@ -290,7 +325,9 @@ sealed interface ConversationViewItem {
             override val replyMessage: ConversationViewItem?,
             override val reactions: List<ReactionsViewItem>,
             override val metaInfo: List<MetaInfo>,
-        ) : Group(userName, avatar, phone, userId), ConversationImageItem
+            override val conversationGroupItemTheme: ConversationGroupItemTheme?,
+        ) : Group(userName, avatar, phone, userId, conversationGroupItemTheme),
+            ConversationImageItem
 
         data class Document(
             override val id: Long,
@@ -308,8 +345,10 @@ sealed interface ConversationViewItem {
             override val messageType: String? = null,
             override val replyMessage: ConversationViewItem? = null,
             override val reactions: List<ReactionsViewItem>,
-            override val metaInfo: List<MetaInfo> = emptyList()
-        ) : Group(userName, avatar, phone, userId), ConversationDocumentItem
+            override val metaInfo: List<MetaInfo> = emptyList(),
+            override val conversationGroupItemTheme: ConversationGroupItemTheme?,
+        ) : Group(userName, avatar, phone, userId, conversationGroupItemTheme),
+            ConversationDocumentItem
     }
 
     data class System(

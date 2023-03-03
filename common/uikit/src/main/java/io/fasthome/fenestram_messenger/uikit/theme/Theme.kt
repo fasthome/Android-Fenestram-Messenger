@@ -14,10 +14,12 @@ import io.fasthome.fenestram_messenger.util.android.color
 import io.fasthome.fenestram_messenger.util.android.colorStateList
 import io.fasthome.fenestram_messenger.util.android.drawable
 
+
 interface Theme : AppTheme {
 
     var context: Context
 
+    fun mainActive(): Int
     fun backgroundColor(): Int
     fun backgroundGeometry() : Drawable
 
@@ -30,6 +32,7 @@ interface Theme : AppTheme {
     fun bg1Color(): Int
     fun bg2Color(): Int
     fun bg3Color(): Int
+    fun buttonInactiveColor(): Int
     fun redColor(): Int = context.color(R.color.red)
 
     //Main
@@ -52,11 +55,19 @@ interface Theme : AppTheme {
     fun logoGradient(textView: TextView)
 
     fun shapeBg2_10dp(): Drawable
+
+    // Conversation
+    fun bgGradient_Top10_BottomLeft10(): Drawable
+    fun shapeBg3_Top10_BottomRight10(): Drawable
 }
 
 class LightTheme : Theme {
 
     override lateinit var context: Context
+
+    override fun mainActive(): Int {
+        return context.color(R.color.main_active)
+    }
 
     override fun backgroundColor(): Int {
         return context.color(R.color.background)
@@ -100,6 +111,10 @@ class LightTheme : Theme {
 
     override fun bg3Color(): Int {
         return context.color(R.color.bg_3)
+    }
+
+    override fun buttonInactiveColor(): Int {
+        return context.color(R.color.button_inactive)
     }
 
     override fun navigationViewBackground(): Int {
@@ -160,6 +175,14 @@ class LightTheme : Theme {
         return context.drawable(R.drawable.shape_bg_2_10dp)
     }
 
+    override fun bgGradient_Top10_BottomLeft10(): Drawable {
+        return context.drawable(R.drawable.shape_gradient_top10_bottom_left10)
+    }
+
+    override fun shapeBg3_Top10_BottomRight10(): Drawable {
+        return context.drawable(R.drawable.shape_top10_bottom_right10)
+    }
+
     override fun id(): Int = 1
 
 }
@@ -167,6 +190,10 @@ class LightTheme : Theme {
 class DarkTheme : Theme {
 
     override lateinit var context: Context
+
+    override fun mainActive(): Int {
+        return context.color(R.color.main_active)
+    }
 
     override fun backgroundColor(): Int {
         return context.color(R.color.dark1)
@@ -210,6 +237,10 @@ class DarkTheme : Theme {
 
     override fun bg3Color(): Int {
         return context.color(R.color.bg_3_dark)
+    }
+
+    override fun buttonInactiveColor(): Int {
+        return context.color(R.color.button_inactive_dark)
     }
 
     override fun navigationViewBackground(): Int {
@@ -268,6 +299,14 @@ class DarkTheme : Theme {
 
     override fun shapeBg2_10dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_2_10dp_dark)
+    }
+
+    override fun bgGradient_Top10_BottomLeft10(): Drawable {
+        return context.drawable(R.drawable.shape_gradient_top10_bottom_left10_dark)
+    }
+
+    override fun shapeBg3_Top10_BottomRight10(): Drawable {
+        return context.drawable(R.drawable.shape_top10_bottom_right10_dark)
     }
 
     override fun id(): Int = 2
