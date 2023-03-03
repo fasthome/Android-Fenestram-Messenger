@@ -578,13 +578,13 @@ private fun Theme.getSelfMessageTheme() = ConversationSelfItemTheme(
 )
 
 private fun Theme.getReceiveMessageTheme() = ConversationReceiveItemTheme(
-    background = this.shapeBg3_Top10_BottomRight10(),
+    background = this.shapeBg3_a85_Top10_BottomRight10(),
     textColor = this.text0Color(),
     documentColor = this.text0Color()
 )
 
 private fun Theme.getGroupMessageTheme() = ConversationGroupItemTheme(
-    background = this.shapeBg3_Top10_BottomRight10(),
+    background = this.shapeBg3_a85_Top10_BottomRight10(),
     textColor = this.text0Color(),
     documentColor = this.text0Color()
 )

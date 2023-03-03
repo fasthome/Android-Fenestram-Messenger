@@ -29,7 +29,7 @@ object LogoutDialog {
             cancel.setTextColor(theme.text1Color())
             cancel.background = theme.shapeBg02_5dp()
             delete.setTextColor(theme.redColor())
-            delete.background = theme.shapeBg02_5dp()
+            delete.background.setTint(theme.bg02Color())
             root.background = theme.shapeBg2_20dp()
 
             titleText?.let {
