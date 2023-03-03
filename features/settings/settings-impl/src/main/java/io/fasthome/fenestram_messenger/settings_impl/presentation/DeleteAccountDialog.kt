@@ -20,20 +20,18 @@ object DeleteAccountDialog {
         val errorBinding = DialogDeleteAccountBinding.inflate(fragment.layoutInflater)
 
         with(errorBinding) {
-
-            val dialog = DialogBuilder(fragment)
+            val theme = fragment.getThemeManager()?.getCurrentTheme() as Theme
+            val dialog = DialogBuilder(fragment, theme.bg2Color())
                 .addCustomView(root)
                 .setCancelable(true)
 
-            val theme = fragment.getThemeManager()?.getCurrentTheme() as Theme
 
             title.setTextColor(theme.text0Color())
             description.setTextColor(theme.text0Color())
             cancel.setTextColor(theme.text1Color())
-            cancel.background = theme.shapeBg02_5dp()
+            cancel.background.setTint(theme.bg02Color())
             delete.setTextColor(theme.redColor())
-            delete.background = theme.shapeBg02_5dp()
-            root.background = theme.shapeBg2_20dp()
+            delete.background.setTint(theme.bg02Color())
 
             titleText?.let {
                 title.setPrintableText(it)

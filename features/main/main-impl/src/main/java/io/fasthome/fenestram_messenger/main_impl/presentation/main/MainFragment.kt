@@ -92,6 +92,7 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
         appTheme.context = requireActivity().applicationContext
         binding.content.background = appTheme.bg0Color().toDrawable()
         binding.navigationView.setBackgroundResource(appTheme.navigationViewBackground())
+        binding.root.background = appTheme.bg0Color().toDrawable()
     }
 
     override fun updateFabIcon(iconRes: Int?, badgeCount: Int) {

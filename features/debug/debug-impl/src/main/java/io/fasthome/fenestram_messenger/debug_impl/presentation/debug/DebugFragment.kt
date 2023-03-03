@@ -167,6 +167,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
                 PersonDetailDialog
                     .create(
                         fragment = this,
+                        theme = getTheme(),
                         personDetail = event.selectedPerson,
                         launchFaceCallClicked = {
                             //TODO

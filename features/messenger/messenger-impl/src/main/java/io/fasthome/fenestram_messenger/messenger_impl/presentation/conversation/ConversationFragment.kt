@@ -419,6 +419,7 @@ class ConversationFragment :
                     PersonDetailDialog
                         .create(
                             fragment = this,
+                            theme = getTheme(),
                             personDetail = event.selectedPerson,
                             launchFaceCallClicked = {
                                 //TODO

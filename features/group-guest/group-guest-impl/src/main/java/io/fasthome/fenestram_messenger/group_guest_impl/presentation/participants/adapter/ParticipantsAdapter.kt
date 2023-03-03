@@ -30,6 +30,7 @@ fun createCurrentUserAdapterDelegate() =
         ItemCurrentUserBinding::inflate,
     ) {
         bindWithBinding {
+            item.textColor?.let { it1 -> name.setTextColor(it1) }
             avatar.loadCircle(item.avatar)
             name.setPrintableText(item.name)
         }
@@ -49,6 +50,7 @@ fun createParticipantsAdapter(
         binding.root.setOnClickListener { onAnotherUserClicked(item.userId) }
 
         bindWithBinding {
+            item.textColor?.let { it1 -> name.setTextColor(it1) }
             avatar.loadCircle(item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
             name.setPrintableText(item.name)
         }

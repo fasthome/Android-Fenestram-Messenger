@@ -58,7 +58,7 @@ interface Theme : AppTheme {
 
     // Conversation
     fun bgGradient_Top10_BottomLeft10(): Drawable
-    fun shapeBg3_Top10_BottomRight10(): Drawable
+    fun shapeBg3_a85_Top10_BottomRight10(): Drawable
 }
 
 class LightTheme : Theme {
@@ -179,7 +179,7 @@ class LightTheme : Theme {
         return context.drawable(R.drawable.shape_gradient_top10_bottom_left10)
     }
 
-    override fun shapeBg3_Top10_BottomRight10(): Drawable {
+    override fun shapeBg3_a85_Top10_BottomRight10(): Drawable {
         return context.drawable(R.drawable.shape_top10_bottom_right10)
     }
 
@@ -305,7 +305,7 @@ class DarkTheme : Theme {
         return context.drawable(R.drawable.shape_gradient_top10_bottom_left10_dark)
     }
 
-    override fun shapeBg3_Top10_BottomRight10(): Drawable {
+    override fun shapeBg3_a85_Top10_BottomRight10(): Drawable {
         return context.drawable(R.drawable.shape_top10_bottom_right10_dark)
     }
 
