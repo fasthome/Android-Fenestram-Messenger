@@ -64,7 +64,7 @@ class CreateGroupChatViewModel(
                 return@launch
             }
 
-            when (val result = contactsFeature.getContactsAndUploadContacts()) {
+            when (val result = contactsFeature.getContactsAndUploadContacts()) { // TODO: !!!
                 is CallResult.Error -> {
                     onError(
                         ShowErrorType.Dialog,

@@ -10,7 +10,7 @@ import java.time.ZonedDateTime
 data class Chat(
     val id: Long?,
     val name: String,
-    val users: List<Long>,
+    val users: List<Long?>,
     val messages: List<Message>,
     val time: ZonedDateTime?,
     val avatar: String?,
