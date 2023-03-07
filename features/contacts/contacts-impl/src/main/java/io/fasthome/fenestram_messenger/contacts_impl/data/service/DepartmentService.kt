@@ -29,22 +29,22 @@ class DepartmentService(
             Contact(
                 id = 1,
                 userId = 1,
-                phone = "+79876543210",
+                phone = "+79999999999",
                 userName = "Дмитрий Иванов",
                 user = User(1)
             ),
             Contact(
                 id = 2,
                 userId = 2,
-                phone = "+79876543210",
+                phone = "+79999999999",
                 userName = "Данила Иванов",
                 user = User(2)
             ), Contact(
-                id = 2,
-                userId = 2,
-                phone = "+79876543210",
+                id = 3,
+                userId = 3,
+                phone = "+79999999999",
                 userName = "Владислав Иванов",
-                user = User(2)
+                user = User(3)
             )
         )
         val divisionModels = listOf(

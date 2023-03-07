@@ -15,7 +15,7 @@ data class ContactViewItem(
 
     val backgroundRes: Int
         get() = if (isSelected) {
-            R.color.dark2
+            R.color.gray1_50
         } else {
             android.R.color.transparent
         }
