@@ -49,7 +49,7 @@ class MessengerService(
         )
     }
 
-    suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean): PostChatsResult {
+    suspend fun postChats(name: String, users: List<Long?>, isGroup: Boolean): PostChatsResult {
         return client
             .runPost<PostChatsRequest, BaseResponse<PostChatsResponse>>(
                 path = "chats",

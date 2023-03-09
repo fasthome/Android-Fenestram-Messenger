@@ -21,6 +21,7 @@ import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.RoundedCornersOutlineProvider
 import io.fasthome.fenestram_messenger.util.hideKeyboard
 import io.fasthome.fenestram_messenger.util.model.Bytes
@@ -57,7 +58,7 @@ class CreateInfoFragment :
 
     private val adapter = ContactsAdapter(onItemClicked = {
 
-    }, selectActive = false)
+    }, selectActive = false, textColor = getTheme().text0Color())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,6 +83,10 @@ class CreateInfoFragment :
         chatAvatar.onClick {
             vm.onAvatarClicked()
         }
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
     }
 
     override fun renderState(state: CreateInfoState) {

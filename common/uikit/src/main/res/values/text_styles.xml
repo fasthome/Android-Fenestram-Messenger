@@ -140,6 +140,9 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="Text.Blue.20sp">
+        <item name="android:textSize">20sp</item>
+    </style>
 
     <style name="Text.NewLight">
         <item name="android:textColor">@color/text_1</item>

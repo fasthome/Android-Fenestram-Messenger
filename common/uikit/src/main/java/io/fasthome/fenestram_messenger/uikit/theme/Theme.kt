@@ -21,7 +21,7 @@ interface Theme : AppTheme {
 
     fun mainActive(): Int
     fun backgroundColor(): Int
-    fun backgroundGeometry() : Drawable
+    fun backgroundGeometry(): Drawable
 
     fun text0Color(): Int
     fun text1Color(): Int
@@ -36,7 +36,7 @@ interface Theme : AppTheme {
     fun redColor(): Int = context.color(R.color.red)
 
     //Main
-    fun navigationViewBackground() : Int
+    fun navigationViewBackground(): Int
 
     //Profile
     fun gradientDrawable(): Drawable
@@ -60,6 +60,8 @@ interface Theme : AppTheme {
     fun bgGradient_Top10_BottomLeft10(): Drawable
     fun shapeBg3_a85_Top10_BottomRight10(): Drawable
 
+    // Contacts (Employee)
+    fun bgStroke2_8dp(): Drawable
 }
 
 class LightTheme : Theme {
@@ -182,6 +184,10 @@ class LightTheme : Theme {
 
     override fun shapeBg3_a85_Top10_BottomRight10(): Drawable {
         return context.drawable(R.drawable.shape_top10_bottom_right10)
+    }
+
+    override fun bgStroke2_8dp(): Drawable {
+        return context.drawable(R.drawable.shape_bg_stroke2_8dp)
     }
 
     override fun id(): Int = 1
@@ -308,6 +314,10 @@ class DarkTheme : Theme {
 
     override fun shapeBg3_a85_Top10_BottomRight10(): Drawable {
         return context.drawable(R.drawable.shape_top10_bottom_right10_dark)
+    }
+
+    override fun bgStroke2_8dp(): Drawable {
+        return context.drawable(R.drawable.shape_bg_stroke2_8dp_dark)
     }
 
     override fun id(): Int = 2

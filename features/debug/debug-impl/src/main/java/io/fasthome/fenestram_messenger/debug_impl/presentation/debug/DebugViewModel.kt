@@ -143,12 +143,12 @@ class DebugViewModel(
     }
 
     fun onDeleteContactsClicked() {
-        viewModelScope.launch {
+       /* viewModelScope.launch { // TODO: !!!
             features.contactsFeature.deleteAllContacts()
                 .withErrorHandled(showErrorType = ShowErrorType.Dialog, onSuccess = {
                     sendEvent(DebugEvent.ContactsDeleted)
                 })
-        }
+        }*/
     }
 
     fun onGroupGuestClicked() {

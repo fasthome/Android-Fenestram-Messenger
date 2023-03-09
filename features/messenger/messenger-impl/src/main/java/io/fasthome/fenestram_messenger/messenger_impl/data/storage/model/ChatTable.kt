@@ -19,7 +19,7 @@ class ChatTable(
     @PrimaryKey
     val id: Long?,
     val name: String,
-    val users: List<Long>,
+    val users: List<Long?>,
     val messages: List<String>,
     val time: ZonedDateTime?,
     val avatar: String?,
