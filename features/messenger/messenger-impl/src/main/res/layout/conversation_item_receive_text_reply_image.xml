@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
             android:maxWidth="350dp"
             android:minWidth="48dp"
             android:minHeight="24dp"
@@ -58,7 +58,7 @@
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/geometria"
                     android:maxEms="16"
-                    android:textColor="@color/blue3"
+                    android:textColor="@color/main_active"
                     app:barrierMargin="5dp"
                     tools:text="Ответ на фото\nдля Мария Сергеева" />
 
@@ -74,7 +74,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxWidth="300dp"
-                        tools:itemCount="4"
+                        tools:itemCount="2"
                         tools:listitem="@layout/item_document" />
 
                 </LinearLayout>
@@ -113,6 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/cl_message"
+                tools:itemCount="1"
                 android:layout_alignEnd="@id/cl_message"
                 tools:listitem="@layout/holder_reactions" />
 

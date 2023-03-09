@@ -11,6 +11,7 @@ import io.fasthome.fenestram_messenger.navigation.contract.InterfaceFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.onClick
 
 class GroupParticipantsFragment :
@@ -23,7 +24,8 @@ class GroupParticipantsFragment :
 
     private val adapter = ParticipantsAdapter(
         onMenuClicked = { id -> vm.onMenuClicked(id) },
-        onAnotherUserClicked = { userId -> vm.onAnotherUserClicked(userId) }
+        onAnotherUserClicked = { userId -> vm.onAnotherUserClicked(userId) },
+
     )
 
     private val binding by fragmentViewBinding(FragmentGroupParticipantsBinding::bind)
@@ -43,7 +45,16 @@ class GroupParticipantsFragment :
     }
 
     override fun renderState(state: GroupParticipantsState) {
-        adapter.items = state.participants
+        adapter.items = state.participants.map {
+            it.textColor = getTheme().text0Color()
+            it
+        }
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.recentFileHeaderText.setTextColor(appTheme.text0Color())
+        binding.clBg.background.setTint(appTheme.bg3Color())
     }
 
     override fun handleEvent(event: GroupParticipantsEvent) {
@@ -51,6 +62,7 @@ class GroupParticipantsFragment :
             is GroupParticipantsEvent.MenuOpenEvent -> {
                 UserMenuDialog.create(
                     fragment = this,
+                    theme = getTheme(),
                     delete = vm::onDeleteUserClicked,
                     addToContacts = vm::onAddToContactsClicked,
                     id = event.id,
@@ -63,6 +75,7 @@ class GroupParticipantsFragment :
                     PersonDetailDialog
                         .create(
                             fragment = this,
+                            theme = getTheme(),
                             personDetail = event.selectedPerson,
                             launchFaceCallClicked = {
                                 //TODO

@@ -6,16 +6,18 @@ package io.fasthome.fenestram_messenger.contacts_impl.domain.logic
 import android.Manifest
 import androidx.annotation.RequiresPermission
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.contacts_api.model.DepartmentModel
 import io.fasthome.fenestram_messenger.contacts_impl.data.ContactsLoader
-import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
+import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.DepartmentRepo
 import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.getOrThrow
 
-class ContactsInteractor(
-    private val contactsRepo: ContactsRepo,
+
+class DepartmentInteractor(
+    private val departmentRepo: DepartmentRepo,
+    private val userStorage: UserStorage,
     private val contactsLoader: ContactsLoader,
-    private val userStorage: UserStorage
 ) {
 
     /***
@@ -33,31 +35,16 @@ class ContactsInteractor(
             )
         }
 
-        contactsRepo.uploadContacts(localContacts)
+        departmentRepo.uploadContacts(localContacts)
 
-        return contactsRepo.loadContacts()
+        return departmentRepo.loadContacts()
     }
 
-    /***
-     * Если нам нужно просто получить контакты из ContactsFeature
+    /**
+     * Запрос на получение всех департаментов компании.
      */
-    suspend fun getContacts(): CallResult<List<Contact>> = contactsRepo.loadContacts()
+    suspend fun getDepartments(): CallResult<List<DepartmentModel>> =
+        departmentRepo.getDepartments()
 
-    suspend fun deleteContacts(contactIds: List<Long>): CallResult<Unit> =
-        contactsRepo.deleteContacts(contactIds)
-
-    suspend fun deleteAllContacts(): CallResult<Unit> {
-        val contactIds = getContacts()
-            .getOrThrow()
-            .map { it.id }
-        return deleteContacts(contactIds)
-    }
-
-    suspend fun updateContactName(phoneNumber: String, oldName: String, newName: String) {
-        contactsLoader.updateContactName(phoneNumber.drop(1), oldName, newName)
-        contactsRepo.updateContactName(newName, phoneNumber)
-    }
-
-    suspend fun getSelfUserPhone() = userStorage.getUserPhone()
 
 }

@@ -22,6 +22,7 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.renderLoadingState
@@ -40,15 +41,21 @@ class CreateGroupChatFragment :
 
     private val binding by fragmentViewBinding(FragmentCreateGroupChatBinding::bind)
 
-    private val contactsAdapter = ContactsAdapter(onItemClicked = {
+    private val contactsAdapter = ContactsAdapter(textColor = getTheme().text0Color(),onItemClicked = {
         vm.onContactClicked(it)
     })
 
-    private val addedContactsAdapter = AddedContactsAdapter(onItemClicked = {
+    private val addedContactsAdapter = AddedContactsAdapter(
+        textColor = getTheme().text0Color(),
+        onItemClicked = {
 
     }, onRemoveClicked = {
         vm.onContactRemoveClick(it)
     })
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)

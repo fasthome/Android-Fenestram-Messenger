@@ -7,6 +7,14 @@
         <item quantity="other">%d файлов</item>
     </plurals>
 
+    <plurals name="employee_quantity">
+        <item quantity="one">%d сотрудник</item>
+        <item quantity="two">%d сотрудника</item>
+        <item quantity="few">%d сотрудников</item>
+        <item quantity="many">%d сотрудников</item>
+        <item quantity="other">%d сотрудников</item>
+    </plurals>
+
     <plurals name="image_quantity">
         <item quantity="one">%d изображение</item>
         <item quantity="few">%d изображения</item>

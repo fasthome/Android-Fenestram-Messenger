@@ -19,7 +19,7 @@ object CreateChatDialog {
 
         with(binding) {
 
-            val dialog = BottomSheetDialogBuilder(fragment,theme)
+            val dialog = BottomSheetDialogBuilder(fragment,theme.bg0Color())
                 .addCustomView(root)
                 .setCancelable(true)
 

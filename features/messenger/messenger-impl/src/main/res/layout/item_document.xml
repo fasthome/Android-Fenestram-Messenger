@@ -14,7 +14,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginVertical="8dp"
-        android:alpha="0.3"
+        android:alpha="0.5"
         android:background="@drawable/bg_image_document"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,10 +63,11 @@
 
         <TextView
             android:id="@+id/file_size"
-            style="@style/Text.Gray.12sp"
+            style="@style/Text.White.12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="100dp"
+            android:alpha="0.5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/file_name"
             app:layout_constraintHorizontal_bias="0.0"

@@ -113,7 +113,6 @@ class MainViewModel(
         fragmentsStack.remove(tab)
         fragmentsStack.push(tab)
         val fabVisible = when (tab) {
-            MainFeature.TabType.Contacts,
             MainFeature.TabType.Chats -> true
             else -> false
         }

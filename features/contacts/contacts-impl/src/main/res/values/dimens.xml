@@ -18,12 +18,12 @@
     <dimen name="contacts_header_text_size">20sp</dimen>
 
     <dimen name="contacts_sv_height">50dp</dimen>
-    <dimen name="contacts_input_margin_start_end">30dp</dimen>
+    <dimen name="contacts_input_margin_start_end">20dp</dimen>
     <dimen name="contacts_sv_margin_top">50dp</dimen>
 
     <dimen name="contacts_rv_padding_start_end">30dp</dimen>
 
-    <dimen name="contacts_list_margin_top">15dp</dimen>
+    <dimen name="contacts_list_margin_top">5dp</dimen>
 
     <dimen name="contacts_fab_margin_bottom">20dp</dimen>
 

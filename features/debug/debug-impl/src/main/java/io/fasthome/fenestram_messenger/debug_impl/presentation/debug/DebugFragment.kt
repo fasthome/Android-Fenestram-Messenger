@@ -157,6 +157,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             }
             is DebugEvent.AcceptEnvChangeDialog -> AcceptDialog.create(
                 fragment = this,
+                theme = getTheme(),
                 titleText = PrintableText.StringResource(R.string.debug_rebirth_endpoints),
                 accept = { vm.onEnvironmentChanged(event.endpointsConfig) },
                 id = 0,
@@ -166,6 +167,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
                 PersonDetailDialog
                     .create(
                         fragment = this,
+                        theme = getTheme(),
                         personDetail = event.selectedPerson,
                         launchFaceCallClicked = {
                             //TODO

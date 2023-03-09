@@ -66,7 +66,7 @@ class Link {
     }
 
     companion object {
-        val DEFAULT_COLOR = Color.parseColor("#5EA4FF")
+        val DEFAULT_COLOR = Color.parseColor("#0066CC")
         const val DEFAULT_ALPHA = .15f
     }
 }

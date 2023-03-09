@@ -27,8 +27,8 @@ class HooliBottomNavigation : BottomNavigationView {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         tabIndicator.post {
-            val menu = menu.getItem(defaultIndicatorPosition)
-            val itemView = findViewById<BottomNavigationItemView>(menu.itemId)
+            val selectedMenu = menu.findItem(selectedItemId)
+            val itemView = findViewById<BottomNavigationItemView>(selectedMenu.itemId)
             tabIndicator.setNewPosition(itemView, true)
         }
     }

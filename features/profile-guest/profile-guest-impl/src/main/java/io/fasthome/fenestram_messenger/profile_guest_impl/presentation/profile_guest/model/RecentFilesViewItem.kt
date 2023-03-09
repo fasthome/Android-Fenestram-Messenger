@@ -4,4 +4,6 @@ import io.fasthome.fenestram_messenger.util.model.MetaInfo
 
 data class RecentFilesViewItem(
     val metaInfo: MetaInfo
-)
+) {
+    var textColor: Int? = null
+}

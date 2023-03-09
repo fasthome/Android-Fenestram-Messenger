@@ -3,8 +3,7 @@ package io.fasthome.fenestram_messenger.onboarding_impl.presentation.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import io.fasthome.fenestram_messenger.onboarding_impl.R
 import io.fasthome.fenestram_messenger.onboarding_impl.databinding.FragmentOnboardingBinding
@@ -12,11 +11,10 @@ import io.fasthome.fenestram_messenger.onboarding_impl.presentation.onboarding.a
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
-import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.setPrintableText
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class OnboardingFragment :
     BaseFragment<OnboardingState, OnboardingEvent>(R.layout.fragment_onboarding) {
@@ -32,16 +30,17 @@ class OnboardingFragment :
 
         with(binding) {
             viewPager2.adapter = onboardingAdapter
+            (viewPager2.getChildAt(0) as RecyclerView).itemAnimator = null
             indicator.setViewPager2(viewPager2)
             skipOnboarding.setOnClickListener() {
                 vm.skipOnboarding()
             }
             viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
-                    if (position == PageLists.introSlides.size - 1) {
+                    if (position == 2) {
                         buttonOnb.setPrintableText(PrintableText.StringResource(R.string.onboarding_letsgo_button))
                         skipOnboarding.isVisible = false
-                        buttonOnb.setOnClickListener(){
+                        buttonOnb.setOnClickListener() {
                             vm.skipOnboarding()
                         }
                     } else {
@@ -55,10 +54,16 @@ class OnboardingFragment :
                 }
             })
         }
-
-
     }
 
+    override fun syncTheme(appTheme: Theme): Unit = with(binding) {
+        appTheme.context = requireContext()
+        layout.setBackgroundColor(appTheme.bg0Color())
+        skipOnboarding.setTextColor(appTheme.buttonInactiveColor())
+        indicator.dotsColor = appTheme.buttonInactiveColor()
+        indicator.selectedDotColor = appTheme.buttonInactiveColor()
+        vm.updatePagerTextColor(appTheme.text0Color())
+    }
 
     override fun renderState(state: OnboardingState) = with(binding) {
         onboardingAdapter.items = state.onboardingList

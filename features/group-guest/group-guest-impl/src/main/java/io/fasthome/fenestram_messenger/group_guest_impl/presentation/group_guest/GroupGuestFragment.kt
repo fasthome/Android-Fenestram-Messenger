@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_gues
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -18,6 +19,7 @@ import io.fasthome.fenestram_messenger.group_guest_impl.presentation.group_guest
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.onClick
 
 class GroupGuestFragment :
@@ -49,6 +51,12 @@ class GroupGuestFragment :
             }
         }
         contactsAdapter.notifyDataSetChanged()
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.root.backgroundTintList = ColorStateList.valueOf(appTheme.bg1Color())
+        binding.toolbar.setTextColor(appTheme.text0Color())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {

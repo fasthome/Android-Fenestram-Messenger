@@ -46,7 +46,7 @@
             android:paddingHorizontal="15dp"
             android:paddingVertical="5dp"
             android:orientation="vertical"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
             android:maxWidth="300dp"
             app:layout_constraintWidth_max="300dp"
             app:layout_constraintStart_toEndOf="@id/avatar"
@@ -55,6 +55,7 @@
             <TextView
                 android:id="@+id/username"
                 style="@style/Text.Light.14sp"
+                android:textColor="@color/text_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Мария Сергеевна"
@@ -75,6 +76,7 @@
                 android:id="@+id/list_reactions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                tools:itemCount="1"
                 tools:listitem="@layout/holder_reactions"
                 android:layout_below="@id/rv_docs"
                 android:layout_alignEnd="@id/rv_docs" />
@@ -89,7 +91,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="4dp"
             android:text="@string/timeviewcheck"
-            android:textSize="11sp"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@id/avatar"
             app:layout_constraintTop_toBottomOf="@id/message_content" />
 

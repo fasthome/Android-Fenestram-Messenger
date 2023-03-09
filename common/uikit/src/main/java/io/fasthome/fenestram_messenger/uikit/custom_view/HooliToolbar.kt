@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.uikit.custom_view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -29,6 +30,11 @@ class HooliToolbar : ConstraintLayout {
         set(value) {
             binding.toolbarTitle.text = value
         }
+
+    fun setTextColor(color: Int) {
+        binding.ibCancel.imageTintList = ColorStateList.valueOf(color)
+        binding.toolbarTitle.setTextColor(color)
+    }
 
     constructor(context: Context) : this(context, null)
 

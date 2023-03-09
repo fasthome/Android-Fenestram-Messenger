@@ -11,7 +11,9 @@ open class ParticipantsViewItem(
     open val nickname: String,
     open val phone: String,
     open val avatar: String
-) : Parcelable
+) : Parcelable {
+    var textColor: Int? = null
+}
 
 @Parcelize
 class AnotherUserViewItem(

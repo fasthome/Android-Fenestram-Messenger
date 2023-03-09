@@ -95,7 +95,7 @@ class MessengerRepoImpl(
 
     override suspend fun postChats(
         name: String,
-        users: List<Long>,
+        users: List<Long?>,
         isGroup: Boolean,
     ): CallResult<PostChatsResult> =
         callForResult {

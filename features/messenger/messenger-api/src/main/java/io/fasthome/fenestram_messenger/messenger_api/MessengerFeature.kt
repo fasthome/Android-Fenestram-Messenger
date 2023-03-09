@@ -86,7 +86,7 @@ interface MessengerFeature {
     @Parcelize
     data class Params(
         val chatId: String? = null,
-        val userIds: List<Long>,
+        val userIds: List<Long?>,
         val chatName: String,
         val avatar: String,
         val isGroup: Boolean,

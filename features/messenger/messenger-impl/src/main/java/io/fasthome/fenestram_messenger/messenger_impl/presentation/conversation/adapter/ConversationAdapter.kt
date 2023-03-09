@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -82,7 +83,7 @@ class ConversationAdapter(
                 onReplyMessage = onReplyMessage,
                 onSelfMessageLongClicked = onSelfMessageLongClicked,
                 onUserTagClicked = onUserTagClicked,
-                onReactionClicked = onReactionClicked
+                onReactionClicked = onReactionClicked,
             ),
             createConversationSelfImageAdapterDelegate(
                 onImageClicked = onImagesClicked,
@@ -230,6 +231,8 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
 
+            setConversationSelfItemTheme(item.conversationSelfItemTheme, clMessageContent)
+
             (item.replyMessage as? ConversationImageItem)?.let {
                 rvImages.isVisible = true
                 createImageAdapter(
@@ -253,7 +256,8 @@ fun createConversationSelfTextReplyImageAdapterDelegate(
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
                     onDownloadDocument = onDownloadDocument,
-                    it.metaInfo
+                    it.metaInfo,
+                    documentColor = null
                 )
             }
 
@@ -292,6 +296,7 @@ fun createConversationSelfForwardAdapterDelegate(
             onSelfForwardLongClicked(item)
         }
         bindWithBinding {
+            setConversationSelfItemTheme(item.conversationSelfItemTheme, forwardLl)
             val forwardMessage = item.forwardMessage
             when (forwardMessage) {
                 is ConversationTextItem -> {
@@ -329,7 +334,8 @@ fun createConversationSelfForwardAdapterDelegate(
                     createDocumentAdapter(
                         recyclerViewDocuments = rvDocs,
                         onDownloadDocument = onDownloadDocument,
-                        forwardMessage.metaInfo
+                        forwardMessage.metaInfo,
+                        documentColor = null
                     )
                 }
                 else -> {}
@@ -368,6 +374,9 @@ fun createConversationSelfTextAdapterDelegate(
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
+
+            setConversationSelfItemTheme(item.conversationSelfItemTheme, clMessage)
+
             val replyMessage = item.replyMessage as? ConversationTextItem
             clReplyMessage.isVisible = replyMessage != null
             if (replyMessage != null) {
@@ -408,6 +417,9 @@ fun createConversationSelfImageAdapterDelegate(
     bindWithBinding {
         viewBinderHelper.bind(root, item.id.toString())
         viewBinderHelper.setOpenOnlyOne(true)
+
+        setConversationSelfItemTheme(item.conversationSelfItemTheme, clMessage)
+
         createImageAdapter(
             imageRecyclerView = messageContent,
             items = item.metaInfo,
@@ -443,10 +455,12 @@ fun createConversationSelfDocumentAdapterDelegate(
             onSelfDocumentLongClicked(item)
         }
         bindWithBinding {
+            setConversationSelfItemTheme(item.conversationSelfItemTheme, messageContent)
             createDocumentAdapter(
                 recyclerViewDocuments = rvDocs,
                 onDownloadDocument = onDownloadDocument,
-                item.metaInfo
+                item.metaInfo,
+                documentColor = null
             )
             sendTimeView.setPrintableText(item.time)
             status.setImageResource(item.statusIcon)
@@ -458,9 +472,7 @@ fun createConversationSelfDocumentAdapterDelegate(
         }
     }
 
-
 //---Адаптеры для принятых личных сообщений---//
-
 fun createConversationReceiveTextAdapterDelegate(
     onUserTagClicked: (String) -> Unit,
     onReceiveMessageLongClicked: (ConversationViewItem.Receive.Text) -> Unit,
@@ -483,6 +495,12 @@ fun createConversationReceiveTextAdapterDelegate(
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
+
+            setConversationReceiveItemTheme(
+                item.conversationReceiveItemTheme,
+                clMessageContent,
+                listOf(messageContent, replyContent, replyAuthorName)
+            )
 
             val replyMessage = item.replyMessage as? ConversationTextItem
             if (replyMessage != null) {
@@ -525,6 +543,11 @@ fun createConversationReceiveForwardAdapterDelegate(
             onReceiveForwardLongClicked(item)
         }
         bindWithBinding {
+            setConversationReceiveItemTheme(
+                item.conversationReceiveItemTheme,
+                forwardLl,
+                listOf(messageContent)
+            )
             val forwardMessage = item.forwardMessage
             when (forwardMessage) {
                 is ConversationTextItem -> {
@@ -563,7 +586,8 @@ fun createConversationReceiveForwardAdapterDelegate(
                     createDocumentAdapter(
                         recyclerViewDocuments = rvDocs,
                         onDownloadDocument = onDownloadDocument,
-                        forwardMessage.metaInfo
+                        forwardMessage.metaInfo,
+                        documentColor = item.conversationReceiveItemTheme?.documentColor
                     )
                 }
                 else -> {}
@@ -604,6 +628,12 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
 
+            setConversationReceiveItemTheme(
+                item.conversationReceiveItemTheme,
+                clMessageContent,
+                listOf(messageContent)
+            )
+
             (item.replyMessage as? ConversationImageItem)?.let {
                 rvImages.isVisible = true
                 createImageAdapter(
@@ -627,7 +657,8 @@ fun createConversationReceiveTextReplyImageAdapterDelegate(
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
                     onDownloadDocument = onDownloadDocument,
-                    it.metaInfo
+                    it.metaInfo,
+                    documentColor = item.conversationReceiveItemTheme?.documentColor
                 )
             }
             messageContent.setPrintableText(item.content)
@@ -661,6 +692,8 @@ fun createConversationReceiveImageAdapterDelegate(
             onReceiveImageLongClicked(item)
         }
         bindWithBinding {
+            setConversationReceiveItemTheme(
+                item.conversationReceiveItemTheme, clMessage, emptyList())
             createImageAdapter(
                 imageRecyclerView = messageContent,
                 items = item.metaInfo,
@@ -697,10 +730,12 @@ fun createConversationReceiveDocumentAdapterDelegate(
             onReceiveDocumentLongClicked(item)
         }
         bindWithBinding {
+            setConversationReceiveItemTheme(item.conversationReceiveItemTheme, messageContent, emptyList())
             createDocumentAdapter(
                 recyclerViewDocuments = rvDocs,
                 onDownloadDocument = onDownloadDocument,
-                item.metaInfo
+                item.metaInfo,
+                documentColor = item.conversationReceiveItemTheme?.documentColor
             )
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
@@ -742,6 +777,12 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
 
+            setConversationGroupItemTheme(
+                item.conversationGroupItemTheme,
+                textContainer,
+                listOf(messageContent)
+            )
+
             (item.replyMessage as? ConversationImageItem)?.let {
                 rvImages.isVisible = true
                 createImageAdapter(
@@ -766,7 +807,8 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
                 createDocumentAdapter(
                     recyclerViewDocuments = rvDocs,
                     onDownloadDocument = onDownloadDocument,
-                    it.metaInfo
+                    it.metaInfo,
+                    documentColor = null
                 )
             }
             username.setPrintableText(item.userName)
@@ -807,6 +849,12 @@ fun createConversationGroupTextAdapterDelegate(
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
+
+            setConversationGroupItemTheme(
+                item.conversationGroupItemTheme,
+                textContainer,
+                listOf(messageContent, replyContent, replyAuthorName)
+            )
 
             val replyMessage = item.replyMessage as? ConversationTextItem
             if (replyMessage != null) {
@@ -859,6 +907,13 @@ fun createConversationGroupForwardAdapterDelegate(
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
+
+            setConversationGroupItemTheme(
+                item.conversationGroupItemTheme,
+                forwardLl,
+                listOf(messageContent)
+            )
+
             val forwardMessage = item.forwardMessage
             when (forwardMessage) {
                 is ConversationTextItem -> {
@@ -896,7 +951,8 @@ fun createConversationGroupForwardAdapterDelegate(
                     createDocumentAdapter(
                         recyclerViewDocuments = rvDocs,
                         onDownloadDocument = onDownloadDocument,
-                        forwardMessage.metaInfo
+                        forwardMessage.metaInfo,
+                        documentColor = null
                     )
                 }
                 else -> {}
@@ -937,6 +993,10 @@ fun createConversationGroupImageAdapterDelegate(
         bindWithBinding {
             viewBinderHelper.bind(root, item.id.toString())
             viewBinderHelper.setOpenOnlyOne(true)
+
+            setConversationGroupItemTheme(
+                item.conversationGroupItemTheme, clMessage, emptyList())
+
             username.setPrintableText(item.userName)
             createImageAdapter(
                 imageRecyclerView = messageContent,
@@ -977,10 +1037,12 @@ fun createConversationGroupDocumentAdapterDelegate(
             onGroupDocumentLongClicked(item)
         }
         bindWithBinding {
+            setConversationGroupItemTheme(item.conversationGroupItemTheme, messageContent, emptyList())
             createDocumentAdapter(
                 recyclerViewDocuments = rvDocs,
                 onDownloadDocument = onDownloadDocument,
-                item.metaInfo
+                item.metaInfo,
+                documentColor = null
             )
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
@@ -1084,9 +1146,11 @@ private fun createDocumentAdapter(
     recyclerViewDocuments: RecyclerView,
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
     items: List<MetaInfo>,
+    documentColor: Int?,
 ) {
     val adapterDocument = ConversationDocumentAdapter(
-        onDownloadDocument = onDownloadDocument
+        onDownloadDocument = onDownloadDocument,
+        documentColor = documentColor
     )
     recyclerViewDocuments.adapter = adapterDocument
     val linearLayoutManager =
@@ -1100,12 +1164,46 @@ private fun createDocumentAdapter(
 private fun createReactionsAdapter(
     recyclerViewReactions: RecyclerView,
     items: List<ReactionsViewItem>,
-    onReactionClicked: (reactionViewItem: ReactionsViewItem) -> Unit
+    onReactionClicked: (reactionViewItem: ReactionsViewItem) -> Unit,
 ) {
     val adapter = ReactionsAdapter(onItemClicked = onReactionClicked)
     recyclerViewReactions.layoutManager = FlexboxLayoutManager(recyclerViewReactions.context)
     recyclerViewReactions.adapter = adapter
     adapter.items = items
+}
+
+// Theme
+private fun setConversationSelfItemTheme(
+    theme: ConversationSelfItemTheme?,
+    messageBackground: View,
+) {
+    if (theme == null) return
+    messageBackground.background = theme.background
+}
+private fun setConversationReceiveItemTheme(
+    theme: ConversationReceiveItemTheme?,
+    messageBackground: View,
+    textViews: List<TextView>,
+
+    ) {
+    if (theme == null) return
+    messageBackground.background = theme.background
+    textViews.forEach {
+        it.setTextColor(theme.textColor)
+    }
+}
+
+private fun setConversationGroupItemTheme(
+    theme: ConversationGroupItemTheme?,
+    messageBackground: View,
+    textViews: List<TextView>,
+
+    ) {
+    if (theme == null) return
+    messageBackground.background = theme.background
+    textViews.forEach {
+        it.setTextColor(theme.textColor)
+    }
 }
 
 private fun SentStatus.canSwipe() = this != SentStatus.Error && this != SentStatus.Loading
