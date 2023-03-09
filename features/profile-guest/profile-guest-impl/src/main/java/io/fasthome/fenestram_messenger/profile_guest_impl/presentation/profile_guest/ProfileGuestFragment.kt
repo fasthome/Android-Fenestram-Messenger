@@ -16,7 +16,7 @@ import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.core.ui.extensions.setContent
 import io.fasthome.fenestram_messenger.group_guest_api.GroupGuestFeature
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -86,7 +86,8 @@ class ProfileGuestFragment :
         recentImagesList.adapter = recentImagesAdapter
         recentImagesList.itemAnimator = null
 
-        val spanCount = resources.getSpanCount(resources.getDimension(R.dimen.min_image_height).toInt() + 20.dp)
+        val spanCount =
+            resources.getSpanCount(resources.getDimension(R.dimen.min_image_height).toInt() + 20.dp)
         val gridLayoutManager = GridLayoutManager(
             requireContext(),
             spanCount
@@ -250,11 +251,14 @@ class ProfileGuestFragment :
                 state.avatarContent,
                 CircleCrop()
             )
-            state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadCircle(
+            state.userAvatar.isNotEmpty() -> profileGuestAvatar.loadAvatarWithGradient(
                 url = state.userAvatar,
-                placeholderRes = R.drawable.ic_avatar_placeholder
+                username = getPrintableText(state.userName)
             )
-            else -> profileGuestAvatar.loadCircle(R.drawable.ic_avatar_placeholder)
+            else -> profileGuestAvatar.loadAvatarWithGradient(
+                url = null,
+                username = getPrintableText(state.userName)
+            )
         }
         recentImagesHeader.recentFileCount.setPrintableText(
             state.recentImagesCount

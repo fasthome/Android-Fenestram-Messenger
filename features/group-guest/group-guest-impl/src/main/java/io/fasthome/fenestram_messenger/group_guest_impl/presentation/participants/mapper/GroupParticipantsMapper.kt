@@ -15,6 +15,7 @@ fun userToParticipantsItem(user: User, selfUserId: Long?): ParticipantsViewItem 
             name = PrintableText.Raw(
                 getName(user) + " (Вы)"
             ),
+            originalName = getName(user),
             avatar = user.avatar,
             nickname = user.nickname,
             phone = user.phone

@@ -2,10 +2,9 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adap
 
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.ContactItemBinding
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.util.*
 
 class ContactsAdapter(
@@ -32,9 +31,9 @@ fun createContactsAdapterDelegate(
             textColor?.let { it1 -> contactName.setTextColor(it1) }
             contactName.setPrintableText(item.name)
             newMessage.isVisible = false
-            contactAvatar.loadCircle(
+            contactAvatar.loadAvatarWithGradient(
                 url = item.avatar,
-                placeholderRes = R.drawable.ic_avatar_placeholder
+                username = context.getPrintableText(item.name)
             )
         }
     }
