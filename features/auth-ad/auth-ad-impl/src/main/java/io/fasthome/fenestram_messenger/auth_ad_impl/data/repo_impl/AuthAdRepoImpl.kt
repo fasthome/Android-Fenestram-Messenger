@@ -17,8 +17,8 @@ class AuthAdRepoImpl(
 ) :
     AuthAdRepo {
     override suspend fun login(username: String, password: String) = callForResult {
-//        authService.login(username, password)
-        mockLoginStorage.login(username, password)
+        authService.login(username, password)
+//        mockLoginStorage.login(username, password)
     }
 
     override suspend fun saveUserId(userId: Long) {
