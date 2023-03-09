@@ -5,11 +5,11 @@ import io.fasthome.fenestram_messenger.contacts_impl.ContactsFeatureImpl
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddViewModel
 import io.fasthome.fenestram_messenger.contacts_impl.data.ContactsLoader
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.ContactsViewModel
-import io.fasthome.fenestram_messenger.contacts_impl.data.repo_impl.ContactsRepoImpl
-import io.fasthome.fenestram_messenger.contacts_impl.data.service.ContactsService
-import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.ContactsMapper
-import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.ContactsRepo
-import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.ContactsInteractor
+import io.fasthome.fenestram_messenger.contacts_impl.data.repo_impl.DepartmentRepoImpl
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.DepartmentService
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.DepartmentsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.domain.repo.DepartmentRepo
+import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.DepartmentInteractor
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.viewModel
@@ -30,13 +30,13 @@ object ContactsModule {
     }
 
     private fun createDataModule() = module {
-        factory(::ContactsRepoImpl) bindSafe ContactsRepo::class
-        singleAuthorizedService(::ContactsService)
-        single(::ContactsMapper)
+        factory(::DepartmentRepoImpl) bindSafe DepartmentRepo::class
+        singleAuthorizedService(::DepartmentService)
+        single(::DepartmentsMapper)
     }
 
     private fun createDomainModule() = module {
-        factory(::ContactsInteractor)
+        factory(::DepartmentInteractor)
     }
 
     private fun createPresentationModule() = module {

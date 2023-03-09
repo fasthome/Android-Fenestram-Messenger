@@ -4,18 +4,15 @@
 package io.fasthome.fenestram_messenger.contacts_impl.domain.repo
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.contacts_api.model.DepartmentModel
 import io.fasthome.fenestram_messenger.util.CallResult
 
-interface ContactsRepo {
 
-    suspend fun getContacts(): List<Contact>
+interface DepartmentRepo {
+    suspend fun getDepartments(): CallResult<List<DepartmentModel>>
 
     suspend fun uploadContacts(contacts: List<Contact>): CallResult<Unit>
 
     suspend fun loadContacts(): CallResult<List<Contact>>
-
-    suspend fun deleteContacts(contactIds: List<Long>): CallResult<Unit>
-
-    suspend fun updateContactName(name: String, phone: String): CallResult<Unit>
 
 }

@@ -2,6 +2,8 @@
 <resources>
     <string name="contacts">Контакты</string>
     <string name="search_contacts">Поиск контакта</string>
+    <string name="company">Компания</string>
+    <string name="search">Поиск</string>
     <string name="contacts_no_name">Безымянный</string>
 
     <string name="contacts_add_description">Добавить контакт</string>
@@ -26,5 +28,8 @@
     <string name="contacts_unregister_users">Пока не зарегистрированы в приложении</string>
 
     <string name="self_contact_name">%s (вы)</string>
+
+
+
 
 </resources>

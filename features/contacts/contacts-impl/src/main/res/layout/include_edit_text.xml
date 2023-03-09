@@ -11,5 +11,4 @@
     android:maxLines="1"
     android:paddingStart="@dimen/contact_add_include_edittext_padding"
     android:singleLine="true"
-    android:textColor="@color/manatee"
     android:textSize="@dimen/contact_add_input_text_size" />
