@@ -1,10 +1,10 @@
-package io.fasthome.fenestram_messenger.auth_ad_impl.data.service.model
+package io.fasthome.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class LoginRequest(
+class RefreshTokenAdRequest(
     @SerialName("grant_type")
     val grantType: String,
 
@@ -14,12 +14,10 @@ class LoginRequest(
     @SerialName("client_secret")
     val clientSecret: String,
 
-    @SerialName("username")
-    val username: String,
-
-    @SerialName("password")
-    val password: String,
-
     @SerialName("scope")
     val scope: String,
-)
+
+    @SerialName("refresh_token")
+    val refreshToken: String,
+
+    )

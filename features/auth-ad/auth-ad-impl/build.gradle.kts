@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlinx-serialization`
 }
 
 android {
@@ -15,5 +16,6 @@ dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.uikit))
     implementation(project(Modules.Common.network))
+    implementation(project(Modules.Common.data))
 
 }

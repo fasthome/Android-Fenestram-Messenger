@@ -5,12 +5,12 @@ import io.fasthome.fenestram_messenger.data.KeyValueStorage
 import io.fasthome.fenestram_messenger.data.stored
 import kotlinx.coroutines.withContext
 
-class RefreshTokenStorage(
+open class RefreshTokenStorage(
     persistentStorageFactory: KeyValueStorage.Factory,
 ) {
-    private val preferencesStorage = persistentStorageFactory.create("tokens_persistent.prefs")
+    protected val preferencesStorage = persistentStorageFactory.create("tokens_persistent.prefs")
 
-    private var refreshToken: String? by preferencesStorage.stored("KEY_REFRESH_TOKEN")
+    protected open var refreshToken: String? by preferencesStorage.stored("KEY_REFRESH_TOKEN")
 
     suspend fun getRefreshToken(): RefreshToken? =
         withContext(DispatchersProvider.IO) {
@@ -27,4 +27,10 @@ class RefreshTokenStorage(
             refreshToken = null
         }
     }
+}
+
+class RefreshTokenAdStorage(
+    persistentStorageFactory: KeyValueStorage.Factory,
+) : RefreshTokenStorage(persistentStorageFactory) {
+    override var refreshToken: String? by preferencesStorage.stored("KEY_REFRESH_TOKEN_AD")
 }
