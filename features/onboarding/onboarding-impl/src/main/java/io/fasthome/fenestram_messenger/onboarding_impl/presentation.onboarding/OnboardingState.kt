@@ -9,5 +9,6 @@ data class OnboardingState(
 
 data class Page(
     @DrawableRes val image: Int,
-    val text: PrintableText
+    val text: PrintableText,
+    val textColor: Int
 )

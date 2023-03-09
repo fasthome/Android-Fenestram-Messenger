@@ -4,9 +4,12 @@ import androidx.core.content.res.ResourcesCompat
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.onboarding_impl.databinding.FragmentViewpager2Binding
 import io.fasthome.fenestram_messenger.onboarding_impl.presentation.onboarding.Page
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.AdapterUtil
+import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
+import io.fasthome.fenestram_messenger.util.bindWithBinding
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
-class OnboardingAdapter : AsyncListDifferDelegationAdapter<Page>(
+class OnboardingAdapter() : AsyncListDifferDelegationAdapter<Page>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     AdapterUtil.adapterDelegatesManager(
         createContactsAdapterDelegate()
@@ -22,5 +25,6 @@ fun createContactsAdapterDelegate() =
         bindWithBinding {
             iconIv.setImageDrawable(ResourcesCompat.getDrawable(context.resources ,item.image, null))
             descOnb.setPrintableText(item.text)
+            descOnb.setTextColor(item.textColor)
         }
     }
