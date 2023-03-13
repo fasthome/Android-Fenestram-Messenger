@@ -873,7 +873,7 @@ fun mapReactions(
         ReactionsViewItem(
             reaction = it.key,
             userCount = it.value.size,
-            avatars = it.value.map { user -> user.avatar },
+            users = it.value.map { user -> user },
             reactionBackground = when {
                 setBySelf -> appTheme?.mainActive()
                 isSelfMessage -> appTheme?.bg3Color()

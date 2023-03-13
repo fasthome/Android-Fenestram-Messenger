@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import io.fasthome.component.R
 import io.fasthome.component.databinding.DialogPersonDetailBinding
 import io.fasthome.fenestram_messenger.core.ui.dialog.BottomSheetDialogBuilder
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.copyTextToClipBoard
@@ -59,7 +59,10 @@ object PersonDetailDialog {
                 nickname.text = "@${personDetail.userNickname}"
             }
 
-            avatar.loadCircle(personDetail.avatar)
+            avatar.loadAvatarWithGradient(
+                personDetail.avatar,
+                username = personDetail.userName
+            )
             avatar.onClick {
                 if (personDetail.avatar.isNotEmpty()) {
                     onAvatarClicked(personDetail.avatar)

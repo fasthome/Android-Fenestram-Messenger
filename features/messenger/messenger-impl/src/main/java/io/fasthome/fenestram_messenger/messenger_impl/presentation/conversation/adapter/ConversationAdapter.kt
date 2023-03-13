@@ -11,7 +11,7 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.*
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter.imageAdapter.ConversationImageAdapter
@@ -812,7 +812,7 @@ fun createConversationGroupTextReplyImageAdapterDelegate(
                 )
             }
             username.setPrintableText(item.userName)
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            avatar.loadAvatarWithGradient(url = item.avatar, username = context.getPrintableText(item.userName))
             messageContent.setPrintableText(item.content)
             sendTimeView.setPrintableText(item.time)
             messageContent.addCommonLinks(onUserTagClicked)
@@ -871,7 +871,7 @@ fun createConversationGroupTextAdapterDelegate(
             messageContent.addCommonLinks(onUserTagClicked)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            avatar.loadAvatarWithGradient(url = item.avatar, username = context.getPrintableText(item.userName))
             createReactionsAdapter(listReactions, item.reactions) {
                 onReactionClicked(item.id, it)
             }
@@ -957,7 +957,7 @@ fun createConversationGroupForwardAdapterDelegate(
                 }
                 else -> {}
             }
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            avatar.loadAvatarWithGradient(url = item.avatar, username = context.getPrintableText(item.userName))
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
@@ -1006,7 +1006,7 @@ fun createConversationGroupImageAdapterDelegate(
                 })
             sendTimeView.setPrintableText(item.time)
             sendTimeView.isVisible = item.timeVisible
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            avatar.loadAvatarWithGradient(url = item.avatar, username = context.getPrintableText(item.userName))
             createReactionsAdapter(listReactions, item.reactions) {
                 onReactionClicked(item.id, it)
             }
@@ -1046,7 +1046,7 @@ fun createConversationGroupDocumentAdapterDelegate(
             )
             username.setPrintableText(item.userName)
             sendTimeView.setPrintableText(item.time)
-            avatar.loadCircle(url = item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            avatar.loadAvatarWithGradient(url = item.avatar, username = context.getPrintableText(item.userName))
             sendTimeView.isVisible = item.timeVisible
             createReactionsAdapter(listReactions, item.reactions) {
                 onReactionClicked(item.id, it)
@@ -1207,15 +1207,3 @@ private fun setConversationGroupItemTheme(
 }
 
 private fun SentStatus.canSwipe() = this != SentStatus.Error && this != SentStatus.Loading
-
-private fun getMockReactions() = listOf(
-    ReactionsViewItem("&#128522;", 3, listOf("", "", ""), R.color.blue2, true),
-    ReactionsViewItem("&#129306;", 3, listOf("", "", ""), R.color.blue2, true),
-    ReactionsViewItem("&#9995;", 53, listOf("", "", ""), R.color.blue2, true),
-    ReactionsViewItem("&#128165;", 3, listOf("", "", ""), R.color.blue2, true),
-    ReactionsViewItem("&#128164;", 3, listOf("", "", ""), R.color.blue2, true),
-    ReactionsViewItem("&#9996;", 100, listOf(), R.color.blue2, true),
-    ReactionsViewItem("&#128076;", 20, listOf(), R.color.blue2, true),
-    ReactionsViewItem("&#128072;", 3, listOf("", "", ""), R.color.blue2, true),
-    ReactionsViewItem("&#129305;", 2, listOf("", ""), R.color.blue2, true),
-).sortedByDescending { it.userCount }
