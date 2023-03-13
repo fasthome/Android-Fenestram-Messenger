@@ -14,7 +14,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.time.ZonedDateTime
 
-@Entity
+@Entity(tableName = "ChatTable")
 class ChatTable(
     @PrimaryKey
     val id: Long?,

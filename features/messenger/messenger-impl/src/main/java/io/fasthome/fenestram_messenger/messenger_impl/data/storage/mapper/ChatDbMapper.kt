@@ -56,8 +56,7 @@ object ChatDbMapper {
         }
     )
 
-    fun mapTableToChat(chats: List<ChatTable>) = chats.map { chat ->
-        Chat(
+    fun mapTableToChat(chat: ChatTable) = Chat(
             id = chat.id,
             name = chat.name,
             users = chat.users,
@@ -69,6 +68,9 @@ object ChatDbMapper {
             isGroup = chat.isGroup,
             pendingMessages = chat.pendingMessages
         )
+
+    fun mapTableToChat(chats: List<ChatTable>) = chats.map { chat ->
+        mapTableToChat(chat)
     }.sortedByDescending { it.messages.lastOrNull()?.date }
 
     fun mapTableToMessage(message: MessageDb?): Message? = if (message == null) null else Message(

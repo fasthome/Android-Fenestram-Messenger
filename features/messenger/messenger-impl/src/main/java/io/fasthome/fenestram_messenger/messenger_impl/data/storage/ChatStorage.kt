@@ -17,8 +17,14 @@ class ChatStorage(
         return db.chatDao.getChats().let(ChatDbMapper::mapTableToChat)
     }
 
+    suspend fun getChat(chatId: Long) = db.chatDao.get(chatId)?.let(ChatDbMapper::mapTableToChat)
+
+    suspend fun saveChat(chat: Chat) = saveChats(listOf(chat))
+
     suspend fun saveChats(chats: List<Chat>) = db.chatDao.saveChats(chats.let(ChatDbMapper::mapChatToTable))
 
     suspend fun deleteChats() = db.chatDao.removeChats()
+
+    suspend fun deleteChat(chatId: Long) = db.chatDao.removeChats()
 
 }

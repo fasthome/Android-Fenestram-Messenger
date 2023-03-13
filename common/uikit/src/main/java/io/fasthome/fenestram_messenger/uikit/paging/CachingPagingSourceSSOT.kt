@@ -3,23 +3,13 @@ package io.fasthome.fenestram_messenger.uikit.paging
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 
-enum class PagesSource {
-    NotSet,
-    Service,
-    Storage;
-}
-
-class EmptyCacheException : Exception("Failed to load initial page from service and storage is empty!")
-
-fun <T : Any> cachingPagingSource(
+fun <T : Any> cachingPagingSourceSSOT(
     maxPageSize: Int,
     loadPageService: suspend (pageNumber: Int, pageSize: Int) -> List<T>,
     loadPageStorage: suspend (pageNumber: Int, pageSize: Int) -> List<T>,
     removeFromStorage: suspend () -> Unit,
     savePageStorage: suspend (List<T>) -> Unit,
 ): SuspendPagingSource<T> {
-
-    var pagesSource = PagesSource.NotSet
 
     return SuspendPagingSource(
         maxPageSize = maxPageSize,
@@ -41,19 +31,14 @@ fun <T : Any> cachingPagingSource(
                 }
             }
 
-            when (pagesSource) {
-                PagesSource.NotSet -> when (val result = fromService()) {
-                    is CallResult.Error -> {
-                        pagesSource = PagesSource.Storage
-                        fromStorage()
-                    }
-                    is CallResult.Success -> {
-                        pagesSource = PagesSource.Service
-                        result
-                    }
+            val storageRes = fromStorage()
+            when(storageRes) {
+                is CallResult.Error -> {
+                    fromService()
                 }
-                PagesSource.Service -> fromService()
-                PagesSource.Storage -> fromStorage()
+                is CallResult.Success -> {
+                    storageRes
+                }
             }
         }
     )

@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper
 
+import android.util.Log
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
@@ -54,7 +55,6 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
         } else {
             SentStatus.None
         }
-
         return MessengerViewItem(
             id = chat.id ?: 0,
             avatar = 0,

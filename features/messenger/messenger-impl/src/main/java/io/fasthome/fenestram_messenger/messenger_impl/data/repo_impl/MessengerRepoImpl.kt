@@ -1,18 +1,23 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
+import android.util.Log
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.MessengerSocket
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.MessengerService
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.LoadedDocumentData
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.PatchChatAvatarRequest
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SendMessageResponse
+import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.SocketChatChanges
 import io.fasthome.fenestram_messenger.messenger_impl.data.storage.ChatStorage
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
-import io.fasthome.fenestram_messenger.uikit.paging.totalCachingPagingSource
+import io.fasthome.fenestram_messenger.uikit.paging.totalCachingPagingSourceSSOT
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.ProgressListener
@@ -59,31 +64,50 @@ class MessengerRepoImpl(
         )
     }
 
-    override fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> {
-        return if (!fromSocket) {
-            totalCachingPagingSource(
-                maxPageSize = PAGE_SIZE,
-                loadPageService = { pageNumber, pageSize ->
-                    currrentList =
-                        messengerService.getChats(
-                            query = query,
-                            page = pageNumber,
-                            limit = pageSize
-                        )
-                    currrentList
-                },
-                loadPageStorage = { pageNumber, pageSize ->
-                    chatStorage.getChats()
-                },
-                loadTotalCountStorage = { -1 },
-                removeFromStorage = { chatStorage.deleteChats() },
-                savePageStorage = {
-                    chatStorage.saveChats(it)
-                },
+    override suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus) {
+        val chatDb = chatStorage.getChat(chatId) ?: return
+        chatStorage.saveChat(chatDb.copy(
+            messages = chatDb.messages.mapIndexed { index, message ->
+                if (index == 0)
+                    message.copy(messageStatus = status.name)
+                else
+                    message
+            }
+        ))
+    }
+
+    override suspend fun updateBdChatsFromService(query: String) {
+        currrentList =
+            messengerService.getChats(
+                query = query,
+                page = 0,
+                limit = PAGE_SIZE
             )
-        } else {
-            totalPagingSource(PAGE_SIZE) { _, _ -> currrentList }
-        }
+        chatStorage.deleteChats()
+        chatStorage.saveChats(currrentList.list)
+    }
+
+    override fun getPageChats(query: String): TotalPagingSource<Int, Chat> {
+        return totalCachingPagingSourceSSOT(
+            maxPageSize = PAGE_SIZE,
+            loadPageService = { pageNumber, pageSize ->
+                currrentList =
+                    messengerService.getChats(
+                        query = query,
+                        page = pageNumber,
+                        limit = pageSize
+                    )
+                currrentList
+            },
+            loadPageStorage = { pageNumber, pageSize ->
+                chatStorage.getChats()
+            },
+            loadTotalCountStorage = { -1 },
+            removeFromStorage = { chatStorage.deleteChats() },
+            savePageStorage = {
+                chatStorage.saveChats(it)
+            },
+        )
     }
 
     override fun getCachedPages(): TotalPagingSource<Int, Chat> {
@@ -133,6 +157,16 @@ class MessengerRepoImpl(
         messengerService.deleteChat(id)
     }
 
+    override suspend fun deleteChatFromDb(chatId: Long) = callForResult {
+        chatStorage.deleteChat(chatId)
+    }
+
+    override suspend fun addNewMessageToDb(message: Message) = callForResult {
+        val chat = chatStorage.getChat(message.chatId?.toLongOrNull() ?: return@callForResult)
+            ?: return@callForResult
+        chatStorage.saveChat(chat.copy(messages = listOf(message) + chat.messages))
+    }
+
     override suspend fun deleteMessage(messageId: Long, chatId: Long) = callForResult {
         messengerService.deleteMessage(messageId, chatId)
     }
@@ -154,7 +188,8 @@ class MessengerRepoImpl(
             chatChangesCallback = { callback.onNewChatChanges(this) },
             chatDeletedCallback = { callback.onDeletedChatCallback(this) },
             unreadCountCallback = { callback.onUnreadMessage(this) },
-            reactionsCallback = { callback.onNewReactionCallback(this) }
+            reactionsCallback = { callback.onNewReactionCallback(this) },
+            chatCreatedCallback = { callback.onNewChatCreated() }
         )
     }
 
@@ -179,7 +214,10 @@ class MessengerRepoImpl(
         socket.emitChatListeners(subChatId, unsubChatId)
     }
 
-    override suspend fun uploadAvatar(chatId: Long, photoBytes: ByteArray): CallResult<PatchChatAvatarRequest> = callForResult {
+    override suspend fun uploadAvatar(
+        chatId: Long,
+        photoBytes: ByteArray,
+    ): CallResult<PatchChatAvatarRequest> = callForResult {
         messengerService.uploadAvatar(chatId, photoBytes)
     }
 
