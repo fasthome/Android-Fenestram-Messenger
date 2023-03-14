@@ -118,5 +118,4 @@ class ContactsViewModel(
             onRetryClick = { loadDepartments() }
         )
     }
-
 }
