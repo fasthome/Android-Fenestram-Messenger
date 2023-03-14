@@ -1,6 +1,5 @@
 package io.fasthome.fenestram_messenger.messenger_impl.data.repo_impl
 
-import android.util.Log
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
@@ -64,8 +63,8 @@ class MessengerRepoImpl(
         )
     }
 
-    override suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus) {
-        val chatDb = chatStorage.getChat(chatId) ?: return
+    override suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus) = callForResult {
+        val chatDb = chatStorage.getChat(chatId) ?: return@callForResult
         chatStorage.saveChat(chatDb.copy(
             messages = chatDb.messages.mapIndexed { index, message ->
                 if (index == 0)
@@ -76,7 +75,7 @@ class MessengerRepoImpl(
         ))
     }
 
-    override suspend fun updateBdChatsFromService(query: String) {
+    override suspend fun updateBdChatsFromService(query: String) = callForResult {
         currrentList =
             messengerService.getChats(
                 query = query,
@@ -100,7 +99,7 @@ class MessengerRepoImpl(
                 currrentList
             },
             loadPageStorage = { pageNumber, pageSize ->
-                chatStorage.getChats()
+                chatStorage.getChats().sortedByDescending { it.time }
             },
             loadTotalCountStorage = { -1 },
             removeFromStorage = { chatStorage.deleteChats() },
@@ -164,7 +163,13 @@ class MessengerRepoImpl(
     override suspend fun addNewMessageToDb(message: Message) = callForResult {
         val chat = chatStorage.getChat(message.chatId?.toLongOrNull() ?: return@callForResult)
             ?: return@callForResult
-        chatStorage.saveChat(chat.copy(messages = listOf(message) + chat.messages))
+        chatStorage.saveChat(
+            chat.copy(
+                messages = (listOf(message) + chat.messages),
+                pendingMessages = chat.pendingMessages + 1,
+                time = message.date
+            )
+        )
     }
 
     override suspend fun deleteMessage(messageId: Long, chatId: Long) = callForResult {

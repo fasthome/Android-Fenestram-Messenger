@@ -32,9 +32,9 @@ interface MessengerRepo {
 
     fun getPageChats(query: String): TotalPagingSource<Int, Chat>
 
-    suspend fun updateBdChatsFromService(query: String)
+    suspend fun updateBdChatsFromService(query: String): CallResult<Unit>
 
-    suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus)
+    suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus): CallResult<Unit>
 
     fun getCachedPages(): TotalPagingSource<Int, Chat>
 

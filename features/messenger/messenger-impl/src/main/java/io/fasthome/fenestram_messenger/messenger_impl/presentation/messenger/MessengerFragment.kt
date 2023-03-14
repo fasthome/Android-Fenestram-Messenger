@@ -215,12 +215,6 @@ class MessengerFragment :
                     )
                 }
                 messageAdapter.submitData(messengerViewItems)
-                messageAdapter.notifyItemChanged(0)
-                CoroutineScope(Dispatchers.Main + Job()).launch {
-                    delay(5000)
-                    val itemsAfter = messageAdapter.snapshot()
-                    itemsAfter
-                }
             }
     }
 
