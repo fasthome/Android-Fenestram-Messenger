@@ -11,6 +11,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 
 fun Resources.color(@ColorRes colorRes: Int): Int =
     ResourcesCompat.getColor(this, colorRes, null)
@@ -23,3 +24,5 @@ fun Context.drawable(@DrawableRes drawableRes: Int): Drawable =
 
 fun Context.colorStateList(@ColorRes colorRes: Int): ColorStateList =
     AppCompatResources.getColorStateList(this, colorRes)
+
+fun Drawable.setColor(colorRes: Int) = DrawableCompat.setTint(DrawableCompat.wrap(this), colorRes)

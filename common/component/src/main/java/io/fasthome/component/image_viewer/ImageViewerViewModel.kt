@@ -7,6 +7,7 @@ import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl.Companion.IMAGES_COUNT_MEDIUM_PAGE
 import io.fasthome.component.image_viewer.ImageViewerMapper.toImageViewerModel
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
@@ -34,8 +35,8 @@ class ImageViewerViewModel(
             params as? ImageViewerContract.ImageViewerParams.ImagesParams
         return ImageViewerState(
             messageId = fromConversationParams?.messageId,
-            canDelete = fromConversationParams?.canDelete ?: false,
-            canForward = fromConversationParams != null,
+            canDelete = fromConversationParams?.canDelete ?: true,
+            canForward = true,
             username = fromConversationParams?.username,
             currPhotoPosition = someImagesConversationParams?.currentImagePosition,
             imagesViewerModel = params.imageViewerModel,
@@ -96,15 +97,20 @@ class ImageViewerViewModel(
         )
     }
 
-    fun onForwardImage() {
+    fun onForwardImage(imagePos: Int) {
         exitWithResult(
             ImageViewerContract.createResult(
-                ImageViewerContract.Result.Forward(
-                    messageId = currentViewState.messageId ?: return,
+                ImageViewerContract.Result.ForwardImage(
+                    messageId = currentViewState.messageId ?: 0,
+                    imageUrl = currentViewState.imagesViewerModel[imagePos]?.imageUrl ?: return,
                     username = currentViewState.username ?: return
                 )
             )
         )
+    }
+
+    fun onDownloadImage() {
+
     }
 
     override fun onBackPressed(): Boolean {

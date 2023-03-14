@@ -1,11 +1,11 @@
 package io.fasthome.fenestram_messenger.uikit.theme
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.graphics.Shader.TileMode
-import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.widget.TextView
 import com.dolatkia.animatedThemeManager.AppTheme
@@ -59,6 +59,9 @@ interface Theme : AppTheme {
     // Conversation
     fun bgGradient_Top10_BottomLeft10(): Drawable
     fun shapeBg3_a85_Top10_BottomRight10(): Drawable
+
+    // ImageViewer
+    fun ibCancelColor(): Int
 }
 
 class LightTheme : Theme {
@@ -181,6 +184,10 @@ class LightTheme : Theme {
 
     override fun shapeBg3_a85_Top10_BottomRight10(): Drawable {
         return context.drawable(R.drawable.shape_top10_bottom_right10)
+    }
+
+    override fun ibCancelColor(): Int {
+        return context.color(R.color.text_1)
     }
 
     override fun id(): Int = 1
@@ -307,6 +314,10 @@ class DarkTheme : Theme {
 
     override fun shapeBg3_a85_Top10_BottomRight10(): Drawable {
         return context.drawable(R.drawable.shape_top10_bottom_right10_dark)
+    }
+
+    override fun ibCancelColor(): Int {
+        return context.color(R.color.white)
     }
 
     override fun id(): Int = 2

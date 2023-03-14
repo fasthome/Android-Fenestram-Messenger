@@ -1,5 +1,6 @@
 package io.fasthome.component.image_viewer
 
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class ImageViewerState(
