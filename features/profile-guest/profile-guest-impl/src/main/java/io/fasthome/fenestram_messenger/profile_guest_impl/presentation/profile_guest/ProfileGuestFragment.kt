@@ -117,7 +117,7 @@ class ProfileGuestFragment :
         profileGuestPhone.onClick {
             vm.copyText(profileGuestPhone.text.toString(), TextViewKey.Phone)
         }
-        recentFilesHeader.recentFileHeaderText.setText(R.string.recent_files)
+        recentFilesHeader.recentFileHeaderText.setText(R.string.files)
         recentFilesHeader.recentHeader.onClick {
             vm.onShowFilesClicked()
         }
@@ -148,6 +148,8 @@ class ProfileGuestFragment :
         binding.recentImagesHeader.recentHeader.background.setTint(appTheme.bg3Color())
         binding.recentImagesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
         binding.buttonDeleteChat.background.setTint(appTheme.bg3Color())
+        binding.launchCall.background.setTint(appTheme.bg02Color())
+        binding.launchFacecall.background.setTint(appTheme.bg02Color())
     }
 
     override fun renderState(state: ProfileGuestState) = with(binding) {
@@ -192,7 +194,7 @@ class ProfileGuestFragment :
                     R.color.text1
                 )
             )
-            profileGuestNickname.textSize = 14F
+            profileGuestNickname.textSize = 16F
             profileGuestNickname.setPrintableText(
                 PrintableText.PluralResource(
                     R.plurals.chat_participants_count,
@@ -207,7 +209,7 @@ class ProfileGuestFragment :
                     R.color.main_active
                 )
             )
-            profileGuestNickname.textSize = 18F
+            profileGuestNickname.textSize = 16F
             profileGuestNickname.isVisible =
                 getPrintableRawText(state.userNickname).isNotEmpty()
             profileGuestNickname.setPrintableText(

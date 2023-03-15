@@ -19,7 +19,6 @@
             android:id="@+id/profile_guest_appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +52,31 @@
                     android:scaleY="0.3"
                     android:src="@drawable/ic_pick_photo" />
             </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/launch_facecall"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/shape_button_circle"
+                android:visibility="visible"
+                app:layout_constraintEnd_toStartOf="@id/launch_call"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/avatar_container"
+                app:srcCompat="@drawable/ic_facecall_60dp" />
+
+            <ImageView
+                android:id="@+id/launch_call"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/shape_button_circle"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@id/launch_facecall"
+                app:layout_constraintTop_toTopOf="@id/launch_facecall"
+                app:srcCompat="@drawable/ic_call_60dp" />
 
             <EditText
                 android:id="@+id/profile_guest_name"
@@ -110,21 +134,21 @@
 
             <TextView
                 android:id="@+id/profile_guest_phone"
-                style="@style/Text.Blue"
+                style="@style/Text.Blue.16sp"
                 android:layout_width="wrap_content"
-                tools:text="+79876543210"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="@id/profile_guest_name_error"
-                app:layout_constraintTop_toBottomOf="@id/profile_guest_name_error" />
+                app:layout_constraintTop_toBottomOf="@+id/profile_guest_name"
+                tools:text="+79876543210" />
 
             <TextView
                 android:id="@+id/profile_guest_nickname"
-                style="@style/Text.Blue"
+                style="@style/Text.Blue.16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/profile_guest_no_nickname"
                 app:layout_constraintStart_toStartOf="@id/profile_guest_name"
-                app:layout_constraintTop_toBottomOf="@id/profile_guest_phone" />
+                app:layout_constraintTop_toBottomOf="@+id/profile_guest_phone" />
 
             <ImageButton
                 android:id="@+id/profile_guest_video_chat"
