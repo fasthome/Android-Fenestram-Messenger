@@ -151,7 +151,7 @@ class ProfileGuestFragment :
         binding.recentFilesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
         binding.recentImagesHeader.recentHeader.background.setTint(appTheme.bg03Color())
         binding.recentImagesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
-        binding.buttonDeleteChat.background.setTint(appTheme.bg3Color())
+        binding.buttonDeleteChat.background.setTint(appTheme.bg03Color())
         binding.launchCall.background.setTint(appTheme.bg02Color())
         binding.launchFacecall.background.setTint(appTheme.bg02Color())
 

@@ -228,7 +228,7 @@
                     android:maxHeight="120dp"
                     android:nestedScrollingEnabled="false"
                     android:paddingHorizontal="25dp"
-                    android:paddingVertical="10dp"
+                    android:paddingVertical="2dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
