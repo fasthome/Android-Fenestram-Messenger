@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.InputType
 import android.view.View
@@ -106,6 +107,9 @@ class ProfileGuestFragment :
         profileGuestName.imeOptions = EditorInfo.IME_ACTION_DONE
         profileGuestName.setRawInputType(InputType.TYPE_CLASS_TEXT)
         profileGuestName.addTextChangedListener { vm.onProfileNameChanged(it.toString()) }
+        profileAppbar.setNavigationOnClickListener {
+            vm.navigateBack()
+        }
         profileGuestName.onClick {
             vm.copyText(profileGuestName.text.toString(), TextViewKey.Name)
         }
@@ -143,13 +147,17 @@ class ProfileGuestFragment :
         appTheme.context = requireActivity().applicationContext
         binding.profileGuestName.setTextColor(appTheme.text0Color())
         binding.clMain.background.setTint(appTheme.bg1Color())
-        binding.recentFilesHeader.recentHeader.background.setTint(appTheme.bg3Color())
+        binding.recentFilesHeader.recentHeader.background.setTint(appTheme.bg03Color())
         binding.recentFilesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
-        binding.recentImagesHeader.recentHeader.background.setTint(appTheme.bg3Color())
+        binding.recentImagesHeader.recentHeader.background.setTint(appTheme.bg03Color())
         binding.recentImagesHeader.recentFileHeaderText.setTextColor(appTheme.text0Color())
         binding.buttonDeleteChat.background.setTint(appTheme.bg3Color())
         binding.launchCall.background.setTint(appTheme.bg02Color())
         binding.launchFacecall.background.setTint(appTheme.bg02Color())
+
+        binding.profileAppbar.setTitleTextColor(appTheme.text0Color())
+        binding.profileAppbar.setNavigationIconTint(appTheme.text0Color())
+        binding.profileAppbar.backgroundTintList = ColorStateList.valueOf(appTheme.bg03Color())
     }
 
     override fun renderState(state: ProfileGuestState) = with(binding) {

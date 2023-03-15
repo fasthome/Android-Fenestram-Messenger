@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 
 open class BottomSheetFragment(
     private val contentClazz: KClass<out BaseFragment<*, *>>,
-    private val config: Config = Config(Config.Scale.Fullscreen, true),
+    private val config: Config = Config(),
 ) : BaseBottomSheetFragment(R.layout.fragment_bottom_sheet, contentClazz, config) {
 
     private val binding by fragmentViewBinding(FragmentBottomSheetBinding::bind)
