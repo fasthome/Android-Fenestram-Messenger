@@ -72,6 +72,7 @@ class ConversationViewModel(
 
     companion object {
         private const val MAX_ATTACHMENTS = 10
+        private const val MAX_TEXT_MESSAGE_SIZE = 5000
     }
 
     class Features(
@@ -455,7 +456,7 @@ class ConversationViewModel(
         if (currentViewState.inputMessageMode is InputMessageMode.Forward) {
             forwardMessage()
             if (mess.trim().isNotEmpty())
-                sendMessage(text = mess, messageType = MessageType.Text)
+                sendMessage(textMessage = mess, messageType = MessageType.Text)
         }
 
         if (mess.trim().isNotEmpty()) {
@@ -465,7 +466,7 @@ class ConversationViewModel(
                     if (state.attachedFiles.isNotEmpty()) {
                         sendFiles(state.attachedFiles)
                     }
-                    sendMessage(text = mess, messageType = MessageType.Text)
+                    sendMessage(textMessage = mess, messageType = MessageType.Text)
                 }
                 is InputMessageMode.Edit -> {
                     editMessage(mess)
@@ -669,49 +670,51 @@ class ConversationViewModel(
     }
 
     private fun sendMessage(
-        text: String,
+        textMessage: String,
         messageType: MessageType,
         existMessage: ConversationViewItem.Self? = null,
     ) {
         messengerInteractor.emitChatListeners(chatId, null)
-        viewModelScope.launch {
-            val tempMessage = when (messageType) {
-                MessageType.Text -> {
-                    createTextMessage(text, currentTheme)
+        textMessage.chunked(MAX_TEXT_MESSAGE_SIZE).forEach { text ->
+            viewModelScope.launch {
+                val tempMessage = when (messageType) {
+                    MessageType.Text -> {
+                        createTextMessage(text, currentTheme)
+                    }
+                    MessageType.Image -> {
+                        if ((existMessage as ConversationViewItem.Self.Image).loadableContent == null) return@launch
+                        existMessage
+                    }
+                    MessageType.Document, MessageType.Unknown -> return@launch
                 }
-                MessageType.Image -> {
-                    if ((existMessage as ConversationViewItem.Self.Image).loadableContent == null) return@launch
-                    existMessage
-                }
-                MessageType.Document, MessageType.Unknown -> return@launch
-            }
-            val messages = currentViewState.messages
+                val messages = currentViewState.messages
 
-            updateState { state ->
-                state.copy(
-                    messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
-                )
-            }
-            val sendMessageResponse = messengerInteractor.sendMessage(
-                id = chatId ?: return@launch,
-                text = text,
-                type = messageType.type,
-                localId = tempMessage.localId,
-                authorId = selfUserId ?: return@launch
-            )
-            when (sendMessageResponse) {
-                is CallResult.Error -> {
-                    updateStatus(tempMessage, SentStatus.Error)
+                updateState { state ->
+                    state.copy(
+                        messages = mapOf(tempMessage.localId to tempMessage).plus(messages)
+                    )
                 }
-                is CallResult.Success -> {
-                    tempMessage.userName =
-                        PrintableText.Raw(sendMessageResponse.data.userName ?: "")
-                    if (messageType == MessageType.Text) {
-                        updateStatus(
-                            tempMessage,
-                            SentStatus.Received,
-                            id = sendMessageResponse.data.id
-                        )
+                val sendMessageResponse = messengerInteractor.sendMessage(
+                    id = chatId ?: return@launch,
+                    text = text,
+                    type = messageType.type,
+                    localId = tempMessage.localId,
+                    authorId = selfUserId ?: return@launch
+                )
+                when (sendMessageResponse) {
+                    is CallResult.Error -> {
+                        updateStatus(tempMessage, SentStatus.Error)
+                    }
+                    is CallResult.Success -> {
+                        tempMessage.userName =
+                            PrintableText.Raw(sendMessageResponse.data.userName ?: "")
+                        if (messageType == MessageType.Text) {
+                            updateStatus(
+                                tempMessage,
+                                SentStatus.Received,
+                                id = sendMessageResponse.data.id
+                            )
+                        }
                     }
                 }
             }
