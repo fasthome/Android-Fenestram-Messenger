@@ -31,6 +31,7 @@ class MessengerSocket(private val baseUrl: String) {
         messageDeletedCallback: SocketDeleteMessage.() -> Unit,
         chatChangesCallback: SocketChatChanges.ChatChangesResponse.() -> Unit,
         chatDeletedCallback: SocketDeletedChat.SocketDeletedResponse.() -> Unit,
+        chatCreatedCallback: () -> Unit,
         unreadCountCallback: BadgeResponse.() -> Unit,
         reactionsCallback: ReactionsResponse.() -> Unit
     ) {
@@ -78,7 +79,11 @@ class MessengerSocket(private val baseUrl: String) {
                 val messageStatuses = json.decodeFromString<SocketMessageStatus>(it[0].toString())
                 messageStatuses.messages?.forEach { messageStatus ->
                     if (messageStatus != null) {
-                        messageStatusCallback(messageStatus)
+                        if(messageStatus.type == MESSAGE_TYPE_SYSTEM && messageStatus.text.contains("создал(а) чат")) {
+                            chatCreatedCallback()
+                        } else {
+                            messageStatusCallback(messageStatus)
+                        }
                     }
                 }
             }

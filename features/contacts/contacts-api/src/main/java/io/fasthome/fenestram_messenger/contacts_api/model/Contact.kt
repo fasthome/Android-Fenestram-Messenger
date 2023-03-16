@@ -31,4 +31,5 @@ data class User(
 ) : Parcelable {
     constructor(id: Long) : this(id, "", "", "", "", null, "", "", true, ZonedDateTime.now())
     constructor(id: Long, avatar: String) : this(id, "", "", "", "", null, "", avatar, true, ZonedDateTime.now())
+    constructor(id: Long, avatar: String, name : String) : this(id, "", name, "", "", null, "", avatar, true, ZonedDateTime.now())
 }

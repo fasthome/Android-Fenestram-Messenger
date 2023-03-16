@@ -5,9 +5,21 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class LoginRequest(
-    @SerialName("login")
-    val login: String,
+    @SerialName("grant_type")
+    val grantType: String,
+
+    @SerialName("client_id")
+    val clientId: Long,
+
+    @SerialName("client_secret")
+    val clientSecret: String,
+
+    @SerialName("username")
+    val username: String,
 
     @SerialName("password")
-    val password: String
+    val password: String,
+
+    @SerialName("scope")
+    val scope: String,
 )

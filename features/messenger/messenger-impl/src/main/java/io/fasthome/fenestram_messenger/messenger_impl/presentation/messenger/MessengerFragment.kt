@@ -11,6 +11,7 @@ import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
+import androidx.paging.ItemSnapshotList
 import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.AnimationUtil.getAlphaAnimation
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.android.ext.android.inject
 
@@ -117,7 +119,7 @@ class MessengerFragment :
         }
 
         swipeRefresh.setOnRefreshListener {
-            subscribeChats()
+            vm.fetchMessagesFromService()
             swipeRefresh.isRefreshing = false
         }
     }
@@ -203,6 +205,7 @@ class MessengerFragment :
     }
 
     private fun subscribeChats() {
+        vm.fetchMessagesFromService()
         vm.fetchChats()
             .distinctUntilChanged()
             .collectWhenStarted(this@MessengerFragment) {

@@ -27,7 +27,7 @@ class GroupGuestViewModel(
 
     init {
         viewModelScope.launch {
-            contactsFeature.getContacts().onSuccess {
+            /*contactsFeature.getContacts().onSuccess { // TODO: !!!
                 originalContacts = it.filter { contact ->
                     contact.user != null
                 }.filter { contact ->
@@ -40,7 +40,7 @@ class GroupGuestViewModel(
                         contacts = originalContacts.map(::mapToContactViewItem)
                     )
                 }
-            }
+            }*/
         }
     }
 

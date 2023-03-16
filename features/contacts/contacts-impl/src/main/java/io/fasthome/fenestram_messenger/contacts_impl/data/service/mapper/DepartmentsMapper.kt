@@ -1,17 +1,78 @@
 package io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper
 
 import io.fasthome.fenestram_messenger.contacts_api.model.Contact
+import io.fasthome.fenestram_messenger.contacts_api.model.DepartmentModel
+import io.fasthome.fenestram_messenger.contacts_api.model.DivisionModel
 import io.fasthome.fenestram_messenger.contacts_api.model.User
+import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsRequest
 import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.ContactsResponse
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.model.DepartmentResponse
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.DepartmentViewItem
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
+import io.fasthome.fenestram_messenger.util.Country
+import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.setMaskByCountry
 import java.text.Collator
 import java.time.ZonedDateTime
 import java.util.*
 import java.util.Collections.sort
 
-class ContactsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
+class DepartmentsMapper(private val profileImageUrlConverter: StorageUrlConverter) {
 
+    fun responseToDepartmentList(response: DepartmentResponse) = null
+
+    fun departmentModelToViewItem(models: List<DepartmentModel>): List<DepartmentViewItem> {
+        val viewItems = mutableListOf<DepartmentViewItem>()
+        models.forEach { depModel ->
+            viewItems.add(DepartmentViewItem.Header(PrintableText.Raw(depModel.title)))
+            depModel.division.map {
+                viewItems.add(it.toDivisionViewItem())
+            }
+        }
+        return viewItems
+    }
+
+    private fun DivisionModel.toDivisionViewItem() = DepartmentViewItem.Division(
+        title = PrintableText.Raw(title),
+        employee = mapToContactViewItem(employee)
+    )
+
+    fun contactToViewItem(contact: Contact, selfUserPhone: String?): ContactsViewItem {
+        return when {
+            contact.user != null -> {
+                val user = contact.user!!
+                ContactsViewItem(
+                    userId = user.id,
+                    avatar = user.avatar,
+                    name = getName(contact, selfUserPhone)
+                )
+            }
+            else -> {
+                error("Unknown type contact")
+            }
+        }
+    }
+
+    private fun getName(contact: Contact, selfUserPhone: String?): PrintableText {
+        val user = contact.user!!
+
+        val userName = when {
+            contact.userName?.isNotEmpty() == true -> contact.userName!!
+            user.name.isNotEmpty() -> user.name
+            else -> user.phone.setMaskByCountry(Country.RUSSIA)
+        }
+
+        return if (contact.phone == selfUserPhone || user.phone == selfUserPhone)
+            PrintableText.StringResource(R.string.self_contact_name, userName)
+        else PrintableText.Raw(userName)
+    }
+
+
+    fun mapToContactViewItem(employees: List<Contact>) = employees.map { contact ->
+        contactToViewItem(contact,null)
+    }
     fun contactListToRequest(contacts: List<Contact>): List<ContactsRequest> =
         contacts.mapNotNull {
             contactToRequest(it)

@@ -3,7 +3,7 @@ package io.fasthome.fenestram_messenger.uikit.paging
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.callForResult
 
-private enum class PagesSource {
+enum class PagesSource {
     NotSet,
     Service,
     Storage;

@@ -6,8 +6,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.domain.logic
 import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 
 /**
  * Прослойка в виде отдельной сущности необходима из за того, что экземпляры [MessengerInteractor] из разных мест инжекта будут разные,
@@ -25,5 +24,7 @@ class BadgeCounter {
     fun sendCount(badge : Badge) {
         _unreadCountChannel.trySend(badge)
     }
+
+    suspend fun getBadge() = unreadCountFlow.last()
 
 }

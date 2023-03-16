@@ -286,11 +286,11 @@ class ProfileGuestViewModel(
                 val currentName = getPrintableRawText(currentViewState.userName)
 
                 if (newName != currentName && writePermissionGranted && readPermissionGranted) {
-                    features.contactsFeature.updateContactName(
+                    /*features.contactsFeature.updateContactName(
                         params.userPhone,
                         currentName,
                         newName
-                    )
+                    )*/
                     updateState { state -> state.copy(userName = PrintableText.Raw(newName)) }
                 }
                 updateState { state ->

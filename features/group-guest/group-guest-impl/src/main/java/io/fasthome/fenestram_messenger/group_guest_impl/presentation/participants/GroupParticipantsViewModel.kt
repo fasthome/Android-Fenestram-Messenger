@@ -62,7 +62,7 @@ class GroupParticipantsViewModel(
             when (result) {
                 is ContactsFeature.ContactAddResult.Success -> {
                     viewModelScope.launch {
-                        contactsFeature.getContactsAndUploadContacts()
+                        //contactsFeature.getContactsAndUploadContacts() // TODO: !!!
                     }
                 }
                 is ContactsFeature.ContactAddResult.Canceled -> {}

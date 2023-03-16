@@ -1,6 +1,8 @@
 package io.fasthome.fenestram_messenger.auth_ad_impl.data.storage
 
 import io.fasthome.fenestram_messenger.auth_ad_impl.domain.entity.LoginResult
+import io.fasthome.network.tokens.AccessToken
+import io.fasthome.network.tokens.RefreshToken
 
 class MockLoginStorage {
 
@@ -11,7 +13,7 @@ class MockLoginStorage {
         return when {
             !users.containsKey(login) -> LoginResult.Error(isLoginWrong = true, isPasswordWrong = false)
             users[login] != password -> LoginResult.Error(isLoginWrong = false, isPasswordWrong = true)
-            else -> LoginResult.Success
+            else -> LoginResult.Success(AccessToken("abcd"), RefreshToken("abcd"), 0)
         }
     }
 }

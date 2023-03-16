@@ -80,6 +80,10 @@ object NetworkModule {
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 
+//        single { RefreshTokenAdStorage(get(named(StorageQualifier.Simple))) }
+//        single { AccessTokenAdStorage(get(named(StorageQualifier.Simple))) }
+//        single(::TokensRepoAdImpl) bindSafe TokensRepo::class
+
         single { TokensService(get(named(NetworkClientFactoryQualifier.RefreshToken)), get()) }
 
         factory(::NetworkController)

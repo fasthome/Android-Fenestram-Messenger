@@ -95,7 +95,11 @@ class GetChatsMapper(
             ?.mapKeys { "${it.key};" }
             ?.mapValues {
                 it.value.map { userResponse ->
-                    User(id = userResponse.id, avatar = profileImageUrlConverter.convert(userResponse.avatar))
+                    User(
+                        id = userResponse.id,
+                        avatar = profileImageUrlConverter.convert(userResponse.avatar),
+                        name = userResponse.name ?: ""
+                    )
                 }
             }
             ?: emptyMap()
