@@ -4,6 +4,7 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
 import io.fasthome.fenestram_messenger.util.ProgressListener
@@ -29,7 +30,11 @@ interface MessengerRepo {
 
     suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?>
 
-    fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat>
+    fun getPageChats(query: String): TotalPagingSource<Int, Chat>
+
+    suspend fun updateBdChatsFromService(query: String): CallResult<Unit>
+
+    suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus): CallResult<Unit>
 
     fun getCachedPages(): TotalPagingSource<Int, Chat>
 
@@ -44,8 +49,11 @@ interface MessengerRepo {
     suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
+
+    suspend fun addNewMessageToDb(message: Message): CallResult<Unit>
     suspend fun getMessagesFromChat(id: Long, limit: Int, page: Int): CallResult<MessagesPage>
     suspend fun deleteChat(id: Long): CallResult<Unit>
+    suspend fun deleteChatFromDb(chatId: Long): CallResult<Unit>
     suspend fun deleteMessage(messageId: Long, chatId: Long): CallResult<Unit>
 
     fun closeSocket()
@@ -100,5 +108,6 @@ interface MessengerRepo {
         fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse)
         fun onUnreadMessage(badgeResponse: BadgeResponse)
         fun onNewReactionCallback(reactionsResponse: ReactionsResponse)
+        fun onNewChatCreated()
     }
 }
