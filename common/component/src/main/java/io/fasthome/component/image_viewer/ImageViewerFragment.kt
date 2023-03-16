@@ -13,22 +13,21 @@ import io.fasthome.component.image_viewer.adapter.ImageSliderAdapter
 import io.fasthome.component.image_viewer.adapter.ImageViewerAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.android.setColor
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
-import io.fasthome.fenestram_messenger.util.dpToPx
 import io.fasthome.fenestram_messenger.util.getScreenWidth
 import io.fasthome.fenestram_messenger.util.onClick
 import kotlinx.coroutines.flow.distinctUntilChanged
+
 
 class ImageViewerFragment :
     BaseFragment<ImageViewerState, ImageViewerEvent>(R.layout.fragment_image_viewer) {
 
     private val binding by fragmentViewBinding(FragmentImageViewerBinding::bind)
 
-    val adapterImages = ImageViewerAdapter(
+    private val adapterImages = ImageViewerAdapter(
         onDownSwipe = {
             binding.root.animate().alpha(0f).setDuration(300).start()
             vm.onBackPressed()
@@ -41,12 +40,10 @@ class ImageViewerFragment :
         }
     )
 
-    val adapterImagePicker = ImageSliderAdapter(
-        onItemClicked = {
 
-            val pos = binding.rvImagesPicker.getChildLayoutPosition(
-                it as ConstraintLayout
-            )
+    private val adapterImagePicker = ImageSliderAdapter(
+        onItemClicked = {
+            val pos = binding.rvImagesPicker.getChildLayoutPosition(it as ConstraintLayout)
             binding.rvImagesPicker.smoothScrollToPosition(pos)
             binding.rvImages.scrollToPosition(pos)
         }
@@ -61,10 +58,15 @@ class ImageViewerFragment :
         binding.ibCancel.onClick(vm::onBackPressed)
         binding.ibDelete.onClick(vm::onDeleteImage)
         binding.ibForward.onClick {
-            val imagePos = (binding.rvImages.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            val imagePos =
+                (binding.rvImages.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
             vm.onForwardImage(imagePos)
         }
-        binding.ibDownload.onClick(vm::onDownloadImage)
+        binding.ibDownload.onClick {
+            val imagePos =
+                (binding.rvImages.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+            vm.onDownloadImage(imagePos)
+        }
 
         setupAdapter()
         setupHorizontalPicker()
@@ -87,18 +89,15 @@ class ImageViewerFragment :
         adapterImages.addLoadStateListener { listener ->
             if (listener.prepend.endOfPaginationReached && vm.scrollCursorPosition != null) {
                 binding.rvImages.scrollToPosition(vm.scrollCursorPosition!!)
+                binding.rvImagesPicker.scrollToPosition(vm.scrollCursorPosition!!)
                 vm.scrollCursorPosition = null
             }
         }
         vm.fetchImages()
             .distinctUntilChanged()
             .collectWhenStarted(this@ImageViewerFragment) {
-                adapterImages.submitData(it)
-            }
-        vm.fetchImages()
-            .distinctUntilChanged()
-            .collectWhenStarted(this@ImageViewerFragment) {
-                adapterImagePicker.submitData(it)
+                adapterImages.submitData(this@ImageViewerFragment.lifecycle, it)
+                adapterImagePicker.submitData(this@ImageViewerFragment.lifecycle, it)
             }
     }
 
@@ -112,11 +111,12 @@ class ImageViewerFragment :
         snap.attachToRecyclerView(binding.rvImages)
 
         binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
                 val pos =
-                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
+                    (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition()
                         ?: return
+                if (pos == RecyclerView.NO_POSITION) return
                 binding.tvCounter.text = getString(
                     R.string.common_value_from_value_ph,
                     pos + 1,
@@ -127,15 +127,17 @@ class ImageViewerFragment :
     }
 
     private fun setupHorizontalPicker() {
-        val padding: Int = requireContext().getScreenWidth() / 2 - requireContext().dpToPx(42)
+        val padding: Int =
+            (requireContext().getScreenWidth() - resources.getDimensionPixelSize(R.dimen.image_picker_size)) / 2
         binding.rvImagesPicker.setPadding(padding, 0, padding, 0)
-
         binding.rvImagesPicker.layoutManager = SliderLayoutManager(requireContext())
         binding.rvImagesPicker.adapter = adapterImagePicker
     }
 
     override fun renderState(state: ImageViewerState) {
         binding.tvCounter.isVisible = state.imagesViewerModel.size > 1
+        binding.rvImagesPicker.isVisible =
+            state.imagesViewerModel.firstOrNull()?.imageGallery != null || state.imagesViewerModel.size > 1
         if (state.imagesViewerModel.size > 1) {
             binding.tvCounter.text = getString(
                 R.string.common_value_from_value_ph,
@@ -145,7 +147,13 @@ class ImageViewerFragment :
         }
         binding.ibDelete.isVisible = state.canDelete
         binding.ibForward.isVisible = state.canForward
+        binding.ibDownload.isVisible = state.canDownload
     }
 
-    override fun handleEvent(event: ImageViewerEvent) = noEventsExpected()
+    override fun handleEvent(event: ImageViewerEvent) = when (event) {
+        is ImageViewerEvent.ToggleProgressEvent -> {
+            binding.ibDownload.isEnabled = !event.isProgressVisible
+            binding.progress.isVisible = event.isProgressVisible
+        }
+    }
 }

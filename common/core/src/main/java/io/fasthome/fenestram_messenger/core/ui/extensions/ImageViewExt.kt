@@ -245,8 +245,33 @@ fun loadBitmap(context: Context, url: String, placeholderRes: Int = R.drawable.i
     }
 }
 
+fun loadOriginalBitmap(context: Context, url: String): Bitmap {
+    return try {
+        Glide.with(context)
+            .asBitmap()
+            .load(url)
+            .submit()
+            .get()
+    } catch (e: Exception) {
+        throw e
+    }
+}
+
+fun loadOriginalGif(context: Context, url: String): ByteBuffer {
+    return try {
+        Glide.with(context)
+            .asGif()
+            .load(url)
+            .submit()
+            .get()
+            .buffer
+    } catch (e: Exception) {
+        throw e
+    }
+}
+
 fun RequestBuilder<Drawable>.override(overridePair: Pair<Int, Int>?): RequestBuilder<Drawable> {
-    if(overridePair != null) {
+    if (overridePair != null) {
         return this.clone().override(overridePair.first, overridePair.second)
     }
     return this

@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
+class SliderLayoutManager(context: Context?, val onItemSelected: ((Int) -> Unit)? = null) :
+    LinearLayoutManager(context) {
 
     init {
         orientation = HORIZONTAL;
     }
 
-    var callback: OnItemSelectedListener? = null
     private lateinit var recyclerView: RecyclerView
 
     override fun onAttachedToWindow(view: RecyclerView?) {
@@ -69,7 +69,7 @@ class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
             for (i in 0 until recyclerView.childCount) {
                 val child = recyclerView.getChildAt(i)
                 val childCenterX = getDecoratedLeft(child) + (getDecoratedRight(child) - getDecoratedLeft(child)) / 2
-                val newDistance = Math.abs(childCenterX - recyclerViewCenterX)
+                val newDistance = abs(childCenterX - recyclerViewCenterX)
                 if (newDistance < minDistance) {
                     minDistance = newDistance
                     position = recyclerView.getChildLayoutPosition(child)
@@ -77,7 +77,7 @@ class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
             }
 
             // Notify on item selection
-            callback?.onItemSelected(position)
+            onItemSelected?.invoke(position)
         }
     }
 
@@ -85,7 +85,4 @@ class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
         return (recyclerView.right - recyclerView.left) / 2 + recyclerView.left
     }
 
-    interface OnItemSelectedListener {
-        fun onItemSelected(layoutPosition: Int)
-    }
 }

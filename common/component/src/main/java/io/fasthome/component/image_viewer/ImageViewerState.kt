@@ -8,6 +8,7 @@ data class ImageViewerState(
     val chatId: Long? = null,
     val canDelete: Boolean,
     val canForward: Boolean,
+    val canDownload: Boolean,
     val username: PrintableText? = null,
     val currPhotoPosition: Int? = null,
     val imagesViewerModel: List<ImageViewerModel?> = emptyList(),
