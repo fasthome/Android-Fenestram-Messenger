@@ -66,6 +66,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onAuthClicked()
         }
 
+        debugProfileVerification.onClick {
+            vm.onProfileVerification()
+        }
+
         debugAuthAd.onClick {
             vm.onAuthAdClicked()
         }

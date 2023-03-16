@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.debug_impl.di
 
 import io.fasthome.component.bottom_navigation.BottomNavViewModel
+import io.fasthome.component.profile_verification.ProfileVerificationViewModel
 import io.fasthome.fenestram_messenger.debug_api.DebugFeature
 import io.fasthome.fenestram_messenger.debug_impl.DebugFeatureImpl
 import io.fasthome.fenestram_messenger.debug_impl.presentation.debug.DebugViewModel
@@ -37,6 +38,7 @@ object DebugModule {
         viewModel(::DebugViewModel)
         viewModel(::SocketViewModel)
         viewModel(::BottomNavViewModel)
+        viewModel(::ProfileVerificationViewModel)
 
         factory(DebugViewModel::Features)
         factory(SocketViewModel::Interactors)
