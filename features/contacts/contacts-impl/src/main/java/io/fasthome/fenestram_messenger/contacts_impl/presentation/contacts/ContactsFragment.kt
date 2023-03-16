@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapt
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.DepartmentViewItem
 import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
 import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
+import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
@@ -27,7 +28,7 @@ import io.fasthome.fenestram_messenger.util.renderLoadingState
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
-class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts) {
+class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts), FabConsumer {
 
     private val permissionInterface by registerFragment(PermissionComponentContract)
 
@@ -57,6 +58,16 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
             }
         }
         vm.loadDepartments()
+    }
+
+    override fun onFabClicked(): Boolean {
+        binding.rvDepartment.smoothScrollToPosition(0)
+        return super.onFabClicked()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateFabIcon(iconRes = R.drawable.ic_arrow_up, badgeCount = 0)
     }
 
     override fun syncTheme(appTheme: Theme) {
