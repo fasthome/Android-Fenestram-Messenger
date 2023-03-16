@@ -132,6 +132,10 @@ class ImageViewerViewModel(
         }
     }
 
+    fun updateCounter(curPhotoPos: Int) {
+        updateState { state -> state.copy(currPhotoPosition = curPhotoPos) }
+    }
+
     override fun onBackPressed(): Boolean {
         exitWithoutResult()
         return true

@@ -107,9 +107,7 @@ class ImageViewerFragment :
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvImages.itemAnimator = null
         binding.rvImages.isNestedScrollingEnabled = false
-        val snap = PagerSnapHelper()
-        snap.attachToRecyclerView(binding.rvImages)
-
+        PagerSnapHelper().attachToRecyclerView(binding.rvImages)
         binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -117,11 +115,8 @@ class ImageViewerFragment :
                     (binding.rvImages.layoutManager as? LinearLayoutManager)?.findFirstCompletelyVisibleItemPosition()
                         ?: return
                 if (pos == RecyclerView.NO_POSITION) return
-                binding.tvCounter.text = getString(
-                    R.string.common_value_from_value_ph,
-                    pos + 1,
-                    adapterImages.itemCount
-                )
+                binding.rvImagesPicker.smoothScrollToPosition(pos)
+                vm.updateCounter(pos)
             }
         })
     }
@@ -130,7 +125,9 @@ class ImageViewerFragment :
         val padding: Int =
             (requireContext().getScreenWidth() - resources.getDimensionPixelSize(R.dimen.image_picker_size)) / 2
         binding.rvImagesPicker.setPadding(padding, 0, padding, 0)
-        binding.rvImagesPicker.layoutManager = SliderLayoutManager(requireContext())
+        binding.rvImagesPicker.layoutManager = SliderLayoutManager(requireContext()) { scrolledPos ->
+            binding.rvImages.scrollToPosition(scrolledPos)
+        }
         binding.rvImagesPicker.adapter = adapterImagePicker
     }
 
