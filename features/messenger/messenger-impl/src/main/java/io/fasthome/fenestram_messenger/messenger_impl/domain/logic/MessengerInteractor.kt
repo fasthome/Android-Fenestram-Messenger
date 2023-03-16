@@ -57,7 +57,12 @@ class MessengerInteractor(
     suspend fun postChats(name: String, users: List<Long?>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
 
-    suspend fun addNewMessageToDb(message: Message) = messageRepo.addNewMessageToDb(message)
+    suspend fun addNewMessageToDb(message: Message) {
+        messageRepo.addNewMessageToDb(message).onSuccess {
+            val badge = badgeCounter.getBadge()
+            badgeCounter.sendCount(badge.copy(count = badge.count + 1))
+        }
+    }
 
     suspend fun postReaction(chatId: Long, messageId: Long, reaction: String) =
         messageRepo.postReaction(chatId, messageId, reaction)
