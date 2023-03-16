@@ -590,6 +590,7 @@ class ConversationFragment :
         val canEdit =
             conversationViewItem.date?.plusDays(1)?.isAfter(ZonedDateTime.now())
                 ?: false
+        val canCopy = conversationViewItem !is ConversationImageItem
 
         MessageActionDialog.create(
             fragment = this,
@@ -599,9 +600,10 @@ class ConversationFragment :
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
                 { vm.onDeleteMessageClicked(conversationViewItem) }
             } else null,
-            onCopy = {
-                copyPrintableText(conversationViewItem.content as PrintableText)
-            }, onEdit = if (conversationViewItem is ConversationViewItem.Self) {
+            onCopy = if(canCopy) {
+                { copyPrintableText(conversationViewItem.content as PrintableText) }
+            } else null,
+            onEdit = if (conversationViewItem is ConversationViewItem.Self) {
                 if (canEdit) {
                     { vm.editMessageMode(true, conversationViewItem) }
                 } else null
@@ -660,7 +662,7 @@ class ConversationFragment :
                         tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
                         val theme = getTheme()
                         tvTextToEdit.setTextColor(theme.text0Color())
-                        tvTextToEdit.setTextSize(TypedValue.COMPLEX_UNIT_SP,12f)
+                        tvTextToEdit.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false
