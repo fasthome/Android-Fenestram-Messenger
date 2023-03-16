@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -26,6 +26,7 @@ import io.fasthome.fenestram_messenger.uikit.theme.DarkTheme
 import io.fasthome.fenestram_messenger.uikit.theme.LightTheme
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.android.getNavigationBarHeight
+import io.fasthome.fenestram_messenger.util.getPrintableTextOrNull
 import io.fasthome.fenestram_messenger.util.model.Bytes
 import io.fasthome.fenestram_messenger.util.onClick
 import io.fasthome.fenestram_messenger.util.setPrintableText
@@ -133,13 +134,12 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
     override fun renderState(state: ProfileState): Unit = with(binding) {
         state.username?.let { username.setPrintableText(it) }
         state.email?.let { email.setPrintableText(it) }
-        state.avatarUrl?.let { url ->
-            ivAvatar.loadCircle(
-                url,
-                placeholderRes = R.drawable.ic_avatar_placeholder,
-                progressBar = progressBar
-            )
-        }
+        ivAvatar.loadAvatarWithGradient(
+            state.avatarUrl,
+            username = getPrintableTextOrNull(state.username),
+            progressBar = progressBar
+        )
+
     }
 
     override fun handleEvent(event: ProfileEvent) {
@@ -157,7 +157,12 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
                 ).show()
             }
             is ProfileEvent.UpdateStatus -> {
-                binding.status.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), event.status.dotColor))
+                binding.status.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        event.status.dotColor
+                    )
+                )
                 binding.status.setPrintableText(event.status.name)
             }
         }

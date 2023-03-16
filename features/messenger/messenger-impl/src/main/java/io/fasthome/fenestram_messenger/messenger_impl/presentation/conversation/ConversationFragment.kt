@@ -11,10 +11,8 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.AlphaAnimation
 import android.view.animation.AnimationUtils
-import android.webkit.WebSettings.TextSize
 import androidx.annotation.DimenRes
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -25,7 +23,7 @@ import io.fasthome.component.person_detail.PersonDetailDialog
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.fenestram_messenger.core.ui.dialog.AcceptDialog
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -234,9 +232,9 @@ class ConversationFragment :
     }
 
     override fun renderState(state: ConversationState) = with(binding) {
-        avatarImage.loadCircle(
+        avatarImage.loadAvatarWithGradient(
             url = state.avatar,
-            placeholderRes = R.drawable.ic_avatar_placeholder
+            username = getPrintableText(state.userName)
         )
         avatarImage.onClick {
             if (state.avatar.isNotEmpty())
@@ -592,6 +590,7 @@ class ConversationFragment :
         val canEdit =
             conversationViewItem.date?.plusDays(1)?.isAfter(ZonedDateTime.now())
                 ?: false
+        val canCopy = conversationViewItem !is ConversationImageItem
 
         MessageActionDialog.create(
             fragment = this,
@@ -601,9 +600,10 @@ class ConversationFragment :
             onDelete = if (conversationViewItem is ConversationViewItem.Self) {
                 { vm.onDeleteMessageClicked(conversationViewItem) }
             } else null,
-            onCopy = {
-                copyPrintableText(conversationViewItem.content as PrintableText)
-            }, onEdit = if (conversationViewItem is ConversationViewItem.Self) {
+            onCopy = if(canCopy) {
+                { copyPrintableText(conversationViewItem.content as PrintableText) }
+            } else null,
+            onEdit = if (conversationViewItem is ConversationViewItem.Self) {
                 if (canEdit) {
                     { vm.editMessageMode(true, conversationViewItem) }
                 } else null
@@ -662,7 +662,7 @@ class ConversationFragment :
                         tvEditMessageTitle.setTextAppearance(R.style.Text_Blue_12sp)
                         val theme = getTheme()
                         tvTextToEdit.setTextColor(theme.text0Color())
-                        tvTextToEdit.setTextSize(TypedValue.COMPLEX_UNIT_SP,12f)
+                        tvTextToEdit.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                         tvEditMessageTitle.text = getPrintableRawText(message.userName)
                         tvEditMessageTitle.isVisible = true
                         replyImage.isVisible = false

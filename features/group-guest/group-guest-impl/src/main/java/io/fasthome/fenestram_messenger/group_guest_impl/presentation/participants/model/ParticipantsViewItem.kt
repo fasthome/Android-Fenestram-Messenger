@@ -32,7 +32,8 @@ class CurrentUserViewItem(
     override val name: PrintableText,
     override val nickname: String,
     override val phone: String,
-    override val avatar: String
+    override val avatar: String,
+    val originalName : String
 ) : ParticipantsViewItem(
     userId, name, nickname, phone, avatar
 ), Parcelable

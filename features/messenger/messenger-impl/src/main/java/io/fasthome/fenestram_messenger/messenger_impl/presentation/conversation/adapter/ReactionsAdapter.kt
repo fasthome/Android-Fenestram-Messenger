@@ -4,7 +4,7 @@ import android.content.res.ColorStateList
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderPermittedReactionBinding
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderReactionsBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.PermittedReactionViewItem
@@ -66,9 +66,9 @@ fun createReactionsAdapterDelegate(
                 avatars.isVisible = true
                 val avatarImageViews = listOf(avatar3, avatar2, avatar1)
                 avatarImageViews.forEachIndexed { ind, iv ->
-                    item.avatars.getOrNull(ind)?.let {
+                    item.users.getOrNull(ind)?.let {
                         iv.isVisible = true
-                        iv.loadCircle(it)
+                        iv.loadAvatarWithGradient(url = it.avatar, username = it.name)
                     } ?: run { iv.isVisible = false }
                 }
             }

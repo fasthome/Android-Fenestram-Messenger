@@ -35,7 +35,7 @@ class MainViewModel(
     savedStateHandle: SavedStateHandle,
     private val features: Features,
     private val outerTabNavigator: OuterTabNavigator,
-    private val environment: Environment
+    private val environment: Environment,
 ) : BaseViewModel<MainState, MainEvent>(router, requestParams) {
 
     class Features(
@@ -44,7 +44,7 @@ class MainViewModel(
         val profileFeature: ProfileFeature,
         val debugFeature: DebugFeature,
         val pushFeature: PushFeature,
-        val messengerFeature: MessengerFeature
+        val messengerFeature: MessengerFeature,
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -52,7 +52,8 @@ class MainViewModel(
     private val debugLauncher = registerScreen(features.debugFeature.navigationContract)
 
     init {
-        val savedState = savedStateHandle.provideSavedState { SavedState(tabsStack = fragmentsStack) }
+        val savedState =
+            savedStateHandle.provideSavedState { SavedState(tabsStack = fragmentsStack) }
         val tabsStack = savedState?.tabsStack ?: Stack()
 
         if (tabsStack.isNotEmpty()) {
@@ -68,7 +69,7 @@ class MainViewModel(
 
             features.messengerFeature.subscribeUnreadCount()
                 .collectWhenViewActive()
-                .onEach { badge->
+                .onEach { badge ->
                     sendEvent(
                         MainEvent.UpdateBadge(
                             count = badge.count.toInt()
@@ -88,7 +89,11 @@ class MainViewModel(
     }
 
     override fun createInitialState(): MainState {
-        return MainState(currentTab = fragmentsStack.peek(), debugVisible = environment.isDebug, fabVisible = true)
+        return MainState(
+            currentTab = fragmentsStack.peek(),
+            debugVisible = environment.isDebug,
+            fabVisible = true
+        )
     }
 
     override fun onBackPressed(): Boolean {
@@ -113,7 +118,9 @@ class MainViewModel(
         fragmentsStack.remove(tab)
         fragmentsStack.push(tab)
         val fabVisible = when (tab) {
-            MainFeature.TabType.Chats -> true
+            MainFeature.TabType.Contacts,
+            MainFeature.TabType.Chats,
+            -> true
             else -> false
         }
         updateState {
@@ -146,7 +153,7 @@ class MainViewModel(
         debugLauncher.launch(NoParams)
     }
 
-    fun fetchUnreadCount(){
+    fun fetchUnreadCount() {
         viewModelScope.launch {
             features.messengerFeature
                 .fetchUnreadCount().onSuccess { badge ->

@@ -44,5 +44,31 @@
     <color name="stroke_2">#D6E1F2</color>
     <color name="logo_tfn">#293240</color>
 
+    <color name="profile_gradient_1_1">#FF8A65</color>
+    <color name="profile_gradient_1_2">#EA5A5A</color>
+    <color name="profile_gradient_2_1">#FF8A65</color>
+    <color name="profile_gradient_2_2">#FFB74D</color>
+    <color name="profile_gradient_3_1">#F9CE37</color>
+    <color name="profile_gradient_3_2">#FFB74D</color>
+    <color name="profile_gradient_4_1">#AED581</color>
+    <color name="profile_gradient_4_2">#DCE775</color>
+    <color name="profile_gradient_5_1">#81C784</color>
+    <color name="profile_gradient_5_2">#AED581</color>
+    <color name="profile_gradient_6_1">#4DB6AC</color>
+    <color name="profile_gradient_6_2">#81C784</color>
+    <color name="profile_gradient_7_1">#4DD0E1</color>
+    <color name="profile_gradient_7_2">#4DB6AC</color>
+    <color name="profile_gradient_8_1">#64B5F6</color>
+    <color name="profile_gradient_8_2">#4DD0E1</color>
+    <color name="profile_gradient_9_1">#7986CB</color>
+    <color name="profile_gradient_9_2">#64B5F6</color>
+    <color name="profile_gradient_10_1">#9575CD</color>
+    <color name="profile_gradient_10_2">#7986CB</color>
+    <color name="profile_gradient_11_1">#BA68C8</color>
+    <color name="profile_gradient_11_2">#9575CD</color>
+    <color name="profile_gradient_12_1">#F06292</color>
+    <color name="profile_gradient_12_2">#BA68C8</color>
+    <color name="profile_gradient_13_1">#E57373</color>
+    <color name="profile_gradient_13_2">#F06292</color>
 
 </resources>

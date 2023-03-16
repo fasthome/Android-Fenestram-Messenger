@@ -10,6 +10,7 @@ import android.net.Uri
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.annotation.DrawableRes
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Registry
@@ -27,6 +28,7 @@ import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.fasthome.fenestram_messenger.core.R
+import io.fasthome.fenestram_messenger.uikit.custom_view.emptyAvatarWithUsername
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.ContentLoaderFactory
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UrlLoadableContent
@@ -39,7 +41,11 @@ import java.nio.ByteBuffer
 class AppGlideModule : AppGlideModule(), KoinComponent {
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-        registry.prepend(Content.LoadableContent::class.java, ByteBuffer::class.java, ContentLoaderFactory())
+        registry.prepend(
+            Content.LoadableContent::class.java,
+            ByteBuffer::class.java,
+            ContentLoaderFactory()
+        )
     }
 }
 
@@ -69,7 +75,7 @@ fun ImageView.loadRounded(
     transform: BitmapTransformation? = CenterCrop(),
     progressBar: ProgressBar? = null,
     sizeMultiplier: Float = 1f,
-    overridePair: Pair<Int,Int>? = null
+    overridePair: Pair<Int, Int>? = null
 ) {
     progressBar?.isVisible = true
     var plcRes = placeholderRes
@@ -128,6 +134,56 @@ fun ImageView.loadRounded(
         .diskCacheStrategy(DiskCacheStrategy.ALL)
         .placeholder(plcRes)
         .into(this)
+}
+
+fun ImageView.loadAvatarWithGradient(
+    url: String?,
+    username: String? = null,
+    onLoadFailed: () -> Unit = {},
+    onResourceReady: () -> Unit = {},
+    progressBar: ProgressBar? = null
+) {
+
+    if (url.isNullOrEmpty()) {
+        progressBar?.alpha = 0f
+        Glide
+            .with(this)
+            .load(emptyAvatarWithUsername(username))
+            .into(this)
+    } else {
+        progressBar?.alpha = 1f
+        Glide
+            .with(this)
+            .load(url)
+            .placeholder(emptyAvatarWithUsername(username)?.toDrawable(context.resources))
+            .transform(CircleCrop())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean,
+                ): Boolean {
+                    progressBar?.alpha = 0f
+                    onLoadFailed()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean,
+                ): Boolean {
+                    progressBar?.alpha = 0f
+                    onResourceReady()
+                    return false
+                }
+            })
+            .into(this)
+    }
 }
 
 fun ImageView.loadCircle(
@@ -210,7 +266,7 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
             when (content) {
                 is Content.FileContent -> content.file
                 is Content.LoadableContent -> {
-                    when(content){
+                    when (content) {
                         is UrlLoadableContent -> {
                             content.url
                         }
@@ -227,7 +283,11 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
         .into(this)
 }
 
-fun loadBitmap(context: Context, url: String, placeholderRes: Int = R.drawable.ic_avatar_placeholder): Bitmap {
+fun loadBitmap(
+    context: Context,
+    url: String,
+    placeholderRes: Int = R.drawable.ic_avatar_placeholder
+): Bitmap {
     return try {
         Glide.with(context)
             .asBitmap()
@@ -246,7 +306,7 @@ fun loadBitmap(context: Context, url: String, placeholderRes: Int = R.drawable.i
 }
 
 fun RequestBuilder<Drawable>.override(overridePair: Pair<Int, Int>?): RequestBuilder<Drawable> {
-    if(overridePair != null) {
+    if (overridePair != null) {
         return this.clone().override(overridePair.first, overridePair.second)
     }
     return this
