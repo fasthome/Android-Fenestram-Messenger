@@ -1,7 +1,8 @@
 package io.fasthome.component.image_viewer.adapter
 
+import android.net.Uri
 import android.view.View
-import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import io.fasthome.component.databinding.ItemImagePickerBinding
 import io.fasthome.component.image_viewer.model.ImageViewerModel
@@ -33,13 +34,13 @@ fun createImageAdapterDelegate(
             }
             binding.ivImage.apply {
                 item.imageContent?.let {
-                    setContent(it, FitCenter(), RoundedCorners(1.dp))
+                    setContent(it, CenterCrop(), RoundedCorners(5.dp))
                 }
                 item.imageUrl?.let {
-                    loadRounded(it, radius = 5.dp)
+                    loadRounded(Uri.parse(it), progressBar = binding.progress)
                 }
                 item.imageGallery?.let {
-                    loadRounded(it.uri, radius = 5.dp)
+                    loadRounded(it.uri, progressBar = binding.progress)
                 }
             }
         }

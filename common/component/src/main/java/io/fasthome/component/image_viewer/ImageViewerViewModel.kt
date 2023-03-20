@@ -13,6 +13,7 @@ import io.fasthome.fenestram_messenger.data.file.DownloadImageManager
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UrlLoadableContent
 import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
@@ -34,6 +35,8 @@ class ImageViewerViewModel(
 ) {
 
     var scrollCursorPosition: Int? = null
+    var galleryPage = 0
+    var galleryPageSize = IMAGES_COUNT_MEDIUM_PAGE
     override fun createInitialState(): ImageViewerState {
         val fromConversationParams = params as? ImageViewerContract.ImageViewerParams.MessageImageParams
         val someImagesConversationParams = params as? ImageViewerContract.ImageViewerParams.ImagesParams
@@ -48,6 +51,14 @@ class ImageViewerViewModel(
         )
     }
 
+    init {
+        viewModelScope.launch {
+            val imageGallery = currentViewState.imagesViewerModel.firstOrNull()?.imageGallery ?: return@launch
+            galleryPageSize =
+                ((galleryRepository.getCursorLastPosition() - imageGallery.cursorPosition) / IMAGES_COUNT_MEDIUM_PAGE + 1) * IMAGES_COUNT_MEDIUM_PAGE
+        }
+    }
+
     fun fetchImages(): Flow<PagingData<ImageViewerModel>> {
         val imageGallery = currentViewState.imagesViewerModel.firstOrNull()?.imageGallery
         var index = 0
@@ -55,7 +66,12 @@ class ImageViewerViewModel(
             getItems = {
                 totalPagingSource(IMAGES_COUNT_MEDIUM_PAGE) { pageNumber, pageSize ->
                     if (imageGallery != null) {
-                        galleryRepository.getGalleryImages(pageNumber, pageSize).onSuccess { images ->
+                        galleryRepository.getGalleryImages(
+                            galleryPage,
+                            galleryPageSize,
+                        ).onSuccess { images ->
+                            galleryPage += galleryPageSize / IMAGES_COUNT_MEDIUM_PAGE
+                            galleryPageSize = IMAGES_COUNT_MEDIUM_PAGE
                             return@totalPagingSource ListWithTotal(images, pageSize)
                         }
                     } else {
@@ -116,9 +132,18 @@ class ImageViewerViewModel(
 
     fun onDownloadImage(imagePos: Int) {
         viewModelScope.launch {
-            val imageUrl = currentViewState.imagesViewerModel.getOrNull(imagePos)?.imageUrl ?: run {
-                showPopup(PrintableText.StringResource(R.string.image_viewer_download_error))
-                return@launch
+            val imageViewerModel = currentViewState.imagesViewerModel.getOrNull(imagePos)
+            val imageUrl = when {
+                imageViewerModel?.imageUrl != null -> {
+                    imageViewerModel.imageUrl
+                }
+                imageViewerModel?.imageContent is UrlLoadableContent -> {
+                    imageViewerModel.imageContent.url
+                }
+                else -> {
+                    showPopup(PrintableText.StringResource(R.string.image_viewer_download_error))
+                    return@launch
+                }
             }
 
             sendEvent(ImageViewerEvent.ToggleProgressEvent(isProgressVisible = true))
