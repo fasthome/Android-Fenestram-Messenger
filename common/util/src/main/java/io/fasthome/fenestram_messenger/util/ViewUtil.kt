@@ -5,6 +5,7 @@ package io.fasthome.fenestram_messenger.util
 
 import android.content.res.Resources
 import android.graphics.Rect
+import android.os.SystemClock
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.TouchDelegate
@@ -71,3 +72,20 @@ fun Resources.isTablet(): Boolean {
     return this.configuration.smallestScreenWidthDp >= 600
 }
 
+class OnSingleClickListener(private val block: () -> Unit, private val wait: Long) : View.OnClickListener {
+    override fun onClick(view: View) {
+        if (SystemClock.elapsedRealtime() - lastClickTime < wait) {
+            return
+        }
+        lastClickTime = SystemClock.elapsedRealtime()
+        block()
+    }
+
+    companion object {
+        private var lastClickTime = 0L
+    }
+}
+
+fun View.setOnSingleClickListener(wait: Long = 1000L, block: () -> Unit) {
+    setOnClickListener(OnSingleClickListener(block, wait))
+}

@@ -5,8 +5,6 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -43,7 +41,7 @@ class CreateGroupChatFragment :
 
     private val binding by fragmentViewBinding(FragmentCreateGroupChatBinding::bind)
 
-    private val contactsAdapter = ContactsAdapter(textColor = getTheme().text0Color(),onItemClicked = {
+    private val contactsAdapter = ContactsAdapter(textColor = getTheme().text0Color(), onItemClicked = {
         vm.onContactClicked(it)
     })
 
@@ -51,9 +49,9 @@ class CreateGroupChatFragment :
         textColor = getTheme().text0Color(),
         onItemClicked = {
 
-    }, onRemoveClicked = {
-        vm.onContactRemoveClick(it)
-    })
+        }, onRemoveClicked = {
+            vm.onContactRemoveClick(it)
+        })
 
     override fun syncTheme(appTheme: Theme) {
         appTheme.context = requireActivity().applicationContext
@@ -113,10 +111,6 @@ class CreateGroupChatFragment :
 
         if (state.addedContacts.isEmpty()) next.hide() else next.show()
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            listAddedInChat.isVisible = state.addedContacts.isNotEmpty() && state.isGroupChat
-        }, 100)
-        
         contactsAdapter.notifyDataSetChanged()
 
         if (state.isGroupChat) {
@@ -128,11 +122,12 @@ class CreateGroupChatFragment :
              * state.addedContacts.isNotEmpty() не скролить, если список пустой
              * state.needScroll не скролить, если последний элемент был удален
              */
-            if (state.addedContacts.isNotEmpty() && state.needScroll) {
-                listAddedInChat.postDelayed({
+            listAddedInChat.postDelayed({
+                listAddedInChat.isVisible = state.addedContacts.isNotEmpty()
+                if (state.addedContacts.isNotEmpty() && state.needScroll) {
                     listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
-                }, 100)
-            }
+                }
+            }, 100)
         }
     }
 

@@ -204,7 +204,7 @@ class ConversationFragment :
         backButton.onClick() {
             vm.exitToMessenger()
         }
-        profileToolBar.onClick {
+        profileToolBar.setOnSingleClickListener {
             vm.onUserClicked(false)
         }
         backButton.increaseHitArea(16.dp)
@@ -218,7 +218,7 @@ class ConversationFragment :
             inputMessage.setText("")
         }
 
-        attachButton.onClick {
+        attachButton.setOnSingleClickListener {
             vm.onAttachClicked()
         }
 
