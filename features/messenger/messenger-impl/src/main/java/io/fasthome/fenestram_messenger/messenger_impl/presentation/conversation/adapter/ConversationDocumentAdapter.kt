@@ -1,34 +1,45 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.adapter
 
+import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ItemDocumentBinding
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.util.*
-import io.fasthome.network.client.ProgressListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 
 class ConversationDocumentAdapter(
     onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    documentColor: Int?
 ) : AsyncListDifferDelegationAdapter<MetaInfo>(
     AdapterUtil.diffUtilItemCallbackEquals(
         MetaInfo::url
     ), AdapterUtil.adapterDelegatesManager(
-        createDocumentAdapterDelegate(onDownloadDocument = onDownloadDocument)
+        createDocumentAdapterDelegate(
+            onDownloadDocument = onDownloadDocument,
+            documentColor = documentColor
+        )
     )
 )
 
 
-fun createDocumentAdapterDelegate(onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit) =
+fun createDocumentAdapterDelegate(
+    onDownloadDocument: (meta: MetaInfo, progressListener: ProgressListener) -> Unit,
+    documentColor: Int?
+) =
     adapterDelegateViewBinding<MetaInfo, ItemDocumentBinding>(
         ItemDocumentBinding::inflate
     ) {
-
         bindWithBinding {
+            if (documentColor != null) {
+                progressBar.progressTintList = ColorStateList.valueOf(documentColor)
+                fileName.setTextColor(documentColor)
+                fileSize.setTextColor(documentColor)
+            }
+
             renderDocument(
                 metaInfo = item,
                 progressBar = progressBar,
@@ -40,6 +51,7 @@ fun createDocumentAdapterDelegate(onDownloadDocument: (meta: MetaInfo, progressL
         }
     }
 
+@SuppressLint("SuspiciousIndentation")
 private fun renderDocument(
     //поле для клика скачивания
     startDownloadView: View? = null,
@@ -61,48 +73,24 @@ private fun renderDocument(
     }
 
     fileSize.setPrintableText(getPrettySize(metaInfo.size))
-    fileName.setPrintableTextOrGone(metaInfo.name)
+    fileName.text = metaInfo.name
 
     progressBar.isVisible = false
     fileSize.isVisible = true
 
     val documentLoadClickListener = {
-        if(!metaInfo.url.isNullOrEmpty())
-        onDownloadDocument(metaInfo) { progress, loadedBytesSize, fullBytesSize, isReady ->
-            renderDownloadListener(
-                progressBar = progressBar,
-                progress = progress,
-                loadedBytesSize = loadedBytesSize,
-                fullBytesSize = fullBytesSize,
-                metaInfo = metaInfo,
-                fileSize = fileSize,
-                isReady = isReady
-            )
-        }
+        if (!metaInfo.url.isNullOrEmpty())
+            onDownloadDocument(metaInfo) { progress, loadedBytesSize, fullBytesSize, isReady ->
+                renderDownloadListener(
+                    progressBar = progressBar,
+                    progress = progress,
+                    loadedBytesSize = loadedBytesSize,
+                    fullBytesSize = fullBytesSize,
+                    metaInfo = metaInfo,
+                    fileSize = fileSize,
+                    isReady = isReady
+                )
+            }
     }
     startDownloadView?.onClick(documentLoadClickListener)
-}
-
-private suspend inline fun renderDownloadListener(
-    progressBar: ProgressBar,
-    progress: Int,
-    metaInfo: MetaInfo?,
-    fileSize: TextView,
-    isReady: Boolean,
-    loadedBytesSize: Long,
-    fullBytesSize: Long,
-) {
-    withContext(Dispatchers.Main) {
-        progressBar.isVisible = !isReady
-        progressBar.progress = progress
-
-        metaInfo?.let { meta ->
-            if (isReady) {
-                fileSize.setPrintableText(getPrettySize(fullBytesSize))
-            } else {
-                fileSize.setPrintableText(getLoadedFileSize(loadedBytesSize, fullBytesSize))
-            }
-
-        }
-    }
 }

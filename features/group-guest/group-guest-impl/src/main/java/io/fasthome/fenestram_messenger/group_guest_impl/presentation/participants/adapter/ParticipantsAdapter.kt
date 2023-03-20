@@ -1,17 +1,13 @@
 package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.adapter
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
-import io.fasthome.fenestram_messenger.group_guest_impl.R
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.ItemCurrentUserBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.databinding.ItemParticipantBinding
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.AnotherUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.CurrentUserViewItem
 import io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants.model.ParticipantsViewItem
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
-import io.fasthome.fenestram_messenger.util.bindWithBinding
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
 
 class ParticipantsAdapter(
     onMenuClicked: (Long) -> Unit,
@@ -30,7 +26,8 @@ fun createCurrentUserAdapterDelegate() =
         ItemCurrentUserBinding::inflate,
     ) {
         bindWithBinding {
-            avatar.loadCircle(item.avatar)
+            item.textColor?.let { it1 -> name.setTextColor(it1) }
+            avatar.loadAvatarWithGradient(item.avatar, username = item.originalName)
             name.setPrintableText(item.name)
         }
     }
@@ -49,7 +46,8 @@ fun createParticipantsAdapter(
         binding.root.setOnClickListener { onAnotherUserClicked(item.userId) }
 
         bindWithBinding {
-            avatar.loadCircle(item.avatar, placeholderRes = R.drawable.ic_avatar_placeholder)
+            item.textColor?.let { it1 -> name.setTextColor(it1) }
+            avatar.loadAvatarWithGradient(item.avatar, username = context.getPrintableText(item.name))
             name.setPrintableText(item.name)
         }
     }

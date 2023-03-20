@@ -1,34 +1,48 @@
 package io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_guest_impl.R
 import io.fasthome.fenestram_messenger.profile_guest_impl.databinding.FragmentProfileGuestFilesBinding
-import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest_files.adapter.AllFilesAdapter
+import io.fasthome.fenestram_messenger.profile_guest_impl.presentation.profile_guest.adapter.RecentFilesAdapter
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 
 class ProfileGuestFilesFragment :
     BaseFragment<ProfileGuestFilesState, ProfileGuestFilesEvent>(R.layout.fragment_profile_guest_files) {
 
     private val binding by fragmentViewBinding(FragmentProfileGuestFilesBinding::bind)
-    private val allFilesAdapter = AllFilesAdapter()
 
-    override val vm: ProfileGuestFilesViewModel by viewModel(getParamsInterface = ProfileGuestFilesNavigationContract.getParams)
+    private val permissionInterface by registerFragment(PermissionComponentContract)
+
+    override val vm: ProfileGuestFilesViewModel by viewModel(
+        getParamsInterface = ProfileGuestFilesNavigationContract.getParams,
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::permissionInterface)
+    )
+
+    private val recentFilesAdapter =
+        RecentFilesAdapter(onDownloadDocument = { meta, progressListener ->
+            vm.onDownloadDocument(meta = meta, progressListener = progressListener)
+        })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        allFilesList.adapter = allFilesAdapter
+        allFilesList.adapter = recentFilesAdapter
         profileGuestFilesAppbar.setNavigationOnClickListener {
             vm.navigateBack()
         }
-        vm.fetchFiles()
 
         val sv = profileGuestFilesAppbar.menu.findItem(R.id.search).actionView as SearchView
-        sv.queryHint = "Поиск"
+        sv.queryHint = getString(R.string.search)
         sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -43,8 +57,18 @@ class ProfileGuestFilesFragment :
         })
     }
 
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.profileGuestFilesAppbar.setTitleTextColor(appTheme.text0Color())
+        binding.profileGuestFilesAppbar.setNavigationIconTint(appTheme.text0Color())
+        binding.profileGuestFilesAppbar.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
+    }
+
     override fun renderState(state: ProfileGuestFilesState) {
-        allFilesAdapter.items = state.files
+        recentFilesAdapter.items = state.files.map {
+            it.textColor = getTheme().text0Color()
+            it
+        }
     }
 
     override fun handleEvent(event: ProfileGuestFilesEvent) = noEventsExpected()

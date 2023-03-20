@@ -62,14 +62,15 @@ object Deps {
         const val core = "io.ktor:ktor-client-core:${Versions.ktor}"
         const val serialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
         const val client = "io.ktor:ktor-client-okhttp:${Versions.ktor}"
+        const val socket = "io.ktor:ktor-client-websockets:${Versions.ktor}"
         const val logging = "io.ktor:ktor-client-logging:${Versions.ktor}"
         const val mock = "io.ktor:ktor-client-mock:${Versions.ktor}"
     }
 
     object Room {
-        const val runtime = "androidx.room:room-runtime:2.4.1"
-        const val compiler = "androidx.room:room-compiler:2.4.1"
-        const val ktx = "androidx.room:room-ktx:2.4.1"
+        const val runtime = "androidx.room:room-runtime:${Versions.room}"
+        const val compiler = "androidx.room:room-compiler:${Versions.room}"
+        const val ktx = "androidx.room:room-ktx:${Versions.room}"
     }
 
     object Tests {
@@ -129,5 +130,7 @@ object Deps {
     const val processPhoenix = "com.jakewharton:process-phoenix:${Versions.processPhoenix}"
 
     const val instaBug = "com.instabug.library:instabug:${Versions.instaBug}"
+
+    const val themeManager = "com.dolatkia:animated-theme-manager:1.1.4"
 
 }

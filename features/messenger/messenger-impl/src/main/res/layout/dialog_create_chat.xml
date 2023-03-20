@@ -12,10 +12,10 @@
         android:layout_margin="10dp"
         android:paddingVertical="15dp"
         android:text="@string/messenger_create_private_chat"
-        android:textColor="@color/blue"
+        android:textColor="@color/main_active"
         app:icon="@drawable/ic_create_private_chat"
         app:iconGravity="textStart"
-        app:iconTint="@color/blue"
+        app:iconTint="@color/main_active"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
@@ -26,10 +26,10 @@
         android:layout_margin="10dp"
         android:paddingVertical="15dp"
         android:text="@string/messenger_create_group_chat"
-        android:textColor="@color/blue"
+        android:textColor="@color/main_active"
         app:icon="@drawable/ic_create_group_chat"
         app:iconGravity="textStart"
-        app:iconTint="@color/blue"
+        app:iconTint="@color/main_active"
         app:layout_constraintTop_toBottomOf="@id/create_private_chat" />
 
     <TextView

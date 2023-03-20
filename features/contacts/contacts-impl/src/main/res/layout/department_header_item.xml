@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginBottom="6dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/tv_department"
+        style="@style/Text.Blue.20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="IT департамент"/>
+
+</FrameLayout>

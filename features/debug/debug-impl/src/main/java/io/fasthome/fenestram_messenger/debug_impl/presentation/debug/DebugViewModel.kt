@@ -6,7 +6,9 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.viewModelScope
+import io.fasthome.component.bottom_navigation.BottomNavContract
 import io.fasthome.component.person_detail.PersonDetail
+import io.fasthome.fenestram_messenger.auth_ad_api.AuthAdFeature
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.call_api.CallFeature
 import io.fasthome.fenestram_messenger.contacts_api.ContactsFeature
@@ -45,7 +47,8 @@ class DebugViewModel(
         val groupGuestFeature: GroupGuestFeature,
         val pushFeature: PushFeature,
         val mainFeature: MainFeature,
-        val callFeature: CallFeature
+        val callFeature: CallFeature,
+        val authAdFeature: AuthAdFeature
     )
 
     private var personalData: PersonalData? = null
@@ -71,12 +74,15 @@ class DebugViewModel(
     }
 
     private val authLauncher = registerScreen(features.authFeature.authNavigationContract) {}
+
+    private val authAdLauncher = registerScreen(features.authAdFeature.authAdNavigationContract) {}
     private val personalDataLauncher =
         registerScreen(features.authFeature.personalDataNavigationContract) {}
     private val profileGuestLauncher =
         registerScreen(features.profileGuestFeature.profileGuestNavigationContract) {}
     private val onboardingLauncher =
         registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
+    private val bottomNavLauncher = registerScreen(BottomNavContract)
 
     override fun createInitialState() = DebugState(
         userId = "",
@@ -92,6 +98,10 @@ class DebugViewModel(
 
     fun onAuthClicked() {
         authLauncher.launch(NoParams)
+    }
+
+    fun onAuthAdClicked() {
+        authAdLauncher.launch(NoParams)
     }
 
     fun onLogoutClicked() {
@@ -133,12 +143,12 @@ class DebugViewModel(
     }
 
     fun onDeleteContactsClicked() {
-        viewModelScope.launch {
+       /* viewModelScope.launch { // TODO: !!!
             features.contactsFeature.deleteAllContacts()
                 .withErrorHandled(showErrorType = ShowErrorType.Dialog, onSuccess = {
                     sendEvent(DebugEvent.ContactsDeleted)
                 })
-        }
+        }*/
     }
 
     fun onGroupGuestClicked() {
@@ -165,6 +175,10 @@ class DebugViewModel(
 
     fun onOnboardingClicked() {
         onboardingLauncher.launch(NoParams)
+    }
+
+    fun onBottomNavViewClicked() {
+        bottomNavLauncher.launch(NoParams)
     }
 
     fun onLinkFieldClicked(token: String) {

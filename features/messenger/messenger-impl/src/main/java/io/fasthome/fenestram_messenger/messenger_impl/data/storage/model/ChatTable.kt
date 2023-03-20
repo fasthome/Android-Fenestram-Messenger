@@ -14,12 +14,12 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.time.ZonedDateTime
 
-@Entity
+@Entity(tableName = "ChatTable")
 class ChatTable(
     @PrimaryKey
     val id: Long?,
     val name: String,
-    val users: List<Long>,
+    val users: List<Long?>,
     val messages: List<String>,
     val time: ZonedDateTime?,
     val avatar: String?,
@@ -51,7 +51,7 @@ class ContentDb(
     val name: String,
     val extension: String,
     val size: Float,
-    val url: String,
+    val url: String?,
 )
 
 @Serializable

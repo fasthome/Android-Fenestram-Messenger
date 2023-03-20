@@ -9,11 +9,12 @@ import io.fasthome.fenestram_messenger.messenger_impl.data.service.mapper.ChatsM
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.repo.MessengerRepo
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.ProgressListener
 import io.fasthome.fenestram_messenger.util.onSuccess
-import io.fasthome.network.client.ProgressListener
 import io.fasthome.network.tokens.TokensRepo
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -53,8 +54,18 @@ class MessengerInteractor(
 
     suspend fun forwardMessage(chatId: Long, messageId: Long) = messageRepo.forwardMessage(chatId, messageId)
 
-    suspend fun postChats(name: String, users: List<Long>, isGroup: Boolean) =
+    suspend fun postChats(name: String, users: List<Long?>, isGroup: Boolean) =
         messageRepo.postChats(name, users, isGroup)
+
+    suspend fun addNewMessageToDb(message: Message) {
+        messageRepo.addNewMessageToDb(message).onSuccess {
+            val badge = badgeCounter.getBadge()
+            badgeCounter.sendCount(badge.copy(count = badge.count + 1))
+        }
+    }
+
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String) =
+        messageRepo.postReaction(chatId, messageId, reaction)
 
     suspend fun patchChatAvatar(id: Long, avatar: String) =
         messageRepo.patchChatAvatar(id, avatar)
@@ -79,7 +90,8 @@ class MessengerInteractor(
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
         onMessageDeletedCallback: (List<Long>) -> Unit,
         onNewChatChangesCallback: (ChatChanges) -> Unit,
-        onChatDeletedCallback: (Long) -> Unit
+        onChatDeletedCallback: (Long) -> Unit,
+        onNewReactionCallback: (MessageReactions) -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = id.toString(),
@@ -116,6 +128,14 @@ class MessengerInteractor(
                     badgeCounter.sendCount(Badge(count = badgeResponse.totalPending))
                 }
 
+                override fun onNewReactionCallback(reactionsResponse: ReactionsResponse) {
+                    onNewReactionCallback(chatsMapper.toMessageReactions(reactionsResponse))
+                }
+
+                override fun onNewChatCreated() {
+
+                }
+
             })
 
         return messagesFlow
@@ -147,7 +167,8 @@ class MessengerInteractor(
     suspend fun getNewMessages(
         onNewMessageStatusCallback: (MessageStatus) -> Unit,
         onNewChatChangesCallback: (ChatChanges) -> Unit,
-        onChatDeletedCallback: (Long) -> Unit
+        onChatDeletedCallback: (Long) -> Unit,
+        onChatCreatedCallback:() -> Unit
     ): Flow<Message> {
         messageRepo.getClientSocket(
             chatId = null,
@@ -179,13 +200,28 @@ class MessengerInteractor(
                 override fun onUnreadMessage(badgeResponse: BadgeResponse) {
                     badgeCounter.sendCount(Badge(count = badgeResponse.totalPending))
                 }
+
+                override fun onNewReactionCallback(reactionsResponse: ReactionsResponse) {
+
+                }
+
+                override fun onNewChatCreated() {
+                    onChatCreatedCallback()
+                }
             },
             selfUserId = null
         )
         return newMessagesFlow
     }
 
-    suspend fun deleteChat(id: Long) = messageRepo.deleteChat(id)
+    suspend fun updateChatStatusDb(chatId: Long, status: SentStatus) = messageRepo.updateBdChatsStatus(chatId, status)
+    suspend fun deleteChatFromDb(chatId: Long) = messageRepo.deleteChatFromDb(chatId)
+    suspend fun deleteChat(id: Long): CallResult<Unit> {
+        val result = messageRepo.deleteChat(id).onSuccess {
+            deleteChatFromDb(id)
+        }
+        return result
+    }
 
     suspend fun deleteMessage(messageId: Long, chatId: Long) =
         messageRepo.deleteMessage(messageId, chatId)
@@ -194,8 +230,11 @@ class MessengerInteractor(
         messageRepo.getCachedPages()
 
 
-    fun getMessengerPageItems(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat> =
-        messageRepo.getPageChats(query, fromSocket)
+    fun getMessengerPageItems(query: String): TotalPagingSource<Int, Chat> =
+        messageRepo.getPageChats(query)
+
+    suspend fun getMessengerPageItemsService(query: String) =
+        messageRepo.updateBdChatsFromService(query)
 
     private var page = 0
 
@@ -216,6 +255,8 @@ class MessengerInteractor(
 
     suspend fun uploadProfileImage(photoBytes: ByteArray) =
         messageRepo.uploadImage(photoBytes, UUID.randomUUID().toString())
+
+    suspend fun uploadAvatarImage(chatId: Long, imagesBytes: ByteArray) = messageRepo.uploadAvatar(chatId,imagesBytes)
 
     suspend fun uploadDocuments(chatId: Long, documentBytes: List<ByteArray>, name: List<String>) =
         messageRepo.uploadDocuments(chatId = chatId, documentBytes, name)

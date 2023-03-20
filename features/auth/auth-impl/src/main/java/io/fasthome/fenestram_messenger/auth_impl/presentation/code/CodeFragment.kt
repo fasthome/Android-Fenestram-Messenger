@@ -105,7 +105,7 @@ class CodeFragment : BaseFragment<CodeState, CodeEvent>(R.layout.fragment_code) 
 
     private fun renderNormalState() = with(binding) {
         codeInput.setBackgroundResource(R.drawable.rounded_border)
-        resendCode.setTextColor(resources.getColor(R.color.blue, null))
+        resendCode.setTextColor(resources.getColor(R.color.main_active, null))
         error.isVisible = false
     }
 

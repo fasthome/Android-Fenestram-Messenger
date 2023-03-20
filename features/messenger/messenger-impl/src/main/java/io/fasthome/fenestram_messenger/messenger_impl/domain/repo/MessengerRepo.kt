@@ -4,9 +4,11 @@ import io.fasthome.fenestram_messenger.messenger_api.entity.Badge
 import io.fasthome.fenestram_messenger.messenger_api.entity.SendMessageResult
 import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.*
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.*
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.util.CallResult
-import io.fasthome.network.client.ProgressListener
+import io.fasthome.fenestram_messenger.util.ProgressListener
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 import io.fasthome.network.tokens.AccessToken
 
 interface MessengerRepo {
@@ -28,21 +30,30 @@ interface MessengerRepo {
 
     suspend fun forwardMessage(chatId: Long, messageId: Long): CallResult<Message?>
 
-    fun getPageChats(query: String, fromSocket: Boolean): TotalPagingSource<Int, Chat>
+    fun getPageChats(query: String): TotalPagingSource<Int, Chat>
+
+    suspend fun updateBdChatsFromService(query: String): CallResult<Unit>
+
+    suspend fun updateBdChatsStatus(chatId: Long, status: SentStatus): CallResult<Unit>
 
     fun getCachedPages(): TotalPagingSource<Int, Chat>
 
     suspend fun postChats(
         name: String,
-        users: List<Long>,
+        users: List<Long?>,
         isGroup: Boolean
     ): CallResult<PostChatsResult>
+
+    suspend fun postReaction(chatId: Long, messageId: Long, reaction: String): CallResult<Unit>
 
     suspend fun patchChatAvatar(id: Long, avatar: String): CallResult<Unit>
 
     suspend fun getChatById(id: Long): CallResult<GetChatByIdResult>
+
+    suspend fun addNewMessageToDb(message: Message): CallResult<Unit>
     suspend fun getMessagesFromChat(id: Long, limit: Int, page: Int): CallResult<MessagesPage>
     suspend fun deleteChat(id: Long): CallResult<Unit>
+    suspend fun deleteChatFromDb(chatId: Long): CallResult<Unit>
     suspend fun deleteMessage(messageId: Long, chatId: Long): CallResult<Unit>
 
     fun closeSocket()
@@ -69,12 +80,14 @@ interface MessengerRepo {
     fun emitChatListeners(subChatId: Long?, unsubChatId: Long?)
 
     suspend fun uploadImage(photoBytes: ByteArray, guid: String): CallResult<UploadImageResult>
+
+    suspend fun uploadAvatar(chatId: Long, photoBytes: ByteArray): CallResult<PatchChatAvatarRequest>
     suspend fun editMessage(chatId: Long, messageId: Long, newText: String): CallResult<Unit>
     suspend fun uploadDocuments(
         chatId: Long,
         documentBytes: List<ByteArray>,
         guid: List<String>
-    ): CallResult<SendMessageResponse>
+    ): CallResult<List<MetaInfo>>
 
     suspend fun uploadImages(
         chatId: Long,
@@ -94,5 +107,7 @@ interface MessengerRepo {
         fun onNewChatChanges(chatChangesResponse: SocketChatChanges.ChatChangesResponse)
         fun onDeletedChatCallback(chatDeletedChat: SocketDeletedChat.SocketDeletedResponse)
         fun onUnreadMessage(badgeResponse: BadgeResponse)
+        fun onNewReactionCallback(reactionsResponse: ReactionsResponse)
+        fun onNewChatCreated()
     }
 }

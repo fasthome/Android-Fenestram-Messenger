@@ -1,15 +1,18 @@
 package io.fasthome.network.client
 
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.core.exceptions.BadRequestException
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
 import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.core.exceptions.WrongServerResponseException
+import io.fasthome.fenestram_messenger.util.getOrNull
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.serialization.SerializationException
@@ -22,6 +25,7 @@ internal class SimpleNetworkClientFactory(
     private val baseUrl: String,
     private val networkLogger: Logger,
     private val forceLogoutManager: Lazy<ForceLogoutManager>,
+    private val deviceIdRepo: DeviceIdRepo,
 ) : NetworkClientFactory {
 
     override fun create(
@@ -36,6 +40,9 @@ internal class SimpleNetworkClientFactory(
     }
 
     private fun HttpClientConfig<*>.baseConfig() {
+        defaultRequestSuspend {
+            header(JwtNetworkClientFactory.XSessionHeader, deviceIdRepo.getAndroidDeviceId().getOrNull())
+        }
 //        TODO Временно включил логи на релизных сборках
 //        if (environment.isDebug) {
             install(Logging) {
@@ -69,6 +76,9 @@ internal class SimpleNetworkClientFactory(
                             if (cause.message.contains("refresh token invalid")) {
                                 forceLogoutManager.value.forceLogout()
                             } else throw UnauthorizedException()
+                        }
+                        if (cause.response.status.value == HttpStatusCode.BadRequest.value) {
+                            throw BadRequestException(cause)
                         }
                     }
                     is IOException, is HttpRequestTimeoutException -> throw InternetConnectionException(

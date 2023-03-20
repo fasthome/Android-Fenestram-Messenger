@@ -11,16 +11,18 @@ import io.fasthome.fenestram_messenger.util.onClick
 
 class TagParticipantsAdapter(
     onUserClicked: (User) -> Unit,
+    nameThemeColor: Int
 ) :
     AsyncListDifferDelegationAdapter<User>(
         AdapterUtil.diffUtilItemCallbackEquals(),
         AdapterUtil.adapterDelegatesManager(
-            createTagUserAdapterDelegate(onUserClicked)
+            createTagUserAdapterDelegate(onUserClicked,nameThemeColor)
         )
     )
 
 fun createTagUserAdapterDelegate(
     onUserClicked: (User) -> Unit,
+    nameThemeColor: Int
 ) =
     adapterDelegateViewBinding<User, ItemUserTagBinding>(
         ItemUserTagBinding::inflate,
@@ -31,6 +33,7 @@ fun createTagUserAdapterDelegate(
             }
             avatar.loadCircle(item.avatar)
             name.text = item.name
+            name.setTextColor(nameThemeColor)
             nickname.text = "@${item.nickname}"
         }
     }

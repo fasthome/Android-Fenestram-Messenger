@@ -21,5 +21,8 @@ class GetChatByIdResponse(
     val users: List<Long?>?,
 
     @SerialName("chatUsers")
-    val chatUsers: List<UserResponse>
+    val chatUsers: List<UserResponse>,
+
+    @SerialName("permittedReactions")
+    val permittedReactions: List<String>?
 )

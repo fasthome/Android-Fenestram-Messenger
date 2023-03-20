@@ -3,10 +3,12 @@
  */
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import io.fasthome.fenestram_messenger.messenger_api.entity.ChatChanges
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageStatus
 import io.fasthome.fenestram_messenger.messenger_impl.domain.logic.MessengerInteractor
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
@@ -50,6 +52,7 @@ class MessengerViewModel(
                 }
                 loadDataHelper.invalidateSource()
             }
+            ConversationNavigationContract.Result.Canceled -> {}
         }
     }
 
@@ -73,12 +76,14 @@ class MessengerViewModel(
 
     private var _query = ""
 
+    var currentToolbarState: MessengerToolbarMode = MessengerToolbarMode.Default
+
     override fun createInitialState(): MessengerState {
         return MessengerState(
             chats = listOf(),
             messengerViewItems = listOf(),
             newMessagesCount = 0,
-            isSelectMode = params.chatSelectionMode,
+            currentMode = if (params.chatSelectionMode) MessengerToolbarMode.Select(R.string.forward) else MessengerToolbarMode.Default,
             scrolledDown = false
         )
     }
@@ -101,7 +106,7 @@ class MessengerViewModel(
     fun fetchChats(): Flow<PagingData<MessengerViewItem>> {
         val items = loadDataHelper.getDataFlow(
             getItems = {
-                messengerInteractor.getMessengerPageItems(_query, loadDataHelper.fromSocket)
+                messengerInteractor.getMessengerPageItems(_query)
             },
             getCachedSelectedId = { null },
             mapDataItem = {
@@ -122,6 +127,13 @@ class MessengerViewModel(
         viewModelScope.launch {
             subscribeMessages()
             subscribeMessageActions()
+        }
+    }
+
+    fun fetchMessagesFromService() {
+        viewModelScope.launch {
+            messengerInteractor.getMessengerPageItemsService(_query)
+            loadDataHelper.invalidateSource()
         }
     }
 
@@ -186,11 +198,12 @@ class MessengerViewModel(
         messengerInteractor.getNewMessages(
             { onNewMessageStatus(it) },
             { onChatChangesCallback(it) },
-            { onChatDeletedCallback(it) })
+            { onChatDeletedCallback(it) },
+            { onChatCreatedCallback() })
             .collectWhenViewActive()
             .onEach { message ->
+                messengerInteractor.addNewMessageToDb(message)
                 loadDataHelper.invalidateSource()
-
                 updateState { state ->
                     state.copy(newMessagesCount = state.newMessagesCount + 1)
                 }
@@ -200,7 +213,6 @@ class MessengerViewModel(
 
     private fun onNewMessageStatus(messageStatus: MessageStatus) {
         updateState { state ->
-            loadDataHelper.invalidateSource()
             state.copy(
                 messengerViewItems = currentViewState.messengerViewItems.map {
                     if (it.id == messageStatus.messageId)
@@ -209,22 +221,30 @@ class MessengerViewModel(
                 }
             )
         }
+        viewModelScope.launch {
+            messengerInteractor.updateChatStatusDb(
+                messageStatus.messageId,
+                getSentStatus(messageStatus.messageStatus)
+            )
+            loadDataHelper.invalidateSource()
+        }
     }
 
     private fun onChatChangesCallback(chatChanges: ChatChanges) {
         //TODO изменение имени и аватара чата
+        fetchMessagesFromService()
+    }
+
+    private fun onChatCreatedCallback() {
+        fetchMessagesFromService()
     }
 
     private fun onChatDeletedCallback(chatId: Long) {
         viewModelScope.launch {
             updateState {
-                val chats = mutableListOf<MessengerViewItem>()
-                currentViewState.messengerViewItems.forEach { item ->
-                    if (item.id != chatId)
-                        chats.add(item)
-                }
-                it.copy(messengerViewItems = chats)
+                it.copy(messengerViewItems = currentViewState.messengerViewItems.filter { it.id != chatId })
             }
+            messengerInteractor.deleteChatFromDb(chatId)
             loadDataHelper.invalidateSource()
             delay(300)
             sendEvent(MessengerEvent.Invalidate())
@@ -277,5 +297,27 @@ class MessengerViewModel(
             updateState { state -> state.copy(scrolledDown = scrolledDown) }
     }
 
-    fun exitToConversation() = exitWithoutResult()
+    fun backButtonClick() {
+        if (canLeaveFragment()) exitWithoutResult()
+    }
+
+    fun canLeaveFragment(): Boolean {
+        if (currentViewState.currentMode is MessengerToolbarMode.Search) {
+            defaultToolbarMode()
+            return false
+        }
+        return true
+    }
+
+    fun searchToolbarMode() {
+        updateState { state ->
+            state.copy(currentMode = MessengerToolbarMode.Search)
+        }
+    }
+
+    fun defaultToolbarMode() {
+        updateState { state ->
+            state.copy(currentMode = MessengerToolbarMode.Default)
+        }
+    }
 }

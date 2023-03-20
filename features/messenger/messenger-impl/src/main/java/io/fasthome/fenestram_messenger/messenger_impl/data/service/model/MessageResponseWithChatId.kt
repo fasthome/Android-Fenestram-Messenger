@@ -51,11 +51,11 @@ class MessageResponseWithChatId(
     val usersHaveRead: List<Long?>?,
 
     @SerialName("reactions")
-    val reactions: MessageReactions? = null,
+    val reactions: Map<String, List<UserResponse>>? = null,
 
     @SerialName("forwarded_messages")
     val forwardedMessages: List<MessageResponse>?,
 
     @SerialName("content")
     val content: List<ContentResponse>
-    )
+)

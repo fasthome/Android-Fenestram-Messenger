@@ -2,7 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import androidx.annotation.DimenRes
 import io.fasthome.fenestram_messenger.messenger_impl.R
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
+import io.fasthome.fenestram_messenger.util.model.MetaInfo
 
 data class ImageAdapterItem(
     val metaInfo: MetaInfo,

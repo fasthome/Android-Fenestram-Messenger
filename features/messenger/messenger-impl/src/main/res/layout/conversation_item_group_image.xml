@@ -34,7 +34,7 @@
             android:paddingHorizontal="12dp"
             android:paddingTop="5dp"
             android:text="Мария Сергеевна"
-            app:layout_constraintStart_toStartOf="@+id/message_content"
+            app:layout_constraintStart_toStartOf="@+id/cl_message"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText" />
 
@@ -44,18 +44,18 @@
             android:layout_height="32dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/ic_avatar_placeholder"
-            app:layout_constraintBottom_toBottomOf="@+id/message_content"
+            app:layout_constraintBottom_toBottomOf="@+id/cl_message"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/message_content"
+        <RelativeLayout
+            android:id="@+id/cl_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
+            android:orientation="vertical"
             android:padding="3dp"
             app:barrierMargin="5dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,10 +64,27 @@
             app:layout_constraintStart_toEndOf="@+id/avatar"
             app:layout_constraintTop_toBottomOf="@+id/username"
             app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
-            app:layout_constraintWidth_min="@dimen/image_min_size"
-            tools:ignore="TouchTargetSizeCheck"
-            tools:itemCount="1"
-            tools:listitem="@layout/holder_image" />
+            app:layout_constraintWidth_min="@dimen/image_min_size">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:itemCount="1"
+                tools:listitem="@layout/holder_image" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="9dp"
+                android:paddingBottom="2dp"
+                android:layout_below="@id/message_content"
+                android:layout_alignEnd="@id/message_content"
+                tools:listitem="@layout/holder_reactions" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"
@@ -76,10 +93,10 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/timeviewcheck"
-            android:textColor="@color/gray1"
+            android:textColor="@color/text1"
             android:textSize="11sp"
-            app:layout_constraintStart_toStartOf="@+id/message_content"
-            app:layout_constraintTop_toBottomOf="@+id/message_content" />
+            app:layout_constraintStart_toStartOf="@+id/cl_message"
+            app:layout_constraintTop_toBottomOf="@+id/cl_message" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

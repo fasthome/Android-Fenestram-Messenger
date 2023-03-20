@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.main_impl.presentation.main
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isVisible
 import androidx.fragment.app.commitNow
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
@@ -16,6 +17,7 @@ import io.fasthome.fenestram_messenger.main_impl.databinding.FragmentMainBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.onClick
 
 
@@ -40,8 +42,8 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
         fab.onClick {
             onFabClicked()
         }
-        navigationView.setOnItemSelectedListener { item ->
-            val tabType = TabsMapper.mapItemIdToTab(item) ?: return@setOnItemSelectedListener false
+        navigationView.setItemClickListener { item ->
+            val tabType = TabsMapper.mapItemIdToTab(item) ?: return@setItemClickListener false
             vm.onShowFragment(tabType)
             true
         }
@@ -84,6 +86,13 @@ class MainFragment : BaseFragment<MainState, MainEvent>(R.layout.fragment_main) 
                 badgeView.text = "${event.count}"
             }
         }
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.content.background = appTheme.bg0Color().toDrawable()
+        binding.navigationView.setBackgroundResource(appTheme.navigationViewBackground())
+        binding.root.background = appTheme.bg0Color().toDrawable()
     }
 
     override fun updateFabIcon(iconRes: Int?, badgeCount: Int) {

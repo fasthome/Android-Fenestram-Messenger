@@ -15,9 +15,14 @@ interface ChatDao {
     @Query("SELECT * FROM ChatTable")
     suspend fun getChats(): List<ChatTable>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveChats(chats: List<ChatTable>)
+    @Query("SELECT * FROM ChatTable WHERE id = :chatId")
+    suspend fun get(chatId: Long): ChatTable?
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveChats(chats: List<ChatTable>?)
     @Query("DELETE FROM ChatTable")
     suspend fun removeChats()
+
+    @Query("DELETE FROM ChatTable WHERE id=:chatId")
+    suspend fun deleteChat(chatId: Long)
 }

@@ -1,11 +1,11 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mapper
 
+import android.util.Log
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.Chat
 import io.fasthome.fenestram_messenger.messenger_impl.domain.entity.MessageAction
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.mapper.*
-import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.MetaInfo
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.SentStatus
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.model.getStatusIcon
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.model.LastMessage
@@ -39,7 +39,7 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
                     LastMessage.Text(PrintableText.Raw(message.text))
                 }
                 MESSAGE_TYPE_IMAGE -> {
-                    LastMessage.Image(imageUrl = message.content.map { MetaInfo(it) })
+                    LastMessage.Image(imageUrl = message.content)
                 }
                 MESSAGE_TYPE_DOCUMENT -> {
                     LastMessage.Document
@@ -55,7 +55,6 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
         } else {
             SentStatus.None
         }
-
         return MessengerViewItem(
             id = chat.id ?: 0,
             avatar = 0,
@@ -73,7 +72,8 @@ class MessengerMapper(private val profileImageUrlConverter: StorageUrlConverter)
                 R.drawable.bg_not_read
             },
             pendingAmount = if (chat.pendingMessages == 0L) PrintableText.EMPTY
-            else PrintableText.Raw(chat.pendingMessages.toString())
+            else PrintableText.Raw(chat.pendingMessages.toString()),
+            itemTheme = null
         )
     }
 

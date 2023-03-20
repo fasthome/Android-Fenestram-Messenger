@@ -11,7 +11,9 @@ open class ParticipantsViewItem(
     open val nickname: String,
     open val phone: String,
     open val avatar: String
-) : Parcelable
+) : Parcelable {
+    var textColor: Int? = null
+}
 
 @Parcelize
 class AnotherUserViewItem(
@@ -30,7 +32,8 @@ class CurrentUserViewItem(
     override val name: PrintableText,
     override val nickname: String,
     override val phone: String,
-    override val avatar: String
+    override val avatar: String,
+    val originalName : String
 ) : ParticipantsViewItem(
     userId, name, nickname, phone, avatar
 ), Parcelable

@@ -15,6 +15,7 @@ import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.mode
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UriLoadableContent
 
 typealias InputContentListener = (Content) -> Unit
+typealias SelectionChangedListener = (selStart: Int, selEnd: Int) -> Unit
 
 class InputMessageView : AppCompatEditText {
 
@@ -23,6 +24,7 @@ class InputMessageView : AppCompatEditText {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private var inputContentListener: InputContentListener? = null
+    private var selectionChangedListener: SelectionChangedListener? = null
 
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection? {
         val ic: InputConnection = super.onCreateInputConnection(editorInfo) ?: return null
@@ -58,5 +60,13 @@ class InputMessageView : AppCompatEditText {
         this.inputContentListener = inputContentListener
     }
 
+    fun setSelectionChangedListener(selectionChangedListener: SelectionChangedListener) {
+        this.selectionChangedListener = selectionChangedListener
+    }
+
+    override fun onSelectionChanged(selStart: Int, selEnd: Int) {
+        super.onSelectionChanged(selStart, selEnd)
+        selectionChangedListener?.invoke(selStart, selEnd)
+    }
 
 }

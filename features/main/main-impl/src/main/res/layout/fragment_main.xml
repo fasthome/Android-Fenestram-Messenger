@@ -64,16 +64,21 @@
             tools:ignore="HardcodedText,SmallSp" />
     </FrameLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <io.fasthome.fenestram_messenger.uikit.custom_view.bottomNav.HooliBottomNavigation
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dark1"
-        app:itemIconTint="@color/bottom_navigation_color_state_icon"
-        app:itemTextColor="@color/bottom_navigation_color_state_text"
-        app:labelVisibilityMode="labeled"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background_bottom_navigation"
+        app:elevation="0dp"
+        app:itemBackground="@null"
+        app:itemIconTint="@color/selector_bottom_navigation_icon"
+        app:itemRippleColor="@null"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu"
-        tools:layout_height="56dp" />
+        app:menu="@menu/menu_bottom_navigation"
+        tools:layout_height="58dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

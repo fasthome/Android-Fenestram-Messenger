@@ -47,7 +47,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/dark1"
                     android:padding="15dp"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/main_active" />
             </LinearLayout>
 
             <LinearLayout
@@ -73,7 +73,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@color/dark1"
                     android:padding="15dp"
-                    android:textColor="@color/blue" />
+                    android:textColor="@color/main_active" />
             </LinearLayout>
         </LinearLayout>
 
@@ -127,6 +127,14 @@
             android:text="Features"
             tools:ignore="HardcodedText" />
 
+        <Button
+            android:id="@+id/debug_bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Bottom Navigation View"
+            tools:ignore="HardcodedText" />
+
         <LinearLayout
             android:id="@+id/features_container"
             android:layout_width="match_parent"
@@ -155,13 +163,23 @@
                 tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_auth_ad"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Авторизация AD"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/debug_personal_data"
                 style="@style/Button.Blue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="8dp"
-                android:text="Персолнальные данные"
+                android:text="Персональные данные"
                 tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -308,7 +326,7 @@
                 android:inputType="phone"
                 android:padding="10dp"
                 android:text="@string/common_country_code_text"
-                android:textColor="@color/gray1"
+                android:textColor="@color/text1"
                 android:textSize="15sp"
                 tools:ignore="LabelFor" />
 
@@ -324,7 +342,7 @@
                 android:gravity="center"
                 android:inputType="number"
                 android:maxLength="4"
-                android:textColor="@color/gray1"
+                android:textColor="@color/text1"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 

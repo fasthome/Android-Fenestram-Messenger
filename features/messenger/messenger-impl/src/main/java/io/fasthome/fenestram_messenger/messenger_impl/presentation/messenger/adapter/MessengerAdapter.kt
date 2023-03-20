@@ -5,7 +5,7 @@ import android.os.Handler
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
 import io.fasthome.fenestram_messenger.messenger_impl.R
@@ -15,10 +15,7 @@ import io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger.mod
 import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.uikit.paging.PagerDelegateAdapter
 import io.fasthome.fenestram_messenger.uikit.paging.createAdapterDelegate
-import io.fasthome.fenestram_messenger.util.AdapterUtil
-import io.fasthome.fenestram_messenger.util.PrintableText
-import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
 
 class MessengerAdapter(
     profileImageUrlConverter: StorageUrlConverter,
@@ -26,7 +23,7 @@ class MessengerAdapter(
     onProfileClicked: (MessengerViewItem) -> Unit,
     onDeleteChat: (id: Long) -> Unit,
     viewBinderHelper: ViewBinderHelper,
-    handler: Handler
+    handler: Handler,
 ) :
     PagerDelegateAdapter<MessengerViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(
@@ -124,7 +121,7 @@ fun createMessengerAdapter(
                         lastMessage.setTextColor(
                             ContextCompat.getColor(
                                 lastMessage.context,
-                                R.color.blue
+                                R.color.main_active
                             )
                         )
                         statusDots.setPrintableText(PrintableText.Raw("."))
@@ -139,12 +136,17 @@ fun createMessengerAdapter(
                     }
                 }
                 timeView.setPrintableText(item.time)
-                profilePicture.loadCircle(
+                profilePicture.loadAvatarWithGradient(
                     url = item.profileImageUrl,
-                    placeholderRes = R.drawable.ic_avatar_placeholder
+                    username = root.context.getPrintableText(item.name)
                 )
                 status.setImageResource(item.statusIcon)
                 pendingAmount.setPrintableText(item.pendingAmount)
+
+                // Update theme
+                item.itemTheme?.let {
+                    nameView.setTextColor(it.nameColor)
+                }
             }
         }
     )

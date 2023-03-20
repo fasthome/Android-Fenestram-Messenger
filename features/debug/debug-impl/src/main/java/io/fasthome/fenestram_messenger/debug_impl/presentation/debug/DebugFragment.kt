@@ -43,6 +43,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onComponentsClicked()
         }
 
+        debugBottomBar.onClick {
+            vm.onBottomNavViewClicked()
+        }
+
         debugRequests.onClick {
             vm.onRequestsClicked()
         }
@@ -61,6 +65,11 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
         debugAuth.onClick {
             vm.onAuthClicked()
         }
+
+        debugAuthAd.onClick {
+            vm.onAuthAdClicked()
+        }
+
 
         debugProfileGuest.onClick {
             vm.onProfileGuestClicked()
@@ -112,7 +121,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onEnvironmentChangedClicked(EndpointsConfig.Prod)
         }
 
-        debugSip.onClick{
+        debugSip.onClick {
             vm.onSipClicked(requireContext())
         }
 
@@ -148,6 +157,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             }
             is DebugEvent.AcceptEnvChangeDialog -> AcceptDialog.create(
                 fragment = this,
+                theme = getTheme(),
                 titleText = PrintableText.StringResource(R.string.debug_rebirth_endpoints),
                 accept = { vm.onEnvironmentChanged(event.endpointsConfig) },
                 id = 0,
@@ -157,6 +167,7 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
                 PersonDetailDialog
                     .create(
                         fragment = this,
+                        theme = getTheme(),
                         personDetail = event.selectedPerson,
                         launchFaceCallClicked = {
                             //TODO

@@ -6,15 +6,15 @@ package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactsBinding
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.ContactsAdapter
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.adapter.DepartmentAdapter
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.DepartmentViewItem
 import io.fasthome.fenestram_messenger.core.exceptions.EmptyResponseException
 import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
-import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.navigation.FabConsumer
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
@@ -22,13 +22,13 @@ import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentR
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.renderLoadingState
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
-class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts),
-    FabConsumer {
+class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fragment_contacts), FabConsumer {
 
     private val permissionInterface by registerFragment(PermissionComponentContract)
 
@@ -39,56 +39,56 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
     )
 
     private val binding: FragmentContactsBinding by fragmentViewBinding(FragmentContactsBinding::bind)
-    private val contactsAdapter = ContactsAdapter(onItemClicked = { vm.onContactClicked(it) })
+
+    private val departmentAdapter = DepartmentAdapter(
+        onContactClick = { contact->
+        vm.onContactClicked(contact)
+        })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
-
         with(binding) {
-            contactsList.adapter = contactsAdapter
+            rvDepartment.adapter = departmentAdapter
 
-            binding.contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    newText?.let {
-                        vm.filterContacts(it)
-                    }
-                    return true
-                }
-            })
-            contactsAddFirst.setOnClickListener {
-                vm.addContact()
-            }
-
-            contactsAllow.setOnClickListener {
-                vm.requestPermissionAndLoadContacts()
+            binding.contactsEt.doOnTextChanged { text, start, before, count ->
+                vm.filterContacts(text.toString())
             }
         }
-        vm.requestPermissionAndLoadContacts()
+        vm.loadDepartments()
+    }
+
+    override fun onFabClicked(): Boolean {
+        binding.rvDepartment.smoothScrollToPosition(0)
+        return super.onFabClicked()
     }
 
     override fun onResume() {
         super.onResume()
-        updateFabIcon(iconRes = null, badgeCount = 0)
+        updateFabIcon(iconRes = R.drawable.ic_arrow_up, badgeCount = 0)
+    }
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+        binding.contactsEt.background = appTheme.bgStroke2_8dp()
+        binding.contactsHeader.setTextColor(appTheme.text0Color())
+        binding.bgGeometry.background = appTheme.backgroundGeometry()
     }
 
     override fun renderState(state: ContactsState) = with(binding) {
-        noPermissionContainer.isVisible = false
         errorContainer.isVisible = false
         emptyContainer.isVisible = false
 
         renderLoadingState(
             loadingState = state.loadingState,
-            progressContainer = progressContainer,
+            progressContainer = contactsProgressBar,
             contentContainer = null,
             renderData = {
-                contactsAdapter.items = it
+                departmentAdapter.items = it.map { depViewItem ->
+                    if (depViewItem is DepartmentViewItem.Division) depViewItem.copy(textColor = getTheme().text0Color()) else depViewItem
+                }
             },
             renderError = { errorInfo, throwable ->
                 renderError(errorInfo, throwable)
@@ -98,16 +98,8 @@ class ContactsFragment : BaseFragment<ContactsState, ContactsEvent>(R.layout.fra
 
     override fun handleEvent(event: ContactsEvent) = noEventsExpected()
 
-    override fun onFabClicked(): Boolean {
-        vm.addContact()
-        return super.onFabClicked()
-    }
-
     private fun renderError(errorInfo: ErrorInfo, throwable: Throwable) = with(binding) {
         when (throwable) {
-            is PermissionDeniedException -> {
-                noPermissionContainer.isVisible = true
-            }
             is EmptyResponseException -> {
                 errorContainer.isVisible = true
             }

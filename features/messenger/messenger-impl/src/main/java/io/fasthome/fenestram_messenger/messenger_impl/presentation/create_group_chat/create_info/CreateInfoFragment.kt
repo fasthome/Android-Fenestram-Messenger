@@ -7,17 +7,21 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doOnTextChanged
+import io.fasthome.component.permission.PermissionComponentContract
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
 import io.fasthome.component.select_from.SelectFromDialog
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateInfoChatBinding
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationEvent
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.ContactsAdapter
+import io.fasthome.component.file_selector.FileSelectorNavigationContract
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.RoundedCornersOutlineProvider
 import io.fasthome.fenestram_messenger.util.hideKeyboard
 import io.fasthome.fenestram_messenger.util.model.Bytes
@@ -39,17 +43,22 @@ class CreateInfoFragment :
         }
     )
 
+    private val permissionFragment by registerFragment(
+        componentFragmentContractInterface = PermissionComponentContract
+    )
+
     override val vm: CreateInfoViewModel by viewModel(
         getParamsInterface = CreateInfoContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::pickImageFragment)
+            .register(::permissionFragment)
     )
 
     private val binding by fragmentViewBinding(FragmentCreateInfoChatBinding::bind)
 
     private val adapter = ContactsAdapter(onItemClicked = {
 
-    }, selectActive = false)
+    }, selectActive = false, textColor = getTheme().text0Color())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,6 +85,10 @@ class CreateInfoFragment :
         }
     }
 
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+    }
+
     override fun renderState(state: CreateInfoState) {
         adapter.items = state.contacts
         state.avatarImage?.let { avatarImage ->
@@ -89,17 +102,11 @@ class CreateInfoFragment :
 
     override fun handleEvent(event: CreateInfoEvent) {
         when (event) {
-            is CreateInfoEvent.ShowSelectFromDialog -> {
-                SelectFromDialog
-                    .create(
-                        fragment = this,
-                        fromCameraClicked = {
-                            vm.selectFromCamera()
-                        },
-                        fromGalleryClicked = {
-                            vm.selectFromGallery()
-                        })
-                    .show()
+            is CreateInfoEvent.OpenCamera -> {
+                vm.selectFromCamera()
+            }
+            is CreateInfoEvent.OpenImagePicker -> {
+                vm.selectFromGallery()
             }
         }
     }

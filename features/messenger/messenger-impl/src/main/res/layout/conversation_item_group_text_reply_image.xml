@@ -35,112 +35,127 @@
             android:background="@drawable/ic_avatar_placeholder"
             app:layout_constraintBottom_toBottomOf="@+id/text_container"
             app:layout_constraintEnd_toStartOf="@+id/text_container"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/text_container"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            android:background="@drawable/message_rectangle_receive"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/avatar"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/username"
-                style="@style/Text.Light.14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="12dp"
-                android:paddingTop="5dp"
-                android:text="Мария Сергеевна"
-                tools:ignore="HardcodedText" />
-
-            <TextView
-                android:id="@+id/reply_message_name"
-                style="@style/Text.Blue.12sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:fontFamily="@font/geometria"
-                android:maxEms="16"
-                android:paddingHorizontal="12dp"
-                android:textColor="@color/blue3"
-                app:barrierMargin="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                tools:text="Ответ на фото\nдля Мария Сергеева" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="@dimen/image_recycler_ll_max_width">
 
             <LinearLayout
-                android:id="@+id/reply_document_content"
+                android:id="@+id/cl_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="10dp"
-                android:maxWidth="300dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_docs"
+                <TextView
+                    android:id="@+id/username"
+                    style="@style/Text.Light.14sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="4dp"
-                    android:maxWidth="300dp"
-                    tools:itemCount="3"
-                    tools:listitem="@layout/item_document" />
+                    android:paddingHorizontal="12dp"
+                    android:paddingTop="5dp"
+                    android:text="Мария Сергеевна"
+                    tools:ignore="HardcodedText" />
 
+                <TextView
+                    android:id="@+id/reply_message_name"
+                    style="@style/Text.Blue.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/geometria"
+                    android:maxEms="16"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/main_active"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:text="Ответ на фото\nдля Мария Сергеева" />
+
+                <LinearLayout
+                    android:id="@+id/reply_document_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="10dp"
+                    android:maxWidth="300dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_docs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="4dp"
+                        android:maxWidth="300dp"
+                        tools:itemCount="1"
+                        tools:listitem="@layout/item_document" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_images"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:padding="3dp"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_min="@dimen/image_min_size"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
+                    app:layout_constraintWidth_min="@dimen/image_min_size"
+                    app:spanCount="2"
+                    tools:ignore="TouchTargetSizeCheck"
+                    tools:itemCount="1"
+                    tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:layout_constraintHeight_min="@dimen/image_medium_min_size"
+                    tools:layout_constraintWidth_min="@dimen/image_medium_min_size"
+                    tools:listitem="@layout/holder_image" />
+
+
+                <TextView
+                    android:id="@+id/message_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/geometria"
+                    android:maxEms="16"
+                    android:minWidth="48dp"
+                    android:minHeight="24dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/MessageContentCheck"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_images"
-                android:layout_marginStart="4dp"
-                android:layout_width="wrap_content"
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:padding="3dp"
-                app:barrierMargin="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_min="@dimen/image_min_size"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/blue_line"
-                app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
-                app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
-                app:layout_constraintWidth_min="@dimen/image_min_size"
-                tools:ignore="TouchTargetSizeCheck"
-                tools:itemCount="4"
-                app:spanCount="2"
-                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                tools:layout_constraintHeight_min="@dimen/image_medium_min_size"
-                tools:layout_constraintWidth_min="@dimen/image_medium_min_size"
-                tools:listitem="@layout/holder_image"/>
-
-
-            <TextView
-                android:id="@+id/message_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/geometria"
-                android:maxEms="16"
-                android:minWidth="48dp"
-                android:minHeight="24dp"
-                android:paddingStart="12dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="12dp"
+                android:layout_below="@id/cl_message"
+                android:layout_alignEnd="@id/cl_message"
+                android:paddingStart="9dp"
+                tools:itemCount="1"
                 android:paddingBottom="5dp"
-                android:text="@string/MessageContentCheck"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                tools:ignore="TouchTargetSizeCheck" />
+                tools:listitem="@layout/holder_reactions" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/send_time_view"
@@ -150,7 +165,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/timeviewcheck"
-            android:textColor="@color/gray1"
+            android:textColor="@color/text1"
             android:textSize="11sp"
             app:layout_constraintStart_toEndOf="@+id/avatar"
             app:layout_constraintTop_toBottomOf="@+id/text_container" />

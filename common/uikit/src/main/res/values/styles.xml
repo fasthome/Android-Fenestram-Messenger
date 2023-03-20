@@ -5,16 +5,30 @@
         <item name="srcCompat">@drawable/bg_add_contact_cross</item>
         <item name="tint">@color/white</item>
         <item name="fabSize">normal</item>
-        <item name="backgroundTint">@color/blue</item>
+        <item name="backgroundTint">@color/main_active</item>
     </style>
 
     <style name="FloatingActionAddButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="srcCompat">@drawable/ic_add_button</item>
         <item name="tint">@color/white</item>
         <item name="fabSize">normal</item>
-        <item name="backgroundTint">@color/blue</item>
+        <item name="backgroundTint">@color/main_active</item>
     </style>
 
-
+    <style name="LoginTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/selector_text_input</item>
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="hintEnabled">false</item>
+        <item name="boxStrokeErrorColor">@color/red</item>
+        <item name="errorIconDrawable">@null</item>
+        <item name="errorEnabled">true</item>
+        <item name="errorTextAppearance">@style/Text.Red.12sp</item>
+    </style>
 
 </resources>

@@ -41,9 +41,9 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:paddingEnd="10dp"
-                android:text="TextView"
-                android:textColor="@color/white"
-                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Мария Сергеева"
+                style="@style/Text.White.16sp"
                 app:layout_constraintEnd_toStartOf="@+id/time_view"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/group_picture"
@@ -68,7 +68,7 @@
                 app:layout_constrainedWidth="true"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/gray2"
+                android:textColor="@color/text_1"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintEnd_toEndOf="@+id/name_view"
                 app:layout_constraintStart_toEndOf="@+id/image"
@@ -78,7 +78,9 @@
                 android:id="@+id/status_dots"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/blue"
+                tools:text="Привет!"
+                android:textSize="13sp"
+                android:textColor="@color/main_active"
                 app:layout_constraintStart_toEndOf="@+id/last_message"
                 app:layout_constraintBottom_toBottomOf="@+id/last_message" />
 
@@ -113,7 +115,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/timeviewcheck"
-                android:textColor="@color/gray1"
+                android:textColor="@color/text1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -135,6 +137,7 @@
                 <TextView
                     android:id="@+id/pending_amount"
                     style="@style/Text.White.10sp"
+                    android:textColor="@color/almost_white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignLeft="@+id/status"

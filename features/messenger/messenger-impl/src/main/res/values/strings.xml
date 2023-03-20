@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="messageHint">Ваше сообщение</string>
     <string name="SendButtonPresentText">Кнопка отправки сообщения</string>
     <string name="AttachButtonPresentText">Кнопка прикрепления файлов</string>
     <string name="SendMessegeTextViewPresentText">Поле ввода сообщения</string>
-    <string name="AppName">hoolichat</string>
+    <string name="AppName">TeamSpace</string>
     <string name="MessageContentCheck">Blade Runner 2049 is a 2017 American neo-noir science fiction film directed by Denis Villeneuve</string>
     <string name="MessageContentCheckBig">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</string>
     <string name="timeviewcheck">22:22</string>
@@ -21,10 +20,14 @@
     <string name="messenger_max_attach">Максимальное количество прикреляемых файлов - 10</string>
     <string name="conversation_deleted_chat">Собеседник удалил чат</string>
     <string name="conversation_delete_from_chat">Удалить и выйти</string>
+    <string name="conversation_delete_from_chat_history">Удалить историю</string>
     <string name="conversation_delete_from_contacts">Очистить чат</string>
     <string name="conversation_edit">Редактировать</string>
     <string name="messenger_retry_sent">Отправить снова</string>
     <string name="messenger_cancel_sent">Отменить отправку</string>
+    <string name="reset_file_selector">Сбросить изменения?</string>
+    <string name="reset_file_selector_descr">Вы действительно хотите сбросить изменения?</string>
+    <string name="reset">Сбросить</string>
     <string name="search">Поиск</string>
     <string name="messenger_image_viewer_toolbar">Просмотр изображения</string>
     <string name="edit_message_title">Редактирование сообщения</string>

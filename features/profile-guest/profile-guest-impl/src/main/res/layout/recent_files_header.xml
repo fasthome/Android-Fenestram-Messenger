@@ -4,17 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/dark2"
-    android:paddingStart="40dp"
-    android:paddingTop="20dp"
-    android:paddingEnd="40dp"
-    android:paddingBottom="10dp">
+    android:paddingVertical="16dp"
+    android:paddingStart="32dp"
+    android:paddingEnd="24dp"
+    android:id="@+id/recent_header">
 
     <TextView
         android:id="@+id/recent_file_header_text"
         style="@style/ProfileGuestFileHeaderText"
         android:layout_width="wrap_content"
+        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:text="@string/recent_files"
+        app:layout_constraintBottom_toTopOf="@+id/recent_file_count"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="@string/zero_files"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/recent_file_header_text"
         app:layout_constraintTop_toBottomOf="@id/recent_file_header_text" />
 
@@ -34,6 +37,7 @@
         android:layout_height="30dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_header_arrow"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="@id/recent_file_count"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

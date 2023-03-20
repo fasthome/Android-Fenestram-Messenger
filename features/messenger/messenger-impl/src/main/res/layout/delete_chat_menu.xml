@@ -2,13 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/conversationMenu"
     android:layout_width="wrap_content"
+    android:background="@drawable/shape_bg_2_10dp"
     android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/bg_menu_rounded"
         android:elevation="10dp"
         android:orientation="vertical"
         android:translationZ="12dp"
@@ -16,6 +16,7 @@
 
         <TextView
             android:id="@+id/edit"
+            android:visibility="gone"
             style="@style/Text.White.16sp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
@@ -26,7 +27,7 @@
 
         <TextView
             android:id="@+id/delete"
-            style="@style/Text.Red.16sp"
+            style="@style/Text.White.16sp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

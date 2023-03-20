@@ -4,12 +4,17 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.drawable.toDrawable
+import com.dolatkia.animatedThemeManager.AppTheme
+import com.dolatkia.animatedThemeManager.Coordinate
+import com.dolatkia.animatedThemeManager.ThemeActivity
+import com.dolatkia.animatedThemeManager.ThemeManager
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
+import io.fasthome.component.theme.ThemeStorage
 import io.fasthome.fenestram_messenger.CustomAppNavigator
 import io.fasthome.fenestram_messenger.R
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
@@ -19,14 +24,19 @@ import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.push_api.PushFeature
 import io.fasthome.fenestram_messenger.ui.splash.SplashActivity
+import io.fasthome.fenestram_messenger.uikit.theme.LightTheme
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnStartStop
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.koin.viewModel
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : ThemeActivity() {
 
     companion object {
         const val UPDATE_REQUEST_CODE = 1
@@ -42,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     private val authFeature: AuthFeature by inject()
     private val pushFeature: PushFeature by inject()
     private val actionHandler: ActionHandler by inject()
+    private val themeStorage: ThemeStorage by inject()
 
     private val vm: MainActivityViewModel by getKoin().viewModel(
         owner = { ViewModelOwner.from(this, this) },
@@ -56,6 +67,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        binding.root.post {
+            ThemeManager.instance.changeTheme(
+                runBlocking { themeStorage.getTheme() },
+                Coordinate(10, 10),
+                0
+            )
+        }
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         if (savedInstanceState == null) {
@@ -89,9 +107,19 @@ class MainActivity : AppCompatActivity() {
         navigatorHolder.setNavigator(navigator)
     }
 
+    override fun syncTheme(appTheme: AppTheme) {
+        appTheme as Theme
+        appTheme.context = applicationContext
+        binding.root.background = appTheme.bg1Color().toDrawable()
+    }
+
     override fun onPause() {
         super.onPause()
         navigatorHolder.removeNavigator()
+    }
+
+    override fun getStartTheme(): AppTheme {
+        return LightTheme()
     }
 
     override fun onBackPressed() {
@@ -117,12 +145,14 @@ class MainActivity : AppCompatActivity() {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
             ) {
-                appUpdateManager.startUpdateFlowForResult(
-                    appUpdateInfo,
-                    AppUpdateType.FLEXIBLE,
-                    this,
-                    UPDATE_REQUEST_CODE
-                )
+                callForResult {
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.FLEXIBLE,
+                        this,
+                        UPDATE_REQUEST_CODE
+                    )
+                }
             }
         }
     }

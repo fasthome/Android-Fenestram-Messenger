@@ -49,7 +49,7 @@ class WelcomeFragment : BaseFragment<WelcomeState, WelcomeEvent>(R.layout.fragme
         rules.spannableString(
             normalText = getString(R.string.policy_rules_1),
             spannableText = getString(R.string.policy_rules_2),
-            color = ContextCompat.getColor(requireContext(), R.color.blue)
+            color = ContextCompat.getColor(requireContext(), R.color.main_active)
         )
 
         rules.onClick {
