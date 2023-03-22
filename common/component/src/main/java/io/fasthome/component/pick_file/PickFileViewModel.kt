@@ -2,6 +2,7 @@ package io.fasthome.component.pick_file
 
 import android.Manifest
 import android.net.Uri
+import android.os.Build
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.fenestram_messenger.data.FileSystemInterface
@@ -97,17 +98,15 @@ class PickFileViewModel(
 
     override fun pickFile(mimeType: PickFileComponentParams.MimeType?) {
         viewModelScope.launch {
-            val permissionGranted =
+            val permissionGranted = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 permissionInterface.request(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     canOpenSettings = true
                 )
-            if (permissionGranted) {
-                currentMimeType = if (mimeType != null)
-                    mimeType
-                else
-                    params.mimeType
+            } else true
 
+            if (permissionGranted) {
+                currentMimeType = mimeType ?: params.mimeType
                 pickFileLauncher.launch(PickFileNavigationContract.Params(currentMimeType.value))
             }
         }
