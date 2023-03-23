@@ -153,6 +153,16 @@
                 tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_splash"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Splash Screen"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/debug_sip"
                 style="@style/Button.Blue"
                 android:layout_width="match_parent"
