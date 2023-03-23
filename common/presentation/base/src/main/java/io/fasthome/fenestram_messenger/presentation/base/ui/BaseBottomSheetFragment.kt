@@ -152,7 +152,7 @@ open class BaseBottomSheetFragment(
             childFragmentManager.commitNow {
                 replace(R.id.content, fragmentInstance ?: return@commitNow, CONTENT_TAG)
             }
-            this.view?.findViewById<ViewGroup>(R.id.cl_root)!!.fitsSystemWindows = config.fitSystemWindow
+            this.view?.findViewById<ViewGroup>(R.id.cl_root)?.fitsSystemWindows = config.fitSystemWindow
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
