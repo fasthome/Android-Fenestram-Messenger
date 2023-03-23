@@ -1,4 +1,4 @@
-package io.fasthome.component.image_viewer
+package io.fasthome.component.image_viewer.model
 
 import android.os.Parcelable
 import io.fasthome.component.gallery.GalleryImage

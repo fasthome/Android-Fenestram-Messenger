@@ -1,3 +1,5 @@
 package io.fasthome.component.image_viewer
 
-interface ImageViewerEvent { }
+sealed interface ImageViewerEvent {
+    class ToggleProgressEvent(val isProgressVisible: Boolean) : ImageViewerEvent
+}

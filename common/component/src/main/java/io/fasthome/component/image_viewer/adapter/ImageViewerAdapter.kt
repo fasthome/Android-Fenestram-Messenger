@@ -1,8 +1,9 @@
-package io.fasthome.component.image_viewer
+package io.fasthome.component.image_viewer.adapter
 
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import io.fasthome.component.databinding.ItemImageViewerBinding
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.fenestram_messenger.core.ui.extensions.loadRounded
 import io.fasthome.fenestram_messenger.core.ui.extensions.setContent
 import io.fasthome.fenestram_messenger.uikit.paging.PagerDelegateAdapter

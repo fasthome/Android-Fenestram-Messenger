@@ -62,6 +62,9 @@ interface Theme : AppTheme {
 
     // Contacts (Employee)
     fun bgStroke2_8dp(): Drawable
+
+    // ImageViewer
+    fun ibCancelColor(): Int
 }
 
 class LightTheme : Theme {
@@ -188,6 +191,10 @@ class LightTheme : Theme {
 
     override fun bgStroke2_8dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_stroke2_8dp)
+    }
+
+    override fun ibCancelColor(): Int {
+        return context.color(R.color.text_1)
     }
 
     override fun id(): Int = 1
@@ -318,6 +325,10 @@ class DarkTheme : Theme {
 
     override fun bgStroke2_8dp(): Drawable {
         return context.drawable(R.drawable.shape_bg_stroke2_8dp_dark)
+    }
+
+    override fun ibCancelColor(): Int {
+        return context.color(R.color.white)
     }
 
     override fun id(): Int = 2

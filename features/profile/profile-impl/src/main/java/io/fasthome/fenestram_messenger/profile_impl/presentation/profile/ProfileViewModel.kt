@@ -7,7 +7,7 @@ import android.view.View
 import androidx.lifecycle.viewModelScope
 import com.dolatkia.animatedThemeManager.ThemeManager
 import io.fasthome.component.image_viewer.ImageViewerContract
-import io.fasthome.component.image_viewer.ImageViewerModel
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.component.theme.ThemeStorage
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
