@@ -421,6 +421,10 @@ class ProfileGuestViewModel(
         pickFileInterface.pickFile()
     }
 
+    fun navigateBack() {
+        exitWithoutResult()
+    }
+
 
     @Parcelize
     class SavedState(

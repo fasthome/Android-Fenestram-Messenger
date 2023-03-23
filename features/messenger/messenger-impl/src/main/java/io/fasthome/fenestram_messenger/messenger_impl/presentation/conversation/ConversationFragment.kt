@@ -329,10 +329,10 @@ class ConversationFragment :
     override fun syncTheme(appTheme: Theme) {
         vm.currentTheme = appTheme
         with(binding) {
-            rvChatUserTags.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
-            inputMessage.backgroundTintList = ColorStateList.valueOf(appTheme.bg3Color())
+            rvChatUserTags.backgroundTintList = ColorStateList.valueOf(appTheme.bg03Color())
+            inputMessage.backgroundTintList = ColorStateList.valueOf(appTheme.bg03Color())
             inputMessage.setTextColor(appTheme.text0Color())
-            profileToolBar.setBackgroundColor(appTheme.bg3Color())
+            profileToolBar.setBackgroundColor(appTheme.bg03Color())
             username.setTextColor(appTheme.text0Color())
             clEditMessage.backgroundTintList = ColorStateList.valueOf(appTheme.bg0Color())
             tvTextToEdit.setTextColor(appTheme.text0Color())
