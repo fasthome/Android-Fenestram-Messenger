@@ -6,6 +6,7 @@ package io.fasthome.fenestram_messenger.debug_impl.presentation.debug
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -113,6 +114,10 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
 
         debugPersonDetailDialog.onClick {
             vm.onPersonDetailClicked()
+        }
+
+        debugSplash.onClick {
+            startActivity(Intent(requireContext(), Class.forName("io.fasthome.fenestram_messenger.ui.splash.SplashActivity")))
         }
 
         linkField.onClick {

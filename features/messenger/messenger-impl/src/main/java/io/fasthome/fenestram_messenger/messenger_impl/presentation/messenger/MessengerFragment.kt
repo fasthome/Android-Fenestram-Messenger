@@ -11,7 +11,6 @@ import android.view.WindowManager
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.paging.ItemSnapshotList
 import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +27,6 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.ViewBinderHelper
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.*
 import io.fasthome.fenestram_messenger.util.AnimationUtil.getAlphaAnimation
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.android.ext.android.inject
 
@@ -126,7 +124,6 @@ class MessengerFragment :
 
     override fun syncTheme(appTheme: Theme) = with(binding) {
         appTheme.context = requireActivity().applicationContext
-        appTheme.logoGradient(appNameHeader)
         bgGeometry.background = appTheme.backgroundGeometry()
         toolbar.setBackgroundColor(appTheme.bg3Color())
         toolbarTitle.setTextColor(appTheme.text0Color())

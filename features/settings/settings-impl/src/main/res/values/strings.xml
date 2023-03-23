@@ -11,7 +11,7 @@
     <string name="settings_delete_accept_description">В случае удаления все ваши данные будут удалены навсегда!</string>
     <string name="settings_logout_title">Вы уверены, что хотите выйти из учетной записи?</string>
     <string name="settings_logout">Выйти</string>
-    <string name="infoapp_name">Team Space</string>
+    <string name="infoapp_name">Confee</string>
     <string name="policy_rules">Политика конфиденциальности</string>
     <string name="app_version">Версия %1$s</string>
 </resources>

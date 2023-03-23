@@ -35,6 +35,8 @@ interface Theme : AppTheme {
     fun buttonInactiveColor(): Int
     fun redColor(): Int = context.color(R.color.red)
 
+    fun textImageLogoResource(): Int
+
     //Main
     fun navigationViewBackground(): Int
 
@@ -121,6 +123,10 @@ class LightTheme : Theme {
 
     override fun buttonInactiveColor(): Int {
         return context.color(R.color.button_inactive)
+    }
+
+    override fun textImageLogoResource(): Int {
+        return R.drawable.confee_logo
     }
 
     override fun navigationViewBackground(): Int {
@@ -255,6 +261,10 @@ class DarkTheme : Theme {
 
     override fun buttonInactiveColor(): Int {
         return context.color(R.color.button_inactive_dark)
+    }
+
+    override fun textImageLogoResource(): Int {
+        return R.drawable.confee_logo_light
     }
 
     override fun navigationViewBackground(): Int {
