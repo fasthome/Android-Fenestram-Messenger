@@ -8,6 +8,7 @@ import android.content.Intent
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.bottom_navigation.BottomNavContract
 import io.fasthome.component.person_detail.PersonDetail
+import io.fasthome.component.profile_verification.ProfileVerificationContract
 import io.fasthome.fenestram_messenger.auth_ad_api.AuthAdFeature
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
 import io.fasthome.fenestram_messenger.call_api.CallFeature
@@ -35,7 +36,7 @@ class DebugViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val features: Features,
-    private val debugRepo: DebugRepo
+    private val debugRepo: DebugRepo,
 ) : BaseViewModel<DebugState, DebugEvent>(router, requestParams) {
 
     class Features(
@@ -48,7 +49,7 @@ class DebugViewModel(
         val pushFeature: PushFeature,
         val mainFeature: MainFeature,
         val callFeature: CallFeature,
-        val authAdFeature: AuthAdFeature
+        val authAdFeature: AuthAdFeature,
     )
 
     private var personalData: PersonalData? = null
@@ -83,6 +84,7 @@ class DebugViewModel(
     private val onboardingLauncher =
         registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
     private val bottomNavLauncher = registerScreen(BottomNavContract)
+    private val profileVerificationLauncher = registerScreen(ProfileVerificationContract)
 
     override fun createInitialState() = DebugState(
         userId = "",
@@ -143,12 +145,12 @@ class DebugViewModel(
     }
 
     fun onDeleteContactsClicked() {
-       /* viewModelScope.launch { // TODO: !!!
-            features.contactsFeature.deleteAllContacts()
-                .withErrorHandled(showErrorType = ShowErrorType.Dialog, onSuccess = {
-                    sendEvent(DebugEvent.ContactsDeleted)
-                })
-        }*/
+        /* viewModelScope.launch { // TODO: !!!
+             features.contactsFeature.deleteAllContacts()
+                 .withErrorHandled(showErrorType = ShowErrorType.Dialog, onSuccess = {
+                     sendEvent(DebugEvent.ContactsDeleted)
+                 })
+         }*/
     }
 
     fun onGroupGuestClicked() {
@@ -241,7 +243,16 @@ class DebugViewModel(
     }
 
     fun onSipClicked(requireContext: Context) {
-        requireContext.startActivity(Intent(requireContext, features.callFeature.demoIntentActivityClass))
+        requireContext.startActivity(
+            Intent(
+                requireContext,
+                features.callFeature.demoIntentActivityClass
+            )
+        )
+    }
+
+    fun onProfileVerification() {
+        profileVerificationLauncher.launch()
     }
 
 }
