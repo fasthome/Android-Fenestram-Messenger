@@ -7,7 +7,7 @@ import io.fasthome.component.file_selector.FileSelectorNavigationContract
 import io.fasthome.component.gallery.GalleryRepository
 import io.fasthome.component.gallery.GalleryRepositoryImpl
 import io.fasthome.component.image_viewer.ImageViewerContract
-import io.fasthome.component.image_viewer.ImageViewerModel
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.pick_file.PickFileInterface
 import io.fasthome.fenestram_messenger.data.StorageUrlConverter
