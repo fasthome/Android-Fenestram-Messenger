@@ -34,7 +34,7 @@ import kotlin.reflect.KClass
 open class BaseBottomSheetFragment(
     @LayoutRes bottomSheetRes: Int,
     private val contentClazz: KClass<out BaseFragment<*, *>>,
-    private val config: Config = Config(Config.Scale.Fullscreen, true),
+    private val config: Config = Config(),
 ) : Fragment(bottomSheetRes), ModalWindow, BackPressConsumer {
 
     private companion object {
@@ -45,10 +45,10 @@ open class BaseBottomSheetFragment(
         const val KEY_BEHAVIOR_STATE = "KEY_BEHAVIOR_STATE"
         const val KEY_DISMISSED = "KEY_DISMISSED"
     }
-
     data class Config(
-        val scale: Scale,
-        val canceledOnTouchOutside: Boolean,
+        val scale: Scale = Scale.Fullscreen,
+        val canceledOnTouchOutside: Boolean = true,
+        val fitSystemWindow: Boolean = true
     ) {
         sealed class Scale {
             object Fullscreen : Scale()
@@ -152,6 +152,7 @@ open class BaseBottomSheetFragment(
             childFragmentManager.commitNow {
                 replace(R.id.content, fragmentInstance ?: return@commitNow, CONTENT_TAG)
             }
+            this.view?.findViewById<ViewGroup>(R.id.cl_root)!!.fitsSystemWindows = config.fitSystemWindow
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {

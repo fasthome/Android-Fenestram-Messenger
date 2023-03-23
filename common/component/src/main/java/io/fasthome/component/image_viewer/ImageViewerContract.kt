@@ -1,6 +1,7 @@
 package io.fasthome.component.image_viewer
 
 import android.os.Parcelable
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
 import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
@@ -47,6 +48,13 @@ object ImageViewerContract :
         @Parcelize
         class Forward(
             override val messageId: Long,
+            val username: PrintableText,
+        ) : Result()
+
+        @Parcelize
+        class ForwardImage(
+            override val messageId: Long,
+            val imageUrl: String,
             val username: PrintableText,
         ) : Result()
     }

@@ -1,5 +1,6 @@
 package io.fasthome.component.image_viewer
 
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.fenestram_messenger.util.PrintableText
 
 data class ImageViewerState(
@@ -7,6 +8,7 @@ data class ImageViewerState(
     val chatId: Long? = null,
     val canDelete: Boolean,
     val canForward: Boolean,
+    val canDownload: Boolean,
     val username: PrintableText? = null,
     val currPhotoPosition: Int? = null,
     val imagesViewerModel: List<ImageViewerModel?> = emptyList(),

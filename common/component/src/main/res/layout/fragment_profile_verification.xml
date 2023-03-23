@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    tools:background="@color/bg_0_dark"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="60dp"
+            android:layout_height="wrap_content"
+            android:paddingBottom="80dp">
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/Text.White.20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/profile_verify_title"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.utils.widget.ImageFilterView
+                android:id="@+id/profile_avatar"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/ic_avatar_placeholder"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+            <ImageView
+                android:id="@+id/iv_edit_avatar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_plus_with_bg_20"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_avatar"
+                app:layout_constraintEnd_toEndOf="@+id/profile_avatar" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_avatar">
+
+                <TextView
+                    style="@style/Text.Gray.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/name_surname" />
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    style="@style/Text.White.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_bottom_line_1"
+                    android:maxLines="1"
+                    android:text="@string/no_data" />
+
+                <TextView
+                    style="@style/Text.Gray.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/common_email_label" />
+
+                <TextView
+                    android:id="@+id/tv_email"
+                    style="@style/Text.White.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_bottom_line_1"
+                    android:maxLines="1"
+                    android:text="@string/no_data" />
+
+                <TextView
+                    style="@style/Text.Gray.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/department" />
+
+                <TextView
+                    android:id="@+id/tv_department"
+                    style="@style/Text.White.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_bottom_line_1"
+                    android:maxLines="1"
+                    android:text="@string/no_data" />
+
+                <TextView
+                    style="@style/Text.Gray.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/speciality" />
+
+                <TextView
+                    android:id="@+id/tv_speciality"
+                    style="@style/Text.White.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_bottom_line_1"
+                    android:maxLines="1"
+                    android:text="@string/no_data" />
+
+                <TextView
+                    style="@style/Text.Gray.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/common_birthday_label" />
+
+                <TextView
+                    android:id="@+id/tv_birthday"
+                    style="@style/Text.White.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_bottom_line_1"
+                    android:maxLines="1"
+                    android:text="@string/no_data" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_ready"
+        style="@style/Button.Blue"
+        android:gravity="center"
+        android:text="@string/common_done_b"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <View
+        android:id="@+id/bg_geometry"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/layout_bg1"
+        android:fitsSystemWindows="false"
+        tools:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

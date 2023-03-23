@@ -3,13 +3,16 @@
  */
 package io.fasthome.fenestram_messenger.util
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
+import android.util.DisplayMetrics
 import android.os.SystemClock
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.TouchDelegate
 import android.view.View
+import android.view.WindowManager
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 inline fun View.onClick(crossinline action: () -> Unit) {
@@ -70,6 +73,17 @@ fun Resources.getSpanCount(columnWidth: Int): Int {
 
 fun Resources.isTablet(): Boolean {
     return this.configuration.smallestScreenWidthDp >= 600
+}
+
+fun Context.getScreenWidth(): Int {
+    val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val dm = DisplayMetrics()
+    windowManager.defaultDisplay.getMetrics(dm)
+    return dm.widthPixels
+}
+
+fun Context.dpToPx(value: Int): Int {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), resources.displayMetrics).toInt()
 }
 
 class OnSingleClickListener(private val block: () -> Unit, private val wait: Long) : View.OnClickListener {

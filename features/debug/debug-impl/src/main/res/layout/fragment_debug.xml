@@ -143,6 +143,16 @@
             android:visibility="gone">
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/debug_profile_verification"
+                style="@style/Button.Blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Profile verification"
+                tools:ignore="HardcodedText" />
+
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/debug_sip"
                 style="@style/Button.Blue"
                 android:layout_width="match_parent"

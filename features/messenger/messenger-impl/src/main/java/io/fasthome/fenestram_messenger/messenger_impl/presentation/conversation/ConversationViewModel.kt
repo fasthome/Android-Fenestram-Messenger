@@ -7,7 +7,7 @@ import io.fasthome.component.camera.CameraComponentParams
 import io.fasthome.component.file_selector.FileSelectorNavigationContract
 import io.fasthome.component.gallery.GalleryImage
 import io.fasthome.component.image_viewer.ImageViewerContract
-import io.fasthome.component.image_viewer.ImageViewerModel
+import io.fasthome.component.image_viewer.model.ImageViewerModel
 import io.fasthome.component.permission.PermissionInterface
 import io.fasthome.component.person_detail.PersonDetail
 import io.fasthome.component.pick_file.PickFileComponentParams
@@ -119,6 +119,14 @@ class ConversationViewModel(
                 deleteMessage(result.messageId)
             }
             is ImageViewerContract.Result.Forward -> {
+                openChatSelectorForForward(
+                    MessageInfo(
+                        id = result.messageId,
+                        type = MessageType.Image
+                    ), result.username
+                )
+            }
+            is ImageViewerContract.Result.ForwardImage -> {
                 openChatSelectorForForward(
                     MessageInfo(
                         id = result.messageId,

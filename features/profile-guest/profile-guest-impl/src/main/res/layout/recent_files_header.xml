@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:textStyle="bold"
         android:layout_height="wrap_content"
-        android:text="@string/recent_files"
+        android:text="@string/files"
         app:layout_constraintBottom_toTopOf="@+id/recent_file_count"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -54,7 +54,7 @@ class GroupParticipantsFragment :
     override fun syncTheme(appTheme: Theme) {
         appTheme.context = requireActivity().applicationContext
         binding.recentFileHeaderText.setTextColor(appTheme.text0Color())
-        binding.clBg.background.setTint(appTheme.bg3Color())
+        binding.clBg.background.setTint(appTheme.bg03Color())
     }
 
     override fun handleEvent(event: GroupParticipantsEvent) {

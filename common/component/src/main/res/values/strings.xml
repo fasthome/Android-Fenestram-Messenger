@@ -11,6 +11,12 @@
     <string name="personality_empty_name_error">Поле имя не может быть пустым</string>
     <string name="personality_empty_nickname_error">Поле никнейм не может быть пустым</string>
 
+    <string name="profile_verify_title">Добро пожаловать\nв ГК TFN!</string>
+    <string name="no_data">Нет данных</string>
+    <string name="name_surname">Имя Фамилия</string>
+    <string name="department">Отдел</string>
+    <string name="speciality">Должность</string>
+
     <string name="max_images_attached">Достигнуто максимальное количество прикрепляемых изображений</string>
 
     <string name="personality_incorrect_name">Некорректное имя</string>

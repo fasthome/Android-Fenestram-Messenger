@@ -38,6 +38,17 @@ class GalleryRepositoryImpl(
             tempPhotoFile
         }
 
+    override suspend fun getCursorLastPosition(): Int {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(MediaStore.Images.Media._ID)
+        var lastPos = 0
+        appContext.contentResolver.query(uri, projection, null, null, null)?.use { cursor ->
+            cursor.moveToLast()
+            lastPos = cursor.position
+        }
+        return lastPos
+    }
+
     override suspend fun getGalleryImages(
         page: Int,
         itemsPerPage: Int,

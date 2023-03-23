@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/background_0"
+    android:background="@color/bg_1"
     android:fitsSystemWindows="true">
 
-    <io.fasthome.fenestram_messenger.uikit.custom_view.RecyclerViewWithToggle
-        android:id="@+id/rv_images"
-        tools:listitem="@layout/item_image_viewer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
+        android:id="@+id/ll_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dark2_50"
+        android:background="@color/bg_03"
         android:gravity="start|center_vertical"
         android:minHeight="51dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,52 +34,86 @@
             android:id="@+id/tv_counter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="1 из 3"
+            android:layout_weight="10"
+            android:textColor="@color/text_0"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_weight="1" />
+            app:fontFamily="@font/poppins_bold"
+            tools:text="1 из 3" />
 
-        <ImageButton
-            android:id="@+id/ib_copy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="15dp"
-            android:src="@drawable/ic_action_copy"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <ImageButton
             android:id="@+id/ib_forward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="15dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="15dp"
             android:src="@drawable/ic_action_forward"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:indeterminateTint="@color/text1"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/ib_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="15dp"
+                android:src="@drawable/ic_action_download"
+                tools:visibility="visible" />
+
+        </RelativeLayout>
+
 
         <ImageButton
             android:id="@+id/ib_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="15dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="15dp"
             android:src="@drawable/ic_action_trash"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 
     </LinearLayout>
 
+    <io.fasthome.fenestram_messenger.uikit.custom_view.RecyclerViewWithToggle
+        android:id="@+id/rv_images"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/rv_images_picker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_bar"
+        tools:listitem="@layout/item_image_viewer" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_images_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_images"
+        tools:listitem="@layout/item_image_picker" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

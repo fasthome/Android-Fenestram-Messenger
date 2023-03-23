@@ -58,6 +58,7 @@ object DataModule {
         ) bindSafe FileStorage.Factory::class
         single(::FileManagerImpl) bindSafe FileManager::class
         single(::DownloadFileManagerImpl) bindSafe DownloadFileManager::class
+        single(::DownloadImageManagerImpl) bindSafe DownloadImageManager::class
     }
 
     private fun createExt() = module {
