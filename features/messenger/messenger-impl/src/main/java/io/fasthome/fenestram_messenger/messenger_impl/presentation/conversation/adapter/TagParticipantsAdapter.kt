@@ -2,7 +2,7 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import io.fasthome.fenestram_messenger.contacts_api.model.User
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.ItemUserTagBinding
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.adapterDelegateViewBinding
@@ -31,7 +31,10 @@ fun createTagUserAdapterDelegate(
             root.onClick {
                 onUserClicked(item)
             }
-            avatar.loadCircle(item.avatar)
+            avatar.loadAvatarWithGradient(
+                url = item.avatar,
+                username = item.name
+            )
             name.text = item.name
             name.setTextColor(nameThemeColor)
             nickname.text = "@${item.nickname}"

@@ -31,6 +31,7 @@ import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 import kotlin.reflect.KClass
 
+
 open class BaseBottomSheetFragment(
     @LayoutRes bottomSheetRes: Int,
     private val contentClazz: KClass<out BaseFragment<*, *>>,
@@ -45,6 +46,7 @@ open class BaseBottomSheetFragment(
         const val KEY_BEHAVIOR_STATE = "KEY_BEHAVIOR_STATE"
         const val KEY_DISMISSED = "KEY_DISMISSED"
     }
+
     data class Config(
         val scale: Scale = Scale.Fullscreen,
         val canceledOnTouchOutside: Boolean = true,
@@ -91,7 +93,7 @@ open class BaseBottomSheetFragment(
         fragmentInstance?.handleSlideCallback(slideOffset)
     }
 
-    fun getThemeManager() : ThemeManager {
+    fun getThemeManager(): ThemeManager {
         return ThemeManager.instance
     }
 
@@ -99,7 +101,7 @@ open class BaseBottomSheetFragment(
         return getThemeManager().getCurrentTheme() as Theme
     }
 
-    open fun syncTheme(appTheme: Theme){}
+    open fun syncTheme(appTheme: Theme) {}
 
     override fun onResume() {
         getThemeManager().getCurrentLiveTheme().observe(this) {
@@ -108,6 +110,7 @@ open class BaseBottomSheetFragment(
 
         super.onResume()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedStateRegistry.run {
@@ -272,9 +275,9 @@ open class BaseBottomSheetFragment(
              * только ее. В этом когде добавлено следующее: во время касания проверям есть ли под точкой касания
              * вьюшка, которую можно скролить. Записываем найденное значение в [nestedScrollingChildRef] через рефлексию
              */
-            val scrollingViewUnderPointer =
-                findScrollableViewUnderPointer(parent, parent, event.x.toInt(), event.y.toInt())
-            setScrollingViewRef(scrollingViewUnderPointer)
+//            val scrollingViewUnderPointer =
+//                findScrollableViewUnderPointer(parent, parent, event.x.toInt(), event.y.toInt())
+//            setScrollingViewRef(scrollingViewUnderPointer)
             return super.onInterceptTouchEvent(parent, child, event)
         }
 
