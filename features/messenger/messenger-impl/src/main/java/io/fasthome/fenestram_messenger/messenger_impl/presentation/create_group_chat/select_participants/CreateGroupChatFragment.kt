@@ -41,7 +41,7 @@ class CreateGroupChatFragment :
 
     private val binding by fragmentViewBinding(FragmentCreateGroupChatBinding::bind)
 
-    private val contactsAdapter = ContactsAdapter(textColor = getTheme().text0Color(),onItemClicked = {
+    private val contactsAdapter = ContactsAdapter(textColor = getTheme().text0Color(), onItemClicked = {
         vm.onContactClicked(it)
     })
 
@@ -49,9 +49,9 @@ class CreateGroupChatFragment :
         textColor = getTheme().text0Color(),
         onItemClicked = {
 
-    }, onRemoveClicked = {
-        vm.onContactRemoveClick(it)
-    })
+        }, onRemoveClicked = {
+            vm.onContactRemoveClick(it)
+        })
 
     override fun syncTheme(appTheme: Theme) {
         appTheme.context = requireActivity().applicationContext
@@ -113,8 +113,6 @@ class CreateGroupChatFragment :
 
         contactsAdapter.notifyDataSetChanged()
 
-        listAddedInChat.isVisible = (state.addedContacts.isNotEmpty() && state.isGroupChat)
-
         if (state.isGroupChat) {
             addedContactsAdapter.items = state.addedContacts
 
@@ -124,11 +122,12 @@ class CreateGroupChatFragment :
              * state.addedContacts.isNotEmpty() не скролить, если список пустой
              * state.needScroll не скролить, если последний элемент был удален
              */
-            if (state.addedContacts.isNotEmpty() && state.needScroll) {
-                listAddedInChat.postDelayed({
+            listAddedInChat.postDelayed({
+                listAddedInChat.isVisible = state.addedContacts.isNotEmpty()
+                if (state.addedContacts.isNotEmpty() && state.needScroll) {
                     listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
-                }, 100)
-            }
+                }
+            }, 100)
         }
     }
 

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
 import android.util.DisplayMetrics
+import android.os.SystemClock
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.TouchDelegate
@@ -85,3 +86,20 @@ fun Context.dpToPx(value: Int): Int {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value.toFloat(), resources.displayMetrics).toInt()
 }
 
+class OnSingleClickListener(private val block: () -> Unit, private val wait: Long) : View.OnClickListener {
+    override fun onClick(view: View) {
+        if (SystemClock.elapsedRealtime() - lastClickTime < wait) {
+            return
+        }
+        lastClickTime = SystemClock.elapsedRealtime()
+        block()
+    }
+
+    companion object {
+        private var lastClickTime = 0L
+    }
+}
+
+fun View.setOnSingleClickListener(wait: Long = 1000L, block: () -> Unit) {
+    setOnClickListener(OnSingleClickListener(block, wait))
+}
