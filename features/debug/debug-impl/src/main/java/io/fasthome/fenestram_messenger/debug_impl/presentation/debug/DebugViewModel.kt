@@ -28,6 +28,7 @@ import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.profile_api.entity.PersonalData
 import io.fasthome.fenestram_messenger.profile_guest_api.ProfileGuestFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.tasks_api.TasksFeature
 import io.fasthome.fenestram_messenger.util.getOrNull
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.launch
@@ -50,6 +51,7 @@ class DebugViewModel(
         val mainFeature: MainFeature,
         val callFeature: CallFeature,
         val authAdFeature: AuthAdFeature,
+        val tasksFeature: TasksFeature,
     )
 
     private var personalData: PersonalData? = null
@@ -85,6 +87,7 @@ class DebugViewModel(
         registerScreen(features.onboardingFeature.onboardingNavigationContract) {}
     private val bottomNavLauncher = registerScreen(BottomNavContract)
     private val profileVerificationLauncher = registerScreen(ProfileVerificationContract)
+    private val tasksLauncher = registerScreen(features.tasksFeature.tasksNavigationContract)
 
     override fun createInitialState() = DebugState(
         userId = "",
@@ -110,6 +113,10 @@ class DebugViewModel(
         viewModelScope.launch {
             features.authFeature.logout().withErrorHandled {}
         }
+    }
+
+    fun onTasksClicked() {
+        tasksLauncher.launch()
     }
 
     fun onProfileGuestClicked() {

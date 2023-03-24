@@ -14,6 +14,7 @@ interface MainFeature {
     enum class TabType {
         Contacts,
         Chats,
+        Tasks,
         Profile
     }
 

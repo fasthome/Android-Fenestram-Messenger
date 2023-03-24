@@ -75,6 +75,9 @@ class DebugFragment : BaseFragment<DebugState, DebugEvent>(R.layout.fragment_deb
             vm.onAuthAdClicked()
         }
 
+        debugTasks.onClick {
+            vm.onTasksClicked()
+        }
 
         debugProfileGuest.onClick {
             vm.onProfileGuestClicked()

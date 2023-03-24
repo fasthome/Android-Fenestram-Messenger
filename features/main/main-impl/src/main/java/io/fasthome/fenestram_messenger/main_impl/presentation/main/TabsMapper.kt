@@ -8,6 +8,7 @@ object TabsMapper {
     fun mapItemIdToTab(item: MenuItem) = when (item.itemId) {
         R.id.contacts -> MainFeature.TabType.Contacts
         R.id.chats -> MainFeature.TabType.Chats
+        R.id.tasks -> MainFeature.TabType.Tasks
         R.id.profile -> MainFeature.TabType.Profile
         else -> null
     }
@@ -15,6 +16,7 @@ object TabsMapper {
     fun mapTabToItemId(tab: MainFeature.TabType): Int = when (tab) {
         MainFeature.TabType.Contacts -> R.id.contacts
         MainFeature.TabType.Chats -> R.id.chats
+        MainFeature.TabType.Tasks -> R.id.tasks
         MainFeature.TabType.Profile -> R.id.profile
     }
 }

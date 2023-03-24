@@ -239,6 +239,25 @@ inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified 
     )
 }
 
+inline fun <reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7, reified P8, reified P9, reified P10, reified R> Module.factory(
+    crossinline provider: (P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10) -> R,
+    qualifier: Qualifier? = null,
+) = factory(qualifier = qualifier) { params ->
+    provider(
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+        get { params },
+    )
+}
+
 inline fun <reified R : ViewModel> Module.viewModel(
     crossinline provider: () -> R,
     qualifier: Qualifier? = null,

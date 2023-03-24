@@ -19,6 +19,7 @@ import io.fasthome.fenestram_messenger.profile_guest_impl.di.ProfileGuestModule
 import io.fasthome.fenestram_messenger.profile_impl.di.ProfileModule
 import io.fasthome.fenestram_messenger.push_impl.di.PushModule
 import io.fasthome.fenestram_messenger.settings_impl.di.SettingsModule
+import io.fasthome.fenestram_messenger.tasks_impl.di.TasksModule
 import io.fasthome.network.di.NetworkModule
 import org.koin.core.module.Module
 
@@ -49,6 +50,7 @@ object AppModule {
         PushModule(),
         CameraModule(),
         CallModule(),
-        AuthAdModule()
+        AuthAdModule(),
+        TasksModule()
     ).flatten()
 }
