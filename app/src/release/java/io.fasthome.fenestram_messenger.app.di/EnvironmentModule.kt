@@ -13,18 +13,18 @@ object EnvironmentModule {
             val repo = get<DebugRepo>()
 
 
-            val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_PROD + "api/${BuildConfig.PROD_API_VERSION}/"
+            val apiBaseUrl = BuildConfig.MAIN_API_BASE_URL_DEV + "api/${BuildConfig.DEV_API_VERSION}/"
 
             val policyUrl = BuildConfig.POLICY_RULES_URL
 
             Environment(
                 endpoints = Endpoints(
-                    baseUrl = BuildConfig.MAIN_API_BASE_URL_PROD,
+                    baseUrl = BuildConfig.MAIN_API_BASE_URL_DEV,
                     apiBaseUrl = apiBaseUrl,
                     policyUrl = policyUrl
                 ),
                 isDebug = BuildConfig.IS_DEBUG,
-                apiVersion = BuildConfig.PROD_API_VERSION,
+                apiVersion = BuildConfig.DEV_API_VERSION,
                 appVersion = BuildConfig.VERSION_NAME
             )
         }
