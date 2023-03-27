@@ -5,6 +5,8 @@ package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
@@ -96,11 +98,15 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
             vm.onStatusClicked()
         }
 
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = {
+            nightTheme.isEnabled = true
+        }
+
         nightTheme.setOnCheckedChangeListener { compoundButton, b ->
+            handler.removeCallbacks(runnable)
             nightTheme.isEnabled = false
-            nightTheme.postDelayed({
-                nightTheme.isEnabled = true
-            }, 600)
+            handler.postDelayed(runnable, 1000)
             if (b) {
                 vm.onThemeChanged(LightTheme(), compoundButton)
             } else {

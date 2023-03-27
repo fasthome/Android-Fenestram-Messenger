@@ -51,20 +51,7 @@ class SettingsViewModel(
             }
         ),
         SettingsViewItem(
-            icon = R.drawable.ic_delete_account,
-            title = PrintableText.StringResource(R.string.settings_delete_account),
-            onItemClicked = {
-                onDeleteAccountClicked()
-            },
-            colors = theme?.let {
-                SettingsViewItem.Colors(
-                    textColor = theme.text0Color(),
-                    cardColor = theme.shapeBg2_20dp()
-                )
-            }
-        ),
-        SettingsViewItem(
-            icon = R.drawable.ic_info,
+            icon = R.drawable.ic_report,
             title = PrintableText.StringResource(R.string.settings_bug_report),
             onItemClicked = {
                 Instabug.show()
