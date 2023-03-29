@@ -4,6 +4,7 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.messenger
 
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
 class MessengerViewModel(
     router: ContractRouter,
@@ -202,7 +204,6 @@ class MessengerViewModel(
             { onChatCreatedCallback() })
             .collectWhenViewActive()
             .onEach { message ->
-                messengerInteractor.addNewMessageToDb(message)
                 loadDataHelper.invalidateSource()
                 updateState { state ->
                     state.copy(newMessagesCount = state.newMessagesCount + 1)
