@@ -14,6 +14,7 @@ import io.fasthome.component.image_viewer.adapter.ImageViewerAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.custom_view.PreCachingLayoutManager
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.android.setColor
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
@@ -104,7 +105,7 @@ class ImageViewerFragment :
     private fun setupAdapter() {
         binding.rvImages.adapter = adapterImages
         binding.rvImages.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            PreCachingLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvImages.itemAnimator = null
         binding.rvImages.isNestedScrollingEnabled = false
         PagerSnapHelper().attachToRecyclerView(binding.rvImages)
