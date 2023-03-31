@@ -34,7 +34,6 @@ import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.mode
 import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.UrlLoadableContent
 import io.fasthome.fenestram_messenger.util.dp
 import org.koin.core.component.KoinComponent
-import java.io.File
 import java.nio.ByteBuffer
 
 
@@ -265,7 +264,7 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
         .with(this)
         .load(
             when (content) {
-                is Content.FileContent -> content.file
+                is Content.FileContent -> content.file.readBytes()
                 is Content.LoadableContent -> {
                     when (content) {
                         is UrlLoadableContent -> {
@@ -329,13 +328,6 @@ fun loadOriginalGif(context: Context, url: String): ByteBuffer {
     } catch (e: Exception) {
         throw e
     }
-}
-
-fun ImageView.loadFromFile(file: File) {
-    Glide.with(this)
-        .asBitmap()
-        .load(file.readBytes())
-        .into(this)
 }
 
 fun RequestBuilder<Drawable>.override(overridePair: Pair<Int, Int>?): RequestBuilder<Drawable> {

@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.View
 import io.fasthome.fenestram_messenger.camera_impl.R
 import io.fasthome.fenestram_messenger.camera_impl.databinding.FragmentConfirmPhotoBinding
-import io.fasthome.fenestram_messenger.core.ui.extensions.loadFromFile
+import io.fasthome.fenestram_messenger.core.ui.extensions.setContent
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
-import io.fasthome.fenestram_messenger.uikit.image_view.glide_custom_loader.model.Content
 import io.fasthome.fenestram_messenger.util.onClick
 
 class ConfirmPhotoFragment :
@@ -28,7 +27,7 @@ class ConfirmPhotoFragment :
     }
 
     override fun renderState(state: ConfirmPhotoState): Unit = with(binding) {
-        imageView.loadFromFile((state.content as Content.FileContent).file)
+        imageView.setContent(state.content)
     }
 
     override fun handleEvent(event: ConfirmPhotoEvent) = noEventsExpected()
