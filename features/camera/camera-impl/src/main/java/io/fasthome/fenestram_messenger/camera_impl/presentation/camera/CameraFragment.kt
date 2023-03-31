@@ -59,6 +59,7 @@ class CameraFragment : BaseFragment<CameraState, CameraEvent>(R.layout.fragment_
         )
 
         binding.captureProgressBar.isVisible = state.cameraComponentState.inProgress
+        binding.captureButton.isEnabled = !state.cameraComponentState.inProgress
 
         renderRotation(state.cameraComponentState.rotation)
     }

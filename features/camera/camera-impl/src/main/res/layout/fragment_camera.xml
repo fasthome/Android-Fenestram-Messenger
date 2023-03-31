@@ -32,12 +32,12 @@
         android:layout_marginEnd="20dp"
         android:padding="12dp"
         android:src="@drawable/flash_off"
-        app:layout_constraintBottom_toBottomOf="@+id/capture_button"
-        app:layout_constraintEnd_toStartOf="@+id/capture_button"
-        app:layout_constraintTop_toTopOf="@+id/capture_button" />
+        app:layout_constraintBottom_toBottomOf="@+id/capture_button_layout"
+        app:layout_constraintEnd_toStartOf="@+id/capture_button_layout"
+        app:layout_constraintTop_toTopOf="@+id/capture_button_layout" />
 
     <FrameLayout
-        android:id="@+id/capture_button"
+        android:id="@+id/capture_button_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -47,6 +47,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
+            android:id="@+id/capture_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/take_photo_selector" />
@@ -68,8 +69,8 @@
         android:padding="12dp"
         android:src="@drawable/take_return"
         android:layout_margin="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/capture_button"
-        app:layout_constraintStart_toEndOf="@+id/capture_button"
-        app:layout_constraintTop_toTopOf="@+id/capture_button"/>
+        app:layout_constraintBottom_toBottomOf="@+id/capture_button_layout"
+        app:layout_constraintStart_toEndOf="@+id/capture_button_layout"
+        app:layout_constraintTop_toTopOf="@+id/capture_button_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

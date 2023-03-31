@@ -26,7 +26,7 @@ class ConfirmPhotoFragment :
         binding.secondaryButton.onClick(vm::onRetakeClicked)
     }
 
-    override fun renderState(state: ConfirmPhotoState) = with(binding) {
+    override fun renderState(state: ConfirmPhotoState): Unit = with(binding) {
         imageView.setContent(state.content)
     }
 

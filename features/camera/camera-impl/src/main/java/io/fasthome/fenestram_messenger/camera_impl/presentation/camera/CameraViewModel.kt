@@ -54,6 +54,7 @@ class CameraViewModel(
 
     fun onCaptureClicked() {
         if (currentViewState.cameraComponentState.inProgress) return
+        updateState { state -> state.copy(cameraComponentState = state.cameraComponentState.copy(inProgress = true)) }
 
         cameraComponentInterface.capture()
     }

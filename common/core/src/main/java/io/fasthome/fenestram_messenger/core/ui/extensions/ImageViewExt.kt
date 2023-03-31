@@ -264,7 +264,7 @@ fun ImageView.setContent(content: Content, vararg transformations: Transformatio
         .with(this)
         .load(
             when (content) {
-                is Content.FileContent -> content.file
+                is Content.FileContent -> content.file.readBytes()
                 is Content.LoadableContent -> {
                     when (content) {
                         is UrlLoadableContent -> {
