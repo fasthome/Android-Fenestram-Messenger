@@ -7,9 +7,11 @@ import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.viewModel
 import io.fasthome.fenestram_messenger.tasks_api.TasksFeature
+import io.fasthome.fenestram_messenger.tasks_api.mapper.TaskMapper
 import io.fasthome.fenestram_messenger.tasks_impl.TasksFeatureImpl
 import io.fasthome.fenestram_messenger.tasks_impl.data.repo_impl.TasksRepoImpl
 import io.fasthome.fenestram_messenger.tasks_impl.data.service.TasksService
+import io.fasthome.fenestram_messenger.tasks_impl.data.storage.MockTasksStorage
 import io.fasthome.fenestram_messenger.tasks_impl.domain.logic.TasksInteractor
 import io.fasthome.fenestram_messenger.tasks_impl.domain.repo.TasksRepo
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.TaskEditorViewModel
@@ -32,6 +34,7 @@ object TasksModule {
     private fun createDataModule() = module {
         factory(::TasksRepoImpl) bindSafe TasksRepo::class
         singleAuthorizedService(::TasksService)
+        single { MockTasksStorage() }
     }
 
     private fun createDomainModule() = module {
@@ -41,6 +44,6 @@ object TasksModule {
     private fun createPresentationModule() = module {
         viewModel(::TasksViewModel)
         viewModel(::TaskEditorViewModel)
-
+        factory(::TaskMapper)
     }
 }

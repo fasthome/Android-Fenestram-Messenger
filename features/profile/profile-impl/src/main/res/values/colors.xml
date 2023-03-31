@@ -8,11 +8,4 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="status_green">#29CC39</color>
-    <color name="status_purple">#8833FF</color>
-    <color name="status_blue">#33BFFF</color>
-    <color name="status_light_green">#2EE5C9</color>
-    <color name="status_yellow">#FFCB33</color>
-    <color name="status_orange">#FF6633</color>
-    <color name="status_pink">#E62E7B</color>
 </resources>
