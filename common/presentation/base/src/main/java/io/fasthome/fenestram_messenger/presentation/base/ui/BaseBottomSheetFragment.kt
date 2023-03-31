@@ -1,16 +1,11 @@
 package io.fasthome.fenestram_messenger.presentation.base.ui
 
-import android.annotation.SuppressLint
-import android.graphics.Rect
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.coordinatorlayout.widget.ViewGroupUtils
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commitNow
@@ -27,9 +22,9 @@ import io.fasthome.fenestram_messenger.util.awaitPost
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.koin.android.ext.android.inject
-import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 import kotlin.reflect.KClass
+
 
 open class BaseBottomSheetFragment(
     @LayoutRes bottomSheetRes: Int,
@@ -45,6 +40,7 @@ open class BaseBottomSheetFragment(
         const val KEY_BEHAVIOR_STATE = "KEY_BEHAVIOR_STATE"
         const val KEY_DISMISSED = "KEY_DISMISSED"
     }
+
     data class Config(
         val scale: Scale = Scale.Fullscreen,
         val canceledOnTouchOutside: Boolean = true,
@@ -91,7 +87,7 @@ open class BaseBottomSheetFragment(
         fragmentInstance?.handleSlideCallback(slideOffset)
     }
 
-    fun getThemeManager() : ThemeManager {
+    fun getThemeManager(): ThemeManager {
         return ThemeManager.instance
     }
 
@@ -99,7 +95,7 @@ open class BaseBottomSheetFragment(
         return getThemeManager().getCurrentTheme() as Theme
     }
 
-    open fun syncTheme(appTheme: Theme){}
+    open fun syncTheme(appTheme: Theme) {}
 
     override fun onResume() {
         getThemeManager().getCurrentLiveTheme().observe(this) {
@@ -108,6 +104,7 @@ open class BaseBottomSheetFragment(
 
         super.onResume()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedStateRegistry.run {
@@ -261,59 +258,6 @@ open class BaseBottomSheetFragment(
                 is Config.Scale.Percent -> (height * scale.collapsed).toInt()
             }
 
-        override fun onInterceptTouchEvent(
-            parent: CoordinatorLayout,
-            child: V,
-            event: MotionEvent,
-        ): Boolean {
-            /**
-             * Код для обработки случаев, когда во фрагменте несколько вьюшек, которые скролятся. Изначально
-             * [BottomSheetBehavior] работает только с одной вьюшкой с nestedScrolling. Запоминает ее и скролит
-             * только ее. В этом когде добавлено следующее: во время касания проверям есть ли под точкой касания
-             * вьюшка, которую можно скролить. Записываем найденное значение в [nestedScrollingChildRef] через рефлексию
-             */
-            val scrollingViewUnderPointer =
-                findScrollableViewUnderPointer(parent, parent, event.x.toInt(), event.y.toInt())
-            setScrollingViewRef(scrollingViewUnderPointer)
-            return super.onInterceptTouchEvent(parent, child, event)
-        }
-
-        private fun setScrollingViewRef(target: View?) {
-            try {
-                val nestedScrollingChildRefField =
-                    BottomSheetBehavior::class.java.getDeclaredField("nestedScrollingChildRef")
-                nestedScrollingChildRefField.isAccessible = true
-                nestedScrollingChildRefField.set(this, WeakReference(target))
-            } catch (e: Exception) {
-            }
-        }
-
-        @SuppressLint("RestrictedApi")
-        private fun findScrollableViewUnderPointer(
-            view: View,
-            parent: CoordinatorLayout,
-            x: Int,
-            y: Int,
-        ): View? {
-            val rect = Rect()
-            ViewGroupUtils.getDescendantRect(parent, view, rect)
-            val viewInsideRect = rect.contains(x, y)
-            val isScrollableView = ViewCompat.isNestedScrollingEnabled(view)
-
-            if (viewInsideRect && isScrollableView) {
-                return view
-            }
-
-            if (view is ViewGroup) {
-                for (i in 0 until view.childCount) {
-                    val currentChild = view.getChildAt(i)
-                    val foundChild = findScrollableViewUnderPointer(currentChild, parent, x, y)
-                    if (foundChild != null) return foundChild
-                }
-            }
-
-            return null
-        }
     }
 
     fun BottomSheetBehavior<*>.setState(state: BottomSheetState) {
