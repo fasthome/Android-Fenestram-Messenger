@@ -7,6 +7,10 @@ import io.fasthome.network.model.BaseResponse
 import io.fasthome.network.tokens.AccessToken
 import io.socket.client.IO
 import io.socket.client.Socket
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
@@ -21,11 +25,13 @@ class MessengerSocket(private val baseUrl: String) {
         ignoreUnknownKeys = true
     }
 
+    private var socketScope = CoroutineScope(Dispatchers.IO + Job())
+
     fun setClientSocket(
         chatId: String?,
         token: AccessToken,
         selfUserId: Long?,
-        messageCallback: MessageResponseWithChatId.() -> Unit,
+        messageCallback: suspend MessageResponseWithChatId.() -> Unit,
         messageActionCallback: MessageActionResponse.() -> Unit,
         messageStatusCallback: MessageStatusResponse.() -> Unit,
         messageDeletedCallback: SocketDeleteMessage.() -> Unit,
@@ -45,13 +51,15 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.on("receiveMessage") {
                 Log.d(this.javaClass.simpleName, "receiveMessage: " + it[0].toString())
                 val message = json.decodeFromString<SocketMessage>(it[0].toString())
-                if (message.message?.type == MESSAGE_TYPE_SYSTEM) {
-                    messageCallback(messageToMessageResponse(message.message))
-                    return@on
-                }
-                if (chatId == null || chatId == message.message?.chatId) {
-                    if (selfUserId != message.message?.initiatorId) {
+                socketScope.launch {
+                    if (message.message?.type == MESSAGE_TYPE_SYSTEM) {
                         messageCallback(messageToMessageResponse(message.message))
+                        return@launch
+                    }
+                    if (chatId == null || chatId == message.message?.chatId) {
+                        if (selfUserId != message.message?.initiatorId) {
+                            messageCallback(messageToMessageResponse(message.message))
+                        }
                     }
                 }
             }
@@ -59,7 +67,10 @@ class MessengerSocket(private val baseUrl: String) {
             socket?.on("receiveForwardMessage") {
                 Log.d(this.javaClass.simpleName, "receiveForwardMessage: " + it[0].toString())
                 val message = json.decodeFromString<SocketForwardMessage>(it[0].toString())
-                messageCallback(messageToMessageResponse(message.message))
+
+                socketScope.launch {
+                    messageCallback(messageToMessageResponse(message.message))
+                }
             }
 
             socket?.on("receiveMessageAction") {

@@ -100,7 +100,7 @@ interface MessengerRepo {
     suspend fun fetchUnreadCount(): CallResult<Badge>
 
     interface SocketMessageCallback {
-        fun onNewMessage(message: MessageResponseWithChatId)
+        suspend fun onNewMessage(message: MessageResponseWithChatId)
         fun onNewMessageAction(messageAction: MessageActionResponse)
         fun onNewMessageStatus(messageStatusResponse: MessageStatusResponse)
         fun onMessageDeleted(socketDeleteMessage: SocketDeleteMessage)

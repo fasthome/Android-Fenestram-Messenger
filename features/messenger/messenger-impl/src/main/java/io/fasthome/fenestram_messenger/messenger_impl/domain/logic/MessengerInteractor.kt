@@ -98,7 +98,7 @@ class MessengerInteractor(
             selfUserId = selfUserId,
             token = tokensRepo.getAccessToken(),
             callback = object : MessengerRepo.SocketMessageCallback {
-                override fun onNewMessage(message: MessageResponseWithChatId) {
+                override suspend fun onNewMessage(message: MessageResponseWithChatId) {
                     _messagesChannel.trySend(chatsMapper.toMessage(message))
                 }
 
@@ -174,8 +174,10 @@ class MessengerInteractor(
             chatId = null,
             token = tokensRepo.getAccessToken(),
             callback = object : MessengerRepo.SocketMessageCallback {
-                override fun onNewMessage(message: MessageResponseWithChatId) {
-                    _newMessagesChannel.trySend(chatsMapper.toMessage(message))
+                override suspend fun onNewMessage(message: MessageResponseWithChatId) {
+                    val messageModel = chatsMapper.toMessage(message)
+                    _newMessagesChannel.trySend(messageModel)
+                    addNewMessageToDb(messageModel)
                 }
 
                 override fun onNewMessageAction(messageAction: MessageActionResponse) {
