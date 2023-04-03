@@ -22,6 +22,7 @@ import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
 import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.tasks_api.TasksFeature
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -45,6 +46,7 @@ class MainViewModel(
         val debugFeature: DebugFeature,
         val pushFeature: PushFeature,
         val messengerFeature: MessengerFeature,
+        val tasksFeature: TasksFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -138,8 +140,8 @@ class MainViewModel(
                     chatSelectionMode = false,
                     forwardMessage = null
                 )
-            )
-                .createFragment()
+            ).createFragment()
+            MainFeature.TabType.Tasks -> features.tasksFeature.tasksNavigationContract.createParams().createFragment()
             MainFeature.TabType.Contacts -> features.contactsFeature.contactsNavigationContract.createParams()
                 .createFragment()
             MainFeature.TabType.Profile -> features.profileFeature.profileNavigationContract.createParams()

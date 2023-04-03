@@ -56,5 +56,20 @@
 
     <string name="image_viewer_download_error">Не удалось сохранить изображение</string>
 
+    <string name="tasks_self">Мои задачи</string>
+    <string name="tasks_control">Контроль</string>
+    <string name="tasks_self_empty">Здесь будут отображаться ваши задачи</string>
+    <string name="tasks_control_empty">Здесь будут отображаться задачи, которые вы контролируете</string>
+
+    <string name="task_card_self">Моя задача:</string>
+    <string name="task_card_other">Задача:</string>
+    <string name="task_card_status_queue">Очередь</string>
+    <string name="task_card_status_in_work">В работе</string>
+    <string name="task_card_status_done">Готово</string>
+    <string name="task_card_customer_label">Заказчик:</string>
+    <string name="task_card_executor_label">Исполнитель:</string>
+    <string name="task_card_customer_executor_label">Заказчик/Исполнитель:</string>
+    <string name="task_card_participant_label">Участники:</string>
+
 
 </resources>

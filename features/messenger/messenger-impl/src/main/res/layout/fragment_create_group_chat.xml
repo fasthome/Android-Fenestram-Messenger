@@ -27,7 +27,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:queryHint="@string/search"
-        app:searchIcon="@drawable/ic_magnifier" />
+        app:searchIcon="@drawable/ic_action_search" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_added_in_chat"

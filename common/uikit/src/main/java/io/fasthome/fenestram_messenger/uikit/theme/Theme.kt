@@ -27,6 +27,7 @@ interface Theme : AppTheme {
     fun text1Color(): Int
     fun stroke2Color(): Int
     fun bg0Color(): Int
+    fun bg01Color(): Int
     fun bg02Color(): Int
     fun bg03Color(): Int
     fun bg1Color(): Int
@@ -99,6 +100,10 @@ class LightTheme : Theme {
 
     override fun bg0Color(): Int {
         return context.color(R.color.bg_0)
+    }
+
+    override fun bg01Color(): Int {
+        return context.color(R.color.white)
     }
 
     override fun bg02Color(): Int {
@@ -236,6 +241,10 @@ class DarkTheme : Theme {
     }
 
     override fun bg0Color(): Int {
+        return context.color(R.color.bg_0_dark)
+    }
+
+    override fun bg01Color(): Int {
         return context.color(R.color.bg_0_dark)
     }
 

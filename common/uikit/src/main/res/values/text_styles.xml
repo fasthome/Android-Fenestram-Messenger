@@ -8,11 +8,15 @@
     </style>
 
     <style name="Text.Dark">
-        <item name="android:textColor">@color/dark1</item>
+        <item name="android:textColor">@color/text_0</item>
     </style>
 
-    <style name="Text.Dark.18sp">
-        <item name="android:textSize">18sp</item>
+    <style name="Text.Dark.12sp">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Text.Dark.14sp">
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Text.Light">
@@ -121,6 +125,14 @@
 
     <style name="Text.Blue.16sp">
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.Blue.Bold">
+        <item name="fontFamily">@font/poppins_bold</item>
+    </style>
+
+    <style name="Text.Blue.Bold.18sp">
+        <item name="android:textSize">18sp</item>
     </style>
 
 
