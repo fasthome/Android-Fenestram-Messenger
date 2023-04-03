@@ -471,9 +471,6 @@ class ConversationViewModel(
             val state = currentViewState.inputMessageMode
             when (state) {
                 is InputMessageMode.Default -> {
-                    if (state.attachedFiles.isNotEmpty()) {
-                        sendFiles(state.attachedFiles)
-                    }
                     sendMessage(textMessage = mess, messageType = MessageType.Text)
                 }
                 is InputMessageMode.Edit -> {
