@@ -72,12 +72,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
-        binding.root.rootView.setPadding(
-            0,
-            0,
-            0,
-            getNavigationBarHeight(requireContext().resources)
-        )
         activity?.window?.apply {
             setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
             setFlags(
@@ -178,12 +172,6 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         super.onStop()
         activity?.window?.clearFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
-        binding.root.rootView.setPadding(
-            0,
-            0,
-            0,
-            0
         )
     }
 
