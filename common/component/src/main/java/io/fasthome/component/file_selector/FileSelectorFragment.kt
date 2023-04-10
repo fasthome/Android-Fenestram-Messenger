@@ -10,9 +10,6 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.FlexboxLayoutManager
 import io.fasthome.component.R
 import io.fasthome.component.databinding.FragmentFileSelectorBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
@@ -135,8 +132,7 @@ class FileSelectorFragment :
 
     private fun FragmentFileSelectorBinding.setupAdapter() {
         rvImages.adapter = adapterImage
-        val layoutManager = GridAutofitLayoutManager(requireContext(),110.dp)
-          //  FlexboxLayoutManager(rvImages.context, FlexDirection.ROW, FlexWrap.WRAP)
+        val layoutManager = GridAutofitLayoutManager(requireContext(), 110.dp)
 
         rvImages.layoutManager = layoutManager
         rvImages.itemAnimator = null
