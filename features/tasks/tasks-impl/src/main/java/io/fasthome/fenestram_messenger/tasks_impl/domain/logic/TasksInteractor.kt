@@ -7,4 +7,6 @@ import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 class TasksInteractor(private val tasksRepo: TasksRepo) {
     fun getTasks(type: String): TotalPagingSource<Int, Task> = tasksRepo.getTasks(type)
 
+    suspend fun getTaskByNumber(taskNumber: Long) = tasksRepo.getTaskByNumber(taskNumber)
+
 }

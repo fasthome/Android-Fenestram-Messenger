@@ -13,5 +13,5 @@ fun Task.toTaskViewItem(taskMapper: TaskMapper, selfUserId: Long): TaskViewItem 
 
     val taskCardState = taskMapper.mapToTaskCardViewItem(this, selfUserId)
 
-    return TaskViewItem.TaskCardViewItem(taskCardState = taskCardState)
+    return TaskViewItem.TaskCardViewItem(task = this, taskCardState = taskCardState)
 }

@@ -1,6 +1,470 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_3_a85"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="5dp"
+            android:paddingStart="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back_button" />
+
+        <TextView
+            android:id="@+id/tv_mode"
+            style="@style/Text.Dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:paddingEnd="10dp"
+            app:fontFamily="@font/poppins_semibold"
+            app:layout_constraintBottom_toBottomOf="@id/btn_back"
+            app:layout_constraintStart_toEndOf="@id/btn_back"
+            app:layout_constraintTop_toTopOf="@id/btn_back"
+            tools:text="Просмотр задачи" />
+
+        <ImageView
+            android:id="@+id/btn_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="13dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_action_menu"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_history" />
+
+        <ImageView
+            android:id="@+id/btn_action_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="14dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_dropdown_menu" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:id="@+id/sv_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/bg_1"
+        android:clipToPadding="false"
+        android:paddingBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_toolbar"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="16dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp">
+
+            <TextView
+                android:id="@+id/tv_task_number"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Задача: # 000024" />
+
+            <TextView
+                android:id="@+id/tv_created_at_label"
+                style="@style/Text.Gray.12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="2dp"
+                android:text="@string/task_editor_created_at_label"
+                app:layout_constraintEnd_toStartOf="@id/tv_created_at"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_created_at"
+                style="@style/Text.Gray.12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:fontFamily="@font/poppins_bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="10 июня, 11:48" />
+
+            <RelativeLayout
+                android:id="@+id/rl_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_task_number">
+
+                <EditText
+                    android:id="@+id/et_title"
+                    style="@style/Text.Dark.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_bg_02_5dp"
+                    android:gravity="top"
+                    android:hint="@string/task_editor_title_hint"
+                    android:inputType="textMultiLine"
+                    android:lines="2"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="15dp"
+                    android:textColorHint="@color/text1"
+                    android:textCursorDrawable="@null"
+                    app:fontFamily="@font/poppins_bold" />
+
+                <ImageButton
+                    android:id="@+id/btn_title_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/et_title"
+                    android:layout_alignEnd="@id/et_title"
+                    android:background="@null"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="8dp"
+                    android:src="@drawable/ic_action_cancel" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_original_message"
+                style="@style/Text.Blue.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/task_editor_original_message"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rl_title" />
+
+            <TextView
+                android:id="@+id/tv_description_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/task_editor_description_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_original_message" />
+
+            <RelativeLayout
+                android:id="@+id/rl_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_description_label">
+
+                <EditText
+                    android:id="@+id/et_description"
+                    style="@style/Text.Dark.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_bg_02_5dp"
+                    android:gravity="top"
+                    android:hint="@string/task_editor_description_hint"
+                    android:inputType="textMultiLine"
+                    android:lines="3"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="15dp"
+                    android:textColorHint="@color/text1"
+                    android:textCursorDrawable="@null" />
+
+                <ImageButton
+                    android:id="@+id/btn_description_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/et_description"
+                    android:layout_alignEnd="@id/et_description"
+                    android:background="@null"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="8dp"
+                    android:src="@drawable/ic_action_cancel" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_customer_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/task_card_customer_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rl_description" />
+
+            <ImageView
+                android:id="@+id/iv_customer_avatar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_avatar_placeholder"
+                app:layout_constraintBottom_toBottomOf="@id/tv_customer_label"
+                app:layout_constraintStart_toEndOf="@id/tv_customer_label"
+                app:layout_constraintTop_toTopOf="@id/tv_customer_label" />
+
+            <TextView
+                android:id="@+id/tv_customer_name"
+                style="@style/Text.Dark.12sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                app:fontFamily="@font/poppins_bold"
+                app:layout_constraintBottom_toBottomOf="@id/iv_customer_avatar"
+                app:layout_constraintStart_toEndOf="@id/iv_customer_avatar"
+                app:layout_constraintTop_toTopOf="@id/iv_customer_avatar"
+                tools:text="Ирина Игнатова" />
+
+            <ImageButton
+                android:id="@+id/ib_customer_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:padding="20dp"
+                android:src="@drawable/ic_action_chat"
+                app:layout_constraintBottom_toBottomOf="@id/iv_customer_avatar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_customer_avatar" />
+
+            <TextView
+                android:id="@+id/tv_executor_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/task_editor_executor_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_customer_label" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_executor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_bg_02_5dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_executor_label">
+
+                <ImageView
+                    android:id="@+id/iv_executor_avatar"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_avatar_placeholder"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_executor_name"
+                    style="@style/Text.Dark.14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="2dp"
+                    android:hint="@string/task_editor_hint_not_set"
+                    android:paddingVertical="15dp"
+                    android:textColorHint="@color/text1"
+                    app:fontFamily="@font/poppins_bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_executor_avatar"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_goneMarginStart="15dp" />
+
+                <ImageButton
+                    android:id="@+id/ib_executor_action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="10dp"
+                    android:src="@drawable/ic_action_next"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tv_deadline_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/task_editor_deadline_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_executor" />
+
+            <TextView
+                android:id="@+id/tv_deadline"
+                style="@style/Text.Dark.14sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/shape_bg_02_5dp"
+                android:hint="@string/task_editor_hint_not_set_not_required"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="15dp"
+                android:textColorHint="@color/text1"
+                app:drawableEndCompat="@drawable/ic_open_calendar"
+                app:fontFamily="@font/poppins_bold"
+                app:layout_constraintTop_toBottomOf="@id/tv_deadline_label" />
+
+
+            <TextView
+                android:id="@+id/tv_participant_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/task_editor_participant_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_deadline" />
+
+            <FrameLayout
+                android:id="@+id/fl_participants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/shape_bg_02_5dp"
+                android:paddingStart="20dp"
+                android:paddingVertical="15dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_participant_label">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_participant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="50dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:listitem="@layout/task_card_participant_view_item" />
+
+                <TextView
+                    android:id="@+id/tv_participant"
+                    style="@style/Text.Dark.14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="2dp"
+                    android:hint="@string/task_editor_hint_not_set_plural"
+                    android:textColorHint="@color/text1"
+                    android:visibility="gone"
+                    app:fontFamily="@font/poppins_bold" />
+
+                <ImageButton
+                    android:id="@+id/btn_participant_choose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:background="@null"
+                    android:paddingHorizontal="20dp"
+                    android:src="@drawable/ic_action_next" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_priority_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:text="@string/task_editor_priority_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fl_participants" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_priority"
+                style="@style/Button.Violet"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginStart="14dp"
+                android:background="@drawable/shape_bg_2_20dp"
+                android:drawableEnd="@drawable/ic_action_next"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="5dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_priority_label"
+                app:layout_constraintStart_toEndOf="@id/tv_priority_label"
+                app:layout_constraintTop_toTopOf="@id/tv_priority_label"
+                tools:text="Medium" />
+
+            <TextView
+                android:id="@+id/tv_status_label"
+                style="@style/Text.Gray.14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:text="@string/task_editor_status_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_priority_label" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_status"
+                style="@style/Button.Violet"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:background="@drawable/shape_bg_2_20dp"
+                android:drawableEnd="@drawable/ic_action_next"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="5dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_status_label"
+                app:layout_constraintStart_toStartOf="@id/btn_priority"
+                app:layout_constraintTop_toTopOf="@id/tv_status_label"
+                tools:text="Очередь" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                style="@style/Button.Violet"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/shape_bg_02_5dp"
+                android:gravity="center"
+                android:text="@string/common_cancel_b"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_status" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_ready"
+                style="@style/Button.Violet"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/shape_bg_02_5dp"
+                android:gravity="center"
+                android:text="@string/common_done_b"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_status" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

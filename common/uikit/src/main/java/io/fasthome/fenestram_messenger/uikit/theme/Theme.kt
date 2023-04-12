@@ -25,6 +25,7 @@ interface Theme : AppTheme {
 
     fun text0Color(): Int
     fun text1Color(): Int
+    fun stroke1Color(): Int
     fun stroke2Color(): Int
     fun bg0Color(): Int
     fun bg01Color(): Int
@@ -68,6 +69,7 @@ interface Theme : AppTheme {
 
     // ImageViewer
     fun ibCancelColor(): Int
+
 }
 
 class LightTheme : Theme {
@@ -92,6 +94,10 @@ class LightTheme : Theme {
 
     override fun text1Color(): Int {
         return context.color(R.color.text_1)
+    }
+
+    override fun stroke1Color(): Int {
+        return context.color(R.color.stroke_1)
     }
 
     override fun stroke2Color(): Int {
@@ -234,6 +240,10 @@ class DarkTheme : Theme {
 
     override fun text1Color(): Int {
         return context.color(R.color.text_1_dark)
+    }
+
+    override fun stroke1Color(): Int {
+        return context.color(R.color.stroke_1_dark)
     }
 
     override fun stroke2Color(): Int {

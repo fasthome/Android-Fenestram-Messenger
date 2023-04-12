@@ -65,7 +65,7 @@ class TaskMapper(private val context: Context) {
     }
 
 
-    private fun mapToStatusViewItem(taskStatus: Task.Status): ConfeeTaskCardState.StatusViewItem = when (taskStatus) {
+    fun mapToStatusViewItem(taskStatus: Task.Status): ConfeeTaskCardState.StatusViewItem = when (taskStatus) {
         Task.Status.QUEUE -> ConfeeTaskCardState.StatusViewItem(
             PrintableText.StringResource(R.string.task_card_status_queue), appTheme.buttonInactiveColor()
         )
@@ -78,7 +78,7 @@ class TaskMapper(private val context: Context) {
         )
     }
 
-    private fun getPriorityStrokeColor(priority: Task.Priority? = null): Int = when (priority) {
+    fun getPriorityStrokeColor(priority: Task.Priority? = null): Int = when (priority) {
         Task.Priority.LOW, Task.Priority.LOWEST -> context.color(R.color.text_1)
         Task.Priority.MEDIUM -> context.color(R.color.main_active)
         Task.Priority.HIGH -> context.color(R.color.status_yellow)

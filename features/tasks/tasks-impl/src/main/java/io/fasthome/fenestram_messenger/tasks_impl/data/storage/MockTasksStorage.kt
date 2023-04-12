@@ -12,6 +12,11 @@ class MockTasksStorage {
         else -> listOf()
     }
 
+    fun getTaskByNumber(taskNumber: Long): Task? {
+        val tasks = _selfTasks + _controlTasks
+        return tasks.find { it.number == taskNumber }
+    }
+
     private var _controlTasks = listOf(
         Task(
             number = -1,

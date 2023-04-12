@@ -11,6 +11,8 @@ import io.fasthome.fenestram_messenger.uikit.paging.ListWithTotal
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper.Companion.PAGE_SIZE
 import io.fasthome.fenestram_messenger.uikit.paging.TotalPagingSource
 import io.fasthome.fenestram_messenger.uikit.paging.totalPagingSource
+import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.callForResult
 
 
 class TasksRepoImpl(
@@ -25,6 +27,10 @@ class TasksRepoImpl(
                 return@totalPagingSource ListWithTotal(list, pageSize)
             },
         )
+    }
+
+    override suspend fun getTaskByNumber(taskNumber: Long): CallResult<Task> = callForResult {
+        requireNotNull(mockTasksStorage.getTaskByNumber(taskNumber))
     }
 
 }

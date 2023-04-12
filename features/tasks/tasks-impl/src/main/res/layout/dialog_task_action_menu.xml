@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/edit_task"
+        style="@style/BottomActionDialogButton.WithOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:paddingVertical="15dp"
+        android:text="@string/task_editor_menu_edit"
+        app:fontFamily="@font/poppins_bold"
+        app:icon="@drawable/ic_action_edit"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/view_task"
+        style="@style/BottomActionDialogButton.WithOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:paddingVertical="15dp"
+        android:text="@string/task_editor_menu_view"
+        app:fontFamily="@font/poppins_bold"
+        app:icon="@drawable/ic_action_view"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/edit_task" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/archive_task"
+        style="@style/BottomActionDialogButton.WithOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:paddingVertical="15dp"
+        android:text="@string/task_editor_menu_archive"
+        app:fontFamily="@font/poppins_bold"
+        app:icon="@drawable/ic_action_archive"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/view_task" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_customer"
+        style="@style/BottomActionDialogButton.WithOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:paddingVertical="15dp"
+        android:text="@string/task_menu_chat_customer"
+        app:fontFamily="@font/poppins_bold"
+        app:icon="@drawable/ic_action_chat2"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/archive_task" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/chat_executor"
+        style="@style/BottomActionDialogButton.WithOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:elevation="0dp"
+        android:paddingVertical="15dp"
+        android:text="@string/task_menu_chat_executor"
+        app:fontFamily="@font/poppins_bold"
+        app:icon="@drawable/ic_action_chat2"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/chat_customer" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/delete_task"
+        style="@style/BottomActionDialogButton.WithOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:paddingVertical="15dp"
+        android:text="@string/task_editor_menu_delete"
+        app:fontFamily="@font/poppins_bold"
+        android:textColor="@color/red"
+        app:iconTint="@color/red"
+        app:icon="@drawable/ic_action_delete"
+        app:iconGravity="textStart"
+        app:layout_constraintTop_toBottomOf="@id/chat_executor" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

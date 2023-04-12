@@ -7,6 +7,7 @@
     <color name="bg_2_dark">#47408F</color>
     <color name="bg_3_dark">#332C79</color>
     <color name="bg_3_dark_a85">#D9251E50</color>
+    <color name="stroke_1_dark">#43476C</color>
     <color name="text_0_dark">#FFFFFF</color>
     <color name="text_1_dark">#717394</color>
     <color name="gradient_start_color_dark">#4C3E77</color>
