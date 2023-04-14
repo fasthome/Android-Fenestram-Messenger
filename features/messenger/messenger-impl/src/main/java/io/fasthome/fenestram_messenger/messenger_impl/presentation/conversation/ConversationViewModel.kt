@@ -308,7 +308,7 @@ class ConversationViewModel(
             selfUserId ?: return
         )
         subscribeMessageActions()
-        if (params.avatarBytes != null && chatId != null) {
+        if (params.avatarBytes?.isNotEmpty() == true && chatId != null) {
             uploadChatAvatar(params.avatarBytes, chatId!!)
         }
     }
