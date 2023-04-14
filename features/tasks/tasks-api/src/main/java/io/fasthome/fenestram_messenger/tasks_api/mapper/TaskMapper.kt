@@ -7,11 +7,10 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.task_card.ConfeeTaskCar
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.android.color
-import java.util.*
 
 class TaskMapper(private val context: Context) {
 
-    lateinit var appTheme: Theme
+    var appTheme: Theme? = null
     var background = R.drawable.shape_bg_2_10dp
     var selfUserId: Long? = null
 
@@ -23,14 +22,13 @@ class TaskMapper(private val context: Context) {
             else -> {
                 with(task) {
                     ConfeeTaskCardState(
-                        number = " # " + number.toString().padStart(6, '0'),
+                        number = mapTaskNumber(number),
                         title = title,
                         customer = ConfeeTaskCardState.UserViewItem(task.customer.name, task.customer.avatar),
                         customerLabel = getCustomerLabel(customer.id, executor.id),
                         executor = getTaskExecutor(this),
                         participants = participants?.map { ConfeeTaskCardState.UserViewItem(it.name, it.avatar) },
-                        priority = priority.type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-                        priorityStrokeColor = getPriorityStrokeColor(priority),
+                        priority = mapToPriorityViewItem(priority),
                         status = mapToStatusViewItem(status),
                         messageId = messageId.toString(),
                         createdAt = createdAt,
@@ -52,8 +50,7 @@ class TaskMapper(private val context: Context) {
             customerLabel = PrintableText.EMPTY,
             executor = null,
             participants = null,
-            priority = null,
-            priorityStrokeColor = getPriorityStrokeColor(null),
+            priority = mapToPriorityViewItem(null),
             status = mapToStatusViewItem(status),
             messageId = messageId.toString(),
             createdAt = createdAt,
@@ -64,13 +61,17 @@ class TaskMapper(private val context: Context) {
         )
     }
 
+    fun mapTaskNumber(taskNumber: Long?): String {
+        if (taskNumber == null) return ""
+        return " # " + taskNumber.toString().padStart(6, '0')
+    }
 
-    private fun mapToStatusViewItem(taskStatus: Task.Status): ConfeeTaskCardState.StatusViewItem = when (taskStatus) {
+    fun mapToStatusViewItem(taskStatus: Task.Status): ConfeeTaskCardState.StatusViewItem = when (taskStatus) {
         Task.Status.QUEUE -> ConfeeTaskCardState.StatusViewItem(
-            PrintableText.StringResource(R.string.task_card_status_queue), appTheme.buttonInactiveColor()
+            PrintableText.StringResource(R.string.task_card_status_queue), appTheme?.buttonInactiveColor() ?: 0
         )
         Task.Status.DONE -> ConfeeTaskCardState.StatusViewItem(
-            PrintableText.StringResource(R.string.task_card_status_done), appTheme.buttonInactiveColor()
+            PrintableText.StringResource(R.string.task_card_status_done), appTheme?.buttonInactiveColor() ?: 0
         )
         Task.Status.IN_WORK -> ConfeeTaskCardState.StatusViewItem(
             PrintableText.StringResource(R.string.task_card_status_in_work),
@@ -78,12 +79,31 @@ class TaskMapper(private val context: Context) {
         )
     }
 
-    private fun getPriorityStrokeColor(priority: Task.Priority? = null): Int = when (priority) {
-        Task.Priority.LOW, Task.Priority.LOWEST -> context.color(R.color.text_1)
-        Task.Priority.MEDIUM -> context.color(R.color.main_active)
-        Task.Priority.HIGH -> context.color(R.color.status_yellow)
-        Task.Priority.HIGHEST -> context.color(R.color.red)
-        else -> context.color(R.color.button_inactive_dark)
+    fun mapToPriorityViewItem(priority: Task.Priority? = null): ConfeeTaskCardState.PriorityViewItem = when (priority) {
+        Task.Priority.LOWEST -> ConfeeTaskCardState.PriorityViewItem(
+            PrintableText.StringResource(R.string.task_card_priority_lowest),
+            context.color(R.color.text_1)
+        )
+        Task.Priority.LOW -> ConfeeTaskCardState.PriorityViewItem(
+            PrintableText.StringResource(R.string.task_card_priority_low),
+            context.color(R.color.text_1)
+        )
+        Task.Priority.MEDIUM -> ConfeeTaskCardState.PriorityViewItem(
+            PrintableText.StringResource(R.string.task_card_priority_medium),
+            context.color(R.color.main_active)
+        )
+        Task.Priority.HIGH -> ConfeeTaskCardState.PriorityViewItem(
+            PrintableText.StringResource(R.string.task_card_priority_high),
+            context.color(R.color.status_yellow),
+        )
+        Task.Priority.HIGHEST -> ConfeeTaskCardState.PriorityViewItem(
+            PrintableText.StringResource(R.string.task_card_priority_highest),
+            context.color(R.color.red)
+        )
+        else -> ConfeeTaskCardState.PriorityViewItem(
+            PrintableText.EMPTY,
+            context.color(R.color.button_inactive_dark)
+        )
     }
 
 
@@ -94,7 +114,7 @@ class TaskMapper(private val context: Context) {
 
     private fun getTaskType(executorId: Long): PrintableText = when {
         selfUserId == executorId -> PrintableText.StringResource(R.string.task_card_self)
-        else -> PrintableText.StringResource(R.string.task_card_other)
+        else -> PrintableText.StringResource(R.string.task_card_other, "")
     }
 
     private fun getCustomerLabel(customerId: Long, executorId: Long): PrintableText = when {
@@ -105,7 +125,7 @@ class TaskMapper(private val context: Context) {
 
     private fun getTaskStyle(done: Boolean = false): ConfeeTaskCardState.Style = ConfeeTaskCardState.Style(
         background,
-        appTheme.bg01Color(),
-        if (done) appTheme.text1Color() else appTheme.text0Color()
+        appTheme?.bg01Color() ?: 0,
+        if (done) appTheme?.text1Color() ?: 0 else appTheme?.text0Color() ?: 0
     )
 }

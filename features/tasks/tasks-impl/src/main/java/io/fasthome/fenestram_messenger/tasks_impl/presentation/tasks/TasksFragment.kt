@@ -7,13 +7,14 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.nothingToRender
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.tasks_api.model.EditorMode
 import io.fasthome.fenestram_messenger.tasks_impl.R
 import io.fasthome.fenestram_messenger.tasks_impl.databinding.FragmentTasksBinding
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.adapter.PagerAdapter
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.adapter.TaskAdapter
+import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.dialog.TasksDialog
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.model.PagerItem
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
@@ -74,11 +75,11 @@ class TasksFragment : BaseFragment<TasksState, TasksEvent>(R.layout.fragment_tas
     private fun subscribeTasks() {
         val pagerItems = listOf(
             PagerItem(
-                TaskAdapter(onTaskCardClicked = { taskNumber -> vm.onTaskCardClicked(taskNumber) }),
+                TaskAdapter(onTaskCardClicked = { task -> vm.onTaskCardClicked(task) }),
                 PrintableText.StringResource(R.string.tasks_self_empty)
             ),
             PagerItem(
-                TaskAdapter(onTaskCardClicked = { taskNumber -> vm.onTaskCardClicked(taskNumber) }),
+                TaskAdapter(onTaskCardClicked = { task -> vm.onTaskCardClicked(task) }),
                 PrintableText.StringResource(R.string.tasks_control_empty)
             ),
             PagerItem(
@@ -100,6 +101,20 @@ class TasksFragment : BaseFragment<TasksState, TasksEvent>(R.layout.fragment_tas
 
     override fun renderState(state: TasksState) = nothingToRender()
 
-    override fun handleEvent(event: TasksEvent) = noEventsExpected()
+    override fun handleEvent(event: TasksEvent) {
+        when (event) {
+            is TasksEvent.ShowTaskMenu -> {
+                TasksDialog.create(
+                    this@TasksFragment,
+                    onEdit = { vm.onViewEdit(event.task, EditorMode.EDIT) },
+                    onView = { vm.onViewEdit(event.task, EditorMode.VIEW) },
+                    onArchive = { vm.onArchive(event.task) },
+                    onChatCustomer = { vm.onChat(event.task.customer.id) },
+                    onChatExecutor = { vm.onChat(event.task.executor.id) },
+                    onDelete = { vm.onDelete(event.task) }
+                ).show()
+            }
+        }
+    }
 
 }

@@ -1,5 +1,6 @@
 package io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.adapter
 
+import io.fasthome.fenestram_messenger.tasks_api.model.Task
 import io.fasthome.fenestram_messenger.tasks_impl.databinding.TaskCardViewItemBinding
 import io.fasthome.fenestram_messenger.tasks_impl.databinding.TaskHeaderViewItemBinding
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.model.TaskViewItem
@@ -8,7 +9,7 @@ import io.fasthome.fenestram_messenger.uikit.paging.createAdapterDelegate
 import io.fasthome.fenestram_messenger.util.AdapterUtil
 import io.fasthome.fenestram_messenger.util.onClick
 
-class TaskAdapter(onTaskCardClicked: (String) -> Unit) : PagerDelegateAdapter<TaskViewItem>(
+class TaskAdapter(onTaskCardClicked: (Task) -> Unit) : PagerDelegateAdapter<TaskViewItem>(
     AdapterUtil.diffUtilItemCallbackEquals(),
     delegates = listOf(
         createTaskCardAdapterDelegate(onTaskCardClicked),
@@ -17,12 +18,12 @@ class TaskAdapter(onTaskCardClicked: (String) -> Unit) : PagerDelegateAdapter<Ta
 )
 
 
-fun createTaskCardAdapterDelegate(onTaskCardClicked: (String) -> Unit) =
+fun createTaskCardAdapterDelegate(onTaskCardClicked: (Task) -> Unit) =
     createAdapterDelegate(
         inflate = TaskCardViewItemBinding::inflate,
         bind = { item: TaskViewItem.TaskCardViewItem, binding: TaskCardViewItemBinding ->
             binding.root.onClick {
-                onTaskCardClicked(item.taskCardState.number)
+                onTaskCardClicked(item.task)
             }
 
             with(binding) {

@@ -31,4 +31,10 @@
         <item name="errorTextAppearance">@style/Text.Red.12sp</item>
     </style>
 
+    <style name="RadioButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/stroke_2</item>
+        <item name="colorAccent">@color/stroke_2</item>
+        <item name="colorControlActivated">@color/main_active</item>
+    </style>
+
 </resources>

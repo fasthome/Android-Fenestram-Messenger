@@ -7,7 +7,10 @@ import io.fasthome.fenestram_messenger.mvi.BaseViewModel
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.tasks_api.mapper.TaskMapper
+import io.fasthome.fenestram_messenger.tasks_api.model.EditorMode
+import io.fasthome.fenestram_messenger.tasks_api.model.Task
 import io.fasthome.fenestram_messenger.tasks_impl.domain.logic.TasksInteractor
+import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.TaskEditorNavigationContract
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.mapper.toTaskViewItem
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.model.TaskViewItem
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
@@ -23,6 +26,23 @@ class TasksViewModel(
 
     private var mockSelfUserId: Long = 0
     private val loadDataHelpers = mutableListOf<PagingDataViewModelHelper>()
+
+    private val taskEditorLauncher = registerScreen(TaskEditorNavigationContract) { result ->
+        when (result) {
+            is TaskEditorNavigationContract.Result.TaskCreated -> {
+                //TODO
+            }
+            TaskEditorNavigationContract.Result.Canceled -> {
+                //TODO
+            }
+            TaskEditorNavigationContract.Result.TaskDeleted -> {
+                //TODO
+            }
+            TaskEditorNavigationContract.Result.TaskEdited -> {
+                //TODO
+            }
+        }
+    }
 
     override fun createInitialState(): TasksState {
         return TasksState(
@@ -63,7 +83,29 @@ class TasksViewModel(
         //TODO
     }
 
-    fun onTaskCardClicked(number: String) {
-        //TODO
+    fun onTaskCardClicked(task: Task) {
+        sendEvent(TasksEvent.ShowTaskMenu(task))
+    }
+
+    fun onViewEdit(task: Task, editorMode: EditorMode) {
+        taskEditorLauncher.launch(
+            TaskEditorNavigationContract.Params(
+                task = task,
+                mode = editorMode,
+            )
+        )
+    }
+
+    fun onChat(userId: Long) {
+        // TODO
+    }
+
+    fun onArchive(task: Task) {
+        // TODO
+    }
+
+
+    fun onDelete(task: Task) {
+        // TODO
     }
 }
