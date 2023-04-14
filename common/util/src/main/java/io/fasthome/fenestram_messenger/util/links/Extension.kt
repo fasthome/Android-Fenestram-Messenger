@@ -22,7 +22,7 @@ fun TextView.applyLinks(links: List<Link>) {
         .build()
 }
 
-fun TextView.addCommonLinks(onUserTagClicked:((String) -> Unit)?) {
+fun TextView.addCommonLinks(onUserTagClicked: ((String) -> Unit)?) {
 
     val webLinks: Link = Link(WEB_URL_PATTERN)
         .setOnLongClickListener {
@@ -30,7 +30,7 @@ fun TextView.addCommonLinks(onUserTagClicked:((String) -> Unit)?) {
         }
         .setOnClickListener { clickedText ->
             val url = if (!clickedText.startsWith("http://") && !clickedText.startsWith("https://"))
-                "http://$clickedText" else clickedText
+                "https://$clickedText" else clickedText
             val uri = Uri.parse(url)
             startCommonLinkIntent(context, uri)
         }
@@ -53,7 +53,7 @@ fun TextView.addCommonLinks(onUserTagClicked:((String) -> Unit)?) {
             startCommonLinkIntent(context, uri)
         }
 
-        val userTagLinks: Link = Link(USER_TAG_PATTERN)
+    val userTagLinks: Link = Link(USER_TAG_PATTERN)
         .setOnClickListener {
             onUserTagClicked?.invoke(it)
         }
