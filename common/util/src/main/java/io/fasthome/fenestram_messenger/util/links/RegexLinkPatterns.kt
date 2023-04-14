@@ -2,7 +2,7 @@ package io.fasthome.fenestram_messenger.util.links
 
 import java.util.regex.Pattern
 
-val WEB_URL_PATTERN: Pattern = Pattern.compile("(https?://)?([\\da-zА-я\\-]+)\\.([a-zА-я.]{2,6})([#?=&/\\w.-]*)*/?")
+val WEB_URL_PATTERN: Pattern = Pattern.compile("(https?://)?([\\da-zА-я\\-]+)\\.([a-zА-я]{1,6})([#?=%,_&/\\w.-]*)*/?")
 
 val EMAIL_ADDRESS_PATTERN: Pattern = Pattern.compile(
     "[a-zA-Z0-9\\+\\.\\_\\%\\-]{1,256}" +
