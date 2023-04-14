@@ -11,7 +11,7 @@ import io.fasthome.fenestram_messenger.tasks_impl.R
 import io.fasthome.fenestram_messenger.tasks_impl.domain.logic.TasksInteractor
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.mapper.mapToPriority
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.mapper.mapToStatus
-import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.mapper.mapToTaskEditorState
+import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.mapper.mapToTaskEditorViewItem
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.model.SelectionType
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.model.SelectionViewItem
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
@@ -25,25 +25,29 @@ class TaskEditorViewModel(
     private val taskMapper: TaskMapper
 ) : BaseViewModel<TaskEditorState, TaskEditorEvent>(router, requestParams) {
 
-    var appTheme: Theme? = null
-    var mockSelfUserId = 0L
-    var currentTask: Task = params.task
-    var currentMode: EditorMode = params.mode
+    private var mockSelfUserId = 0L
+    private var currentTask: Task = params.task
+    private var taskSnapshot: Task = params.task
 
     override fun createInitialState(): TaskEditorState {
-        return params.task.mapToTaskEditorState(params.mode, mockSelfUserId, null)
-    }
-
-    fun syncTheme(appTheme: Theme) {
-        taskMapper.appTheme = appTheme
-        updateState { currentTask.mapToTaskEditorState(params.mode, mockSelfUserId, taskMapper) }
-        checkReadyStatus()
+        return params.task.mapToTaskEditorViewItem(params.mode, mockSelfUserId, taskMapper)
     }
 
     override fun onBackPressed(): Boolean {
         exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.Canceled))
         return true
     }
+
+    fun syncTheme(appTheme: Theme) {
+        taskMapper.appTheme = appTheme
+        updateState { currentTask.mapToTaskEditorViewItem(currentViewState.editorMode, mockSelfUserId, taskMapper) }
+        checkReadyStatus()
+    }
+
+    fun saveStateOnPause() {
+        updateState { currentTask.mapToTaskEditorViewItem(currentViewState.editorMode, mockSelfUserId, taskMapper) }
+    }
+
 
     fun onTitleChanged(text: String) {
         currentTask = currentTask.copy(title = text)
@@ -54,20 +58,16 @@ class TaskEditorViewModel(
         currentTask = currentTask.copy(description = text)
     }
 
-    fun onHistoryClicked() {
-        //TODO
-    }
-
-    fun onMenuClicked() {
-        sendEvent(TaskEditorEvent.ShowActionMenu(editEnabled = currentMode == EditorMode.VIEW))
-    }
-
     fun onClearTitleClicked() {
         sendEvent(TaskEditorEvent.ClearTitle)
     }
 
     fun onClearDescriptionClicked() {
         sendEvent(TaskEditorEvent.ClearDescription)
+    }
+
+    fun onHistoryClicked() {
+        //TODO
     }
 
     fun onCustomerChatClicked() {
@@ -78,26 +78,63 @@ class TaskEditorViewModel(
         //TODO open partipiciant selection
     }
 
-    fun onStatusClicked() {
-        sendEvent(
-            TaskEditorEvent.ShowSelectionDialog(
-                PrintableText.StringResource(R.string.task_editor_select_title_status),
-                createStatusList()
-            )
-        )
+    fun onOriginalMessageClicked() {
+        //TODO
     }
 
-    fun onPriorityClicked() {
-        sendEvent(
-            TaskEditorEvent.ShowSelectionDialog(
-                PrintableText.StringResource(R.string.task_editor_select_title_priority),
-                createPriorityList()
-            )
-        )
+
+    fun onCancelClicked() {
+        if (currentViewState.editorMode == EditorMode.CREATE) {
+            onBackPressed()
+            return
+        }
+        currentTask = taskSnapshot
+        updateState { currentTask.mapToTaskEditorViewItem(EditorMode.VIEW, mockSelfUserId, taskMapper) }
     }
 
-    fun onDialogSelection(selectionViewItem: SelectionViewItem) {
-        when (val selectionType = selectionViewItem.selectionType) {
+    fun onReadyClicked() {
+        when (currentViewState.editorMode) {
+            EditorMode.CREATE -> {
+                //TODO create request
+                exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.TaskCreated))
+
+            }
+            EditorMode.EDIT -> {
+                //TODO update request
+                exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.TaskEdited))
+            }
+            EditorMode.VIEW -> return
+        }
+    }
+
+    private fun checkReadyStatus() {
+        if (currentTask.title.isNotBlank() && currentTask.executor.name.isNotEmpty()) {
+            sendEvent(TaskEditorEvent.ToggleReadyButton(isEnabled = true))
+        } else sendEvent(TaskEditorEvent.ToggleReadyButton(isEnabled = false))
+
+    }
+
+
+    fun onMenuClicked() {
+        sendEvent(TaskEditorEvent.ShowActionMenu(isEditEnabled = currentViewState.editorMode == EditorMode.VIEW))
+    }
+
+    fun onEdit() {
+        updateState { currentTask.mapToTaskEditorViewItem(EditorMode.EDIT, mockSelfUserId, taskMapper) }
+    }
+
+    fun onArchive() {
+        // TODO
+    }
+
+    fun onDelete() {
+        // TODO delete request
+        exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.TaskDeleted))
+    }
+
+
+    fun onDialogSelection(selectionType: SelectionType) {
+        when (selectionType) {
             SelectionType.EXECUTOR_SELF -> {
                 currentTask = currentTask.copy(executor = User(mockSelfUserId))
             }
@@ -120,68 +157,39 @@ class TaskEditorViewModel(
                 currentTask = currentTask.copy(status = selectionType.mapToStatus())
             }
         }
-        updateState { currentTask.mapToTaskEditorState(currentMode, mockSelfUserId, taskMapper) }
+        updateState { currentTask.mapToTaskEditorViewItem(currentViewState.editorMode, mockSelfUserId, taskMapper) }
         checkReadyStatus()
     }
 
-    private fun checkReadyStatus() {
-        if (currentTask.title.isNotBlank() && currentTask.executor.name.isNotEmpty()) {
-            sendEvent(TaskEditorEvent.ToggleReadyButton(isEnabled = true))
-        } else sendEvent(TaskEditorEvent.ToggleReadyButton(isEnabled = false))
-
+    fun onStatusClicked() {
+        sendEvent(
+            TaskEditorEvent.ShowSelectionDialog(
+                selectionTitle = PrintableText.StringResource(R.string.task_editor_select_title_status),
+                items = createStatusList()
+            )
+        )
     }
 
-    fun onCancelClicked() {
-        when (currentMode) {
-            EditorMode.CREATE -> {
-                onBackPressed()
-                return
-            }
-            else -> currentMode = EditorMode.VIEW
-        }
-        updateState { currentTask.mapToTaskEditorState(currentMode, mockSelfUserId, taskMapper) }
-    }
-
-    fun onReadyClicked() {
-        when (currentMode) {
-            EditorMode.CREATE -> {
-                //TODO create request
-                exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.TaskCreated))
-
-            }
-            EditorMode.EDIT -> {
-                //TODO update request
-                exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.TaskEdited))
-            }
-            EditorMode.VIEW -> return
-        }
+    fun onPriorityClicked() {
+        sendEvent(
+            TaskEditorEvent.ShowSelectionDialog(
+                selectionTitle = PrintableText.StringResource(R.string.task_editor_select_title_priority),
+                items = createPriorityList()
+            )
+        )
     }
 
     fun onExecutorActionClicked() {
         if (currentViewState.isEditMode) {
             sendEvent(
                 TaskEditorEvent.ShowSelectionDialog(
-                    PrintableText.StringResource(R.string.task_editor_select_title_executor),
-                    createExecutorList()
+                    selectionTitle = PrintableText.StringResource(R.string.task_editor_select_title_executor),
+                    items = createExecutorList()
                 )
             )
         } else {
             //TODO open chat
         }
-    }
-
-    fun onEdit() {
-        currentMode = EditorMode.EDIT
-        updateState { currentTask.mapToTaskEditorState(currentMode, mockSelfUserId, taskMapper) }
-    }
-
-    fun onArchive() {
-        // TODO
-    }
-
-    fun onDelete() {
-        // TODO delete request
-        exitWithResult(TaskEditorNavigationContract.createResult(TaskEditorNavigationContract.Result.TaskDeleted))
     }
 
     private fun createExecutorList() = listOf(
@@ -231,22 +239,10 @@ class TaskEditorViewModel(
     private fun createPriorityList(): List<SelectionViewItem> {
         return listOf(
             SelectionViewItem(
-                selectionName = PrintableText.StringResource(R.string.task_card_priority_lowest),
-                selectionType = SelectionType.PRIORITY_LOWEST,
+                selectionName = PrintableText.StringResource(R.string.task_card_priority_highest),
+                selectionType = SelectionType.PRIORITY_HIGHEST,
                 radioButtonVisible = true,
-                isChecked = currentTask.priority == Task.Priority.LOWEST
-            ),
-            SelectionViewItem(
-                selectionName = PrintableText.StringResource(R.string.task_card_priority_low),
-                selectionType = SelectionType.PRIORITY_LOW,
-                radioButtonVisible = true,
-                isChecked = currentTask.priority == Task.Priority.LOW
-            ),
-            SelectionViewItem(
-                selectionName = PrintableText.StringResource(R.string.task_card_priority_medium),
-                selectionType = SelectionType.PRIORITY_MEDIUM,
-                radioButtonVisible = true,
-                isChecked = currentTask.priority == Task.Priority.MEDIUM
+                isChecked = currentTask.priority == Task.Priority.HIGHEST
             ),
             SelectionViewItem(
                 selectionName = PrintableText.StringResource(R.string.task_card_priority_high),
@@ -255,10 +251,22 @@ class TaskEditorViewModel(
                 isChecked = currentTask.priority == Task.Priority.HIGH
             ),
             SelectionViewItem(
-                selectionName = PrintableText.StringResource(R.string.task_card_priority_highest),
-                selectionType = SelectionType.PRIORITY_HIGHEST,
+                selectionName = PrintableText.StringResource(R.string.task_card_priority_medium),
+                selectionType = SelectionType.PRIORITY_MEDIUM,
                 radioButtonVisible = true,
-                isChecked = currentTask.priority == Task.Priority.HIGHEST
+                isChecked = currentTask.priority == Task.Priority.MEDIUM
+            ),
+            SelectionViewItem(
+                selectionName = PrintableText.StringResource(R.string.task_card_priority_low),
+                selectionType = SelectionType.PRIORITY_LOW,
+                radioButtonVisible = true,
+                isChecked = currentTask.priority == Task.Priority.LOW
+            ),
+            SelectionViewItem(
+                selectionName = PrintableText.StringResource(R.string.task_card_priority_lowest),
+                selectionType = SelectionType.PRIORITY_LOWEST,
+                radioButtonVisible = true,
+                isChecked = currentTask.priority == Task.Priority.LOWEST
             ),
         )
     }

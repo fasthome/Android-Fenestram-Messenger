@@ -9,7 +9,7 @@ sealed interface TaskEditorEvent {
     object ClearDescription : TaskEditorEvent
 
     class ShowSelectionDialog(val selectionTitle: PrintableText, val items: List<SelectionViewItem>) : TaskEditorEvent
-    class ShowActionMenu(val editEnabled: Boolean) : TaskEditorEvent
+    class ShowActionMenu(val isEditEnabled: Boolean) : TaskEditorEvent
 
     class ToggleReadyButton(val isEnabled: Boolean) : TaskEditorEvent
 

@@ -62,7 +62,7 @@ object TasksDialog {
 
             // Theme
             val textColor = theme.text0Color()
-            val bgTint = ColorStateList.valueOf(theme.bg2Color())
+            val bgTint = ColorStateList.valueOf(theme.bg02Color())
             editTask.setTextColor(textColor)
             editTask.backgroundTintList = bgTint
             archiveTask.setTextColor(textColor)

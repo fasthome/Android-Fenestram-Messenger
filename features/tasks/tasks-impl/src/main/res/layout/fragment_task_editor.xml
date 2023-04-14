@@ -76,6 +76,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:layout_marginHorizontal="24dp">
 
             <TextView
@@ -250,7 +251,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/task_editor_executor_label"
+                android:text="@string/task_card_executor_label"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_customer_label" />
 
@@ -274,7 +275,7 @@
                 <TextView
                     android:id="@+id/tv_executor_name"
                     style="@style/Text.Dark.14sp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="2dp"
@@ -285,19 +286,10 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_executor_avatar"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_goneMarginStart="15dp" />
-
-                <ImageButton
-                    android:id="@+id/ib_executor_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:src="@drawable/ic_action_next"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_goneMarginStart="15dp"
+                    android:layout_marginEnd="20dp"
+                    app:drawableEndCompat="@drawable/ic_action_next" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -333,7 +325,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="@string/task_editor_participant_label"
+                android:text="@string/task_card_participant_label"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_deadline" />
 
@@ -359,7 +351,7 @@
                     tools:listitem="@layout/task_card_participant_view_item" />
 
                 <TextView
-                    android:id="@+id/tv_participant"
+                    android:id="@+id/tv_participant_empty"
                     style="@style/Text.Dark.14sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -399,6 +391,8 @@
                 android:layout_marginStart="14dp"
                 android:background="@drawable/shape_bg_2_20dp"
                 android:drawableEnd="@drawable/ic_action_next"
+
+                android:drawableTint="@color/white"
                 android:drawablePadding="10dp"
                 android:paddingHorizontal="15dp"
                 android:paddingVertical="5dp"
@@ -427,6 +421,7 @@
                 android:drawablePadding="10dp"
                 android:paddingHorizontal="15dp"
                 android:paddingVertical="5dp"
+                android:drawableTint="@color/white"
                 app:layout_constraintBottom_toBottomOf="@id/tv_status_label"
                 app:layout_constraintStart_toStartOf="@id/btn_priority"
                 app:layout_constraintTop_toTopOf="@id/tv_status_label"

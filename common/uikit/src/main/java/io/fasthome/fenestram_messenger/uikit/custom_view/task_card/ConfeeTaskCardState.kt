@@ -10,8 +10,7 @@ data class ConfeeTaskCardState(
     val customerLabel: PrintableText,
     val executor: UserViewItem?,
     val participants: List<UserViewItem>?,
-    val priority: String?,
-    val priorityStrokeColor: Int,
+    val priority: PriorityViewItem,
     val status: StatusViewItem,
     val messageId: String,
     val createdAt: String,
@@ -27,9 +26,10 @@ data class ConfeeTaskCardState(
         val textColor: Int
     )
 
-    data class UserViewItem(val name: String, val avatar: String = "") {
-        constructor(avatar: String) : this("", avatar)
-    }
+    data class UserViewItem(val name: String, val avatar: String = "")
 
     data class StatusViewItem(val status: PrintableText, val statusColor: Int)
+
+    data class PriorityViewItem(val priority: PrintableText, val priorityColor: Int)
+
 }

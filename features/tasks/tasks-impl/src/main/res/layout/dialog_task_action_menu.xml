@@ -2,15 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/edit_task"
         style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:elevation="0dp"
         android:paddingVertical="15dp"
         android:text="@string/task_editor_menu_edit"
@@ -24,7 +23,6 @@
         style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:elevation="0dp"
         android:paddingVertical="15dp"
         android:text="@string/task_editor_menu_view"
@@ -38,7 +36,6 @@
         style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:elevation="0dp"
         android:paddingVertical="15dp"
         android:text="@string/task_editor_menu_archive"
@@ -52,7 +49,6 @@
         style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:elevation="0dp"
         android:paddingVertical="15dp"
         android:text="@string/task_menu_chat_customer"
@@ -66,7 +62,6 @@
         style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:elevation="0dp"
         android:paddingVertical="15dp"
         android:text="@string/task_menu_chat_executor"
@@ -80,14 +75,13 @@
         style="@style/BottomActionDialogButton.WithOverlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
         android:paddingVertical="15dp"
         android:text="@string/task_editor_menu_delete"
-        app:fontFamily="@font/poppins_bold"
         android:textColor="@color/red"
-        app:iconTint="@color/red"
+        app:fontFamily="@font/poppins_bold"
         app:icon="@drawable/ic_action_delete"
         app:iconGravity="textStart"
+        app:iconTint="@color/red"
         app:layout_constraintTop_toBottomOf="@id/chat_executor" />
 
 

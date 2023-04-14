@@ -9,6 +9,7 @@ import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.tasks_api.model.EditorMode
 import io.fasthome.fenestram_messenger.tasks_impl.R
 import io.fasthome.fenestram_messenger.tasks_impl.databinding.FragmentTaskEditorBinding
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.task_editor.dialog.SelectionDialog
@@ -17,12 +18,8 @@ import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
 import io.fasthome.fenestram_messenger.uikit.custom_view.HooliDatePicker
 import io.fasthome.fenestram_messenger.uikit.custom_view.task_card.TaskCardParticipantAdapter
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
-import io.fasthome.fenestram_messenger.util.android.setBackgroundColor
-import io.fasthome.fenestram_messenger.util.android.setColor
-import io.fasthome.fenestram_messenger.util.android.setStroke
-import io.fasthome.fenestram_messenger.util.dp
-import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.setPrintableText
+import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.util.android.*
 
 
 class TaskEditorFragment : BaseFragment<TaskEditorState, TaskEditorEvent>(R.layout.fragment_task_editor) {
@@ -38,13 +35,17 @@ class TaskEditorFragment : BaseFragment<TaskEditorState, TaskEditorEvent>(R.layo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
+        tvExecutorLabel.text = getString(R.string.task_card_executor_label, "")
+        tvParticipantLabel.text = getString(R.string.task_card_participant_label, "")
+
         btnBack.onClick(vm::onBackPressed)
         btnHistory.onClick(vm::onHistoryClicked)
-        btnActionMenu.onClick(vm::onMenuClicked)
+        btnActionMenu.setOnSingleClickListener { vm.onMenuClicked() }
         btnTitleClear.onClick(vm::onClearTitleClicked)
         btnDescriptionClear.onClick(vm::onClearDescriptionClicked)
         ibCustomerChat.onClick(vm::onCustomerChatClicked)
-        clExecutor.onClick(vm::onExecutorActionClicked)
+        clExecutor.setOnSingleClickListener { vm.onExecutorActionClicked() }
+        tvOriginalMessage.onClick(vm::onOriginalMessageClicked)
 
         etTitle.addTextChangedListener { vm.onTitleChanged(etTitle.text.toString()) }
         etDescription.addTextChangedListener { vm.onDescriptionChanged(etDescription.text.toString()) }
@@ -56,13 +57,19 @@ class TaskEditorFragment : BaseFragment<TaskEditorState, TaskEditorEvent>(R.layo
             if (index > 0) Rect((-5).dp, 0.dp, 0.dp, 0.dp)
             else Rect(0.dp, 0.dp, 0.dp, 0.dp)
         })
-        flParticipants.onClick(vm::onParticipantChooseClicked)
+        flParticipants.setOnSingleClickListener { vm.onParticipantChooseClicked() }
 
-        btnStatus.onClick(vm::onStatusClicked)
-        btnPriority.onClick(vm::onPriorityClicked)
+        btnStatus.setOnSingleClickListener { vm.onStatusClicked() }
+        btnPriority.setOnSingleClickListener { vm.onPriorityClicked() }
 
         btnCancel.onClick(vm::onCancelClicked)
         btnReady.onClick(vm::onReadyClicked)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        vm.saveStateOnPause()
     }
 
     override fun syncTheme(appTheme: Theme): Unit = with(binding) {
@@ -84,68 +91,72 @@ class TaskEditorFragment : BaseFragment<TaskEditorState, TaskEditorEvent>(R.layo
 
         tvDeadline.setTextColor(appTheme.text0Color())
 
-        btnCancel.background.setColor(appTheme.buttonInactiveColor())
+        btnCancel.setDrawableBackgroundColor(appTheme.buttonInactiveColor())
     }
 
     override fun renderState(state: TaskEditorState) = with(binding) {
         tvMode.setPrintableText(state.modeText)
         tvTaskNumber.setPrintableText(state.taskNumber)
         tvCreatedAt.setPrintableText(state.createdAt)
-        btnHistory.isVisible = state.historyVisible
-        btnActionMenu.isVisible = state.actionMenuVisible
-        tvCreatedAtLabel.isVisible = state.createdAtLabelVisible
+        tvCreatedAtLabel.isVisible = state.editorMode != EditorMode.CREATE
+        btnHistory.isVisible = state.editorMode == EditorMode.VIEW
+        btnActionMenu.isVisible = state.editorMode != EditorMode.CREATE
         tvOriginalMessage.isVisible = state.originalMessageVisible
 
         etTitle.setText(state.title)
         etTitle.isEnabled = state.isEditMode
-        etTitle.background.setBackgroundColor(state.textBackgroundColor)
-        etTitle.background.setStroke(state.textStrokeColor, 2, state.textStrokeDash, state.textStrokeDash)
+        etTitle.setDrawableBackgroundColor(state.style.boxBackgroundColor)
+        etTitle.setDrawableBackgroundStroke(state.style.boxStrokeColor, state.style.boxStrokeDash)
         btnTitleClear.isVisible = state.isEditMode
 
         etDescription.setText(state.description)
         etDescription.isEnabled = state.isEditMode
-        etDescription.background.setBackgroundColor(state.textBackgroundColor)
-        etDescription.background.setStroke(state.textStrokeColor, 2, state.textStrokeDash, state.textStrokeDash)
+        etDescription.setDrawableBackgroundColor(state.style.boxBackgroundColor)
+        etDescription.setDrawableBackgroundStroke(state.style.boxStrokeColor, state.style.boxStrokeDash)
         btnDescriptionClear.isVisible = state.isEditMode
 
-        tvCustomerName.text = state.customerName
-        ivCustomerAvatar.loadAvatarWithGradient(state.customerAvatar, state.customerName)
+        tvCustomerName.text = state.customerItem.name
+        ivCustomerAvatar.loadAvatarWithGradient(state.customerItem.avatar, state.customerItem.name)
         ibCustomerChat.isVisible = !state.isEditMode
 
-        tvExecutorName.setPrintableText(state.executorName)
+        tvExecutorName.setPrintableText(state.executorItem.name)
         clExecutor.isClickable = state.isEditMode
-        clExecutor.background.setBackgroundColor(state.textBackgroundColor)
-        clExecutor.background.setStroke(state.textStrokeColor, 2, state.textStrokeDash, state.textStrokeDash)
-        state.executorAvatar?.let {
+        clExecutor.setDrawableBackgroundColor(state.style.boxBackgroundColor)
+        clExecutor.setDrawableBackgroundStroke(state.style.boxStrokeColor, state.style.boxStrokeDash)
+        state.executorItem.avatar?.let {
             ivExecutorAvatar.isVisible = true
-            ivExecutorAvatar.loadAvatarWithGradient(state.customerAvatar, state.customerName)
+            ivExecutorAvatar.loadAvatarWithGradient(
+                state.executorItem.avatar,
+                (state.executorItem.name as? PrintableText.Raw)?.s
+            )
         } ?: run {
             ivExecutorAvatar.isVisible = false
         }
-        ibExecutorAction.setImageResource(state.executorActionBackground)
-        ibExecutorAction.drawable.setColor(state.executorActionBackgroundColor)
+        tvExecutorName.setDrawableRight(state.executorItem.actionBackground)
+        tvExecutorName.setDrawableRightColor(state.executorItem.actionBackgroundColor)
 
         tvDeadline.text = state.deadline
-        tvDeadline.background.setBackgroundColor(state.textBackgroundColor)
-        tvDeadline.background.setStroke(state.textStrokeColor, 2, state.textStrokeDash, state.textStrokeDash)
-        tvDeadline.setCompoundDrawablesWithIntrinsicBounds(0, 0, state.calendarIcon, 0)
+        tvDeadline.isClickable = state.isEditMode
+        tvDeadline.setDrawableBackgroundColor(state.style.boxBackgroundColor)
+        tvDeadline.setDrawableBackgroundStroke(state.style.boxStrokeColor, state.style.boxStrokeDash)
+        tvDeadline.setDrawableRight(state.style.calendarIcon)
 
         btnParticipantChoose.isVisible = state.isEditMode
         flParticipants.isClickable = state.isEditMode
-        flParticipants.background.setBackgroundColor(state.textBackgroundColor)
-        flParticipants.background.setStroke(state.textStrokeColor, 2, state.textStrokeDash, state.textStrokeDash)
+        flParticipants.setDrawableBackgroundColor(state.style.boxBackgroundColor)
+        flParticipants.setDrawableBackgroundStroke(state.style.boxStrokeColor, state.style.boxStrokeDash)
         participantAdapter.items = state.participants
-        tvParticipant.isVisible = state.participants.isEmpty()
+        tvParticipantEmpty.isVisible = state.participants.isEmpty()
 
-        btnPriority.text = state.priority
+        btnPriority.setPrintableText(state.priorityItem.priority)
         btnPriority.isEnabled = state.isEditMode
-        btnPriority.background.setColor(state.priorityColor)
-        btnPriority.setCompoundDrawablesWithIntrinsicBounds(0, 0, state.buttonsIcon, 0)
+        btnPriority.background.setColor(state.priorityItem.priorityColor)
+        btnPriority.setDrawableRight(state.style.priorityStatusIcon)
 
         btnStatus.setPrintableText(state.statusItem.status)
         btnStatus.isEnabled = state.isEditMode
         btnStatus.background.setColor(state.statusItem.statusColor)
-        btnStatus.setCompoundDrawablesWithIntrinsicBounds(0, 0, state.buttonsIcon, 0)
+        btnStatus.setDrawableRight(state.style.priorityStatusIcon)
 
         btnCancel.isVisible = state.isEditMode
         btnReady.isVisible = state.isEditMode
@@ -161,12 +172,12 @@ class TaskEditorFragment : BaseFragment<TaskEditorState, TaskEditorEvent>(R.layo
                     selectionTitle = event.selectionTitle,
                     items = event.items,
                     onItemSelected = {
-                        vm.onDialogSelection(it)
+                        vm.onDialogSelection(it.selectionType)
                     }
                 ).show()
             }
             is TaskEditorEvent.ShowActionMenu -> {
-                val onEdit = if (event.editEnabled) ({ vm.onEdit() }) else null
+                val onEdit = if (event.isEditEnabled) ({ vm.onEdit() }) else null
                 TasksDialog.create(
                     this@TaskEditorFragment,
                     onEdit = onEdit,
@@ -176,8 +187,8 @@ class TaskEditorFragment : BaseFragment<TaskEditorState, TaskEditorEvent>(R.layo
             }
             is TaskEditorEvent.ToggleReadyButton -> {
                 binding.btnReady.isEnabled = event.isEnabled
-                if (event.isEnabled) binding.btnReady.background.setColor(getTheme().mainActive())
-                else binding.btnReady.background.setColor(getTheme().buttonInactiveColor())
+                if (event.isEnabled) binding.btnReady.setDrawableBackgroundColor(getTheme().mainActive())
+                else binding.btnReady.setDrawableBackgroundColor(getTheme().buttonInactiveColor())
             }
         }
     }
