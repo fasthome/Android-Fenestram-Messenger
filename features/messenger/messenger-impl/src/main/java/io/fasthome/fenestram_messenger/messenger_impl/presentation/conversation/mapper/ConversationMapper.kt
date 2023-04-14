@@ -733,8 +733,8 @@ fun createSystem(date: ZonedDateTime) = ConversationViewItem.System(
 private fun getName(user: User?): String {
     if (user == null) return "Неизвестный пользователь"
     return when {
-        user.contactName?.isNotEmpty() == true -> user.contactName!!
         user.name.isNotEmpty() -> user.name
+        user.nickname.isNotEmpty() -> user.nickname!!
         else -> user.phone.setMaskByCountry(Country.RUSSIA)
     }
 }
