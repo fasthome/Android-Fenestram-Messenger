@@ -3,26 +3,41 @@
  */
 package io.fasthome.fenestram_messenger.profile_impl.presentation.profile
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
-import androidx.core.view.isVisible
-import coil.load
-import coil.transform.CircleCropTransformation
+import android.view.WindowManager
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import io.fasthome.component.pick_file.PickFileComponentContract
 import io.fasthome.component.pick_file.PickFileComponentParams
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadAvatarWithGradient
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
-import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.profile_impl.R
 import io.fasthome.fenestram_messenger.profile_impl.databinding.FragmentProfileBinding
-import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.ProfileState.EditTextKey
-import io.fasthome.fenestram_messenger.util.*
+import io.fasthome.fenestram_messenger.profile_impl.presentation.profile.dialog.StatusSelectionDialog
+import io.fasthome.fenestram_messenger.settings_api.SettingsFeature
+import io.fasthome.fenestram_messenger.uikit.theme.DarkTheme
+import io.fasthome.fenestram_messenger.uikit.theme.LightTheme
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.android.getNavigationBarHeight
+import io.fasthome.fenestram_messenger.util.getPrintableTextOrNull
 import io.fasthome.fenestram_messenger.util.model.Bytes
+import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.setPrintableText
+import org.koin.android.ext.android.inject
+
 
 class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragment_profile) {
+
+    private val settingsFeature: SettingsFeature by inject()
 
     private val pickImageFragment by registerFragment(
         componentFragmentContractInterface = PickFileComponentContract,
@@ -37,16 +52,33 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         }
     )
 
+    private val settingsFragment by registerFragment(
+        componentFragmentContractInterface = settingsFeature.settingsComponentContract,
+        paramsProvider = {
+            NoParams
+        },
+        containerViewId = R.id.settings_container
+    )
+
+
     override val vm: ProfileViewModel by viewModel(
         getParamsInterface = ProfileNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
             .register(::pickImageFragment)
+            .register(::settingsFragment)
     )
 
     private val binding by fragmentViewBinding(FragmentProfileBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+        activity?.window?.apply {
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+            setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
 
         ivAvatar.onClick {
             vm.onAvatarClicked()
@@ -55,54 +87,92 @@ class ProfileFragment : BaseFragment<ProfileState, ProfileEvent>(R.layout.fragme
         ibEditData.onClick {
             vm.editClicked()
         }
-        bCancel.onClick {
-            vm.cancelClicked()
-        }
-        bDone.onClick {
-            vm.cancelClicked()
-        }
-        ibSettings.onClick {
-            vm.startSettings()
+
+        status.onClick {
+            vm.onStatusClicked()
         }
 
-        labelNicknameU.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_user_name_label))
-        labelHBDay.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_birthday_label))
-        labelEmail.includeTextView.setPrintableText(PrintableText.StringResource(R.string.common_email_label))
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = {
+            nightTheme.isEnabled = true
+        }
+
+        nightTheme.setOnCheckedChangeListener { compoundButton, b ->
+            handler.removeCallbacks(runnable)
+            nightTheme.isEnabled = false
+            handler.postDelayed(runnable, 1000)
+            if (b) {
+                vm.onThemeChanged(LightTheme(), compoundButton)
+            } else {
+                vm.onThemeChanged(DarkTheme(), compoundButton)
+            }
+        }
+    }
+
+    override fun syncTheme(appTheme: Theme) = with(binding) {
+        appTheme.context = requireActivity().applicationContext
+        gradient.background = appTheme.gradientDrawable()
+        view.background = appTheme.shapeBg3_20dp()
+        username.setTextColor(appTheme.text0Color())
+        email.setTextColor(appTheme.text1Color())
+        bgGeometry.background = appTheme.backgroundGeometry()
+        collapsingToolbar.contentScrim = appTheme.bg0Color().toDrawable()
+
+        when (appTheme) {
+            is LightTheme -> {
+                nightTheme.isChecked = true
+            }
+            is DarkTheme -> {
+                nightTheme.isChecked = false
+            }
+            else -> {
+                nightTheme.isChecked = true
+            }
+        }
     }
 
     override fun renderState(state: ProfileState): Unit = with(binding) {
-        state.fieldsData.forEach { field ->
-            when (field.key) {
-                EditTextKey.NicknameKey -> nickContainer.includeEditText
-                EditTextKey.BirthdateKey -> hbDayContainer.includeEditText
-                EditTextKey.MailKey -> emailContainer.includeEditText
-                EditTextKey.UsernameKey -> username
-            }.let { view ->
-                view.setPrintableText(field.text)
-            }
-        }
+        state.username?.let { username.setPrintableText(it) }
+        state.email?.let { email.setPrintableText(it) }
+        ivAvatar.loadAvatarWithGradient(
+            state.avatarUrl,
+            username = getPrintableTextOrNull(state.username),
+            progressBar = progressBar
+        )
 
-        state.avatarBitmap?.let { bitmap ->
-            ivAvatar.load(bitmap) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
-            }
-        }
-
-        state.avatarUrl?.let { url ->
-            ivAvatar.load(url) {
-                transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_baseline_account_circle_24)
-            }
-        }
-
-        llButtons.isVisible = state.isEdit
-
-        nickContainer.includeEditText.isEnabled = state.isEdit
-        emailContainer.includeEditText.isEnabled = state.isEdit
-        hbDayContainer.includeEditText.isEnabled = state.isEdit
     }
 
-    override fun handleEvent(event: ProfileEvent) = noEventsExpected()
+    override fun handleEvent(event: ProfileEvent) {
+        when (event) {
+            is ProfileEvent.AvatarLoading -> {
+                binding.progressBar.alpha = if (event.isLoading) 1f else 0f
+            }
+            is ProfileEvent.ShowStatusSelectionDialog -> {
+                StatusSelectionDialog.create(
+                    this@ProfileFragment,
+                    statusItems = event.items,
+                    onStatusSelected = {
+                        vm.onStatusSelected(it)
+                    }
+                ).show()
+            }
+            is ProfileEvent.UpdateStatus -> {
+                binding.status.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        event.status.dotColor
+                    )
+                )
+                binding.status.setPrintableText(event.status.name)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.window?.clearFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+    }
 
 }

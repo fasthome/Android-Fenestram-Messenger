@@ -1,18 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="messageHint">Ваше сообщение</string>
     <string name="SendButtonPresentText">Кнопка отправки сообщения</string>
     <string name="AttachButtonPresentText">Кнопка прикрепления файлов</string>
     <string name="SendMessegeTextViewPresentText">Поле ввода сообщения</string>
-    <string name="AppName">FENESTRAM</string>
+    <string name="AppName">TeamSpace</string>
     <string name="MessageContentCheck">Blade Runner 2049 is a 2017 American neo-noir science fiction film directed by Denis Villeneuve</string>
+    <string name="MessageContentCheckBig">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</string>
     <string name="timeviewcheck">22:22</string>
     <string name="name">Username</string>
-    <string name="statusonline">Online</string>
     <string name="messenger_creating_chat">Создание чата</string>
     <string name="messenger_chat_participants">Участники чата</string>
     <string name="messenger_input_chat_name">Введите имя чата</string>
     <string name="messenger_select_hint">Выберите участников чата</string>
     <string name="messenger_chat_empty">Здесь будет отображаться история ваших сообщениий</string>
+    <string name="messenger_image">Изображение</string>
+
+    <string name="messenger_empty_view">Здесь будет отображаться список ваших чатов</string>
+    <string name="messenger_max_attach">Максимальное количество прикреляемых файлов - 10</string>
+    <string name="conversation_deleted_chat">Собеседник удалил чат</string>
+    <string name="conversation_delete_from_chat">Удалить и выйти</string>
+    <string name="conversation_delete_from_chat_history">Удалить историю</string>
+    <string name="conversation_delete_from_contacts">Очистить чат</string>
+    <string name="conversation_edit">Редактировать</string>
+    <string name="messenger_retry_sent">Отправить снова</string>
+    <string name="messenger_cancel_sent">Отменить отправку</string>
+    <string name="reset_file_selector">Сбросить изменения?</string>
+    <string name="reset_file_selector_descr">Вы действительно хотите сбросить изменения?</string>
+    <string name="reset">Сбросить</string>
+    <string name="search">Поиск</string>
+    <string name="messenger_image_viewer_toolbar">Просмотр изображения</string>
+    <string name="edit_message_title">Редактирование сообщения</string>
+    <string name="messenger_create_group_chat">Создать групповой чат</string>
+    <string name="messenger_create_private_chat">Создать личный чат</string>
+    <string name="messenger_create_chat_cancel">Отмена</string>
+    <string name="back_to_chats">Вернуться к списку чатов</string>
+    <string name="messenger_search_contacts">Поиск контакта</string>
+    <string name="messenger_edited">изменено</string>
+    <string name="forward_file_from_ph">Пересланный файл\nот %1$s</string>
+    <string name="forward_image_from_ph">Пересланное фото\nот %1$s</string>
+    <string name="forward_messages_ph">Пересланное сообщение от %1$s</string>
+    <string name="reply_document_ph">Ответ на файл\nот %1$s</string>
+    <string name="reply_image_for_ph">"Ответ на фото\nдля %1$s</string>
+    <string name="forward">Переслать</string>
+    <string name="forward_message">Пересланное сообщение</string>
+
+    <string name="conversation_copy_message">Скопировать текст</string>
+    <string name="conversation_delete_message">Удалить сообщение</string>
+    <string name="conversation_edit_message">Редактировать сообщение</string>
+    <string name="conversation_reply_message">Ответить на сообщение</string>
+    <string name="conversation_forward_message">Переслать сообщение</string>
+    <string name="messenger_document">Документ</string>
+
+    <string name="user_status_online">Online</string>
+    <string name="user_status_offline">Offline</string>
+    <string name="user_group_status">%1$d участников, %2$d в сети</string>
+    <string name="user_status_typing">Печатает</string>
+    <string name="group_user_status_typing">%s печатает</string>
 </resources>

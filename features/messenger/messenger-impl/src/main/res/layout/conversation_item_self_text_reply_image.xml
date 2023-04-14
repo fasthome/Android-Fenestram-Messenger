@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:dragEdge="right"
+    app:mode="same_level">
+
+    <FrameLayout
+        android:id="@+id/delete_layout"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:background="@android:color/transparent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_reply" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:clipChildren="true">
+
+        <RelativeLayout
+            android:id="@+id/cl_message_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/shape_gradient_top10_bottom_left10_dark"
+            android:minWidth="48dp"
+            android:minHeight="24dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_max="@dimen/image_recycler_ll_max_width"
+            tools:ignore="TouchTargetSizeCheck">
+
+            <LinearLayout
+                android:id="@+id/cl_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/reply_message_name"
+                    style="@style/Text.Blue.12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/geometria"
+                    android:maxEms="16"
+                    android:textColor="@color/main_active"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:text="Ответ на фото\nдля Мария Сергеева" />
+
+                <LinearLayout
+                    android:id="@+id/reply_document_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="10dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_docs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="300dp"
+                        tools:itemCount="4"
+                        tools:listitem="@layout/item_document" />
+
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_images"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:padding="3dp"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintHeight_min="@dimen/image_min_size"
+                    app:layout_constraintWidth_min="@dimen/image_min_size"
+                    app:spanCount="2"
+                    tools:ignore="TouchTargetSizeCheck"
+                    tools:itemCount="4"
+                    tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:layout_constraintHeight_min="@dimen/image_medium_min_size"
+                    tools:layout_constraintWidth_min="@dimen/image_medium_min_size"
+                    tools:listitem="@layout/holder_image" />
+
+                <TextView
+                    android:id="@+id/message_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/geometria"
+                    android:maxEms="16"
+                    android:text="@string/MessageContentCheck"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintVertical_bias="0.0" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cl_message"
+                android:layout_alignEnd="@id/cl_message"
+                tools:listitem="@layout/holder_reactions" />
+
+            <TextView
+                android:id="@+id/tv_edited"
+                style="@style/Text.Gray.10sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/messenger_edited"
+                android:textColor="@color/text_1"
+                android:layout_below="@id/list_reactions"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/send_time_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="30dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/timeviewcheck"
+            android:textColor="@color/text1"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_message_content" />
+
+        <ImageView
+            android:id="@+id/status"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_message_content"
+            app:srcCompat="@drawable/ic_approve_send" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

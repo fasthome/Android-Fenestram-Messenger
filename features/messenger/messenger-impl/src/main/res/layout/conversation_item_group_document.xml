@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:dragEdge="right"
+    app:mode="same_level">
+
+    <FrameLayout
+        android:id="@+id/delete_layout"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:background="@android:color/transparent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_reply" />
+    </FrameLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/ic_avatar_placeholder"
+            app:layout_constraintBottom_toBottomOf="@+id/message_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <RelativeLayout
+            android:id="@+id/message_content"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="5dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
+            android:maxWidth="300dp"
+            app:layout_constraintWidth_max="300dp"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/username"
+                style="@style/Text.Light.14sp"
+                android:textColor="@color/text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Мария Сергеевна"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_docs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:maxWidth="300dp"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_document"
+                android:layout_below="@id/username" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:itemCount="1"
+                tools:listitem="@layout/holder_reactions"
+                android:layout_below="@id/rv_docs"
+                android:layout_alignEnd="@id/rv_docs" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/send_time_view"
+            style="@style/Text.Gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/timeviewcheck"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintTop_toBottomOf="@id/message_content" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

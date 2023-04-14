@@ -9,7 +9,7 @@
         android:topRightRadius="10dp"
         />
     <solid
-        android:color="@color/gray1"
+        android:color="@color/text1"
         />
 
 

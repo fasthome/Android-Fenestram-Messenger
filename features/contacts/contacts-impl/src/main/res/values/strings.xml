@@ -2,6 +2,8 @@
 <resources>
     <string name="contacts">Контакты</string>
     <string name="search_contacts">Поиск контакта</string>
+    <string name="company">Компания</string>
+    <string name="search">Поиск</string>
     <string name="contacts_no_name">Безымянный</string>
 
     <string name="contacts_add_description">Добавить контакт</string>
@@ -12,17 +14,22 @@
     <string name="add_contact">Добавить контакт</string>
     <string name="contact_add_ready">Готово</string>
     <string name="number_placeholder">+7 _ _ _ _ _ _ - _ _ - _ _</string>
+    <string name="failed_to_save_contact">Не удалось сохранить контакт</string>
 
     <string name="contact_add_first_name_label">Имя</string>
     <string name="contact_add_second_name_label">Фамилия</string>
     <string name="contact_add_number_label">Номер телефона</string>
 
-    <string name="contact_add_name_invalid">Не добавлено имя</string>
+    <string name="contact_add_name_invalid">Имя не может быть пустым</string>
     <string name="contact_add_number_invalid">Некорректный номер телефона</string>
     <string name="contact_add_number_empty">Не добавлен номер телефона</string>
     <string name="contact_add_first_name_hint">(обязательно)</string>
     <string name="contact_add_second_name_hint">(необязательно)</string>
-    <string name="no_permission">Вы не разрешили приложению доступ\nк контактам</string>
-    <string name="contacts_allow">Разрешить</string>
+    <string name="contacts_unregister_users">Пока не зарегистрированы в приложении</string>
+
+    <string name="self_contact_name">%s (вы)</string>
+
+
+
 
 </resources>

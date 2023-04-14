@@ -6,10 +6,10 @@ package io.fasthome.fenestram_messenger.auth_api
 import android.os.Parcelable
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.util.CallResult
-import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.flow.Flow
+import kotlinx.parcelize.Parcelize
+
 
 interface AuthFeature {
 
@@ -17,13 +17,19 @@ interface AuthFeature {
 
     val personalDataNavigationContract: NavigationContractApi<PersonalDataParams, AuthResult>
 
-    suspend fun getUserId(): CallResult<Long?>
+    suspend fun getUserId(needLogout : Boolean): CallResult<Long?>
+
+    suspend fun getUserPhone(): CallResult<String?>
+
+    suspend fun getUserCode(): CallResult<String?>
 
     suspend fun getUsers(): CallResult<List<User>>
 
     suspend fun isUserAuthorized(): CallResult<Boolean>
 
-    suspend fun logout(): CallResult<Unit>
+    suspend fun logout(needRequest: Boolean = true): CallResult<Unit>
+
+    suspend fun login(phone: String, code: String) : CallResult<Unit>
 
     /**
      * Поток событий, по которым должен происходить переход на экран авторизации.
@@ -49,6 +55,7 @@ interface AuthFeature {
     data class User(
         val id: Long,
         val name: String,
+        val nickname: String?,
         val phone : String
     )
 
@@ -58,6 +65,7 @@ interface AuthFeature {
         val nickname: String?,
         val birth: String?,
         val email: String?,
-        val avatar: String?
+        val avatar: String?,
+        val isEdit : Boolean
     ) : Parcelable
 }

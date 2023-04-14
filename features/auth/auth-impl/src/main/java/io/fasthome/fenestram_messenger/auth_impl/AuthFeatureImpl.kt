@@ -4,17 +4,16 @@
 package io.fasthome.fenestram_messenger.auth_impl
 
 import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UserDetail
+import io.fasthome.fenestram_messenger.auth_api.UserDetail
 import io.fasthome.fenestram_messenger.auth_impl.domain.logic.AuthInteractor
-import io.fasthome.fenestram_messenger.auth_impl.presentation.code.CodeNavigationContract
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.AuthNavigator
 import io.fasthome.fenestram_messenger.auth_impl.presentation.logout.LogoutManager
 import io.fasthome.fenestram_messenger.auth_impl.presentation.personality.PersonalityNavigationContract
 import io.fasthome.fenestram_messenger.auth_impl.presentation.welcome.WelcomeNavigationContract
-import io.fasthome.fenestram_messenger.navigation.contract.*
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
+import io.fasthome.fenestram_messenger.navigation.contract.map
 import io.fasthome.fenestram_messenger.util.CallResult
+import io.fasthome.fenestram_messenger.util.callForResult
 import io.fasthome.fenestram_messenger.util.onSuccess
 import kotlinx.coroutines.flow.Flow
 
@@ -37,17 +36,23 @@ class AuthFeatureImpl(
                         nickname = it.nickname ?: "",
                         birth = it.birth ?: "",
                         profileImageUrl = it.avatar ?: ""
-                    )
+                    ),
+                    isEdit = it.isEdit
                 )
             },
             resultMapper = { it }
         )
 
-    override suspend fun getUserId(): CallResult<Long?> = authInteractor.getUserId().onSuccess {
-        if (it == null) {
-            logout()
+    override suspend fun getUserId(needLogout: Boolean): CallResult<Long?> =
+        authInteractor.getUserId().onSuccess {
+            if (it == null && needLogout) {
+                logout()
+            }
         }
-    }
+
+    override suspend fun getUserCode(): CallResult<String?> = authInteractor.getUserCode()
+
+    override suspend fun getUserPhone(): CallResult<String?> = authInteractor.getUserPhone()
 
     override suspend fun getUsers(): CallResult<List<AuthFeature.User>> = authInteractor.getUsers()
 
@@ -55,6 +60,22 @@ class AuthFeatureImpl(
 
     override suspend fun isUserAuthorized() = authInteractor.isUserAuthorized()
 
-    override suspend fun logout(): CallResult<Unit> = logoutManager.logout()
+    override suspend fun logout(needRequest: Boolean): CallResult<Unit> {
+        if(needRequest) {
+            val result = callForResult {
+                authInteractor.logout()
+            }.onSuccess {
+                return logoutManager.logout()
+            }
+            return result
+        } else return logoutManager.logout()
+    }
+
+    override suspend fun login(phone: String, code: String): CallResult<Unit> {
+        return when (val result = authInteractor.login(phone, code)) {
+            is CallResult.Error -> result
+            is CallResult.Success -> CallResult.Success(Unit)
+        }
+    }
 
 }

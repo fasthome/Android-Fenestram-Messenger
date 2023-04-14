@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="messageHint">Ваше сообщение</string>
+    <string name="common_selected">Выбрано </string>
+    <string name="common_select_image_selector">Выбрать изображение</string>
+    <string name="images">Изображения</string>
+    <string name="common_skip_button">Пропустить</string>
+    <string name="common_done_b">Готово</string>
+    <string name="common_cancel_b">Отмена</string>
+    <string name="common_email_label">Email</string>
+    <string name="common_birthday_label">Дата рождения</string>
+    <string name="common_user_name_label">Никнейм</string>
+    <string name="common_name_label">Имя</string>
+    <string name="common_welcome_message_label">Добро пожаловать\nв Hoolichat!</string>
+    <string name="common_hoolichat_label">hoolichat</string>
+    <string name="common_phone_number_label">Номер телефона</string>
+    <string name="common_phone_number_error">Неверный формат ввода номера</string>
+    <string name="common_phone_number_country_error">Некорректный код страны</string>
+    <string name="common_country_code_text">+7</string>
+    <string name="common_send_code_button">Отправить код</string>
+    <string name="common_input_code_label">Введите код из СМС</string>
+    <string name="common_incorrect_code_label">Неверный код</string>
+    <string name="common_resend_code_button">Отправить заново?</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_dialog_retry">Попробовать еще раз</string>
+    <string name="common_notification_channel_title_push">PUSH-уведомления</string>
+    <string name="common_notification_channel_description_push">Получение PUSH-уведомлений</string>
+    <string name="common_more_button">Далее</string>
+    <string name="common_delete_chat_dialog">Вы уверены, что хотите удалить чат?</string>
+    <string name="common_retry">Повторить</string>
+    <string name="common_unable_to_download">Невозможно загрузить данный файл</string>
+    <string name="common_accept">Подтвердить</string>
+    <string name="common_select_image">Выберите изображение</string>
+    <string name="common_attach">Прикрепить</string>
+    <string name="common_save">Сохранить</string>
+    <string name="profile_nickname_info">Можно использовать символы A–z, А–я, 0–9 и нижнее подчеркивание. Минимальная длина - %1$d символа.</string>
+    <string name="contacts_no_permission">Вы не разрешили приложению доступ\nк контактам</string>
+    <string name="contacts_empty_view">По вашему запросу \"%s\"\nничего не найдено</string>
+    <string name="empty_gallery">У Вас нет изображений доступных для отправки. Проверьте разрешения для доступа к хранилищу устройства.</string>
+    <string name="common_allow_permission">Разрешить</string>
+    <string name="common_edit">Редактирование</string>
+    <string name="common_name_copied">Имя пользователя скопировано</string>
+    <string name="common_chat_name_copied">Имя чата скопировано</string>
+    <string name="common_nickname_copied">Никнейм пользователя скопирован</string>
+    <string name="common_phone_copied">Телефон пользователя скопирован</string>
+    <string name="common_empty_chat_name">Название чата не может быть пустым</string>
+
+
+    <string name="auth_login_label">Введите Ваш корпоративный логин</string>
+    <string name="auth_login_hint">Логин</string>
+    <string name="auth_login_error">Логин не найден</string>
+    <string name="auth_password_label">Введите пароль</string>
+    <string name="auth_password_hint">Пароль</string>
+    <string name="auth_password_error">Введен неправильный пароль</string>
+    <string name="auth_login">Войти</string>
+
+    <string name="image_viewer_download_error">Не удалось сохранить изображение</string>
+
+    <string name="tasks_fragment">Задачи</string>
+    <string name="tasks_self">Мои задачи</string>
+    <string name="tasks_control">Контроль</string>
+    <string name="tasks_archive">Архив</string>
+    <string name="tasks_self_empty">Здесь будут отображаться ваши задачи</string>
+    <string name="tasks_control_empty">Здесь будут отображаться задачи, которые вы контролируете</string>
+    <string name="task_menu_chat_customer">Написать сообщение заказчику</string>
+    <string name="task_menu_chat_executor">Написать сообщение исполнителю</string>
+
+    <string name="tasks_archive_empty">Здесь будут отображаться задачи, которые находятся в архиве</string>
+
+    <string name="task_card_self">Моя задача:</string>
+    <string name="task_card_other">Задача:%1$s</string>
+    <string name="task_card_status_queue">Очередь</string>
+    <string name="task_card_status_in_work">В работе</string>
+    <string name="task_card_status_done">Готово</string>
+    <string name="task_card_customer_label">Заказчик:</string>
+    <string name="task_card_executor_label">Исполнитель%1$s</string>
+    <string name="task_card_customer_executor_label">Заказчик/Исполнитель:</string>
+    <string name="task_card_participant_label">Участники%1$s</string>
+    <string name="task_card_priority_lowest">Lowest</string>
+    <string name="task_card_priority_low">Low</string>
+    <string name="task_card_priority_medium">Medium</string>
+    <string name="task_card_priority_high">High</string>
+    <string name="task_card_priority_highest">Highest</string>
+
+
+    <string name="task_editor_mode_create">Создание задачи</string>
+    <string name="task_editor_mode_edit">Редактирование задачи</string>
+    <string name="task_editor_mode_view">Просмотр задачи</string>
+
+    <string name="task_editor_title_hint">Название задачи (обязательно)</string>
+    <string name="task_editor_created_at_label">Создана:</string>
+    <string name="task_editor_original_message"><u>Исходное сообщение</u></string>
+    <string name="task_editor_description_label">Описание задачи</string>
+    <string name="task_editor_description_hint">Описание задачи (необязательно)</string>
+    <string name="task_editor_executor_self">Назначена себе</string>
+    <string name="task_editor_deadline_label">Срок выполнения</string>
+    <string name="task_editor_priority_label">Приоритет</string>
+    <string name="task_editor_status_label">Статус</string>
+    <string name="task_editor_hint_not_set">Не задан</string>
+    <string name="task_editor_hint_not_set_not_required">Не задан (необязательно)</string>
+    <string name="task_editor_hint_not_set_plural">Не заданы</string>
+
+    <string name="task_editor_select_title_executor">Исполнитель задачи</string>
+    <string name="task_editor_select_title_status">Статус задачи</string>
+    <string name="task_editor_select_title_priority">Приоритет задачи</string>
+
+    <string name="task_editor_select_executor_self">Назначить себе</string>
+    <string name="task_editor_select_executor_companion">Назначить собеседнику</string>
+    <string name="task_editor_select_executor_chat_user">Назначить участнику чата</string>
+    <string name="task_editor_select_executor_other">Выбрать исполнителя</string>
+
+    <string name="task_editor_menu_edit">Редактировать задачу</string>
+    <string name="task_editor_menu_view">Просмотр задачи</string>
+    <string name="task_editor_menu_archive">Архивировать</string>
+    <string name="task_editor_menu_delete">Удалить задачу</string>
+
+
+</resources>

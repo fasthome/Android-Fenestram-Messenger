@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/ib_cancel"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_cancel" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/images"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_action_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/view_strip"
+            android:layout_width="64dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/shape_bottom_sheet_strip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/from_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_button_circle"
+            android:padding="16dp"
+            android:src="@drawable/ic_add_image"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toStartOf="@+id/from_camera"
+            app:layout_constraintStart_toEndOf="@id/attach_file"
+            app:layout_constraintTop_toBottomOf="@id/view_strip"/>
+
+        <ImageButton
+            android:id="@+id/from_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_button_circle"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/from_gallery"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/from_gallery"
+            app:layout_constraintTop_toTopOf="@+id/from_gallery"
+            app:srcCompat="@drawable/ic_add_photo" />
+
+        <ImageButton
+            android:id="@+id/attach_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_button_circle"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/from_gallery"
+            app:layout_constraintEnd_toStartOf="@id/from_gallery"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/from_gallery"
+            app:srcCompat="@drawable/ic_add_file" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_images"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/cl_input"
+            app:layout_constraintTop_toBottomOf="@+id/from_gallery"
+            app:layout_constraintVertical_bias="0.0"
+            app:spanCount="3"
+            tools:itemCount="17"
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:layout_editor_absoluteX="12dp"
+            tools:listitem="@layout/item_image_select_from"
+            tools:visibility="visible" />
+    </LinearLayout>
+</LinearLayout>

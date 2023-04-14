@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:dragEdge="right"
+    app:mode="same_level">
+
+    <FrameLayout
+        android:id="@+id/delete_layout"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:background="@android:color/transparent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_reply" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true">
+
+        <RelativeLayout
+            android:id="@+id/message_content"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
+            app:layout_constraintWidth_max="300dp"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="8dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_docs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="300dp"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_document" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rv_docs"
+                android:layout_alignEnd="@id/rv_docs"
+                tools:listitem="@layout/holder_reactions" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/send_time_view"
+            style="@style/Text.Gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="4dp"
+            android:text="@string/timeviewcheck"
+            android:textSize="11sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/message_content" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

@@ -1,84 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-
-    <io.fasthome.fenestram_messenger.core.ui.custom_view.HooliToolbar
-        android:id="@+id/hooliToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/settings" />
-
-
-    <TextView
-        android:id="@+id/tv_changes_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="43dp"
-        android:drawableLeft="@drawable/ic_palitra"
-        android:drawablePadding="20dp"
-        android:text="@string/changeColor"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hooliToolbar" />
-
-    <ImageButton
-        android:id="@+id/ib_blue_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="20dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/selector_blue"
-        app:layout_constraintEnd_toStartOf="@+id/ib_green_button"
-        app:layout_constraintTop_toBottomOf="@+id/hooliToolbar" />
-
-    <ImageButton
-        android:id="@+id/ib_green_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="44dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/selector_green"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hooliToolbar" />
-
-    <TextView
-        android:id="@+id/tv_aboutApp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="48dp"
-        android:drawableLeft="@drawable/ic_info"
-        android:drawablePadding="20dp"
-        android:text="@string/settings_about_app"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_changes_color" />
-
-    <TextView
-        android:id="@+id/tv_exit_profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="48dp"
-        android:drawableLeft="@drawable/ic_exit"
-        android:drawablePadding="20dp"
-        android:text="@string/exitAccount"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_aboutApp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

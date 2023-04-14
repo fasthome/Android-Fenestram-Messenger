@@ -1,6 +1,7 @@
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -9,9 +10,14 @@ import io.fasthome.fenestram_messenger.contacts_impl.R
 import io.fasthome.fenestram_messenger.contacts_impl.databinding.FragmentContactAddBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.*
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
+import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.util.PrintableText
+import io.fasthome.fenestram_messenger.util.REGEX_RU_EN_LETTERS_AND_SPACE
 import io.fasthome.fenestram_messenger.util.getPrintableText
+import io.fasthome.fenestram_messenger.util.model.EditTextFilter
 import io.fasthome.fenestram_messenger.util.setPrintableText
 
 
@@ -23,7 +29,7 @@ class ContactAddFragment :
     override val vm: ContactAddViewModel by viewModel(
         getParamsInterface = ContactAddNavigationContract.getParams,
         interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
-            .register(::permissionInterface)
+            .register(::permissionInterface),
     )
 
     private val binding: FragmentContactAddBinding by fragmentViewBinding(FragmentContactAddBinding::bind)
@@ -32,10 +38,11 @@ class ContactAddFragment :
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-
-            contactAddAppbar.setNavigationOnClickListener {
+            toolbar.setOnButtonClickListener {
                 vm.navigateBack()
             }
+            contactAddInputSecondName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
+            contactAddInputNumber.setBackground(R.drawable.bg_rounded_edittext)
 
             contactAddLabelFirstName.includeTextView.setPrintableText(PrintableText.StringResource(R.string.contact_add_first_name_label))
 
@@ -51,6 +58,11 @@ class ContactAddFragment :
             contactAddInputSecondName.includeEditText.hint =
                 getPrintableText(PrintableText.StringResource(R.string.contact_add_second_name_hint))
 
+            contactAddInputFirstName.includeEditText.filters =
+                arrayOf(EditTextFilter(REGEX_RU_EN_LETTERS_AND_SPACE), InputFilter.LengthFilter(25))
+            contactAddInputSecondName.includeEditText.filters =
+                arrayOf(EditTextFilter(REGEX_RU_EN_LETTERS_AND_SPACE), InputFilter.LengthFilter(25))
+
             contactAddInvalidFirstName.includeTextInvalid.run {
                 setPrintableText(
                     PrintableText.StringResource(
@@ -63,84 +75,88 @@ class ContactAddFragment :
             contactAddInputFirstName.includeEditText.addTextChangedListener {
                 vm.onNameTextChanged(
                     contactAddInputFirstName.includeEditText.text.toString(),
-                    contactAddInputNumber.unMasked
+                    contactAddInputNumber.isValid()
                 )
             }
 
-            contactAddInputNumber.addTextChangedListener {
+            contactAddInputNumber.addListener {
                 vm.onNumberTextChanged(
                     contactAddInputFirstName.includeEditText.text.toString(),
-                    contactAddInputNumber.unMasked
+                    contactAddInputNumber.isValid()
                 )
             }
 
             contactAddButtonReady.setOnClickListener {
                 vm.checkAndWriteContact(
-                    contactAddInputFirstName.includeEditText.text.toString(),
-                    contactAddInputSecondName.includeEditText.text.toString(),
-                    contactAddInputNumber.unMasked
+                    contactAddInputFirstName.includeEditText.text.toString().trim(),
+                    contactAddInputSecondName.includeEditText.text.toString().trim(),
+                    contactAddInputNumber.getPhoneNumberFiltered(),
+                    contactAddInputNumber.isValid()
                 )
             }
         }
     }
 
-    override fun renderState(state: ContactAddState) = with(binding) {
-        when (state.contactAddStatus) {
-            EditTextStatus.NameIdle -> {
-                renderNameIdle()
-                renderButtonDisabled()
-            }
+    override fun renderState(state: ContactAddState) {
+        with(binding) {
+            when (state) {
+                is ContactAddState.ContactAddStatus -> {
+                    when (state.contactAddStatus) {
+                        EditTextStatus.NameIdle -> {
+                            renderNameIdle()
+                            contactAddButtonReady.isEnabled = false
+                        }
 
-            EditTextStatus.NumberIdle -> {
-                renderNumberIdle()
-                renderButtonDisabled()
-            }
+                        EditTextStatus.NumberIdle -> {
+                            renderNumberIdle()
+                            contactAddButtonReady.isEnabled = false
+                        }
 
-            EditTextStatus.NameFilledAndNumberCorrect -> {
-                contactAddButtonReady.setBackgroundColor(
-                    ContextCompat.getColor(
-                        contactAddButtonReady.context,
-                        R.color.blue
-                    )
-                )
-                renderNameIdle()
-                renderNumberIdle()
-            }
+                        EditTextStatus.NameFilledAndNumberCorrect -> {
+                            contactAddButtonReady.isEnabled = true
+                            renderNameIdle()
+                            renderNumberIdle()
+                        }
 
-            EditTextStatus.NameEmptyAndNumberEmpty -> {
-                renderNameEmpty()
-                renderNumberEmpty()
-            }
+                        EditTextStatus.NameEmptyAndNumberEmpty -> {
+                            renderNameEmpty()
+                            renderNumberEmpty()
+                        }
 
-            EditTextStatus.NameEmptyAndNumberIncorrect -> {
-                renderNameEmpty()
-                renderNumberIncorrect()
-            }
+                        EditTextStatus.NameEmptyAndNumberIncorrect -> {
+                            renderNameEmpty()
+                            renderNumberIncorrect()
+                        }
 
-            EditTextStatus.NameEmptyAndNumberCorrect -> {
-                renderNameEmpty()
-            }
+                        EditTextStatus.NameEmptyAndNumberCorrect -> {
+                            contactAddButtonReady.isEnabled = false
+                            renderNameEmpty()
+                        }
 
-            EditTextStatus.NameFilledAndNumberEmpty -> {
-                renderNumberEmpty()
-            }
+                        EditTextStatus.NameFilledAndNumberEmpty -> {
+                            renderNumberEmpty()
+                        }
 
-            EditTextStatus.NameFilledAndNumberIncorrect -> {
-                renderNumberIncorrect()
+                        EditTextStatus.NameFilledAndNumberIncorrect -> {
+                            renderNumberIncorrect()
+                        }
+                    }
+                }
+                is ContactAddState.ContactAutoFillStatus -> {
+                    state.name?.let { contactAddInputFirstName.includeEditText.setText(it) }
+                    state.phone?.let {
+                        contactAddInputNumber.apply {
+                            setPhoneNumber(it)
+                            isEnabled = false
+                        }
+                    }
+                }
             }
         }
     }
+
 
     override fun handleEvent(event: ContactAddEvent) = noEventsExpected()
-
-    private fun renderButtonDisabled() = with(binding) {
-        contactAddButtonReady.setBackgroundColor(
-            ContextCompat.getColor(
-                contactAddButtonReady.context,
-                R.color.appbar_color
-            )
-        )
-    }
 
     private fun renderNameIdle() = with(binding) {
         contactAddInputFirstName.includeEditText.setBackgroundResource(R.drawable.bg_rounded_edittext)
@@ -154,7 +170,7 @@ class ContactAddFragment :
     }
 
     private fun renderNumberIdle() = with(binding) {
-        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext)
+        contactAddInputNumber.setBackground(R.drawable.bg_rounded_edittext)
         contactAddInvalidNumber.includeTextInvalid.visibility = View.GONE
         contactAddLabelNumber.includeTextView.setTextColor(
             ContextCompat.getColor(
@@ -176,7 +192,7 @@ class ContactAddFragment :
     }
 
     private fun renderNumberEmpty() = with(binding) {
-        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInputNumber.setBackgroundDrawable(R.drawable.bg_rounded_edittext_error)
         contactAddInvalidNumber.includeTextInvalid.run {
             setPrintableText(
                 PrintableText.StringResource(
@@ -194,7 +210,7 @@ class ContactAddFragment :
     }
 
     private fun renderNumberIncorrect() = with(binding) {
-        contactAddInputNumber.setBackgroundResource(R.drawable.bg_rounded_edittext_error)
+        contactAddInputNumber.setBackgroundDrawable(R.drawable.bg_rounded_edittext_error)
         contactAddInvalidNumber.includeTextInvalid.run {
             setPrintableText(
                 PrintableText.StringResource(

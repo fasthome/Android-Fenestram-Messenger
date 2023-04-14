@@ -30,14 +30,32 @@ android {
         getByName(BuildType.release) {
             booleanBuildConfigField("IS_DEBUG", false)
 
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://dev.hoolichat.ru/")
+            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://prod.hoolichat.ru/")
+
+            stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
+            stringBuildConfigField("INSTABUG_APP_TOKEN_BETA", "5622f3685b90aca197ee34b9b3a612fb")
+
+            stringBuildConfigField("DEV_API_VERSION", "v2")
+            stringBuildConfigField("PROD_API_VERSION", "v2")
+
+            stringBuildConfigField("POLICY_RULES_URL", "http://37.140.197.223/storage/PrivacyPolicy.html")
+
             isMinifyEnabled = obfuscationEnabled
             isShrinkResources = obfuscationEnabled
         }
         getByName(BuildType.debug) {
             booleanBuildConfigField("IS_DEBUG", true)
 
-            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://176.99.12.176/")
-            stringBuildConfigField("REFRESH_TOKEN_URL_DEV", "http://176.99.12.176/")
+            stringBuildConfigField("MAIN_API_BASE_URL_DEV", "http://dev.hoolichat.ru/")
+            stringBuildConfigField("MAIN_API_BASE_URL_PROD", "http://prod.hoolichat.ru/")
+            stringBuildConfigField("ONESIGNAL_APP_ID", "977e9b8a-5cf3-401b-b801-3c62e346cfde")
+            stringBuildConfigField("INSTABUG_APP_TOKEN_BETA", "5622f3685b90aca197ee34b9b3a612fb")
+
+            stringBuildConfigField("POLICY_RULES_URL", "http://37.140.197.223/storage/PrivacyPolicy.html")
+
+            stringBuildConfigField("DEV_API_VERSION", "v2")
+            stringBuildConfigField("PROD_API_VERSION", "v2")
             isDebuggable = true
             isMinifyEnabled = obfuscationEnabled
             isShrinkResources = obfuscationEnabled
@@ -62,11 +80,13 @@ dependencies {
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.di))
+    implementation(project(Modules.Common.presentation))
     implementation(project(Modules.Common.mvi))
     implementation(project(Modules.Common.navigation))
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.component))
     implementation(project(Modules.Common.network))
+    implementation(project(Modules.Common.uikit))
 
     implementation(project(Modules.Feature.main.api))
     implementation(project(Modules.Feature.main.impl))
@@ -92,6 +112,27 @@ dependencies {
     implementation(project(Modules.Feature.debug.api))
     implementation(project(Modules.Feature.debug.impl))
 
+    implementation(project(Modules.Feature.groupGuest.api))
+    implementation(project(Modules.Feature.groupGuest.impl))
+
+    implementation(project(Modules.Feature.push.api))
+    implementation(project(Modules.Feature.push.impl))
+
+    implementation(project(Modules.Feature.onboarding.api))
+    implementation(project(Modules.Feature.onboarding.impl))
+
+    implementation(project(Modules.Feature.camera.api))
+    implementation(project(Modules.Feature.camera.impl))
+
+    implementation(project(Modules.Feature.call.api))
+    implementation(project(Modules.Feature.call.impl))
+
+    implementation(project(Modules.Feature.authAd.api))
+    implementation(project(Modules.Feature.authAd.impl))
+
+    implementation(project(Modules.Feature.tasks.api))
+    implementation(project(Modules.Feature.tasks.impl))
+
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
     implementation(Deps.AndroidX.fragment)
@@ -110,20 +151,20 @@ dependencies {
 
     implementation(Deps.Firebase.crashlitycs)
     implementation(Deps.Firebase.analitycs)
-
-    implementation(Deps.Coil.coil)
-    implementation(Deps.Coil.base)
-    implementation(Deps.Coil.svg)
+    implementation(Deps.onesignal)
 
     implementation(Deps.lottie)
     implementation(Deps.gms)
     implementation(Deps.playCore)
     implementation(Deps.gson)
     implementation(Deps.materialCalendar)
+    implementation(Deps.flexbox)
 
     implementation(Deps.Koin.core)
 
     implementation(Deps.workRuntime)
+
+    implementation(Deps.instaBug)
 
     androidTestImplementation(Deps.Tests.androidxJunit)
     androidTestImplementation(Deps.Tests.espresso)

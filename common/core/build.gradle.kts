@@ -1,5 +1,6 @@
 plugins {
     `android-common`
+    `kotlin-kapt`
 }
 
 android {
@@ -9,6 +10,7 @@ android {
 dependencies {
     implementation(project(Modules.Common.util))
     implementation(project(Modules.Common.di))
+    implementation(project(Modules.Common.uikit))
 
     implementation(Deps.AndroidX.core)
     implementation(Deps.AndroidX.appcompat)
@@ -16,6 +18,7 @@ dependencies {
 
     implementation(Deps.Coroutines.core)
 
-//    implementation(Deps.Firebase.firestore)
+    implementation(Deps.Glide.core)
+    kapt(Deps.Glide.compiler)
 
 }

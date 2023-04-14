@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="common_error_something_went_wrong_title">Неизвстная ошибка</string>
+    <string name="common_error_something_went_wrong_title">Неизвестная ошибка</string>
     <string name="common_error_something_went_wrong_description">Что-то пошло не так</string>
     <string name="common_error_connection_error_title">Нет подключения к сети</string>
-    <string name="common_error_connection_error_description">Проверьте соединение с интернетом</string>
+    <string name="common_error_server_title">Ошибка сервера</string>
+    <string name="common_error_server_description">Произошла ошибка на сервере, мы уже знаем о проблеме и работаем над исправлением. Пожалуйста попробуйте позже</string>
+    <string name="common_error_connection_error_description">Отсутствует Интернет-соединение</string>
     <string name="common_error_login_error_title">Ошибка авторизации</string>
     <string name="common_error_login_error_description">Неверный код</string>
+    <string name="common_error_forbidden">Ошибка Авторизации</string>
+    <string name="common_error_forbidden_description">"Код неверный или сервер посчитал его неверным. Попробуйте ещё раз "</string>
 </resources>

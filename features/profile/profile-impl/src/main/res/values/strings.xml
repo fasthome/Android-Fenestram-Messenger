@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_successs_changed">Данные профиля успешно изменены</string>
+    <string name="profile_error_photo">Невозможно загрузить данный файл</string>
+    <string name="status_in_office">В офисе</string>
+    <string name="status">Статус</string>
+    <string name="status_in_home">Работаю из дома</string>
+    <string name="status_in_business_trip">В командировке</string>
+    <string name="status_on_holiday">В отпуске</string>
+    <string name="status_on_seak_leave">На больничном</string>
+    <string name="status_on_meating">На совещании</string>
+    <string name="status_no_available">Не доступен</string>
+</resources>

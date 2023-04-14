@@ -3,132 +3,119 @@
  */
 package io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts
 
-import android.Manifest
 import androidx.lifecycle.viewModelScope
 import io.fasthome.component.permission.PermissionInterface
-import io.fasthome.fenestram_messenger.auth_api.AuthFeature
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.ContactAddNavigationContract
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.add_contact.model.ContactAddResult
+import io.fasthome.fenestram_messenger.contacts_impl.data.service.mapper.DepartmentsMapper
+import io.fasthome.fenestram_messenger.contacts_impl.domain.logic.DepartmentInteractor
 import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.ContactsViewItem
-import io.fasthome.fenestram_messenger.contacts_impl.presentation.util.ContactsLoader
+import io.fasthome.fenestram_messenger.contacts_impl.presentation.contacts.model.DepartmentViewItem
+import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
 import io.fasthome.fenestram_messenger.messenger_api.MessengerFeature
 import io.fasthome.fenestram_messenger.mvi.BaseViewModel
+import io.fasthome.fenestram_messenger.mvi.ShowErrorType
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
-import io.fasthome.fenestram_messenger.util.ErrorInfo
-import io.fasthome.fenestram_messenger.util.LoadingState
-import io.fasthome.fenestram_messenger.util.onSuccess
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import io.fasthome.fenestram_messenger.uikit.R
+import io.fasthome.fenestram_messenger.util.*
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val permissionInterface: PermissionInterface,
-    private val contactsLoader: ContactsLoader,
-    private val features: Features
+    private val departmentInteractor: DepartmentInteractor,
+    private val departmentsMapper: DepartmentsMapper,
+    private val messengerFeature: MessengerFeature,
 ) : BaseViewModel<ContactsState, ContactsEvent>(router, requestParams) {
 
-    init {
-//        requestPermissionAndLoadContacts()
+    private var originalViewItem = listOf<DepartmentViewItem>()
 
-        viewModelScope.launch {
-            features.authFeature.getUsers().onSuccess { users ->
-                updateState { state ->
-                    state.copy(loadingState = LoadingState.Success(users.map {
-                        ContactsViewItem(
-                            id = it.id,
-                            avatar = 0,
-                            name = it.name,
-                            newMessageVisibility = 0
-                        )
-                    }))
-                }
-            }
-        }
-    }
-
-    class Features(
-        val authFeature: AuthFeature,
-        val messengerFeature: MessengerFeature
-    )
-
-    private val addContactLauncher = registerScreen(ContactAddNavigationContract) { result ->
-        when (result) {
-            is ContactAddResult.Success -> requestPermissionAndLoadContacts()
-            is ContactAddResult.Canceled -> sendEvent(ContactsEvent.ContactAddCancelled)
-        }
-    }
     private val conversationLauncher =
-        registerScreen(features.messengerFeature.conversationNavigationContract)
-
-    private var currentContacts: List<ContactsViewItem> = listOf()
-
-    private val contactsLoaderScope = CoroutineScope(Job() + Dispatchers.IO)
-    private var contactsLoaderJob: Job? = null
-
-    fun requestPermissionAndLoadContacts() {
-        viewModelScope.launch {
-            val permissionGranted = permissionInterface.request(Manifest.permission.READ_CONTACTS)
-
-            if (permissionGranted) {
-                fetchContacts()
-            } else {
-                updateState {
-                    ContactsState(
-                        LoadingState.Error(error = ErrorInfo.createEmpty()),
-                        false
-                    )
-                }
-            }
-        }
-    }
+        registerScreen(messengerFeature.conversationNavigationContract) { }
 
     override fun createInitialState(): ContactsState {
-        return ContactsState(LoadingState.None, true)
+        return ContactsState(LoadingState.None)
     }
 
-    private fun fetchContacts() {
-        contactsLoaderJob = contactsLoaderScope.launch {
-            currentContacts = contactsLoader.onStartLoading()
-            if (currentContacts.isEmpty()) {
-                updateState {
-                    ContactsState(
-                        LoadingState.Error(error = ErrorInfo.createEmpty()),
-                        true
-                    )
+    fun filterContacts(query: String) {
+        val filteredContacts = if (query.isEmpty()) {
+            originalViewItem
+        } else {
+            emptyList()
+            /*
+            val divisions = originalViewItem.filterIsInstance<DepartmentViewItem.Division>().toMutableList()
+            val searchItems = mutableListOf<DepartmentViewItem.Division>()
+            divisions.forEach {
+
+            }
+
+            divisions.filter { division ->
+                division.employee.filter {
+                    getPrintableRawText(it.name).contains(query.trim(), true)
                 }
-            } else {
-                updateState { ContactsState(LoadingState.Success(currentContacts), true) }
+            }*/
+        }
+       updateState { state ->
+            state.copy(
+                loadingState = LoadingState.Success(filteredContacts)
+            )
+        } // TODO: !!! Make search
+        if (filteredContacts.isEmpty()) {
+            updateState { state ->
+                state.copy(
+                    loadingState = LoadingState.Error(
+                        error = ErrorInfo(
+                            PrintableText.EMPTY,
+                            PrintableText.StringResource(R.string.contacts_empty_view, query)
+                        ),
+                        throwable = EmptySearchException()
+                    )
+                )
             }
         }
     }
 
-    fun stopJob() {
-        contactsLoaderJob?.cancel()
-    }
-
-    fun addContact() {
-        addContactLauncher.launch(NoParams)
-    }
-
-    fun filterContacts(text: String) {
-        val filteredContacts = currentContacts.filter {
-            it.name.startsWith(text.trim(), true)
+    fun loadDepartments() {
+        viewModelScope.launch {
+            updateState { state ->
+                state.copy(loadingState = LoadingState.Loading)
+            }
+            val result = departmentInteractor.getDepartments()
+            when(result) {
+                is CallResult.Success -> {
+                    val items = departmentsMapper.departmentModelToViewItem(result.data)
+                    updateState { state ->
+                        originalViewItem = items
+                        state.copy(
+                            loadingState = LoadingState.Success(data = items),
+                        )
+                    }
+                }
+                is CallResult.Error -> {
+                    updateState { state ->
+                        state.copy(loadingState = LoadingState.None)
+                    }
+                }
+            }
         }
-        updateState { ContactsState(LoadingState.Success(filteredContacts), true) }
     }
 
     fun onContactClicked(contactsViewItem: ContactsViewItem) {
         conversationLauncher.launch(
             MessengerFeature.Params(
-                userId = contactsViewItem.id,
-                userName = contactsViewItem.name
+                userIds = listOf(contactsViewItem.userId),
+                chatName = getPrintableRawText(contactsViewItem.name),
+                avatar = contactsViewItem.avatar,
+                isGroup = false
             )
         )
     }
 
+    fun onOtherError(throwable: Throwable) {
+        onError(
+            showErrorType = ShowErrorType.Dialog,
+            throwable = throwable,
+            onRetryClick = { loadDepartments() }
+        )
+    }
 }

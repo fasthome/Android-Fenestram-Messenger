@@ -1,6 +1,3 @@
-import org.gradle.api.Project
-import org.gradle.api.file.ConfigurableFileCollection
-
 object Deps {
 
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.JetBrains.kotlin}"
@@ -12,9 +9,11 @@ object Deps {
         const val coordinatorLayout =
             "androidx.coordinatorlayout:coordinatorlayout:${Versions.AndroidX.coordinatorLayout}"
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.AndroidX.constraintLayout}"
-        const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.AndroidX.swipeRefreshLayout}"
+        const val swipeRefreshLayout =
+            "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.AndroidX.swipeRefreshLayout}"
 
-        const val navigationFragment = "androidx.navigation:navigation-fragment-ktx:${Versions.AndroidX.navigationVersion}"
+        const val navigationFragment =
+            "androidx.navigation:navigation-fragment-ktx:${Versions.AndroidX.navigationVersion}"
         const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Versions.AndroidX.navigationVersion}"
         const val paging = "androidx.paging:paging-runtime-ktx:3.1.0"
         const val legacy = "androidx.legacy:legacy-support-v4:1.0.0"
@@ -43,11 +42,12 @@ object Deps {
         const val crashlitycs = "com.google.firebase:firebase-crashlytics:18.2.7"
         const val analitycs = "com.google.firebase:firebase-analytics:20.0.2"
         const val firestore = "com.google.firebase:firebase-firestore-ktx:24.1.2"
+        const val messaging = "com.google.firebase:firebase-messaging-ktx:23.0.5"
     }
 
     object Moxy {
         const val moxy = "com.github.moxy-community:moxy:2.2.2"
-        const val androidx ="com.github.moxy-community:moxy-androidx:${Versions.moxy}"
+        const val androidx = "com.github.moxy-community:moxy-androidx:${Versions.moxy}"
         const val ktx = "com.github.moxy-community:moxy-ktx:${Versions.moxy}"
         const val compiler = "com.github.moxy-community:moxy-compiler:${Versions.moxy}"
     }
@@ -62,20 +62,15 @@ object Deps {
         const val core = "io.ktor:ktor-client-core:${Versions.ktor}"
         const val serialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
         const val client = "io.ktor:ktor-client-okhttp:${Versions.ktor}"
+        const val socket = "io.ktor:ktor-client-websockets:${Versions.ktor}"
         const val logging = "io.ktor:ktor-client-logging:${Versions.ktor}"
         const val mock = "io.ktor:ktor-client-mock:${Versions.ktor}"
     }
 
-    object Coil {
-        const val coil = "io.coil-kt:coil:1.3.0"
-        const val base = "io.coil-kt:coil-base:1.3.0"
-        const val svg = "io.coil-kt:coil-svg:1.3.0"
-    }
-
     object Room {
-        const val runtime = "androidx.room:room-runtime:2.4.1"
-        const val compiler = "androidx.room:room-compiler:2.4.1"
-        const val ktx = "androidx.room:room-ktx:2.4.1"
+        const val runtime = "androidx.room:room-runtime:${Versions.room}"
+        const val compiler = "androidx.room:room-compiler:${Versions.room}"
+        const val ktx = "androidx.room:room-ktx:${Versions.room}"
     }
 
     object Tests {
@@ -92,16 +87,11 @@ object Deps {
 
     const val gms = "com.google.android.gms:play-services-location:19.0.1"
     const val playCore = "com.google.android.play:core:1.10.3"
-    const val onesignal = "com.onesignal:OneSignal:4.6.3"
-
-    const val map = "org.osmdroid:osmdroid-android:6.1.6"
+    const val onesignal = "com.onesignal:OneSignal:4.8.3"
+    const val dotsindicator = "com.tbuonomo:dotsindicator:4.2"
 
     const val materialCalendar = "com.github.prolificinteractive:material-calendarview:2.0.0"
-
-    fun w3r2Sdk(project: Project): ConfigurableFileCollection =
-        project.files("libs/ute_sdk_v3.1.5.aar")
-
-    const val dfuForW3R2Sdk = "no.nordicsemi.android:dfu:1.12.1-beta01"
+    const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
 
     object Tools {
         const val desugar = "com.android.tools:desugar_jdk_libs:${Versions.Tools.desugar}"
@@ -119,9 +109,14 @@ object Deps {
         const val workmanager = "io.insert-koin:koin-androidx-workmanager:${Versions.koin}"
     }
 
+    object Glide {
+        const val core = "com.github.bumptech.glide:glide:${Versions.glide}"
+        const val compiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
+    }
+
     const val cicerone = "com.github.terrakok:cicerone:${Versions.cicerone}"
 
-    const val maskara = "com.github.santalu:maskara:1.0.0"
+    const val libphonenumber = "io.michaelrocks:libphonenumber-android:8.12.52"
     const val workRuntime = "androidx.work:work-runtime-ktx:2.7.1"
 
     const val kotlinXSerialization =
@@ -131,4 +126,11 @@ object Deps {
         "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.serializationJson}"
 
     const val socketIO = "io.socket:socket.io-client:2.0.0"
+
+    const val processPhoenix = "com.jakewharton:process-phoenix:${Versions.processPhoenix}"
+
+    const val instaBug = "com.instabug.library:instabug:${Versions.instaBug}"
+
+    const val themeManager = "com.dolatkia:animated-theme-manager:1.1.4"
+
 }

@@ -1,0 +1,8 @@
+package io.fasthome.fenestram_messenger.group_guest_impl.presentation.participants
+
+import io.fasthome.fenestram_messenger.group_guest_api.GroupParticipantsInterface
+import io.fasthome.fenestram_messenger.group_guest_api.ParticipantsParams
+import io.fasthome.fenestram_messenger.navigation.contract.ComponentFragmentContract
+
+val GroupParticipantsComponentContract = ComponentFragmentContract<GroupParticipantsInterface, ParticipantsParams, GroupParticipantsFragment>()
+

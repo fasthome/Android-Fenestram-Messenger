@@ -6,16 +6,23 @@ package io.fasthome.fenestram_messenger.presentation.base.ui
 import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
+import com.dolatkia.animatedThemeManager.ThemeManager
 import io.fasthome.fenestram_messenger.mvi.BaseViewEvent
 import io.fasthome.fenestram_messenger.mvi.ViewModelInterface
+import io.fasthome.fenestram_messenger.mvi.messageResult
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
+import io.fasthome.fenestram_messenger.navigation.FabConsumer
+import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.util.onBackPressed
+import io.fasthome.fenestram_messenger.presentation.base.util.onFabClicked
+import io.fasthome.fenestram_messenger.presentation.base.util.onFabUpdateIcon
 import io.fasthome.fenestram_messenger.presentation.base.util.showMessage
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.doOnCreate
 import io.fasthome.fenestram_messenger.util.doOnStartStop
 
-abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsumer {
+abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsumer, FabConsumer {
 
     constructor() : super()
     constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
@@ -30,7 +37,7 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
             when (event) {
                 is BaseViewEvent.ScreenEvent -> handleEvent(event.event)
                 is BaseViewEvent.ShowMessage -> showMessage(event.message)
-                is BaseViewEvent.ShowDialog -> showMessage(event.message)
+                is BaseViewEvent.ShowDialog -> showMessage(event.message, event.onCloseClick, event.onRetryClick)
             }
         }
 
@@ -38,17 +45,45 @@ abstract class BaseFragment<State : Any, Event : Any> : Fragment, BackPressConsu
         //TODO придумать более подходящее решение
         lifecycle.doOnCreate(vm::onCreate)
 
-//        childFragmentManager.setFragmentResultListener(
-//            requestParams.requestKey,
-//            this
-//        ) { _, bundle ->
-//            vm.onMessageResult(bundle.messageResult)
-//        }
+        childFragmentManager.setFragmentResultListener(
+            requestParams.requestKey,
+            this
+        ) { _, bundle ->
+            vm.onMessageResult(bundle.messageResult)
+        }
     }
+
+    override fun onResume() {
+        getThemeManager().getCurrentLiveTheme().observe(this) {
+            syncTheme(it as Theme)
+        }
+
+        super.onResume()
+    }
+
+    fun getThemeManager() : ThemeManager {
+        return ThemeManager.instance
+    }
+
+    fun getTheme(): Theme {
+        return getThemeManager().getCurrentTheme() as Theme
+    }
+
+    // to sync ui with selected theme
+    open fun syncTheme(appTheme: Theme){}
 
     override fun onBackPressed(): Boolean =
         childFragmentManager.onBackPressed() || vm.onBackPressed()
 
+    override fun onFabClicked(): Boolean =
+        childFragmentManager.onFabClicked()
+
+    override fun updateFabIcon(iconRes: Int?, badgeCount: Int) {
+        requireActivity().supportFragmentManager.onFabUpdateIcon(iconRes, badgeCount)
+    }
+
     protected abstract fun renderState(state: State)
     protected abstract fun handleEvent(event: Event)
+
+    open fun handleSlideCallback(offset : Float){}
 }

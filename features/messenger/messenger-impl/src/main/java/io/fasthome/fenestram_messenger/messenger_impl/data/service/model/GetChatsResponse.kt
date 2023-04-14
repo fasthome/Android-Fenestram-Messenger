@@ -15,7 +15,7 @@ class GetChatsResponse(
     val limit: Int?,
 
     @SerialName("total")
-    val total: Int?
+    val total: Int
 ) {
     @Serializable
     class Chats(
@@ -25,13 +25,25 @@ class GetChatsResponse(
         @SerialName("name")
         val name: String?,
 
+        @SerialName("avatar")
+        val avatar: String?,
+
         @SerialName("created_at")
         val date: String,
+
+        @SerialName("updated_at")
+        val updatedDate: String,
 
         @SerialName("users")
         val users: List<Long>,
 
         @SerialName("message")
-        val message: List<MessageResponse>?
+        val message: List<MessageResponseWithoutInitiator>?,
+
+        @SerialName("is_group")
+        val isGroup: Boolean,
+
+        @SerialName("pending_messages")
+        val pendingMessages: Long,
     )
 }

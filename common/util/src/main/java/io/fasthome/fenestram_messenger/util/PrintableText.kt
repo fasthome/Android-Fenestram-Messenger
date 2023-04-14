@@ -82,3 +82,17 @@ fun TextView.setPrintableTextOrGone(printableText: PrintableText?) {
     isVisible = printableText != null
     text = printableText?.let(resources::getPrintableText)
 }
+
+fun getPrintableRawText(printableText: PrintableText?): String {
+    return when (printableText) {
+        is PrintableText.Raw -> {
+            printableText.s
+        }
+        null -> {
+            ""
+        }
+        else -> {
+            error("Only for PrintableText.Raw!")
+        }
+    }
+}

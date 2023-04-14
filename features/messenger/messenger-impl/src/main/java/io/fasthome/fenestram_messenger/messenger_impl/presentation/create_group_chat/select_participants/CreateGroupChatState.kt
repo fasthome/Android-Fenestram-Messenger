@@ -4,9 +4,12 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants
 
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
+import io.fasthome.fenestram_messenger.util.ErrorInfo
+import io.fasthome.fenestram_messenger.util.LoadingState
 
 data class CreateGroupChatState(
-    val contacts: List<ContactViewItem>,
+    val loadingState: LoadingState<ErrorInfo, List<ContactViewItem>>,
     val addedContacts: List<ContactViewItem>,
-    val needScroll: Boolean
+    val needScroll: Boolean,
+    val isGroupChat: Boolean,
 )

@@ -22,8 +22,9 @@ class AuthInteractor(
 
     suspend fun login(phoneNumber: String, code: String) =
         authRepo.login(phoneNumber, code).onSuccess {
-            if (it is LoginResult.Success)
-                onLoginResultSuccess(tokensRepo = tokensRepo, authRepo = authRepo, loginResult = it)
+            onLoginResultSuccess(tokensRepo = tokensRepo, authRepo = authRepo, loginResult = it)
+            setUserCode(code)
+            setUserPhone(phoneNumber)
         }
 
 
@@ -34,19 +35,28 @@ class AuthInteractor(
     suspend fun getUsers() = authRepo.getUsers().map {
         if (it is UsersResult.Success) {
             it.users.map {
-                AuthFeature.User(id = it.id, name = it.name, phone = it.phone)
+                AuthFeature.User(id = it.id, name = it.name, phone = it.phone, nickname = it.nickname)
             }
         } else {
             listOf()
         }
     }
 
+    suspend fun getUserCode(): CallResult<String?> = authRepo.getUserCode()
+
+    suspend fun getUserPhone(): CallResult<String?> = authRepo.getUserPhone()
+
+    suspend fun setUserCode(code : String) = authRepo.setUserCode(code)
+
+    suspend fun setUserPhone(phone : String) = authRepo.setUserPhone(phone)
+
+    suspend fun logout() = authRepo.logout()
 
     companion object {
         suspend fun onLoginResultSuccess(
             tokensRepo: TokensRepo,
             authRepo: AuthRepo,
-            loginResult: LoginResult.Success,
+            loginResult: LoginResult,
         ) {
             tokensRepo.saveTokens(loginResult.accessToken, loginResult.refreshToken)
             authRepo.saveUserId(loginResult.userDetail.id)

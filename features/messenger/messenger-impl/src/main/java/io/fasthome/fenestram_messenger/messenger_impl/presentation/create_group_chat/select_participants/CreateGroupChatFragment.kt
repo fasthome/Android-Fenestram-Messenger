@@ -6,33 +6,56 @@ package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import io.fasthome.component.permission.PermissionComponentContract
+import io.fasthome.fenestram_messenger.core.exceptions.EmptySearchException
+import io.fasthome.fenestram_messenger.core.exceptions.PermissionDeniedException
 import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.FragmentCreateGroupChatBinding
+import io.fasthome.fenestram_messenger.messenger_impl.presentation.conversation.ConversationNavigationContract
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.AddedContactsAdapter
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter.ContactsAdapter
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.presentation.base.ui.registerFragment
+import io.fasthome.fenestram_messenger.presentation.base.util.InterfaceFragmentRegistrator
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.noEventsExpected
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.ErrorInfo
 import io.fasthome.fenestram_messenger.util.onClick
+import io.fasthome.fenestram_messenger.util.renderLoadingState
+import io.fasthome.fenestram_messenger.util.setPrintableText
 
 class CreateGroupChatFragment :
     BaseFragment<CreateGroupChatState, CreateGroupChatEvent>(R.layout.fragment_create_group_chat) {
 
-    override val vm: CreateGroupChatViewModel by viewModel()
+    private val permissionInterface by registerFragment(PermissionComponentContract)
+
+    override val vm: CreateGroupChatViewModel by viewModel(
+        getParamsInterface = ConversationNavigationContract.getParams,
+        interfaceFragmentRegistrator = InterfaceFragmentRegistrator()
+            .register(::permissionInterface)
+    )
 
     private val binding by fragmentViewBinding(FragmentCreateGroupChatBinding::bind)
 
-    private val contactsAdapter = ContactsAdapter(onItemClicked = {
+    private val contactsAdapter = ContactsAdapter(textColor = getTheme().text0Color(), onItemClicked = {
         vm.onContactClicked(it)
     })
 
-    private val addedContactsAdapter = AddedContactsAdapter(onItemClicked = {
+    private val addedContactsAdapter = AddedContactsAdapter(
+        textColor = getTheme().text0Color(),
+        onItemClicked = {
 
-    }, onRemoveClicked = {
-        vm.onContactRemoveClick(it)
-    })
+        }, onRemoveClicked = {
+            vm.onContactRemoveClick(it)
+        })
+
+    override fun syncTheme(appTheme: Theme) {
+        appTheme.context = requireActivity().applicationContext
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,30 +67,82 @@ class CreateGroupChatFragment :
         next.onClick {
             vm.onNextClicked()
         }
+
+        contactsSv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    vm.filterContacts(it)
+                }
+                return true
+            }
+        })
+
+        contactsAllow.setOnClickListener {
+            vm.checkPermissionsAndLoadContacts()
+        }
+
+        vm.checkPermissionsAndLoadContacts()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun renderState(state: CreateGroupChatState) {
-        contactsAdapter.items = state.contacts.map { item->
-            item.isSelected = state.addedContacts.find { it.userId == item.userId } != null
-            item
-        }
+    override fun renderState(state: CreateGroupChatState) = with(binding) {
+        noPermissionContainer.isVisible = false
+        emptyContainer.isVisible = false
+
+        renderLoadingState(
+            loadingState = state.loadingState,
+            progressContainer = progressContainer,
+            contentContainer = null,
+            renderData = {
+                contactsAdapter.items = it.map { item ->
+                    item.isSelected =
+                        state.addedContacts.find { addedContact -> addedContact.userId == item.userId } != null
+                    item
+                }
+            },
+            renderError = { errorInfo, throwable ->
+                renderError(errorInfo, throwable)
+            }
+        )
+
+        if (state.addedContacts.isEmpty()) next.hide() else next.show()
 
         contactsAdapter.notifyDataSetChanged()
 
-        binding.hint.isVisible = state.addedContacts.isEmpty()
-        addedContactsAdapter.items = state.addedContacts
+        if (state.isGroupChat) {
+            addedContactsAdapter.items = state.addedContacts
 
-        /***
-         * Необходимо дать время binding.listAddedInChat обновить список, решается выставлением задержки для скролла
-         *
-         * state.addedContacts.isNotEmpty() не скролить, если список пустой
-         * state.needScroll не скролить, если последний элемент был удален
-         */
-        if (state.addedContacts.isNotEmpty() && state.needScroll) {
-            binding.listAddedInChat.postDelayed({
-                binding.listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
+            /***
+             * Необходимо дать время binding.listAddedInChat обновить список, решается выставлением задержки для скролла
+             *
+             * state.addedContacts.isNotEmpty() не скролить, если список пустой
+             * state.needScroll не скролить, если последний элемент был удален
+             */
+            listAddedInChat.postDelayed({
+                listAddedInChat.isVisible = state.addedContacts.isNotEmpty()
+                if (state.addedContacts.isNotEmpty() && state.needScroll) {
+                    listAddedInChat.smoothScrollToPosition(state.addedContacts.size - 1)
+                }
             }, 100)
+        }
+    }
+
+    private fun renderError(errorInfo: ErrorInfo, throwable: Throwable) = with(binding) {
+        when (throwable) {
+            is PermissionDeniedException -> {
+                noPermissionContainer.isVisible = true
+            }
+            is EmptySearchException -> {
+                emptyContainer.isVisible = true
+                contactsEmptyText.setPrintableText(errorInfo.description)
+            }
+            else -> {
+                vm.onOtherError(throwable)
+            }
         }
     }
 

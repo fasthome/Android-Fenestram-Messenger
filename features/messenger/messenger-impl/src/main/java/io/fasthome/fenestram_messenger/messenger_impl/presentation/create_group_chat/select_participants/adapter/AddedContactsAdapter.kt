@@ -4,20 +4,23 @@
 package io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.adapter
 
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
+import io.fasthome.fenestram_messenger.core.ui.extensions.loadCircle
+import io.fasthome.fenestram_messenger.messenger_impl.R
 import io.fasthome.fenestram_messenger.messenger_impl.databinding.HolderAddedContactBinding
 import io.fasthome.fenestram_messenger.messenger_impl.presentation.create_group_chat.select_participants.model.ContactViewItem
 import io.fasthome.fenestram_messenger.util.*
 
 
-class AddedContactsAdapter(onItemClicked: (ContactViewItem) -> Unit, onRemoveClicked: (ContactViewItem) -> Unit) :
+class AddedContactsAdapter(textColor: Int,onItemClicked: (ContactViewItem) -> Unit, onRemoveClicked: (ContactViewItem) -> Unit) :
     AsyncListDifferDelegationAdapter<ContactViewItem>(
         AdapterUtil.diffUtilItemCallbackEquals(keyExtractor = ContactViewItem::userId),
         AdapterUtil.adapterDelegatesManager(
-            createAddedContactsAdapterDelegate(onItemClicked, onRemoveClicked)
+            createAddedContactsAdapterDelegate(textColor,onItemClicked, onRemoveClicked)
         )
     ) {}
 
 fun createAddedContactsAdapterDelegate(
+    textColor: Int,
     onItemClicked: (ContactViewItem) -> Unit,
     onRemoveClicked: (ContactViewItem) -> Unit
 ) =
@@ -32,6 +35,11 @@ fun createAddedContactsAdapterDelegate(
             onRemoveClicked(item)
         }
         bindWithBinding {
+            contactName.setTextColor(textColor)
             contactName.setPrintableText(item.userName)
+            contactAvatar.loadCircle(
+                url = item.avatar,
+                placeholderRes = R.drawable.ic_avatar_placeholder
+            )
         }
     }

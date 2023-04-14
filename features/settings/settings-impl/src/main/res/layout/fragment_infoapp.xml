@@ -5,13 +5,58 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <io.fasthome.fenestram_messenger.core.ui.custom_view.HooliToolbar
-        android:id="@+id/hooliToolbar"
+    <io.fasthome.fenestram_messenger.uikit.custom_view.HooliToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/settings_about_app"/>
 
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="32dp"
+        android:src="@drawable/confee_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/logo"
+        app:layout_constraintStart_toStartOf="@+id/logo"
+        app:layout_constraintTop_toBottomOf="@+id/logo"
+        android:layout_marginTop="12dp"
+        android:text="@string/infoapp_name"
+        android:textColor="@color/white"
+        android:textSize="22sp"/>
+
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/name"
+        app:layout_constraintStart_toStartOf="@+id/name"
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/policy_rules"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/policy_rules"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/logo"
+        app:layout_constraintStart_toStartOf="@+id/logo"
+        app:layout_constraintTop_toBottomOf="@+id/version" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

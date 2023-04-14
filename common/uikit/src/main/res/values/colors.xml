@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="black_50">#80000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg_0">#EFF2F7</color>
+    <color name="bg_02">#E8ECF3</color>
+    <color name="bg_03">#EFF2F7</color>
+    <color name="bg_1">#FAFAFC</color>
+    <color name="bg_2">#E8ECF3</color>
+    <color name="bg_3">#FFFFFF</color>
+    <color name="bg_3_a85">#D9DDE4EF</color>
+    <color name="button_inactive">#C3C4E4</color>
+    <color name="background_main">#222121</color>
+    <color name="button_standart">#888686</color>
+    <color name="button_standart_stroke">#C5C4C4</color>
+    <color name="button_standart_text">#1B1A1A</color>
+
+    <color name="gradient_start_color">#9F86C7</color>
+    <color name="gradient_end_color">#77BDED</color>
+
+    <color name="background_0">#1A202C</color>
+    <color name="background">#EFF2F7</color>
+    <color name="dark1">#232b38</color>
+    <color name="dark2">#2a313c</color>
+    <color name="dark2_50">#802A313C</color>
+    <color name="text1">#718096</color>
+    <color name="gray1_50">#80718096</color>
+    <color name="gray2">#A0AEC0</color>
+    <color name="gray4">#C9C9C9</color>
+    <color name="gray5">#2A313C</color>
+    <color name="main_active">#7B57C8</color>
+    <color name="blue2">#053868</color>
+    <color name="blue3">#5EA4FF</color>
+    <color name="blue4">#054077</color>
+    <color name="red">#FF4B4B</color>
+
+    <!-- TODO: Заменить new_light_gray и new_purple на название цвета из новой цветовой палитры (В Figma) Сейчас названий нет! -->
+    <color name="new_light_gray">#A5ABD7</color>
+    <color name="new_purple">#7847E2</color>
+
+    <color name="text_1">#717394</color>
+    <color name="text_0">#2A313C</color>
+    <color name="stroke_1">#C6D1DE</color>
+    <color name="stroke_2">#D6E1F2</color>
+    <color name="logo_tfn">#293240</color>
+
+    <color name="profile_gradient_1_1">#FF8A65</color>
+    <color name="profile_gradient_1_2">#EA5A5A</color>
+    <color name="profile_gradient_2_1">#FF8A65</color>
+    <color name="profile_gradient_2_2">#FFB74D</color>
+    <color name="profile_gradient_3_1">#F9CE37</color>
+    <color name="profile_gradient_3_2">#FFB74D</color>
+    <color name="profile_gradient_4_1">#AED581</color>
+    <color name="profile_gradient_4_2">#DCE775</color>
+    <color name="profile_gradient_5_1">#81C784</color>
+    <color name="profile_gradient_5_2">#AED581</color>
+    <color name="profile_gradient_6_1">#4DB6AC</color>
+    <color name="profile_gradient_6_2">#81C784</color>
+    <color name="profile_gradient_7_1">#4DD0E1</color>
+    <color name="profile_gradient_7_2">#4DB6AC</color>
+    <color name="profile_gradient_8_1">#64B5F6</color>
+    <color name="profile_gradient_8_2">#4DD0E1</color>
+    <color name="profile_gradient_9_1">#7986CB</color>
+    <color name="profile_gradient_9_2">#64B5F6</color>
+    <color name="profile_gradient_10_1">#9575CD</color>
+    <color name="profile_gradient_10_2">#7986CB</color>
+    <color name="profile_gradient_11_1">#BA68C8</color>
+    <color name="profile_gradient_11_2">#9575CD</color>
+    <color name="profile_gradient_12_1">#F06292</color>
+    <color name="profile_gradient_12_2">#BA68C8</color>
+    <color name="profile_gradient_13_1">#E57373</color>
+    <color name="profile_gradient_13_2">#F06292</color>
+
+    <color name="status_green">#29CC39</color>
+    <color name="status_purple">#8833FF</color>
+    <color name="status_blue">#33BFFF</color>
+    <color name="status_light_green">#2EE5C9</color>
+    <color name="status_yellow">#FFCB33</color>
+    <color name="status_orange">#FF6633</color>
+    <color name="status_pink">#E62E7B</color>
+
+</resources>

@@ -5,7 +5,7 @@ package io.fasthome.fenestram_messenger.auth_impl.data.repo_impl
 
 import io.fasthome.fenestram_messenger.auth_impl.data.service.AuthService
 import io.fasthome.fenestram_messenger.auth_impl.data.service.UsersService
-import io.fasthome.component.storage.UserStorage
+import io.fasthome.fenestram_messenger.data.UserStorage
 import io.fasthome.fenestram_messenger.auth_impl.domain.entity.UsersResult
 import io.fasthome.fenestram_messenger.auth_impl.domain.repo.AuthRepo
 import io.fasthome.fenestram_messenger.util.CallResult
@@ -29,6 +29,10 @@ class AuthRepoImpl(
         authService.sendCode(phoneNumber)
     }
 
+    override suspend fun logout() {
+        authService.logoutAccount()
+    }
+
     override suspend fun login(
         phoneNumber: String,
         code: String
@@ -42,5 +46,21 @@ class AuthRepoImpl(
 
     override suspend fun getUsers(): CallResult<UsersResult> = callForResult {
         usersService.getUsers()
+    }
+
+    override suspend fun getUserCode(): CallResult<String?> = callForResult{
+        userStorage.getUserCode()
+    }
+
+    override suspend fun getUserPhone(): CallResult<String?> = callForResult{
+        userStorage.getUserPhone()
+    }
+
+    override suspend fun setUserCode(code : String) {
+        userStorage.setUserCode(code)
+    }
+
+    override suspend fun setUserPhone(phone : String) {
+        userStorage.setUserPhone(phone)
     }
 }

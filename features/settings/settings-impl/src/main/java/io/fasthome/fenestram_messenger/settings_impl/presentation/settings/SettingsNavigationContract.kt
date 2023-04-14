@@ -1,7 +1,8 @@
 package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
-import io.fasthome.fenestram_messenger.navigation.contract.NavigationContract
+import io.fasthome.fenestram_messenger.navigation.contract.ComponentFragmentContract
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.settings_api.SettingsInterface
 
-object SettingsNavigationContract : NavigationContract<NoParams, NoResult>(SettingsFragment::class)
+val SettingsComponentContract =
+    ComponentFragmentContract<SettingsInterface, NoParams, SettingsFragment>()

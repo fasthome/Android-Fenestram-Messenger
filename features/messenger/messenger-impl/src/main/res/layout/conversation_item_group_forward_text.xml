@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:dragEdge="right"
+    app:mode="same_level">
+
+    <FrameLayout
+        android:id="@+id/delete_layout"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:background="@android:color/transparent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_reply" />
+    </FrameLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/ic_avatar_placeholder"
+            app:layout_constraintBottom_toBottomOf="@+id/forward_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <RelativeLayout
+            android:id="@+id/forward_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
+            android:minWidth="48dp"
+            android:minHeight="24dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp"
+            app:barrierMargin="5dp"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/blue_line"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/main_active"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_arrow"
+                    app:layout_constraintTop_toBottomOf="@+id/username"
+                    tools:viewBindingIgnore="true" />
+
+                <TextView
+                    android:id="@+id/forward_author_name"
+                    style="@style/Text.Blue.14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/blue_line"
+                    app:layout_constraintTop_toTopOf="@+id/blue_line"
+                    tools:text="Мария Сергеева" />
+
+                <LinearLayout
+                    android:id="@+id/forward_document_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:maxWidth="300dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/forward_author_name"
+                    app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                    tools:visibility="visible">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_docs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxWidth="300dp"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/item_document" />
+
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/username"
+                    style="@style/Text.Light.14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Сергей Сергеевич"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="HardcodedText" />
+
+                <ImageView
+                    android:id="@+id/iv_arrow"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_action_forward"
+                    android:tint="@color/main_active"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/blue_line"
+                    tools:ignore="UseAppTint" />
+
+                <TextView
+                    android:id="@+id/message_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/geometria"
+                    android:maxEms="16"
+                    android:text="@string/MessageContentCheck"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="@+id/forward_author_name"
+                    app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_images"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:padding="3dp"
+                    app:barrierMargin="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_min="@dimen/image_min_size"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/blue_line"
+                    app:layout_constraintTop_toBottomOf="@+id/forward_author_name"
+                    app:layout_constraintWidth_max="@dimen/image_recycler_max_width"
+                    app:layout_constraintWidth_min="@dimen/image_min_size"
+                    tools:ignore="TouchTargetSizeCheck"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/holder_image" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                tools:itemCount="1"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_below="@id/cl_message_content"
+                android:layout_alignEnd="@id/cl_message_content"
+                tools:listitem="@layout/holder_reactions" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/send_time_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/timeviewcheck"
+            android:textColor="@color/text1"
+            android:textSize="11sp"
+            app:layout_constraintStart_toStartOf="@+id/forward_ll"
+            app:layout_constraintTop_toBottomOf="@+id/forward_ll" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

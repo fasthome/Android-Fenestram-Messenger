@@ -10,7 +10,11 @@ android {
 dependencies {
     implementation(project(Modules.Feature.auth.api))
     implementation(project(Modules.Feature.profile.api))
+    implementation(project(Modules.Feature.debug.api))
+    implementation(project(Modules.Feature.messenger.api))
+    implementation(project(Modules.Feature.camera.api))
 
+    implementation(project(Modules.Common.uikit))
     implementation(project(Modules.Common.core))
     implementation(project(Modules.Common.data))
     implementation(project(Modules.Common.di))
@@ -19,9 +23,5 @@ dependencies {
     implementation(project(Modules.Common.network))
     implementation(project(Modules.Common.component))
 
-    implementation(Deps.Coil.coil)
-    implementation(Deps.Coil.base)
-    implementation(Deps.Coil.svg)
-
-    api(Deps.maskara)
+    implementation(Deps.Firebase.messaging)
 }

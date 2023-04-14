@@ -7,20 +7,21 @@ import androidx.lifecycle.viewModelScope
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.contract.CreateResultInterface
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
+import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.NoResult
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
 import io.fasthome.fenestram_messenger.navigation.model.UnitResult
 import io.fasthome.fenestram_messenger.util.CallResult
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.kotlin.Activable
 import io.fasthome.fenestram_messenger.util.kotlin.activableFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 
 abstract class BaseViewModel<S : Any, E : Any>(
     protected val router: ContractRouter,
     private val requestParams: RequestParams,
-    ) : ViewModel(), ViewModelInterface<S, BaseViewEvent<E>> {
+) : ViewModel(), ViewModelInterface<S, BaseViewEvent<E>> {
 
     ////////////////////// State //////////////////////////
 
@@ -129,11 +130,27 @@ abstract class BaseViewModel<S : Any, E : Any>(
         )
     }
 
-    protected fun showDialog(titleText: PrintableText, messageText: PrintableText) {
-        sendEvent(BaseViewEvent.ShowMessage(Message.Dialog(messageText = messageText, titleText = titleText)))
+    protected fun showDialog(
+        titleText: PrintableText,
+        messageText: PrintableText,
+        onCloseClick: () -> Unit,
+        onRetryClick: () -> Unit
+    ) {
+        sendEvent(
+            BaseViewEvent.ShowDialog(
+                Message.Dialog(messageText = messageText, titleText = titleText),
+                onCloseClick,
+                onRetryClick
+            )
+        )
     }
 
-    protected fun onError(showErrorType: ShowErrorType, throwable: Throwable) {
+    fun onError(
+        showErrorType: ShowErrorType,
+        throwable: Throwable,
+        onCloseClick: () -> Unit = {},
+        onRetryClick: () -> Unit = {}
+    ) {
         val errorInfo = errorConverter.convert(throwable)
 
         when (showErrorType) {
@@ -145,6 +162,8 @@ abstract class BaseViewModel<S : Any, E : Any>(
             ShowErrorType.Dialog -> showDialog(
                 titleText = errorInfo.title,
                 messageText = errorInfo.description,
+                onCloseClick,
+                onRetryClick
             )
         }
     }
@@ -195,4 +214,8 @@ abstract class BaseViewModel<S : Any, E : Any>(
         navigationContractApi = navigationContractApi,
         consumeResult = {},
     )
+
+    protected fun ScreenLauncher<NoParams>.launch() {
+        launch(NoParams)
+    }
 }

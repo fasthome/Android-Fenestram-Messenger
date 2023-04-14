@@ -1,8 +1,9 @@
 package io.fasthome.network.tokens
 
 import io.fasthome.fenestram_messenger.core.exceptions.InternetConnectionException
-import io.fasthome.fenestram_messenger.core.exceptions.UnauthorizedException
 import io.fasthome.fenestram_messenger.util.NonCancellableAction
+import io.fasthome.fenestram_messenger.util.callForResult
+import io.fasthome.fenestram_messenger.util.getOrThrow
 
 @JvmInline
 value class AccessToken(val s: String)
@@ -18,27 +19,39 @@ interface TokensRepo {
     suspend fun clearTokens()
 }
 
-class TokensRepoImpl(
+open class TokensRepoImpl(
     private val refreshTokenStorage: RefreshTokenStorage,
     private val accessTokenStorage: AccessTokenStorage,
     private val inMemoryTokensStorage: InMemoryTokensStorage,
     private val tokensService: TokensService,
 ) : TokensRepo {
 
-    private val updateTokensAction: NonCancellableAction<AccessToken> =
+    protected open val updateTokensAction: NonCancellableAction<AccessToken> =
         NonCancellableAction(action = {
             try {
-                val prevRefreshToken = checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
-                val prevAccessToken = checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
-                val response = tokensService.callUpdateToken(prevAccessToken, prevRefreshToken)
+                val prevRefreshToken =
+                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
+                val prevAccessToken =
+                    checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                val updateResult = callForResult {
+                    tokensService.callUpdateToken(prevAccessToken, prevRefreshToken)
+                }
+                val response = updateResult.getOrThrow()
                 val accessToken = AccessToken(response.accessToken)
                 val refreshToken = RefreshToken(response.refreshToken)
                 saveTokens(accessToken, refreshToken)
                 accessToken
             } catch (exception: Exception) {
-                throw when (exception) {
-                    is InternetConnectionException -> exception
-                    else -> TokenUpdateException(exception)
+                when (exception) {
+                    is IllegalStateException -> {
+                        if (exception.message == "No access token!") {
+                            throw exception
+                        } else {
+                            checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                        }
+                    }
+                    is InternetConnectionException -> checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                    else -> throw TokenUpdateException(exception)
                 }
             }
         })
@@ -62,5 +75,42 @@ class TokensRepoImpl(
     override suspend fun clearTokens() {
         inMemoryTokensStorage.clear()
         refreshTokenStorage.clearRefreshToken()
+        accessTokenStorage.clearAccessToken()
     }
+}
+
+class TokensRepoAdImpl(
+    private val refreshTokenStorage: RefreshTokenAdStorage,
+    private val accessTokenStorage: AccessTokenAdStorage,
+    private val inMemoryTokensStorage: InMemoryTokensStorage,
+    private val tokensService: TokensService,
+) : TokensRepoImpl(refreshTokenStorage, accessTokenStorage, inMemoryTokensStorage, tokensService) {
+
+    override val updateTokensAction: NonCancellableAction<AccessToken> =
+        NonCancellableAction(action = {
+            try {
+                val prevRefreshToken =
+                    checkNotNull(refreshTokenStorage.getRefreshToken()) { "No refresh token!" }
+                val updateResult = callForResult {
+                    tokensService.callUpdateTokenAd(prevRefreshToken)
+                }
+                val response = updateResult.getOrThrow()
+                val accessToken = AccessToken(response.accessToken)
+                val refreshToken = RefreshToken(response.refreshToken)
+                saveTokens(accessToken, refreshToken)
+                accessToken
+            } catch (exception: Exception) {
+                when (exception) {
+                    is IllegalStateException -> {
+                        if (exception.message == "No access token!") {
+                            throw exception
+                        } else {
+                            checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                        }
+                    }
+                    is InternetConnectionException -> checkNotNull(accessTokenStorage.getAccessToken()) { "No access token!" }
+                    else -> throw TokenUpdateException(exception)
+                }
+            }
+        })
 }

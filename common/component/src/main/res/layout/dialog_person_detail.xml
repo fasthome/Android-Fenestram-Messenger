@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@color/background_0"
+    android:paddingBottom="12dp"
+    android:paddingTop="4dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_avatar_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/Text.White.16sp"
+        android:layout_width="0dp"
+        android:maxLines="2"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/launch_conversation"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/avatar"
+        app:layout_constraintTop_toTopOf="@id/avatar"
+        tools:text="abcd 1234567901234567891" />
+
+    <TextView
+        android:id="@+id/phone"
+        style="@style/Text.Blue"
+        tools:text="+79876543210"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toStartOf="@id/name"
+        app:layout_constraintTop_toBottomOf="@id/name" />
+
+    <TextView
+        android:id="@+id/nickname"
+        style="@style/Text.Blue"
+        tools:text="\@nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/phone"
+        app:layout_constraintTop_toBottomOf="@id/phone" />
+
+    <ImageButton
+        android:id="@+id/launch_facecall"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:visibility="gone"
+        android:background="@drawable/shape_button_circle"
+        app:layout_constraintEnd_toStartOf="@id/launch_call"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/avatar"
+        app:srcCompat="@drawable/ic_facecall_60dp" />
+
+    <ImageButton
+        android:id="@+id/launch_call"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:visibility="gone"
+        android:background="@drawable/shape_button_circle"
+        app:layout_constraintEnd_toStartOf="@id/launch_conversation"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/launch_facecall"
+        app:layout_constraintTop_toTopOf="@id/launch_facecall"
+        app:srcCompat="@drawable/ic_call_60dp" />
+
+    <ImageButton
+        android:id="@+id/launch_conversation"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/shape_button_circle"
+        app:layout_constraintBottom_toBottomOf="@+id/avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/avatar"
+        app:srcCompat="@drawable/ic_open_dialog" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

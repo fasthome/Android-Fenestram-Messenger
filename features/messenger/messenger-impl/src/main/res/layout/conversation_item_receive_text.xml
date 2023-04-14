@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:dragEdge="right"
+    app:mode="same_level">
+
+    <FrameLayout
+        android:id="@+id/delete_layout"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:background="@android:color/transparent">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_reply" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true">
+
+        <LinearLayout
+            android:id="@+id/cl_message_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/shape_top10_bottom_right10_dark"
+            android:minWidth="48dp"
+            android:minHeight="24dp"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="5dp"
+            app:barrierMargin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_reply_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="200dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <View
+                    android:id="@+id/blue_line"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@color/main_active"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:viewBindingIgnore="true" />
+
+                <TextView
+                    android:id="@+id/reply_author_name"
+                    style="@style/Text.White.12sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="11dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/blue_line"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Мария Сергеева" />
+
+                <TextView
+                    android:id="@+id/reply_content"
+                    style="@style/Text.White.12sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@id/reply_author_name"
+                    app:layout_constraintTop_toBottomOf="@id/reply_author_name"
+                    tools:text="@string/MessageContentCheckBig" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/message_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/geometria"
+                android:maxEms="16"
+                android:text="@string/MessageContentCheck"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:text="123" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/holder_reactions" />
+
+            <TextView
+                android:id="@+id/tv_edited"
+                style="@style/Text.Gray.10sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/messenger_edited"
+                android:gravity="bottom"
+                android:textColor="@color/text_1"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/send_time_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/timeviewcheck"
+            android:textColor="@color/text1"
+            android:textSize="11sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_message_content" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</io.fasthome.fenestram_messenger.uikit.custom_view.SwipeRevealLayout>

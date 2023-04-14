@@ -5,38 +5,153 @@
     android:id="@+id/GoToConversationButton"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:background="@color/background_0">
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chat_list"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:minHeight="51dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:background="@color/dark2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:textCursorDrawable="@null"
+            android:layout_marginStart="6dp"
+            android:hint="@string/search"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:textColorHint="@color/text_1"
+            app:layout_constraintBottom_toBottomOf="@+id/back_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_button"
+            app:layout_constraintTop_toTopOf="@+id/back_button" />
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:paddingVertical="9dp"
+            android:paddingStart="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back_button"
+            app:tint="@color/text_1"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/Text.White.18sp"
+            android:layout_width="0dp"
+            tools:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="20dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingEnd="10dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_button"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Переслать" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_marginTop="9dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_name_header"
-        app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/messanger_chat_item" />
+        app:layout_constraintVertical_bias="0.0">
 
-    <TextView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:clipToPadding="false"
+            android:paddingBottom="80dp"
+            tools:listitem="@layout/messanger_chat_item" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <ImageView
         android:id="@+id/app_name_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="23dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/montserrat"
-        android:text="@string/AppName"
-        android:textColor="@color/white"
-        android:textSize="18sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/confee_logo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_chat_search"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        tools:visibility="gone"
+        android:layout_margin="20dp"
+        android:contentDescription="Поиск чатов"
+        android:src="@drawable/ic_search_24"
+        app:layout_constraintBottom_toBottomOf="@+id/app_name_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/app_name_header"
+        tools:ignore="HardcodedText" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/swipe_refresh"
+        app:layout_constraintVertical_bias="0.25">
+
+        <ImageView
+            android:id="@+id/empty_image"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:background="@drawable/image_general_chat_empty"
+            android:contentDescription="@string/messenger_empty_view"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/empty_text"
+            style="@style/EmptyViewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="@string/messenger_empty_view"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
 
     <ImageButton
         android:id="@+id/ib_settings"
@@ -45,18 +160,17 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_settings" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/chat_add"
-        style="@style/FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <View
+        android:id="@+id/bg_geometry"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/layout_bg1"
+        android:fitsSystemWindows="false"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

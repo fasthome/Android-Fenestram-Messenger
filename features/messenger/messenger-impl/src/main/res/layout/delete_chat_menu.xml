@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/conversationMenu"
+    android:layout_width="wrap_content"
+    android:background="@drawable/shape_bg_2_10dp"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:translationZ="12dp"
+        android:paddingVertical="6dp">
+
+        <TextView
+            android:id="@+id/edit"
+            android:visibility="gone"
+            style="@style/Text.White.16sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginVertical="10dp"
+            android:text="@string/conversation_edit" />
+
+        <TextView
+            android:id="@+id/delete"
+            style="@style/Text.White.16sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginVertical="10dp" />
+    </LinearLayout>
+</FrameLayout>

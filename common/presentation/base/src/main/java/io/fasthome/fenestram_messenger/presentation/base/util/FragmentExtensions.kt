@@ -8,13 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
-import io.fasthome.fenestram_messenger.mvi.ErrorDialog
 import io.fasthome.fenestram_messenger.mvi.Message
 import io.fasthome.fenestram_messenger.navigation.BackPressConsumer
+import io.fasthome.fenestram_messenger.navigation.FabConsumer
+import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
+import io.fasthome.fenestram_messenger.mvi.ErrorDialog
+import io.fasthome.fenestram_messenger.presentation.base.ui.MessageDialogFragment
 import io.fasthome.fenestram_messenger.util.doOnDestroy
 import io.fasthome.fenestram_messenger.util.getPrintableText
 import kotlin.properties.ReadOnlyProperty
@@ -92,25 +96,34 @@ fun <B : ViewBinding> Fragment.nestedViewBinding(
 internal fun FragmentManager.onBackPressed(): Boolean =
     fragments.any { it is BackPressConsumer && it.onBackPressed() }
 
-fun Fragment.showMessage(message: Message): Unit = when (message) {
-    is Message.Alert -> {
-//        val tag = message.id
-//        (childFragmentManager.findFragmentByTag(tag) as MessageDialogFragment?)
-//            ?.dismissAllowingStateLoss()
-//        MessageDialogFragment
-//            .create(requestParams.requestKey, message)
-//            .show(childFragmentManager, tag)
+internal fun FragmentManager.onFabClicked(): Boolean =
+    fragments.any { it is FabConsumer && it.onFabClicked() }
+
+internal fun FragmentManager.onFabUpdateIcon(@DrawableRes iconRes: Int? = null, badgeCount: Int) =
+    fragments.any {
+        (it as? FabConsumer)?.updateFabIcon(iconRes, badgeCount)
+        it is FabConsumer
     }
 
-    is Message.PopUp -> Toast
-        .makeText(requireContext(), getPrintableText(message.messageText), Toast.LENGTH_LONG)
-        .show()
-    is Message.Dialog ->
-        ErrorDialog
-            .create(this, message.titleText, message.messageText)
-            .show()
+fun Fragment.showMessage(message: Message, onCloseClick: () -> Unit = {}, onRetryClick: (() -> Unit)? = null): Unit =
+    when (message) {
+        is Message.Alert -> {
+            val tag = message.id
+            (childFragmentManager.findFragmentByTag(tag) as MessageDialogFragment?)
+                ?.dismissAllowingStateLoss()
+            MessageDialogFragment
+                .create(requestParams.requestKey, message)
+                .show(childFragmentManager, tag)
+        }
 
-}
+        is Message.PopUp -> Toast
+            .makeText(requireContext(), getPrintableText(message.messageText), Toast.LENGTH_LONG)
+            .show()
+        is Message.Dialog ->
+            ErrorDialog
+                .create(this, message.titleText, message.messageText, onCloseClick, onRetryClick)
+                .show()
+    }
 
 
 fun Fragment.getOrCreateArguments(): Bundle {

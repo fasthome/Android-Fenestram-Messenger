@@ -22,6 +22,10 @@ fun <T> switchObject(cancelPrev: (T) -> Unit) = object : ReadWriteProperty<Any?,
 
 fun switchJob() = switchObject(cancelPrev = Job::cancel)
 
+fun <P> KMutableProperty0<P?>.getAndSet(
+    value: P?,
+): P? = get().also { set(value) }
+
 inline fun <T> ifOrNull(condition: Boolean, valueProvider: () -> T): T? =
     if (condition) valueProvider() else null
 

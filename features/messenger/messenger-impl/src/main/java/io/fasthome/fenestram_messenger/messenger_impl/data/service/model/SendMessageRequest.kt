@@ -9,5 +9,11 @@ class SendMessageRequest(
     val text: String?,
 
     @SerialName("message_type")
-    val type: String?
+    val type: String?,
+
+    @SerialName("reply_message_id")
+    val replyMessageId: Long?,
+
+    @SerialName("author_id")
+    val authorId: Long
 )

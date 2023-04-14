@@ -18,12 +18,17 @@ import io.fasthome.fenestram_messenger.mvi.provideSavedState
 import io.fasthome.fenestram_messenger.navigation.ContractRouter
 import io.fasthome.fenestram_messenger.navigation.model.NoParams
 import io.fasthome.fenestram_messenger.navigation.model.RequestParams
+import io.fasthome.fenestram_messenger.navigation.model.createParams
 import io.fasthome.fenestram_messenger.navigation.model.requestParams
 import io.fasthome.fenestram_messenger.profile_api.ProfileFeature
+import io.fasthome.fenestram_messenger.push_api.PushFeature
+import io.fasthome.fenestram_messenger.tasks_api.TasksFeature
+import io.fasthome.fenestram_messenger.util.onSuccess
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.*
-import io.fasthome.fenestram_messenger.navigation.model.createParams
 
 class MainViewModel(
     router: ContractRouter,
@@ -31,14 +36,17 @@ class MainViewModel(
     savedStateHandle: SavedStateHandle,
     private val features: Features,
     private val outerTabNavigator: OuterTabNavigator,
-    private val environment: Environment
+    private val environment: Environment,
 ) : BaseViewModel<MainState, MainEvent>(router, requestParams) {
 
     class Features(
         val chatsFeature: MessengerFeature,
         val contactsFeature: ContactsFeature,
         val profileFeature: ProfileFeature,
-        val debugFeature : DebugFeature
+        val debugFeature: DebugFeature,
+        val pushFeature: PushFeature,
+        val messengerFeature: MessengerFeature,
+        val tasksFeature: TasksFeature
     )
 
     private val fragmentsStack = Stack<MainFeature.TabType>()
@@ -46,8 +54,8 @@ class MainViewModel(
     private val debugLauncher = registerScreen(features.debugFeature.navigationContract)
 
     init {
-
-        val savedState = savedStateHandle.provideSavedState { SavedState(tabsStack = fragmentsStack) }
+        val savedState =
+            savedStateHandle.provideSavedState { SavedState(tabsStack = fragmentsStack) }
         val tabsStack = savedState?.tabsStack ?: Stack()
 
         if (tabsStack.isNotEmpty()) {
@@ -59,6 +67,18 @@ class MainViewModel(
         }
 
         viewModelScope.launch {
+            updateFbToken()
+
+            features.messengerFeature.subscribeUnreadCount()
+                .collectWhenViewActive()
+                .onEach { badge ->
+                    sendEvent(
+                        MainEvent.UpdateBadge(
+                            count = badge.count.toInt()
+                        )
+                    )
+                }
+                .launchIn(viewModelScope)
             outerTabNavigator.tabToOpenFlow
                 .collectWhenViewActive()
                 .collect { newTab ->
@@ -71,7 +91,11 @@ class MainViewModel(
     }
 
     override fun createInitialState(): MainState {
-        return MainState(currentTab = fragmentsStack.peek(), debugVisible = environment.isDebug)
+        return MainState(
+            currentTab = fragmentsStack.peek(),
+            debugVisible = environment.isDebug,
+            fabVisible = true
+        )
     }
 
     override fun onBackPressed(): Boolean {
@@ -95,15 +119,29 @@ class MainViewModel(
 
         fragmentsStack.remove(tab)
         fragmentsStack.push(tab)
+        val fabVisible = when (tab) {
+            MainFeature.TabType.Contacts,
+            MainFeature.TabType.Chats,
+            -> true
+            else -> false
+        }
         updateState {
-            it.copy(currentTab = tab)
+            it.copy(
+                currentTab = tab,
+                fabVisible = fabVisible
+            )
         }
     }
 
     fun buildFragment(type: MainFeature.TabType): Fragment {
         return when (type) {
-            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams()
-                .createFragment()
+            MainFeature.TabType.Chats -> features.chatsFeature.messengerNavigationContract.createParams(
+                MessengerFeature.MessengerParams(
+                    chatSelectionMode = false,
+                    forwardMessage = null
+                )
+            ).createFragment()
+            MainFeature.TabType.Tasks -> features.tasksFeature.tasksNavigationContract.createParams().createFragment()
             MainFeature.TabType.Contacts -> features.contactsFeature.contactsNavigationContract.createParams()
                 .createFragment()
             MainFeature.TabType.Profile -> features.profileFeature.profileNavigationContract.createParams()
@@ -115,6 +153,27 @@ class MainViewModel(
 
     fun debugClicked() {
         debugLauncher.launch(NoParams)
+    }
+
+    fun fetchUnreadCount() {
+        viewModelScope.launch {
+            features.messengerFeature
+                .fetchUnreadCount().onSuccess { badge ->
+                    sendEvent(
+                        MainEvent.UpdateBadge(
+                            count = badge.count.toInt()
+                        )
+                    )
+                }
+        }
+    }
+
+    private suspend fun updateFbToken() {
+        features.pushFeature.updateToken().onSuccess {
+            if (it.isEmpty()) {
+                updateFbToken()
+            }
+        }
     }
 
     @Parcelize

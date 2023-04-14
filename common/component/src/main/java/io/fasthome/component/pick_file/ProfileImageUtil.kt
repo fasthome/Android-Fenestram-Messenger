@@ -8,14 +8,18 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 interface ProfileImageUtil {
-    suspend fun getPhoto(file: File): Bitmap
+    suspend fun getPhoto(file: File): Bitmap?
 
     suspend fun getCroppedFile(bitmap: Bitmap, outputFile: File, paddings: Paddings)
 }
 
 class ProfileImageUtilImpl : ProfileImageUtil {
-    override suspend fun getPhoto(file: File): Bitmap = withContext(DispatchersProvider.IO) {
-        return@withContext BitmapFactory.decodeFile(file.path)
+    override suspend fun getPhoto(file: File): Bitmap? = withContext(DispatchersProvider.IO) {
+        try {
+            return@withContext BitmapFactory.decodeFile(file.path)
+        } catch (e: Exception) {
+            return@withContext null
+        }
     }
 
     override suspend fun getCroppedFile(bitmap: Bitmap, outputFile: File, paddings: Paddings) {

@@ -1,9 +1,11 @@
 package io.fasthome.fenestram_messenger.data.di
 
-import io.fasthome.fenestram_messenger.data.FileSystemInterface
-import io.fasthome.fenestram_messenger.data.FileSystemInterfaceImpl
-import io.fasthome.fenestram_messenger.data.KeyValueStorage
-import io.fasthome.fenestram_messenger.data.StorageQualifier
+import io.fasthome.fenestram_messenger.data.*
+import io.fasthome.fenestram_messenger.data.core.CoreRepo
+import io.fasthome.fenestram_messenger.data.core.CoreRepoImpl
+import io.fasthome.fenestram_messenger.data.db.DatabaseFactory
+import io.fasthome.fenestram_messenger.data.db.SimpleDbFactory
+import io.fasthome.fenestram_messenger.data.file.*
 import io.fasthome.fenestram_messenger.data.prefs.InMemoryKeyValueStorage
 import io.fasthome.fenestram_messenger.data.prefs.PreferenceKeyValueStorage
 import io.fasthome.fenestram_messenger.di.bindSafe
@@ -16,7 +18,9 @@ object DataModule {
     operator fun invoke(): List<Module> =
         listOf(
             createKeyValue(),
-            createFile()
+            createFile(),
+            createExt(),
+            createDatabase()
         )
 
     private fun createKeyValue() = module {
@@ -30,14 +34,42 @@ object DataModule {
             named(StorageQualifier.Simple)
         ) bindSafe KeyValueStorage.Factory::class
 
+        /***
+         * todo Использовать хранилище с шифрованием для хранения токенов
+         * сейчас при использовании его бывает краш при открытии приложения
+         */
+//        single(
+//            PreferenceKeyValueStorage::SecureFactory,
+//            named(StorageQualifier.Secure)
+//        ) bindSafe KeyValueStorage.Factory::class
+
         single(
-            PreferenceKeyValueStorage::SecureFactory,
-            named(StorageQualifier.Secure)
-        ) bindSafe KeyValueStorage.Factory::class
+            ::CoreRepoImpl
+        ) bindSafe CoreRepo::class
+        single { CoreStorage(get(named(StorageQualifier.Simple))) }
     }
 
-    private fun createFile() = module{
+    private fun createFile() = module {
         single(::FileSystemInterfaceImpl) bindSafe FileSystemInterface::class
+
+        single(
+            SimpleFileStorage::FactoryFiles,
+            named(StorageQualifier.Simple)
+        ) bindSafe FileStorage.Factory::class
+        single(::FileManagerImpl) bindSafe FileManager::class
+        single(::DownloadFileManagerImpl) bindSafe DownloadFileManager::class
+        single(::DownloadImageManagerImpl) bindSafe DownloadImageManager::class
+    }
+
+    private fun createExt() = module {
+        single(::StorageUrlConverter)
+    }
+
+    private fun createDatabase() = module {
+        single(
+            ::SimpleDbFactory,
+            named(StorageQualifier.Simple)
+        ) bindSafe DatabaseFactory::class
     }
 
 }

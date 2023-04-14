@@ -1,53 +1,79 @@
 package io.fasthome.fenestram_messenger.settings_impl.presentation.settings
 
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import androidx.core.view.isVisible
+import io.fasthome.fenestram_messenger.navigation.contract.InterfaceFragment
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
-import io.fasthome.fenestram_messenger.presentation.base.util.*
+import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
+import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.settings_api.SettingsInterface
 import io.fasthome.fenestram_messenger.settings_impl.R
 import io.fasthome.fenestram_messenger.settings_impl.databinding.FragmentSettingsBinding
+import io.fasthome.fenestram_messenger.settings_impl.presentation.DeleteAccountDialog
+import io.fasthome.fenestram_messenger.settings_impl.presentation.LogoutDialog
+import io.fasthome.fenestram_messenger.settings_impl.presentation.settings.adapter.SettingsAdapter
+import io.fasthome.fenestram_messenger.uikit.SpacingItemDecoration
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.dp
-import io.fasthome.fenestram_messenger.util.increaseHitArea
-import io.fasthome.fenestram_messenger.util.onClick
 
 
-class SettingsFragment: BaseFragment<SettingsState, SettingsEvent>(R.layout.fragment_settings) {
-
+class SettingsFragment : BaseFragment<SettingsState, SettingsEvent>(R.layout.fragment_settings),
+    InterfaceFragment<SettingsInterface> {
 
     override val vm: SettingsViewModel by viewModel()
 
-    private val binding by fragmentViewBinding (FragmentSettingsBinding::bind)
+    private val binding by fragmentViewBinding(FragmentSettingsBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding){
+    private val adapter = SettingsAdapter()
+
+    private val decoration = SpacingItemDecoration { index, itemCount ->
+        Rect(
+            20.dp,
+            16.dp,
+            20.dp,
+            0,
+        )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+        list.adapter = adapter
+        list.itemAnimator = null
+        list.removeItemDecoration(decoration)
+        list.addItemDecoration(decoration)
+    }
 
-        hooliToolbar.setOnButtonClickListener {
-            onBackPressed()
-        }
+    override fun renderState(state: SettingsState) = with(binding) {
+        adapter.items = state.items
+    }
 
-        tvExitProfile.onClick {
-            vm.onLogoutClicked()
-        }
-
-        tvAboutApp.setOnClickListener{
-            vm.startInfoapp()
-        }
-
-        ibBlueButton.setOnClickListener{
-            vm.onBlueClicked()
-        }
-        ibGreenButton.setOnClickListener{
-            vm.onGreenClicked()
+    override fun handleEvent(event: SettingsEvent) {
+        when (event) {
+            is SettingsEvent.DeleteAccount -> {
+                DeleteAccountDialog.create(
+                    fragment = this,
+                    titleText = PrintableText.StringResource(R.string.settings_delete_accept_title),
+                    messageText = PrintableText.StringResource(R.string.settings_delete_accept_description),
+                    onAcceptClicked = vm::deleteAccount
+                ).show()
+            }
+            is SettingsEvent.Logout -> {
+                LogoutDialog.create(
+                    fragment = this,
+                    titleText = PrintableText.StringResource(R.string.settings_logout_title),
+                    onAcceptClicked = vm::logout
+                ).show()
+            }
         }
     }
 
-    override fun renderState(state: SettingsState) = with(binding){
-        ibBlueButton.isActivated = state.blueSelected
-        ibGreenButton.isActivated = state.greenSelected
-    }
+    override fun getInterface(): SettingsInterface = vm
 
-    override fun handleEvent(event: SettingsEvent) = noEventsExpected()
+    override fun syncTheme(appTheme: Theme) = with(binding){
+        appTheme.context = requireActivity().applicationContext
+        vm.themeSynced(appTheme)
+    }
 }

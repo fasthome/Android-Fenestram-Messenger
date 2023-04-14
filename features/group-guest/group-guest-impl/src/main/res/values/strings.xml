@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_guest_participants">Участники чата</string>
+    <string name="profile_guest_add_user">Добавление участников</string>
+    <string name="profile_guest_title">Выберите участников чата</string>
+    <string name="profile_guest_link_title">Пригласить в чат по ссылке</string>
+    <string name="profile_guest_delete_user">Удалить из чата</string>
+    <string name="profile_guest_add_to_contacts">Добавить в контакты</string>
+    <string name="profile_guest_cancel">Отмена</string>
+</resources>

@@ -10,5 +10,6 @@ sealed class UsersResult {
 class User(
     val id: Long,
     val name: String,
+    val nickname: String?,
     val phone : String
 )

@@ -4,17 +4,35 @@
 package io.fasthome.fenestram_messenger.profile_guest_api
 
 import android.os.Parcelable
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 import io.fasthome.fenestram_messenger.navigation.contract.NavigationContractApi
-import io.fasthome.fenestram_messenger.navigation.model.NoParams
-import io.fasthome.fenestram_messenger.navigation.model.NoResult
+import io.fasthome.fenestram_messenger.util.PrintableText
 import kotlinx.parcelize.Parcelize
 
 interface ProfileGuestFeature {
-    val profileGuestNavigationContract: NavigationContractApi<ProfileGuestParams, NoResult>
+    val profileGuestNavigationContract: NavigationContractApi<ProfileGuestParams, ProfileGuestResult>
 
     @Parcelize
     class ProfileGuestParams(
-        val userName : String,
-        val userNickname : String
+        val id: Long?,
+        val userName: String,
+        val userNickname: String,
+        val userPhone: String,
+        val userAvatar: String,
+        val chatParticipants: List<User>,
+        val isGroup: Boolean,
+        val editMode: Boolean
     ) : Parcelable
+
+    sealed class ProfileGuestResult : Parcelable {
+
+        @Parcelize
+        class ChatDeleted(val id: Long) : ProfileGuestResult()
+
+        @Parcelize
+        class ChatNameChanged(val newName: PrintableText) : ProfileGuestResult()
+
+        @Parcelize
+        object Canceled : ProfileGuestResult()
+    }
 }

@@ -30,10 +30,15 @@ object Versions {
     object Tools {
         const val desugar = "1.1.5"
     }
+
     const val koin = "3.1.3"
     const val cicerone = "7.0"
     const val ktor = "1.6.3"
     const val kotlinXSerialization = "1.4.30"
     const val serializationJson = "1.1.0"
+    const val glide = "4.13.2"
+    const val processPhoenix = "2.1.2"
+    const val instaBug = "11.5.4"
+    const val room = "2.5.0"
 
 }

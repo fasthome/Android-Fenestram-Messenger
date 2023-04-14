@@ -1,12 +1,12 @@
 object Config {
     const val applicationId = "io.fasthome.fenestram_messenger"
-    const val compileSdk = 31
-    const val targetSdk = 31
+    const val compileSdk = 33
+    const val targetSdk = 33
     const val minSdk = "23"
-    const val buildToolsVersion = "32.0.0"
+    const val buildToolsVersion = "33.0.0"
 
-    const val versionCode = 1
-    const val versionName = "1.00"
+    const val versionCode = 7
+    const val versionName = "1.042"
 }
 
 object BuildType {

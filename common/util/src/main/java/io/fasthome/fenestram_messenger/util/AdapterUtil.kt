@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.viewbinding.ViewBinding
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegatesManager
-import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.AdapterDelegateViewBindingViewHolder
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 
@@ -52,6 +51,22 @@ object AdapterUtil {
         override fun areItemsTheSame(oldItem: T, newItem: T): Boolean = when {
             (oldItem is T1 && newItem is T1) -> keyExtractorT1(oldItem) == keyExtractorT1(newItem)
             (oldItem is T2 && newItem is T2) -> keyExtractorT2(oldItem) == keyExtractorT2(newItem)
+            else -> oldItem == newItem
+        }
+
+        @SuppressLint("DiffUtilEquals")
+        override fun areContentsTheSame(oldItem: T, newItem: T): Boolean = oldItem == newItem
+    }
+
+    inline fun <T : Any, reified T1 : T, reified T2 : T, reified T3 : T,> diffUtilItemCallbackEquals(
+        crossinline keyExtractorT1: (T1) -> Any?,
+        crossinline keyExtractorT2: (T2) -> Any?,
+        crossinline keyExtractorT3: (T3) -> Any?,
+    ) = object : DiffUtil.ItemCallback<T>() {
+        override fun areItemsTheSame(oldItem: T, newItem: T): Boolean = when {
+            (oldItem is T1 && newItem is T1) -> keyExtractorT1(oldItem) == keyExtractorT1(newItem)
+            (oldItem is T2 && newItem is T2) -> keyExtractorT2(oldItem) == keyExtractorT2(newItem)
+            (oldItem is T3 && newItem is T3) -> keyExtractorT3(oldItem) == keyExtractorT3(newItem)
             else -> oldItem == newItem
         }
 

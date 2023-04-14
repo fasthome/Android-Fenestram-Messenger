@@ -14,6 +14,10 @@ interface MainFeature {
     enum class TabType {
         Contacts,
         Chats,
+        Tasks,
         Profile
     }
+
+    fun returnToMainScreenAndOpenTab(tab: TabType)
+
 }

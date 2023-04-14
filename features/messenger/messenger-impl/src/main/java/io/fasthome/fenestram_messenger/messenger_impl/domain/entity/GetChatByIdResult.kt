@@ -1,7 +1,10 @@
 package io.fasthome.fenestram_messenger.messenger_impl.domain.entity
 
-import io.fasthome.fenestram_messenger.messenger_impl.data.service.model.MessageResponse
+import io.fasthome.fenestram_messenger.contacts_api.model.User
 
-sealed class GetChatByIdResult {
-    data class Success(val messages: List<MessageResponse?>?) : GetChatByIdResult()
-}
+data class GetChatByIdResult(
+    val avatar: String,
+    val chatName: String,
+    val chatUsers: List<User>,
+    val permittedReactions: List<String>
+)

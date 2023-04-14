@@ -1,16 +1,18 @@
 package io.fasthome.network.di
 
-import io.fasthome.fenestram_messenger.data.StorageQualifier
+import android.content.Context
 import io.fasthome.fenestram_messenger.core.environment.Environment
+import io.fasthome.fenestram_messenger.data.StorageQualifier
 import io.fasthome.fenestram_messenger.di.bindSafe
 import io.fasthome.fenestram_messenger.di.factory
 import io.fasthome.fenestram_messenger.di.single
+import io.fasthome.network.client.DeviceIdRepo
 import io.fasthome.network.client.JwtNetworkClientFactory
 import io.fasthome.network.client.NetworkClientFactory
 import io.fasthome.network.client.SimpleNetworkClientFactory
 import io.fasthome.network.tokens.*
-import io.fasthome.network.util.NetworkLogger
 import io.fasthome.network.util.NetworkController
+import io.fasthome.network.util.NetworkLogger
 import io.ktor.client.engine.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.logging.*
@@ -32,6 +34,7 @@ object NetworkModule {
                     networkLogger = get(),
                     tokensRepo = get(),
                     forceLogoutManager = lazy { get() },
+                    deviceIdRepo = get()
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.Authorized)
@@ -42,8 +45,10 @@ object NetworkModule {
                 SimpleNetworkClientFactory(
                     httpClientEngine = get(),
                     environment = get(),
-                    baseUrl = get<Environment>().endpoints.refreshTokenUrl,
-                    networkLogger = get()
+                    baseUrl = get<Environment>().endpoints.apiBaseUrl,
+                    networkLogger = get(),
+                    forceLogoutManager = lazy { get() },
+                    deviceIdRepo = get()
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.RefreshToken)
@@ -55,7 +60,9 @@ object NetworkModule {
                     httpClientEngine = get(),
                     environment = get(),
                     baseUrl = get<Environment>().endpoints.apiBaseUrl,
-                    networkLogger = get()
+                    networkLogger = get(),
+                    forceLogoutManager = lazy { get() },
+                    deviceIdRepo = get()
                 )
             },
             qualifier = named(NetworkClientFactoryQualifier.Unauthorized)
@@ -66,12 +73,18 @@ object NetworkModule {
         } bindSafe HttpClientEngine::class
 
         single(::InMemoryTokensStorage)
-        single { RefreshTokenStorage(get(named(StorageQualifier.Secure))) }
-        single { AccessTokenStorage(get(named(StorageQualifier.Secure))) }
+        //TODO использовать StorageQualifier.Secure
+        single { RefreshTokenStorage(get(named(StorageQualifier.Simple))) }
+        single { AccessTokenStorage(get(named(StorageQualifier.Simple))) }
+        factory { DeviceIdRepo(get<Context>().contentResolver) }
 
         single(::TokensRepoImpl) bindSafe TokensRepo::class
 
-        single { TokensService(get(named(NetworkClientFactoryQualifier.RefreshToken))) }
+//        single { RefreshTokenAdStorage(get(named(StorageQualifier.Simple))) }
+//        single { AccessTokenAdStorage(get(named(StorageQualifier.Simple))) }
+//        single(::TokensRepoAdImpl) bindSafe TokensRepo::class
+
+        single { TokensService(get(named(NetworkClientFactoryQualifier.RefreshToken)), get()) }
 
         factory(::NetworkController)
 

@@ -11,12 +11,18 @@ class GetChatByIdResponse(
     @SerialName("name")
     val name: String?,
 
+    @SerialName("avatar")
+    val avatar: String?,
+
     @SerialName("created_at")
     val date: String?,
 
     @SerialName("users")
-    val users: List<Int?>?,
+    val users: List<Long?>?,
 
-    @SerialName("message")
-    val message: List<MessageResponse?>?
+    @SerialName("chatUsers")
+    val chatUsers: List<UserResponse>,
+
+    @SerialName("permittedReactions")
+    val permittedReactions: List<String>?
 )

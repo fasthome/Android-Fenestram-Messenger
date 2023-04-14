@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    tools:ignore="ContentDescription">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/camera_component_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageButton
+        android:id="@+id/ib_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginTop="64dp"
+        android:layout_marginStart="16dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/flash_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginEnd="20dp"
+        android:padding="12dp"
+        android:src="@drawable/flash_off"
+        app:layout_constraintBottom_toBottomOf="@+id/capture_button_layout"
+        app:layout_constraintEnd_toStartOf="@+id/capture_button_layout"
+        app:layout_constraintTop_toTopOf="@+id/capture_button_layout" />
+
+    <FrameLayout
+        android:id="@+id/capture_button_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="22dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/capture_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/take_photo_selector" />
+
+        <ProgressBar
+            android:id="@+id/capture_progress_bar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDuration="700" />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/switch_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:src="@drawable/take_return"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/capture_button_layout"
+        app:layout_constraintStart_toEndOf="@+id/capture_button_layout"
+        app:layout_constraintTop_toTopOf="@+id/capture_button_layout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

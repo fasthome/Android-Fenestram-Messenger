@@ -10,5 +10,6 @@ import io.fasthome.fenestram_messenger.util.PrintableText
 fun mapToContactViewItem(contact: Contact) =
     ContactViewItem(
         userId = contact.userId,
-        userName = PrintableText.Raw(contact.userName ?: contact.phone)
+        userName = PrintableText.Raw(contact.userName ?: contact.phone),
+        avatar = contact.user?.avatar ?: ""
     )
