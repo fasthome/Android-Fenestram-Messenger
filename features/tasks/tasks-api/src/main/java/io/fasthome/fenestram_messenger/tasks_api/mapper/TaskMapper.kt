@@ -53,7 +53,7 @@ class TaskMapper(private val context: Context) {
             executor = null,
             participants = null,
             priority = null,
-            priorityStrokeColor = getPriorityStrokeColor(priority),
+            priorityStrokeColor = getPriorityStrokeColor(null),
             status = mapToStatusViewItem(status),
             messageId = messageId.toString(),
             createdAt = createdAt,

@@ -7,4 +7,5 @@ data class TasksState(
 enum class Tabs(val type: String) {
     SELF("self"),
     CONTROL("control"),
+    ARCHIVE("archive"),
 }

@@ -11,13 +11,14 @@ import io.fasthome.fenestram_messenger.tasks_impl.domain.logic.TasksInteractor
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.mapper.toTaskViewItem
 import io.fasthome.fenestram_messenger.tasks_impl.presentation.tasks.model.TaskViewItem
 import io.fasthome.fenestram_messenger.uikit.paging.PagingDataViewModelHelper
+import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import kotlinx.coroutines.flow.Flow
 
 class TasksViewModel(
     router: ContractRouter,
     requestParams: RequestParams,
     private val tasksInteractor: TasksInteractor,
-    val taskMapper: TaskMapper
+    private val taskMapper: TaskMapper
 ) : BaseViewModel<TasksState, TasksEvent>(router, requestParams) {
 
     private var mockSelfUserId: Long = 0
@@ -27,6 +28,11 @@ class TasksViewModel(
         return TasksState(
             selectedTab = Tabs.SELF
         )
+    }
+
+    fun syncTheme(appTheme: Theme) {
+        taskMapper.appTheme = appTheme
+        loadDataHelpers.forEach { it.invalidateSource() }
     }
 
     fun fetchTasks(type: String): Flow<PagingData<TaskViewItem>> {
