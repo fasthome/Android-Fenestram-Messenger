@@ -67,7 +67,7 @@ class TasksFragment : BaseFragment<TasksState, TasksEvent>(R.layout.fragment_tas
 
     override fun syncTheme(appTheme: Theme): Unit = with(binding) {
         appTheme.context = requireContext()
-        vm.taskMapper.appTheme = appTheme
+        vm.syncTheme(appTheme)
         root.setBackgroundColor(appTheme.bg0Color())
         tabLayout.setTabTextColors(appTheme.buttonInactiveColor(), appTheme.mainActive())
     }
@@ -81,6 +81,10 @@ class TasksFragment : BaseFragment<TasksState, TasksEvent>(R.layout.fragment_tas
             PagerItem(
                 TaskAdapter(onTaskCardClicked = { task -> vm.onTaskCardClicked(task) }),
                 PrintableText.StringResource(R.string.tasks_control_empty)
+            ),
+            PagerItem(
+                TaskAdapter(onTaskCardClicked = { taskNumber -> vm.onTaskCardClicked(taskNumber) }),
+                PrintableText.StringResource(R.string.tasks_archive_empty)
             )
         )
 

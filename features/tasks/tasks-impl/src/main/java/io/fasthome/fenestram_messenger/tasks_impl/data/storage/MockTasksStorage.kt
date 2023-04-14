@@ -9,6 +9,7 @@ class MockTasksStorage {
     fun getTasks(type: String): List<Task> = when (type) {
         "self" -> _selfTasks
         "control" -> _controlTasks
+        "archive" -> _archiveTasks
         else -> listOf()
     }
 
@@ -493,6 +494,65 @@ class MockTasksStorage {
             ),
             priority = Task.Priority.LOWEST,
             status = Task.Status.IN_WORK,
+            messageId = 1,
+            createdAt = "20 января, 11:48",
+            updatedAt = "20 июня, 11:48",
+            completedAt = null
+        ),
+    )
+
+    private val _archiveTasks = listOf(
+        Task(
+            number = -1,
+            title = "",
+            description = "",
+            customer = User(-1),
+            executor = User(-1),
+            participants = null,
+            priority = Task.Priority.MEDIUM,
+            status = Task.Status.IN_WORK,
+            messageId = -1,
+            createdAt = "Сегодня",
+            updatedAt = null,
+            completedAt = null
+        ),
+        Task(
+            number = 12,
+            title = "Давно сделанное",
+            description = "",
+            customer = User(0, "https://i.imgur.com/34NeeMh.jpeg", "Я"),
+            executor = User(2, "https://i.imgur.com/ilW4zeW.jpeg", "Дмитрий"),
+            participants = null,
+            priority = Task.Priority.HIGHEST,
+            status = Task.Status.DONE,
+            messageId = 1,
+            createdAt = "20 января, 11:48",
+            updatedAt = "20 июня, 11:48",
+            completedAt = null
+        ),
+        Task(
+            number = 42,
+            title = "Давно сделанное",
+            description = "",
+            customer = User(0, "https://i.imgur.com/34NeeMh.jpeg", "Я"),
+            executor = User(2, "https://i.imgur.com/ilW4zeW.jpeg", "Дмитрий"),
+            participants = null,
+            priority = Task.Priority.HIGHEST,
+            status = Task.Status.DONE,
+            messageId = 1,
+            createdAt = "20 января, 11:48",
+            updatedAt = "20 июня, 11:48",
+            completedAt = null
+        ),
+        Task(
+            number = 55,
+            title = "Давно сделанное",
+            description = "",
+            customer = User(0, "https://i.imgur.com/34NeeMh.jpeg", "Я"),
+            executor = User(2, "https://i.imgur.com/ilW4zeW.jpeg", "Дмитрий"),
+            participants = null,
+            priority = Task.Priority.HIGHEST,
+            status = Task.Status.DONE,
             messageId = 1,
             createdAt = "20 января, 11:48",
             updatedAt = "20 июня, 11:48",

@@ -1,5 +1,6 @@
 package io.fasthome.component.image_viewer.adapter
 
+import android.annotation.SuppressLint
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import io.fasthome.component.databinding.ItemImageViewerBinding
@@ -13,32 +14,22 @@ import io.fasthome.fenestram_messenger.util.dp
 
 class ImageViewerAdapter(
     onDownSwipe: () -> Unit,
-    onRootAlphaChanged: (Float) -> Unit,
-    onToggleScroll: (Boolean) -> Unit,
 ) : PagerDelegateAdapter<ImageViewerModel>(
     AdapterUtil.diffUtilItemCallbackEquals(ImageViewerModel::imageGallery),
     delegates = listOf(
-        createImageAdapterDelegate(onDownSwipe, onRootAlphaChanged, onToggleScroll)
+        createImageAdapterDelegate(onDownSwipe)
     )
 )
 
+@SuppressLint("ClickableViewAccessibility")
 fun createImageAdapterDelegate(
     onDownSwipe: () -> Unit,
-    onRootAlphaChanged: (Float) -> Unit,
-    onToggleScroll: (Boolean) -> Unit,
 ) =
     createAdapterDelegate(
         inflate = ItemImageViewerBinding::inflate,
         bind = { item: ImageViewerModel, binding: ItemImageViewerBinding ->
-            binding.image.setOnSwipeDownListener {
-                onDownSwipe()
-            }
-            binding.image.setOnAlphaChangedListener { alpha ->
-                onRootAlphaChanged(alpha)
-            }
-            binding.image.setOnScrollToggleListener { state ->
-                onToggleScroll(state)
-            }
+            binding.image.setSwipeDownListener(onDownSwipe)
+
             binding.image.apply {
                 item.imageContent?.let {
                     setContent(it, FitCenter(), RoundedCorners(1.dp))
@@ -52,3 +43,4 @@ fun createImageAdapterDelegate(
             }
         }
     )
+

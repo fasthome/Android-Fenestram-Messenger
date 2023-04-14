@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import io.fasthome.component.R
 import io.fasthome.component.databinding.FragmentImageViewerBinding
-import io.fasthome.component.image_viewer.adapter.ImageSliderAdapter
-import io.fasthome.component.image_viewer.adapter.ImageViewerAdapter
+import io.fasthome.component.image_viewer.adapter.*
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
 import io.fasthome.fenestram_messenger.uikit.custom_view.PreCachingLayoutManager
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
+import io.fasthome.fenestram_messenger.util.AnimationUtil.loadAnimation
 import io.fasthome.fenestram_messenger.util.android.setColor
 import io.fasthome.fenestram_messenger.util.collectWhenStarted
 import io.fasthome.fenestram_messenger.util.getScreenWidth
@@ -30,14 +30,10 @@ class ImageViewerFragment :
 
     private val adapterImages = ImageViewerAdapter(
         onDownSwipe = {
-            binding.root.animate().alpha(0f).setDuration(300).start()
-            vm.onBackPressed()
-        },
-        onRootAlphaChanged = { alpha ->
-            binding.root.alpha = alpha
-        },
-        onToggleScroll = { state ->
-            binding.rvImages.isCanScrolling = state
+            binding.rvImages.isCanScrolling = false
+            binding.root.startAnimation(binding.root.loadAnimation(R.anim.slide_down) {
+                vm.onBackPressed()
+            })
         }
     )
 
@@ -68,7 +64,6 @@ class ImageViewerFragment :
                 (binding.rvImages.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
             vm.onDownloadImage(imagePos)
         }
-
         setupAdapter()
         setupHorizontalPicker()
         subscribeImages()
@@ -126,9 +121,10 @@ class ImageViewerFragment :
         val padding: Int =
             (requireContext().getScreenWidth() - resources.getDimensionPixelSize(R.dimen.image_picker_size)) / 2
         binding.rvImagesPicker.setPadding(padding, 0, padding, 0)
-        binding.rvImagesPicker.layoutManager = SliderLayoutManager(requireContext()) { scrolledPos ->
-            binding.rvImages.scrollToPosition(scrolledPos)
-        }
+        binding.rvImagesPicker.layoutManager =
+            SliderLayoutManager(requireContext()) { scrolledPos ->
+                binding.rvImages.scrollToPosition(scrolledPos)
+            }
         binding.rvImagesPicker.adapter = adapterImagePicker
     }
 
