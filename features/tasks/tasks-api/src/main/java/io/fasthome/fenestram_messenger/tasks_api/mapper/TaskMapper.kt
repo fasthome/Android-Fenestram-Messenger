@@ -7,7 +7,6 @@ import io.fasthome.fenestram_messenger.uikit.custom_view.task_card.ConfeeTaskCar
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
 import io.fasthome.fenestram_messenger.util.PrintableText
 import io.fasthome.fenestram_messenger.util.android.color
-import java.util.*
 
 class TaskMapper(private val context: Context) {
 
@@ -52,7 +51,6 @@ class TaskMapper(private val context: Context) {
             executor = null,
             participants = null,
             priority = mapToPriorityViewItem(null),
-            priorityStrokeColor = getPriorityStrokeColor(null),
             status = mapToStatusViewItem(status),
             messageId = messageId.toString(),
             createdAt = createdAt,
