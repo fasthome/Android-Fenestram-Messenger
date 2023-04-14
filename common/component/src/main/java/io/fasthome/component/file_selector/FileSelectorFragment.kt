@@ -10,19 +10,14 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.FlexboxLayoutManager
 import io.fasthome.component.R
 import io.fasthome.component.databinding.FragmentFileSelectorBinding
 import io.fasthome.fenestram_messenger.presentation.base.ui.BaseFragment
 import io.fasthome.fenestram_messenger.presentation.base.util.fragmentViewBinding
 import io.fasthome.fenestram_messenger.presentation.base.util.viewModel
+import io.fasthome.fenestram_messenger.uikit.custom_view.GridAutofitLayoutManager
 import io.fasthome.fenestram_messenger.uikit.theme.Theme
-import io.fasthome.fenestram_messenger.util.SingleToast
-import io.fasthome.fenestram_messenger.util.collectWhenStarted
-import io.fasthome.fenestram_messenger.util.onClick
-import io.fasthome.fenestram_messenger.util.supportBottomSheetScroll
+import io.fasthome.fenestram_messenger.util.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -137,8 +132,7 @@ class FileSelectorFragment :
 
     private fun FragmentFileSelectorBinding.setupAdapter() {
         rvImages.adapter = adapterImage
-        val layoutManager =
-            FlexboxLayoutManager(rvImages.context, FlexDirection.ROW, FlexWrap.WRAP)
+        val layoutManager = GridAutofitLayoutManager(requireContext(), 110.dp)
 
         rvImages.layoutManager = layoutManager
         rvImages.itemAnimator = null
